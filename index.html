@@ -1706,7 +1706,7 @@ function renderTodosDoStorage() {
 }
 
 
-document.addEventListener('DOMContentLoaded', carregarDoGitHub);
+// DOMContentLoaded unificado abaixo
 /* ═══ DADOS ═══ */
 const PRODS = [{"id": 1, "name": "Vaso Floral Grande", "artisan": "Rosenir Batista", "cat": "Cer\u00e2mica \u00b7 Vasos", "price": 280, "parcelas": 6, "prazo": "15\u201320 dias \u00fateis", "dim": "20\u00d718\u00d730 cm", "emoji": "\ud83c\udffa", "desc": "Barro vermelho, grafismo floral em branco. Acordelamento, polimento com pedra e queima a c\u00e9u aberto. Pe\u00e7a \u00fanica.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Cachoeirinha \u2014 Miranda", "badge": "Exclusivo", "foto": ""}, {"id": 2, "name": "Anta do Pantanal", "artisan": "Artes\u00e3s Terena", "cat": "Madeira entalhada", "price": 95, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "18\u00d78\u00d712 cm", "emoji": "\ud83e\udd8c", "desc": "Escultura de anta em madeira de cedro, entalhada \u00e0 m\u00e3o. Fauna viva do Pantanal sul-mato-grossense.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "", "foto": ""}, {"id": 3, "name": "Pote Ritual M\u00e9dio", "artisan": "Maria Auxiliadora Bezerra", "cat": "Cer\u00e2mica \u00b7 Utens\u00edlios", "price": 185, "parcelas": 3, "prazo": "12\u201318 dias \u00fateis", "dim": "16\u00d716\u00d714 cm", "emoji": "\u26b1\ufe0f", "desc": "Pote com tampa, grafismo pontilhado em branco. Resina de jatob\u00e1. T\u00e9cnica ancestral.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Destaque", "foto": ""}, {"id": 4, "name": "Colar Sementes Terena", "artisan": "Artes\u00e3s Mar\u00e7al", "cat": "Bijuteria", "price": 58, "parcelas": 1, "prazo": "7\u201310 dias \u00fateis", "dim": "60 cm", "emoji": "\ud83d\udcff", "desc": "Sementes nativas do Cerrado e Pantanal, montado \u00e0 m\u00e3o. Cada colar \u00e9 \u00fanico.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Novo", "foto": ""}, {"id": 5, "name": "Jacar\u00e9 em Barro", "artisan": "Ceramistas Terena", "cat": "Cer\u00e2mica \u00b7 Bichos", "price": 120, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "28\u00d77\u00d76 cm", "emoji": "\ud83d\udc0a", "desc": "Esculpido em barro vermelho com detalhes em branco. Fauna do Pantanal. Cada pe\u00e7a \u00e9 irrepet\u00edvel.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Baba\u00e7u \u2014 Miranda", "badge": "", "foto": ""}, {"id": 6, "name": "Cestaria de Buriti", "artisan": "Artes\u00e3s Terena", "cat": "Fibra e Palha", "price": 145, "parcelas": 3, "prazo": "15\u201320 dias \u00fateis", "dim": "35\u00d735\u00d712 cm", "emoji": "\ud83e\uddfa", "desc": "Fibra de buriti tran\u00e7ada \u00e0 m\u00e3o. Decorativa ou funcional. Tradi\u00e7\u00e3o centen\u00e1ria.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Lim\u00e3o Verde \u2014 Aquidauana", "badge": "\u00daltimo", "foto": ""}];
 let carrinho=[], atual=null, pgto=null;
@@ -2494,9 +2494,7 @@ var _dirFotoData = null; // foto base64 do membro da diretoria
 
 
 
-document.addEventListener('DOMContentLoaded', function(){
-  carregarDoGitHub();
-});
+
 
 // ── Upload Cloudinary para galeria (igual CMDDI) ──
 function uploadCloudinaryFoto(input) {
@@ -2813,12 +2811,7 @@ window.addEventListener('scroll',function(){
 },{passive:true});
 
 // ── Animações dos slots ──
-document.addEventListener('DOMContentLoaded',function(){
-  // vaso-anim nos slots fs_006 e fs_007
-  ['fs_006','fs_007'].forEach(function(key){
-    var el=document.querySelector('[data-slot-key="'+key+'"]');
-    if(el)el.classList.add('vaso-anim');
-  });
+
   // grafismo-anim no fs_008
   var el8=document.querySelector('[data-slot-key="fs_008"]');
   if(el8)el8.classList.add('grafismo-anim');
@@ -2859,15 +2852,7 @@ function editarFotoMaria() {
 }
 
 // ── Carregar foto da Maria do localStorage ──
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-    var db = dbLer();
-    if(db.diretoria && db.diretoria['dir_001'] && db.diretoria['dir_001'].foto){
-      var img = document.getElementById('img-maria');
-      if(img) img.src = db.diretoria['dir_001'].foto;
-    }
-  } catch(e){}
-});
+
 
 
 // ═══ PRESERVAÇÃO DE DADOS — versão ═══
@@ -3080,8 +3065,35 @@ function renderMembroDiretoria(item, key) {
 }
 
 // Inicializar ao carregar
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(initDiretoria, 500);
+
+
+
+// ═══ INICIALIZAÇÃO ÚNICA ═══
+document.addEventListener('DOMContentLoaded', function(){
+  // 1. Carregar dados do localStorage PRIMEIRO (imediato)
+  renderTodosDoStorage();
+  // 2. Tentar sincronizar com GitHub em segundo plano
+  carregarDoGitHub();
+  // 3. Inicializar diretoria
+  setTimeout(initDiretoria, 300);
+  // 4. Vasos animados
+  setTimeout(function(){
+    ['fs_006','fs_007'].forEach(function(key){
+      var el=document.querySelector('[data-slot-key="'+key+'"]');
+      if(el&&!el.classList.contains('vaso-anim'))el.classList.add('vaso-anim');
+    });
+    var el8=document.querySelector('[data-slot-key="fs_008"]')||
+             document.querySelector('[data-slot-key="fs_005"]');
+    if(el8&&!el8.classList.contains('grafismo-anim'))el8.classList.add('grafismo-anim');
+  }, 100);
+  // 5. Limpar bordas vermelhas ao digitar
+  ['an','aa','ac','ap','apr','ade','dir-nome','dir-cargo'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){
+      el.addEventListener('input',function(){this.style.borderColor='';});
+      el.addEventListener('change',function(){this.style.borderColor='';});
+    }
+  });
 });
 
 </script>
