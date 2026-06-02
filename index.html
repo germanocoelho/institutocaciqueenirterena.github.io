@@ -1759,7 +1759,22 @@ document.addEventListener('DOMContentLoaded', function(){
     <h2 class="st td">Diretoria do Instituto</h2>
     <p class="sec-lead" style="color:rgba(249,245,237,.7)">Conheça os membros que conduzem as ações do Instituto Cacique Enir Terena.</p>
 
-    <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem;margin-top:1.5rem"></div>
+    <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem">
+  <div class="card-membro" data-key="dir_001" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">
+    <div data-key="dir_001" onclick="ajustarPosDir(this)" title="Clique para ajustar posição da foto"
+      style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem;overflow:hidden;cursor:pointer;position:relative">
+      <span id="ph-maria" style="font-size:4rem">👤</span>
+      <img id="img-maria" src="" alt="Maria Auxiliadora Bezerra"
+        style="display:none;width:100%;height:100%;object-fit:cover;object-position:center top;transition:object-position .3s">
+    </div>
+    <div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">Maria Auxiliadora Bezerra</div>
+    <div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">Presidente</div>
+    <div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, o Cacique Enir Terena, herdou da mãe a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo. Com a ancestralização de sua mãe em 2016, assumiu a presidência do Instituto, conduzindo com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano.</div>
+    <div class="adm-panel" style="margin-top:.7rem;display:flex;gap:.4rem;justify-content:center">
+      <button onclick="escolherFotoMaria()" style="background:rgba(200,135,58,.2);border:1px solid rgba(200,135,58,.3);color:#F2C45A;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .8rem;border-radius:3px">📷 Adicionar foto</button>
+    </div>
+  </div>
+</div>
 
     <div class="adm" style="margin-top:2rem">
       <div class="admcb"><div class="admti">⚙ Adicionar Membro da Diretoria</div></div>
@@ -3812,6 +3827,57 @@ function trocarFotoDiretor(key) {
   };
   inp.click();
 }
+
+
+// ── Foto da Maria Auxiliadora ──
+function escolherFotoMaria() {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = function() {
+    if (!this.files || !this.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var b64 = e.target.result;
+      // Comprimir
+      var img2 = new Image();
+      img2.onload = function() {
+        var c = document.createElement('canvas');
+        var maxW = 600; var w = img2.width, h = img2.height;
+        if (w > maxW) { h = Math.round(h*maxW/w); w = maxW; }
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img2, 0, 0, w, h);
+        var compressed = c.toDataURL('image/jpeg', 0.8);
+        aplicarFotoMaria(compressed);
+      };
+      img2.onerror = function() { aplicarFotoMaria(b64); };
+      img2.src = b64;
+    };
+    reader.readAsDataURL(this.files[0]);
+  };
+  inp.click();
+}
+
+function aplicarFotoMaria(b64) {
+  var img = document.getElementById('img-maria');
+  var ph = document.getElementById('ph-maria');
+  if (img) { img.src = b64; img.style.display = 'block'; }
+  if (ph) ph.style.display = 'none';
+  try { localStorage.setItem('icet_foto_maria', b64); } catch(e) {}
+  notif('📸 Foto da presidente salva!');
+}
+
+// Restaurar foto da Maria do localStorage ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    var fotoMaria = localStorage.getItem('icet_foto_maria');
+    if (fotoMaria) {
+      var img = document.getElementById('img-maria');
+      var ph = document.getElementById('ph-maria');
+      if (img) { img.src = fotoMaria; img.style.display = 'block'; }
+      if (ph) ph.style.display = 'none';
+    }
+  } catch(e) {}
+});
 
 </script>
 
