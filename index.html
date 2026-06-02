@@ -518,7 +518,7 @@ body.adm-unlocked .cac-foto:hover .foto-overlay {
 .campo-erro { border-color: #c0392b !important; box-shadow: 0 0 0 2px rgba(192,57,43,.2) !important; }
 
 
-#grid-diretoria{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem}
+#grid-diretoria{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
 
 /* Tabelas IBGE */
 #doc-ibge-brasil table tbody tr:nth-child(even),
@@ -2636,46 +2636,66 @@ function pubDiretoria() {
 }
 function renderDiretoria(item, key) {
   var posicao = item.pos || 'center top';
-  var foto = item.foto
-    ? '<div class="dir-foto-wrap" style="width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:6px;margin-bottom:.8rem;position:relative">' +
-        '<img src="'+item.foto+'" alt="'+item.nome+'" style="width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block" onerror="this.remove()">' +
-        '<div class="foto-overlay"></div>' +
-      '</div>'
-    : '<div class="dir-foto-placeholder" style="width:100%;aspect-ratio:4/3;border-radius:6px;background:rgba(200,135,58,.15);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">👤</div>';
 
-  var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.04);border-radius:8px;padding:1.2rem;text-align:center">' +
-    foto +
-    '<div class="cm-nome" style="font-family:Cinzel,serif;font-size:.95rem;font-weight:700;color:var(--ou);margin-bottom:.25rem">'+item.nome+'</div>' +
-    '<div class="cm-cargo" style="font-size:.75rem;color:rgba(249,245,237,.6);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem">'+item.cargo+'</div>' +
-    (item.bio?'<div class="cm-bio" style="font-size:.73rem;color:rgba(249,245,237,.55);font-style:italic;line-height:1.5">'+item.bio+'</div>':'') +
-    '<div class="adm-panel" style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center;flex-wrap:wrap">' +
-      '<button onclick="ajustarPosDir(this)" data-key="'+key+'" style="background:rgba(200,135,58,.2);border:none;color:var(--ou);font-size:.6rem;font-weight:700;cursor:pointer;padding:.2rem .5rem;border-radius:3px">↕ Posição foto</button>' +
-      '<button onclick="excluirDir(this)" data-key="'+key+'" style="background:rgba(180,30,30,.2);border:none;color:#f87171;font-size:.6rem;font-weight:700;cursor:pointer;padding:.2rem .5rem;border-radius:3px">✕ Excluir</button>' +
+  var fotoHtml = item.foto
+    ? '<div class="dir-foto-wrap" data-key="'+key+'" title="Clique para ajustar posição da foto" ' +
+        'style="width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:8px;margin-bottom:1rem;position:relative;cursor:pointer" ' +
+        'onclick="ajustarPosDir(this)">' +
+        '<img src="'+item.foto+'" alt="'+item.nome+'" ' +
+          'style="width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block;transition:object-position .3s" ' +
+          'onerror="this.parentElement.innerHTML='👤'">' +
+        '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);color:#fff;font-size:.6rem;text-align:center;padding:.3rem;opacity:0;transition:.2s" class="pos-hint">🖱 Clique para reposicionar</div>' +
+      '</div>'
+    : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem">👤</div>';
+
+  var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
+    fotoHtml +
+    '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
+    '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
+    (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem;margin-top:.2rem">'+item.bio+'</div>' : '') +
+    '<div class="adm-panel" style="margin-top:.7rem;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap">' +
+      '<button onclick="excluirDir(this)" data-key="'+key+'" ' +
+        'style="background:rgba(180,30,30,.25);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .7rem;border-radius:3px">✕ Excluir</button>' +
     '</div>' +
   '</div>';
 
   var grid = document.getElementById('grid-diretoria');
-  if(grid) grid.insertAdjacentHTML('beforeend', card);
+  if (grid) grid.insertAdjacentHTML('beforeend', card);
+
+  // Hint ao hover
+  var cards = grid ? grid.querySelectorAll('.card-membro') : [];
+  var last = cards[cards.length-1];
+  if (last) {
+    var wrap = last.querySelector('.dir-foto-wrap');
+    if (wrap) {
+      wrap.addEventListener('mouseenter', function(){ var h=this.querySelector('.pos-hint'); if(h) h.style.opacity='1'; });
+      wrap.addEventListener('mouseleave', function(){ var h=this.querySelector('.pos-hint'); if(h) h.style.opacity='0'; });
+    }
+  }
 }
 
-function ajustarPosDir(btn) {
-  var key = btn.dataset.key;
-  var card = btn.closest('.card-membro');
-  var img = card ? card.querySelector('img') : null;
+
+function ajustarPosDir(el) {
+  // el pode ser o div.dir-foto-wrap (clique direto na foto) ou um botão
+  var wrap = el.classList && el.classList.contains('dir-foto-wrap') ? el : el.closest('.dir-foto-wrap');
+  var key = wrap ? wrap.dataset.key : (el.dataset && el.dataset.key);
+  var img = wrap ? wrap.querySelector('img') : null;
   if (!img) { notif('Insira uma foto primeiro.'); return; }
+  var opcoes = ['center top','center center','center bottom','left top','left center','left bottom','right top','right center','right bottom'];
   var atual = img.style.objectPosition || 'center top';
-  var opcoes = ['center top','center center','center bottom','left top','left center','right top','right center'];
   var idx = opcoes.indexOf(atual);
   var nova = opcoes[(idx + 1) % opcoes.length];
   img.style.objectPosition = nova;
+  notif('↕ Posição: ' + nova);
   // Salvar
-  var dados = dbLer();
-  if (dados.diretoria && dados.diretoria[key]) {
-    dados.diretoria[key].pos = nova;
-    dbSalvar(dados);
-    salvarNoGitHub();
+  if (key) {
+    var dados = dbLer();
+    if (dados.diretoria && dados.diretoria[key]) {
+      dados.diretoria[key].pos = nova;
+      dbSalvar(dados);
+      salvarNoGitHub();
+    }
   }
-  notif('✅ Posição: ' + nova);
 }
 
 function excluirDir(btn) {
