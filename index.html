@@ -1457,28 +1457,6 @@ document.addEventListener('DOMContentLoaded', function(){
   renderBarrasMS();
 });
 </script>
-    <!-- ADM -->
-    <div class="adm-panel" id="painel-diretoria" style="margin-top:2rem">
-      <div class="adm-panel-t">⚙ Adicionar Membro da Diretoria</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-        <div class="adm-form-group"><label class="adm-label">Nome completo</label>
-          <input class="adm-input" id="dir-nome" placeholder="Ex: Maria Auxiliadora Bezerra"></div>
-        <div class="adm-form-group"><label class="adm-label">Cargo</label>
-          <input class="adm-input" id="dir-cargo" placeholder="Ex: Presidente"></div>
-      </div>
-      <div class="adm-form-group"><label class="adm-label">Mini-biografia</label>
-        <textarea class="adm-input" id="dir-bio" rows="3" placeholder="Breve apresentação..." style="resize:vertical"></textarea></div>
-      <div class="adm-form-group" style="margin-top:.5rem">
-        <label class="adm-label">📤 Foto (upload Cloudinary)</label>
-        <input class="adm-input" id="dir-file" type="file" accept="image/*" style="padding:.4rem" onchange="uploadFotoGenerica(this,'dir-foto-status','dir-foto-url')">
-        <div id="dir-foto-status" style="font-size:.8rem;margin-top:.4rem;padding:.4rem .6rem;border-radius:4px;display:none"></div>
-      </div>
-      <input type="hidden" id="dir-foto-url">
-      <button class="btn-p" onclick="pubDiretoria()" style="margin-top:.75rem">✅ Publicar</button>
-    </div>
-  </div>
-</section>
-
 <!-- ════════════════════════════════════════════════════════
      ASSOCIADOS/AS
 ════════════════════════════════════════════════════════ -->
