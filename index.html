@@ -2968,14 +2968,40 @@ function renderMembroDiretoria(item, key) {
   var div = document.createElement('div');
   div.className = 'dir-card';
   div.setAttribute('data-key', key);
-  div.innerHTML = '<div class="dir-foto">' +
-    (foto ? '<img src="' + foto + '" alt="' + nome + '" style="width:100%;height:100%;object-fit:cover">' : '<span style="font-size:2.5rem">\u{1F464}</span>') +
-    '</div>' +
+  div.style.position = 'relative';
+  var btnStyle = 'border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.75rem';
+  var fotoHtml = foto
+    ? '<img src="' + foto + '" alt="' + nome + '" style="width:100%;height:100%;object-fit:cover">'
+    : '<span style="font-size:2.5rem">\u{1F464}</span>';
+  div.innerHTML =
+    '<div class="dir-foto">' + fotoHtml + '</div>' +
     '<div class="dir-info"><strong>' + nome + '</strong><span>' + cargo + '</span></div>' +
-    '<button class="adm-panel" onclick="excluirMembro(this,\"' + key + '\")" style="position:absolute;top:.4rem;right:.4rem;background:rgba(180,30,30,.85);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.7rem">x</button>';
+    '<div class="adm" style="position:absolute;top:.3rem;right:.3rem;display:flex;gap:.3rem">' +
+      '<button title="Mover esquerda" style="background:rgba(42,74,28,.85);' + btnStyle + '" onclick="moverMembro(this,-1)">&#9664;</button>' +
+      '<button title="Mover direita" style="background:rgba(42,74,28,.85);' + btnStyle + '" onclick="moverMembro(this,1)">&#9654;</button>' +
+      '<button title="Excluir" style="background:rgba(180,30,30,.85);' + btnStyle + '" onclick="excluirMembro(this)">&#x2715;</button>' +
+    '</div>';
   grid.appendChild(div);
 }
 
+function moverMembro(btn, direcao) {
+  var card = btn.closest('.dir-card');
+  if (!card) return;
+  var grid = card.parentNode;
+  if (direcao === -1 && card.previousElementSibling) {
+    grid.insertBefore(card, card.previousElementSibling);
+  } else if (direcao === 1 && card.nextElementSibling) {
+    grid.insertBefore(card.nextElementSibling, card);
+  }
+  var db = dbLer();
+  var i = 0;
+  grid.querySelectorAll('[data-key]').forEach(function(c) {
+    var k = c.getAttribute('data-key');
+    if (db.diretoria && db.diretoria[k]) db.diretoria[k].ordem = i++;
+  });
+  dbSalvar(db);
+  notif('Ordem salva!');
+}
 function excluirMembro(btn, key) {
   if (!confirm('Remover este membro?')) return;
   var db = dbLer();
