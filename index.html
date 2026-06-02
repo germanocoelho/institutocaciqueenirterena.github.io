@@ -1659,15 +1659,37 @@ function carregarDoGitHub() {
 
 function renderTodosDoStorage() {
   var dados = dbLer();
+  // Galeria
   if (dados.galeria) {
     Object.keys(dados.galeria).sort(function(a,b){
-      return (dados.galeria[b].ts||0) - (dados.galeria[a].ts||0);
-    }).forEach(function(key) {
-      var item = dados.galeria[key];
-      if (item && item.src) renderFotoGaleria(item, key);
+      return (dados.galeria[b].ts||0)-(dados.galeria[a].ts||0);
+    }).forEach(function(key){
+      var item=dados.galeria[key];
+      if(item&&item.src) renderFotoGaleria(item,key);
     });
   }
+  // Slots de foto (.fs)
+  if (dados.fotos) {
+    Object.keys(dados.fotos).forEach(function(slotKey){
+      var item=dados.fotos[slotKey];
+      if(!item||!item.src) return;
+      var el=document.querySelector('[data-slot-key="'+slotKey+'"]');
+      if(!el) return;
+      el.style.backgroundImage='url('+item.src+')';
+      el.style.backgroundSize='cover';
+      el.style.backgroundPosition='center top';
+      el.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
+      if(item.leg){
+        var lb=el.querySelector('.foto-legenda-bar');
+        if(!lb){lb=document.createElement('div');lb.className='foto-legenda-bar';el.appendChild(lb);}
+        lb.textContent=item.leg;
+      }
+    });
+  }
+  // Diretoria — via initDiretoria
+  if (typeof initDiretoria === 'function') initDiretoria();
 }
+
 
 document.addEventListener('DOMContentLoaded', carregarDoGitHub);
 /* ═══ DADOS ═══ */
@@ -2542,23 +2564,51 @@ function atualizarOverlayEl(el){
 // ── Upload via Cloudinary ──
 function carregarFoto(input){
   if(!input||!input.files||!input.files[0]) return;
-  var el=input.parentElement;
-  notif('⏳ Enviando foto...');
-  var fd=new FormData();
-  fd.append('file',input.files[0]);
-  fd.append('upload_preset',CLOUD_PRESET);
-  fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.secure_url){
-      aplicarFotoEl(el, d.secure_url);
-      notif('✅ Foto salva!');
-    } else {
-      notif('❌ Cloudinary: '+(d.error&&d.error.message||JSON.stringify(d)));
-    }
-  })
-  .catch(function(e){notif('❌ Erro: '+e.message);});
+  var el = input.parentElement;
+  var slotKey = el.dataset.slotKey || ('slot_'+Math.random().toString(36).slice(2));
+  el.dataset.slotKey = slotKey;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var b64 = e.target.result;
+    // Comprimir via canvas
+    var img = new Image();
+    img.onload = function(){
+      var maxW=800, maxH=800, w=img.width, h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var compressed = canvas.toDataURL('image/jpeg',0.75);
+      aplicarESalvar(el, slotKey, compressed);
+    };
+    img.onerror = function(){ aplicarESalvar(el, slotKey, b64); };
+    img.src = b64;
+  };
+  reader.readAsDataURL(input.files[0]);
   input.value='';
+}
+
+function aplicarESalvar(el, slotKey, src){
+  // Aplicar visualmente
+  el.style.backgroundImage='url('+src+')';
+  el.style.backgroundSize='cover';
+  el.style.backgroundPosition='center top';
+  el.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
+  // Legenda
+  var lb=el.querySelector('.foto-legenda-bar');
+  var legText=lb?lb.textContent:(el.dataset.defaultLeg||'');
+  if(!lb&&legText){
+    lb=document.createElement('div');lb.className='foto-legenda-bar';lb.textContent=legText;el.appendChild(lb);
+  }
+  atualizarOverlayEl(el);
+  // Salvar no localStorage
+  var db=dbLer();
+  if(!db.fotos) db.fotos={};
+  db.fotos[slotKey]={src:src, ts:Date.now(), leg:legText};
+  dbSalvar(db);
+  salvarNoGitHub();
+  notif('✅ Foto salva!');
 }
 
 function aplicarFotoEl(el, url){
