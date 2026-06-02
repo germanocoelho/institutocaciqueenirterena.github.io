@@ -1736,8 +1736,8 @@ function cardP(p){
   var bdg=p.badge?'<span class="pb2">'+(p.badge)+'</span>':'';
   var parc=p.parcelas>1?'<p class="ppa">ou '+(p.parcelas)+'x de R$ '+((p.price/p.parcelas).toFixed(0))+' s/juros</p>':'';
   var img=p.foto
-    ?'<img src="'+(p.foto)+'" class="pfr"><div class="pnf" style="opacity:0">'+(p.emoji)+'</div>'
-    :'<div class="pnf">'+(p.emoji)+'Foto em breve</div>';
+    ?'<img src="'+(p.foto)+'" class="pfr"><div class="pnf" style="opacity:0">'+(p.emoji)+'</div>'+
+    ':'<div class="pnf">'+(p.emoji)+'Foto em breve</div>';
   return '<article class="pc" data-id="'+(p.id)+'" onclick="abrirChk('+(p.id)+')">
     <div class="pi" id="pi-'+(p.id)+'" style="background:linear-gradient(135deg,'+(c1)+','+(c2)+')">'+(img)+''+(bdg)+'<span class="ps2">'+(STAMP)+'</span></div>
     <div class="pd"><p class="pa2">'+(p.artisan)+'</p><h3 class="pn">'+(p.name)+'</h3><p class="pca">'+(p.cat)+'</p>
@@ -1770,8 +1770,8 @@ function abrirChk(id){
     sel.appendChild(o);
   }
   pgto=atual.payments[0];
-  document.getElementById('pgto-g').innerHTML=atual.payments.map(function(p){ return '<button class="pgb'+(p===pgto?' on':'')+'" onclick="selPgto(''+(p)+''; },this)">'+(p)+'</button>'
-  ).join('');
+  document.getElementById('pgto-g').innerHTML=atual.payments.map(function(p){ return '<button class="pgb'+(p===pgto?' on':'')+'" onclick="selPgto(''+(p)+''; },this)">'+(p)+'</button>'+
+    ').join('');
   updPgto();
   document.getElementById('mo').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1851,8 +1851,8 @@ function renderAdm(){
   var ul=document.getElementById('adm-li2'); if(!ul) return;
   ul.innerHTML=PRODS.map(function(p){ return '<div class="ai">; }
     <div class="ath" onclick="this.querySelector('input').click()">
-      '+(p.foto?'<img src="'+(p.foto)+'">':'📷')+'
-      <input type="file" accept="image/*" style="display:none" onchange="updFoto('+(p.id)+',this)">
+      '+(p.foto?'<img src="'+(p.foto)+'">':'📷')+'+
+    '<input type="file" accept="image/*" style="display:none" onchange="updFoto('+(p.id)+',this)">
     </div>
     <div class="aem">'+(p.emoji)+'</div>
     <div class="ain"><div class="an2">'+(p.name)+'</div><div class="am">'+(p.artisan)+' · '+(p.cat)+' · R$'+(p.price)+'</div></div>
@@ -1902,9 +1902,8 @@ function sv(id,val){ var el=document.getElementById(id); if(el) el.value=val||''
 
 
 /* === ADMIN AUTH === */
-var ADM_HASH = 'c337e3cb';  // hash de 'icet2026'  // hash simples de 'icet2025'
-
-function admHash(s){
+var ADM_HASH = 'c337e3cb';  // hash de 'icet2026'  // hash simples de 'icet2025'+
+    'function admHash(s){
   var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
   return (h>>>0).toString(16).slice(0,8);
 }
@@ -2558,8 +2557,8 @@ function ativarBotoesFotos(){
       ?'<button class="fbtn fbtn-tro" onclick="fbTrocar(this)">📷 Trocar</button>'+
         '<button class="fbtn fbtn-leg" onclick="fbLegenda(this)">✏️ Legenda</button>'+
         '<button class="fbtn fbtn-exc" onclick="fbExcluir(this)">🗑 Excluir</button>'+
-        '<button class="fbtn fbtn-mov" draggable="true" ondragstart="fbDrag(event)">↕ Mover</button>'
-      :'<button class="fbtn fbtn-ins" onclick="fbTrocar(this)" style="background:#2E75B6;color:#fff">📷 Inserir foto</button>';
+        '<button class="fbtn fbtn-mov" draggable="true" ondragstart="fbDrag(event)">↕ Mover</button>'+
+    ':'<button class="fbtn fbtn-ins" onclick="fbTrocar(this)" style="background:#2E75B6;color:#fff">📷 Inserir foto</button>';
     var inp=document.createElement('input');
     inp.type='file';inp.accept='image/*';inp.style.display='none';
     inp.onchange=function(){carregarFoto(this);};
