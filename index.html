@@ -430,6 +430,127 @@ body.adm-unlocked .foto-container:hover .foto-overlay{display:flex!important}
 .btn-p{background:var(--r);color:#F9F5ED;padding:.5rem 1.2rem;border:none;border-radius:3px;font-size:.78rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:.15s;font-family:inherit}
 .btn-p:hover{background:var(--rd);color:#fff}
 
+
+/* ════ BRILHO E MOVIMENTO ════ */
+
+/* 1. Shimmer em todos os H2 */
+@keyframes shimmer-h2 {
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+.st {
+  background: linear-gradient(90deg, #F9F5ED 25%, #F2C45A 45%, #ffffff 50%, #F2C45A 55%, #F9F5ED 75%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-h2 6s linear infinite;
+}
+.sec.lt .st {
+  background: linear-gradient(90deg, #2A1A08 25%, #8B3A0F 45%, #C4621A 50%, #8B3A0F 55%, #2A1A08 75%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-h2 6s linear infinite;
+}
+
+/* 2. Shimmer no título hero */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.hti {
+  background: linear-gradient(90deg, #F9F5ED 20%, #F2C45A 40%, #fff 50%, #F2C45A 60%, #F9F5ED 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fu .8s .4s forwards, shimmer 4s linear 1.5s infinite;
+}
+
+/* 3. Vasos flutuantes */
+@keyframes float-vaso {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-8px) rotate(.8deg); }
+  66%       { transform: translateY(-4px) rotate(-.5deg); }
+}
+@keyframes float-vaso-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(-.7deg); }
+  66%       { transform: translateY(-10px) rotate(.6deg); }
+}
+.vaso-anim {
+  animation: float-vaso 6s ease-in-out infinite;
+  border-radius: 8px; overflow: hidden;
+}
+.vaso-anim + .vaso-anim {
+  animation-name: float-vaso-2;
+  animation-duration: 7s;
+  animation-delay: 1s;
+}
+.vaso-anim:hover { animation-play-state: paused; transform: scale(1.04) !important; box-shadow: 0 16px 40px rgba(139,58,15,.35); transition: transform .3s, box-shadow .3s; }
+
+/* 4. Grafismo com pulso */
+@keyframes grafismo-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+  25%       { transform: scale(1.02) rotate(.4deg); filter: brightness(1.08); }
+  50%       { transform: scale(1.03) rotate(-.3deg); filter: brightness(1.12); }
+  75%       { transform: scale(1.01) rotate(.2deg); filter: brightness(1.06); }
+}
+.grafismo-anim {
+  animation: grafismo-pulse 8s ease-in-out infinite;
+  border-radius: 8px; overflow: hidden;
+}
+.grafismo-anim:hover { animation-play-state: paused; transform: scale(1.05) !important; box-shadow: 0 16px 40px rgba(139,58,15,.3); transition: transform .3s, box-shadow .3s; }
+
+/* 5. Logo hero */
+@keyframes logo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(242,196,90,.15)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(242,196,90,.55)); }
+}
+.hlo { animation: fu .8s .1s forwards, logo-pulse 4s ease-in-out 1.2s infinite !important; }
+
+/* 6. Cards produto hover */
+.prod-card { transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s; }
+.prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 48px rgba(139,58,15,.28); }
+
+/* 7. Galeria hover */
+.galeria-item { transition: transform .3s ease, box-shadow .3s; overflow: hidden; border-radius: 6px; }
+.galeria-item:hover { transform: scale(1.04); box-shadow: 0 12px 32px rgba(0,0,0,.45); }
+
+/* 8. Cards etnias hover */
+.ec { transition: transform .25s ease, box-shadow .25s; }
+.ec:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.3); }
+
+/* 9. Timeline hover */
+.tli { transition: background .25s, padding-left .25s, border-left .25s; border-left: 2px solid transparent; border-radius: 0 4px 4px 0; padding-left: .4rem; }
+.tli:hover { background: rgba(242,196,90,.06); border-left-color: rgba(242,196,90,.4); padding-left: .9rem; }
+
+/* 10. Botões hover */
+.bp, .bo, .btn-p { transition: transform .15s, box-shadow .15s, background .15s; }
+.bp:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,58,15,.35); }
+.bo:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(242,196,90,.2); }
+.btn-p:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,58,15,.35); }
+
+/* 11. Notícias hover */
+.ncc { transition: transform .25s ease, box-shadow .25s; }
+.ncc:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.3); }
+
+/* 12. Nav blur ao scroll */
+nav { transition: background .3s, backdrop-filter .3s; }
+
+/* 13. Tabs */
+.yt-tab { transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.yt-tab:hover { transform: translateY(-1px); }
+
+/* 14. Scroll suave */
+html { scroll-behavior: smooth; }
+
+/* 15. eyb entrada */
+@keyframes eyb-in { from { opacity:0; letter-spacing:.5em; } to { opacity:1; letter-spacing:.2em; } }
+.eyb { animation: eyb-in .8s ease both; }
+
 </style>
 
 
@@ -2670,6 +2791,19 @@ function pubDiretoria() {
   var st=document.getElementById('dir-status'); if(st)st.style.display='none';
   notif('✅ Membro publicado!');
 }
+
+
+window.addEventListener('scroll', function(){
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  if (window.scrollY > 60) {
+    nav.style.background = 'rgba(10,6,3,.92)';
+    nav.style.backdropFilter = 'blur(12px)';
+  } else {
+    nav.style.background = '';
+    nav.style.backdropFilter = '';
+  }
+}, {passive:true});
 
 </script>
 
