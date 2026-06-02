@@ -3769,6 +3769,50 @@ window.addEventListener('scroll', function(){
   }
 }, {passive:true});
 
+
+// Restaurar foto da Maria do storage ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    var dados = dbLer();
+    if (dados.diretoria && dados.diretoria['dir_001'] && dados.diretoria['dir_001'].foto) {
+      var img = document.getElementById('dir-foto-img-001');
+      var ph = document.getElementById('dir-foto-placeholder-001');
+      if (img) { img.src = dados.diretoria['dir_001'].foto; img.style.display = 'block'; }
+      if (ph) ph.style.display = 'none';
+    }
+  }, 800);
+});
+
+
+// Trocar foto de membro fixo da diretoria
+function trocarFotoDiretor(key) {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = function() {
+    if (!this.files || !this.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var b64 = e.target.result;
+      var img = document.getElementById('dir-foto-img-' + key.replace('dir_',''));
+      var ph = document.getElementById('dir-foto-placeholder-' + key.replace('dir_',''));
+      if (img) { img.src = b64; img.style.display = 'block'; }
+      if (ph) ph.style.display = 'none';
+      // Salvar
+      var dados = dbLer();
+      if (!dados.diretoria) dados.diretoria = {};
+      if (!dados.diretoria[key]) dados.diretoria[key] = {};
+      dados.diretoria[key].foto = b64;
+      dados.diretoria[key].nome = 'Maria Auxiliadora Bezerra';
+      dados.diretoria[key].cargo = 'Presidente';
+      dbSalvar(dados);
+      salvarNoGitHub();
+      notif('📸 Foto salva!');
+    };
+    reader.readAsDataURL(this.files[0]);
+  };
+  inp.click();
+}
+
 </script>
 
 <!-- LIGHTBOX -->
