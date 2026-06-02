@@ -2721,37 +2721,7 @@ function uploadFotoDiretoria(input, statusId, urlId) {
   .catch(function(){if(st){st.style.color='#f87171';st.textContent='❌ Erro de conexão';}});
 }
 
-function pubDiretoria() {
-  var nome=document.getElementById('dir-nome').value.trim();
-  var cargo=document.getElementById('dir-cargo').value.trim();
-  var bio=document.getElementById('dir-bio').value.trim();
-  var foto=document.getElementById('dir-foto-url').value;
-  if(!nome||!cargo){alert('Preencha nome e cargo.'); return;}
-  var key='dir_'+Date.now();
-  var grid=document.getElementById('grid-diretoria');
-  if(!grid) return;
-  var card=document.createElement('div');
-  card.className='card-membro'; card.dataset.key=key;
-  card.style.cssText='background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
-  var fotoHtml = foto
-    ? '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:1rem"><img src="'+foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
-    : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem">👤</div>';
-  card.innerHTML = fotoHtml +
-    '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+nome+'</div>'+
-    '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+cargo+'</div>'+
-    (bio?'<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">'+bio+'</div>':'');
-  grid.appendChild(card);
-  ['dir-nome','dir-cargo','dir-bio','dir-foto-url'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  var st=document.getElementById('dir-status'); if(st)st.style.display='none';
-  notif('✅ Membro publicado!');
-}
-
-
-window.addEventListener('scroll', function(){
-  var nav = document.querySelector('nav');
-  if (!nav) return;
-  if (window.scrollY > 60) {
-    nav.style.background = 'rgba(10,6,3,.92)';
+gba(10,6,3,.92)';
     nav.style.backdropFilter = 'blur(12px)';
   } else {
     nav.style.background = '';
