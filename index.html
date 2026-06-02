@@ -1626,9 +1626,11 @@ function carregarDoGitHub() {
       _memDb = json;
       try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
       renderTodosDoStorage();
+      initDiretoria();
     } else {
       var local = dbLer();
-      if (local && local.galeria) renderTodosDoStorage();
+      renderTodosDoStorage();
+      initDiretoria();
     }
   })
   .catch(function(){
@@ -1666,7 +1668,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }, {threshold: 0.05});
   document.querySelectorAll('.rv').forEach(function(el) { io.observe(el); });
   carregarDoGitHub();
-  initDiretoria();
   renderProds();
   if(typeof renderAdm === 'function') renderAdm();
 });
@@ -2957,14 +2958,17 @@ function initDiretoria() {
   var foto = maria.foto || _FOTO_MARIA;
   var campoC = document.getElementById('maria-cargo');
   var campoB = document.getElementById('maria-bio');
-  if (campoC && !campoC.value) campoC.value = cargo;
-  if (campoB && !campoB.value) campoB.value = bio;
+  if (campoC) campoC.value = cargo;
+  if (campoB) campoB.value = bio;
+  // Limpar grid para evitar duplicatas
+  var grid = document.getElementById('grid-diretoria');
+  if (grid) grid.innerHTML = '';
   renderCardMaria(foto, cargo, bio);
   if (db.diretoria) {
     Object.keys(db.diretoria).sort().forEach(function(key) {
       if (key === 'dir_001') return;
       var item = db.diretoria[key];
-      if (item && !document.querySelector('[data-key="' + key + '"]')) renderMembroDiretoria(item, key);
+      if (item) renderMembroDiretoria(item, key);
     });
   }
 }
