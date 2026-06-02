@@ -344,8 +344,45 @@ figcaption strong{font-style:normal;font-weight:700;color:rgba(255,255,255,.75)}
 .galeria-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 60%); opacity:0; transition:.3s; display:flex; align-items:flex-end; padding:.8rem; }
 .galeria-item:hover .galeria-overlay { opacity:1; }
 .galeria-leg { color:#fff; font-size:.78rem; line-height:1.3; }
-.yt-tab { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.7); padding:.4rem .9rem; border-radius:20px; cursor:pointer; font-size:.78rem; transition:.2s; }
-.yt-tab.ativo { background:var(--am,#c8873a); border-color:var(--am,#c8873a); color:#fff; }
+.yt-tab {
+  background: transparent;
+  border: 1.5px solid rgba(139,58,15,.35);
+  color: #8B3A0F;
+  padding: .38rem 1rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: .73rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  transition: .2s;
+  font-family: inherit;
+}
+.yt-tab:hover {
+  background: rgba(139,58,15,.08);
+  border-color: #8B3A0F;
+  color: #5C2207;
+}
+.yt-tab.ativo {
+  background: #8B3A0F;
+  border-color: #8B3A0F;
+  color: #F9F5ED;
+  font-weight: 700;
+}
+/* Em seções escuras — inverter */
+.sec.dk .yt-tab, .sec.dk2 .yt-tab {
+  border-color: rgba(242,196,90,.3);
+  color: rgba(242,196,90,.8);
+}
+.sec.dk .yt-tab:hover, .sec.dk2 .yt-tab:hover {
+  background: rgba(242,196,90,.1);
+  border-color: var(--ou);
+  color: var(--ou);
+}
+.sec.dk .yt-tab.ativo, .sec.dk2 .yt-tab.ativo {
+  background: rgba(139,58,15,.6);
+  border-color: var(--ou);
+  color: #F9F5ED;
+}
 .yt-panel { display:none; }
 .yt-panel.ativo { display:block; }
 .adm-drag-hint { display:none; }
@@ -524,6 +561,64 @@ body.adm-unlocked .nc-exc-btn{display:block!important}
 .adm input::placeholder, .adm textarea::placeholder { color: rgba(249,245,237,.35) !important; }
 /* doc-ibge — sempre texto claro */
 #doc-ibge-ms *, #doc-ibge-brasil * { color: inherit; }
+
+
+/* ══════════════════════════════════════════════════
+   CORREÇÕES DE COR — seções de fundo claro
+   ══════════════════════════════════════════════════ */
+
+/* Seções lt — forçar texto escuro em elementos com cor clara */
+.sec.lt .ec h4 { color: #5C2207 !important; }
+.sec.lt .ec p  { color: rgba(42,26,8,.72) !important; }
+.sec.lt .tly   { color: #8B3A0F !important; }
+.sec.lt .tlt   { color: rgba(42,26,8,.8) !important; }
+.sec.lt .nct   { color: #F9F5ED; } /* noticias tem fundo escuro próprio */
+.sec.lt .ncd   { color: rgba(249,245,237,.7); }
+.sec.lt .sec-lead { color: rgba(42,26,8,.7) !important; }
+.sec.lt .eyb   { color: #8B3A0F !important; }
+.sec.lt h2, .sec.lt h3 { color: #2A1A08 !important; }
+.sec.lt p      { color: rgba(42,26,8,.78); }
+
+/* Abas yt-tab em seção lt já cobertas pela regra geral acima */
+
+/* Legislação — itens da lista */
+.sec.lt .nl a  { color: #5C2207 !important; }
+.sec.lt .nl a:hover { color: #8B3A0F !important; }
+
+/* Cards de obras e membros em fundo claro */
+.sec.lt .card-obra-titulo { color: #2A1A08 !important; }
+.sec.lt .card-obra-resumo { color: rgba(42,26,8,.7) !important; }
+.sec.lt .card-membro .cm-nome { color: #5C2207 !important; }
+.sec.lt .card-membro .cm-cargo { color: rgba(42,26,8,.6) !important; }
+.sec.lt .card-membro .cm-bio  { color: rgba(42,26,8,.6) !important; }
+
+/* Documentos — abas e conteúdo */
+.sec.lt .admti { color: #8B3A0F !important; }
+.sec.lt .fl2   { color: #5C2207 !important; }
+.sec.lt .admno { color: rgba(42,26,8,.6) !important; }
+
+/* Atos — "Nenhuma portaria publicada" */
+.sec.lt .em-breve-msg { 
+  color: rgba(42,26,8,.4) !important; 
+  border-color: rgba(42,26,8,.12) !important;
+}
+
+/* Inputs e selects em seção lt */
+.sec.lt input:not([type=file]),
+.sec.lt select,
+.sec.lt textarea {
+  color: #2A1A08 !important;
+  background: rgba(255,255,255,.7) !important;
+  border-color: rgba(139,58,15,.25) !important;
+}
+.sec.lt input::placeholder,
+.sec.lt textarea::placeholder {
+  color: rgba(42,26,8,.35) !important;
+}
+
+
+.sec.lt .bp { color: #F9F5ED !important; } /* bp tem fundo escuro próprio */
+.sec.lt .bo { color: #F9F5ED !important; }
 
 </style>
 
