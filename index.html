@@ -292,9 +292,8 @@ footer{background:var(--k);color:var(--pa);padding:3.8rem 2.5rem 1.8rem;border-t
   width:44px;height:44px;border-radius:50%;font-size:.75rem;font-weight:800;cursor:pointer;
   z-index:850;box-shadow:0 3px 12px rgba(0,0,0,.45);letter-spacing:.04em;transition:transform .2s}
 .adm-fab:hover{transform:scale(1.1)}
-.adm-modal{display:none;position:fixed;inset:0;background:rgba(10,6,3,.92);z-index:3000;
-  align-items:center;justify-content:center}
-.adm-modal.open{display:flex}
+.adm-modal{display:none;position:fixed;inset:0;background:rgba(10,6,3,.96);z-index:999999;align-items:center;justify-content:center}
+.adm-modal.open{display:flex!important}
 .adm-box{background:var(--ar);padding:2.5rem;max-width:360px;width:90%;position:relative}
 .adm-box h3{font-family:'Cinzel',serif;color:var(--rd);margin-bottom:.5rem;font-size:1.1rem}
 .adm-box p{font-size:.82rem;color:var(--tx2);margin-bottom:1.2rem}
@@ -406,7 +405,6 @@ body.adm-ok .adm-drag-hint { display:block; }
 .ato-privado { font-size:.65rem; background:rgba(160,64,26,.1); color:#A0401A; padding:.15rem .4rem; border-radius:10px; }
 
 
-/* ═══ ADM OCULTO ═══ */
 .adm{display:none!important}
 body.adm-unlocked .adm{display:block!important}
 .adm-panel{display:none!important}
@@ -414,115 +412,158 @@ body.adm-unlocked .adm-panel{display:block!important}
 .nc-exc-btn{display:none!important}
 body.adm-unlocked .nc-exc-btn{display:inline-block!important}
 
-/* ═══ MODAL ═══ */
-.adm-modal{display:none;position:fixed;inset:0;background:rgba(10,6,3,.96);z-index:999999;align-items:center;justify-content:center}
-.adm-modal.open{display:flex!important}
 
 /* ═══ BOTÕES ADM NAS FOTOS ═══ */
-.fs,.galeria-item,.foto-container,.pi,.dir-foto-wrap,.ec{position:relative!important}
-.fs,.galeria-item,.pi,.dir-foto-wrap{overflow:hidden!important}
-.foto-overlay{position:absolute;inset:0;background:rgba(0,0,0,.68);display:none;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;padding:.5rem;z-index:30}
+.fs{position:relative!important;overflow:hidden!important}
+.galeria-item{position:relative!important;overflow:hidden!important}
+.foto-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);display:none;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;padding:.5rem;z-index:20}
 body.adm-unlocked .fs:hover .foto-overlay,
 body.adm-unlocked .galeria-item:hover .foto-overlay,
-body.adm-unlocked .foto-container:hover .foto-overlay,
-body.adm-unlocked .pi:hover .foto-overlay,
-body.adm-unlocked .dir-foto-wrap:hover .foto-overlay{display:flex!important}
-.fbtn{font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.28rem .65rem;border:none;cursor:pointer;border-radius:2px;width:128px;text-align:center;transition:.15s;white-space:nowrap;font-family:inherit}
+body.adm-unlocked .foto-container:hover .foto-overlay{display:flex!important}
+.fbtn{font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .7rem;border:none;cursor:pointer;border-radius:2px;width:130px;text-align:center;transition:.15s}
 .fbtn-ins{background:#2E75B6;color:#fff}
 .fbtn-tro{background:#D4AC0D;color:#1a1a1a}
-.fbtn-exc{background:rgba(192,57,43,.92);color:#fff}
-.fbtn-leg{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35)}
-.fbtn-mov{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:grab}
-.foto-legenda-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.68);color:rgba(255,255,255,.92);font-size:.65rem;padding:.3rem .5rem;pointer-events:none;z-index:5}
-
-/* ═══ BOTÃO PADRÃO ═══ */
+.fbtn-exc{background:rgba(192,57,43,.9);color:#fff}
+.fbtn-leg{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.fbtn-mov{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:grab}
+.foto-legenda-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:rgba(255,255,255,.92);font-size:.65rem;padding:.3rem .5rem;pointer-events:none}
 .btn-p{background:var(--r);color:#F9F5ED;padding:.5rem 1.2rem;border:none;border-radius:3px;font-size:.78rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:.15s;font-family:inherit}
-.btn-p:hover{background:var(--rd);color:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(139,58,15,.35)}
-
-/* ═══ ABAS ELEGANTES ═══ */
-.yt-tab{background:transparent;border:1.5px solid rgba(139,58,15,.35);color:#8B3A0F;padding:.38rem 1rem;border-radius:3px;cursor:pointer;font-size:.73rem;font-weight:600;letter-spacing:.04em;transition:.2s;font-family:inherit}
-.yt-tab:hover{background:rgba(139,58,15,.08);border-color:#8B3A0F;transform:translateY(-1px)}
-.yt-tab.ativo{background:#8B3A0F;border-color:#8B3A0F;color:#F9F5ED;font-weight:700}
-.sec.dk .yt-tab,.sec.dk2 .yt-tab{border-color:rgba(242,196,90,.3);color:rgba(242,196,90,.8)}
-.sec.dk .yt-tab:hover,.sec.dk2 .yt-tab:hover{background:rgba(242,196,90,.1);border-color:var(--ou);color:var(--ou)}
-.sec.dk .yt-tab.ativo,.sec.dk2 .yt-tab.ativo{background:rgba(139,58,15,.6);border-color:var(--ou);color:#F9F5ED}
-
-/* ═══ CORES SEÇÕES CLARAS (lt) ═══ */
-.sec.lt h2,.sec.lt h3{color:#2A1A08!important}
-.sec.lt p,.sec.lt .sec-lead{color:rgba(42,26,8,.78)!important}
-.sec.lt .eyb{color:#8B3A0F!important}
-.sec.lt .tly{color:#8B3A0F!important}
-.sec.lt .tlt{color:rgba(42,26,8,.8)!important}
-.sec.lt .nl a{color:#5C2207!important}
-.sec.lt .em-breve-msg{color:rgba(42,26,8,.4)!important;border-color:rgba(42,26,8,.12)!important}
-.sec.lt input:not([type=file]),.sec.lt select,.sec.lt textarea{color:#2A1A08!important;background:rgba(255,255,255,.7)!important;border-color:rgba(139,58,15,.25)!important}
-.sec.lt input::placeholder,.sec.lt textarea::placeholder{color:rgba(42,26,8,.35)!important}
-
-/* ═══ CORES SEÇÕES ESCURAS (dk/dk2) ═══ */
-.sec.dk h2,.sec.dk2 h2,.sec.dk h3,.sec.dk2 h3{color:rgba(249,245,237,.95)!important}
-.sec.dk .sec-lead,.sec.dk2 .sec-lead{color:rgba(249,245,237,.7)!important}
-.sec.dk .eyb,.sec.dk2 .eyb{color:var(--ou)!important}
-.sec.dk .yt-card-titulo,.sec.dk2 .yt-card-titulo{color:rgba(249,245,237,.92)!important}
-.sec.dk .card-obra-titulo,.sec.dk2 .card-obra-titulo{color:rgba(249,245,237,.92)!important}
-.sec.dk .card-obra-autores,.sec.dk2 .card-obra-autores{color:rgba(200,135,58,.85)!important}
-.sec.dk .card-obra-resumo,.sec.dk2 .card-obra-resumo{color:rgba(249,245,237,.65)!important}
-
-/* ═══ IBGE TABELAS ═══ */
-#doc-ibge-ms,#doc-ibge-brasil{color:rgba(249,245,237,.85)}
-#doc-ibge-ms *,#doc-ibge-brasil *{color:inherit}
-#ms-busca{color:#F9F5ED!important}
-#ms-busca::placeholder{color:rgba(249,245,237,.4)!important}
-
-/* ═══ BRILHO E MOVIMENTO ═══ */
-@keyframes shimmer-h2{0%{background-position:-300% center}100%{background-position:300% center}}
-.st{background:linear-gradient(90deg,#F9F5ED 25%,#F2C45A 45%,#fff 50%,#F2C45A 55%,#F9F5ED 75%);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer-h2 6s linear infinite}
-.sec.lt .st{background:linear-gradient(90deg,#2A1A08 25%,#8B3A0F 45%,#C4621A 50%,#8B3A0F 55%,#2A1A08 75%);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer-h2 6s linear infinite}
-@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-.hti{background:linear-gradient(90deg,#F9F5ED 20%,#F2C45A 40%,#fff 50%,#F2C45A 60%,#F9F5ED 80%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fu .8s .4s forwards,shimmer 4s linear 1.5s infinite}
-@keyframes logo-pulse{0%,100%{filter:drop-shadow(0 0 8px rgba(242,196,90,.15))}50%{filter:drop-shadow(0 0 24px rgba(242,196,90,.55))}}
-.hlo{animation:fu .8s .1s forwards,logo-pulse 4s ease-in-out 1.2s infinite!important}
-@keyframes float-vaso{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-8px) rotate(.8deg)}66%{transform:translateY(-4px) rotate(-.5deg)}}
-@keyframes float-vaso-2{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-6px) rotate(-.7deg)}66%{transform:translateY(-10px) rotate(.6deg)}}
-@keyframes grafismo-pulse{0%,100%{transform:scale(1) rotate(0deg);filter:brightness(1)}25%{transform:scale(1.02) rotate(.4deg);filter:brightness(1.08)}50%{transform:scale(1.03) rotate(-.3deg);filter:brightness(1.12)}75%{transform:scale(1.01) rotate(.2deg);filter:brightness(1.06)}}
-@keyframes eyb-in{from{opacity:0;letter-spacing:.5em}to{opacity:1;letter-spacing:.2em}}
-.eyb{animation:eyb-in .8s ease both}
-.prod-card{transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
-.prod-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 20px 48px rgba(139,58,15,.28)}
-.galeria-item{transition:transform .3s ease,box-shadow .3s;overflow:hidden;border-radius:6px}
-.galeria-item:hover{transform:scale(1.04);box-shadow:0 12px 32px rgba(0,0,0,.45)}
-.ec{transition:transform .25s ease,box-shadow .25s}
-.ec:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
-.tli{transition:background .25s,padding-left .25s,border-left .25s;border-left:2px solid transparent;border-radius:0 4px 4px 0;padding-left:.4rem}
-.tli:hover{background:rgba(242,196,90,.06);border-left-color:rgba(242,196,90,.4);padding-left:.9rem}
-.ncc{transition:transform .25s ease,box-shadow .25s}
-.ncc:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.3)}
-.bp,.bo{transition:transform .15s,box-shadow .15s,background .15s}
-.bp:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(139,58,15,.35)}
-.bo:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(242,196,90,.2)}
-nav{transition:background .3s,backdrop-filter .3s}
-html{scroll-behavior:smooth}
-
-/* ═══ CAMPOS COM ERRO ═══ */
-.campo-erro{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,.2)!important}
-#grid-diretoria{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
+.btn-p:hover{background:var(--rd);color:#fff}
 
 
-.vaso-anim{animation:float-vaso 6s ease-in-out infinite;border-radius:8px;overflow:hidden}
-.vaso-anim+.vaso-anim,.vaso-anim:nth-child(2){animation-name:float-vaso-2;animation-duration:7s;animation-delay:1s}
-.vaso-anim:hover{animation-play-state:paused;transform:scale(1.04)!important;box-shadow:0 16px 40px rgba(139,58,15,.35);transition:transform .3s,box-shadow .3s}
-.grafismo-anim{animation:grafismo-pulse 8s ease-in-out infinite;border-radius:8px;overflow:hidden}
-.grafismo-anim:hover{animation-play-state:paused;transform:scale(1.05)!important;box-shadow:0 16px 40px rgba(139,58,15,.3);transition:transform .3s,box-shadow .3s}
+/* ════ BRILHO E MOVIMENTO ════ */
+
+/* 1. Shimmer em todos os H2 */
+@keyframes shimmer-h2 {
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+.st {
+  background: linear-gradient(90deg, #F9F5ED 25%, #F2C45A 45%, #ffffff 50%, #F2C45A 55%, #F9F5ED 75%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-h2 6s linear infinite;
+}
+.sec.lt .st {
+  background: linear-gradient(90deg, #2A1A08 25%, #8B3A0F 45%, #C4621A 50%, #8B3A0F 55%, #2A1A08 75%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-h2 6s linear infinite;
+}
+
+/* 2. Shimmer no título hero */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.hti {
+  background: linear-gradient(90deg, #F9F5ED 20%, #F2C45A 40%, #fff 50%, #F2C45A 60%, #F9F5ED 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fu .8s .4s forwards, shimmer 4s linear 1.5s infinite;
+}
+
+/* 3. Vasos flutuantes */
+@keyframes float-vaso {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-8px) rotate(.8deg); }
+  66%       { transform: translateY(-4px) rotate(-.5deg); }
+}
+@keyframes float-vaso-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(-.7deg); }
+  66%       { transform: translateY(-10px) rotate(.6deg); }
+}
+.vaso-anim {
+  animation: float-vaso 6s ease-in-out infinite;
+  border-radius: 8px; overflow: hidden;
+}
+.vaso-anim + .vaso-anim {
+  animation-name: float-vaso-2;
+  animation-duration: 7s;
+  animation-delay: 1s;
+}
+.vaso-anim:hover { animation-play-state: paused; transform: scale(1.04) !important; box-shadow: 0 16px 40px rgba(139,58,15,.35); transition: transform .3s, box-shadow .3s; }
+
+/* 4. Grafismo com pulso */
+@keyframes grafismo-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+  25%       { transform: scale(1.02) rotate(.4deg); filter: brightness(1.08); }
+  50%       { transform: scale(1.03) rotate(-.3deg); filter: brightness(1.12); }
+  75%       { transform: scale(1.01) rotate(.2deg); filter: brightness(1.06); }
+}
+.grafismo-anim {
+  animation: grafismo-pulse 8s ease-in-out infinite;
+  border-radius: 8px; overflow: hidden;
+}
+.grafismo-anim:hover { animation-play-state: paused; transform: scale(1.05) !important; box-shadow: 0 16px 40px rgba(139,58,15,.3); transition: transform .3s, box-shadow .3s; }
+
+/* 5. Logo hero */
+@keyframes logo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(242,196,90,.15)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(242,196,90,.55)); }
+}
+.hlo { animation: fu .8s .1s forwards, logo-pulse 4s ease-in-out 1.2s infinite !important; }
+
+/* 6. Cards produto hover */
+.prod-card { transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s; }
+.prod-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 48px rgba(139,58,15,.28); }
+
+/* 7. Galeria hover */
+.galeria-item { transition: transform .3s ease, box-shadow .3s; overflow: hidden; border-radius: 6px; }
+.galeria-item:hover { transform: scale(1.04); box-shadow: 0 12px 32px rgba(0,0,0,.45); }
+
+/* 8. Cards etnias hover */
+.ec { transition: transform .25s ease, box-shadow .25s; }
+.ec:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.3); }
+
+/* 9. Timeline hover */
+.tli { transition: background .25s, padding-left .25s, border-left .25s; border-left: 2px solid transparent; border-radius: 0 4px 4px 0; padding-left: .4rem; }
+.tli:hover { background: rgba(242,196,90,.06); border-left-color: rgba(242,196,90,.4); padding-left: .9rem; }
+
+/* 10. Botões hover */
+.bp, .bo, .btn-p { transition: transform .15s, box-shadow .15s, background .15s; }
+.bp:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,58,15,.35); }
+.bo:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(242,196,90,.2); }
+.btn-p:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,58,15,.35); }
+
+/* 11. Notícias hover */
+.ncc { transition: transform .25s ease, box-shadow .25s; }
+.ncc:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.3); }
+
+/* 12. Nav blur ao scroll */
+nav { transition: background .3s, backdrop-filter .3s; }
+
+/* 13. Tabs */
+.yt-tab { transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.yt-tab:hover { transform: translateY(-1px); }
+
+/* 14. Scroll suave */
+html { scroll-behavior: smooth; }
+
+/* 15. eyb entrada */
+@keyframes eyb-in { from { opacity:0; letter-spacing:.5em; } to { opacity:1; letter-spacing:.2em; } }
+.eyb { animation: eyb-in .8s ease both; }
 
 </style>
 
 
 
 
+
 <meta property="og:title" content="Instituto Cacique Enir Terena — OREKA · Cultura Terena">
-<meta property="og:description" content="Primeira marca coletiva indígena do Brasil. Artesanato OREKA, cerâmica ancestral, aldeia urbana Marçal de Souza · Campo Grande, MS.">
+<meta property="og:description" content="Primeira marca coletiva indígena do Brasil. Instituto que protege, valoriza e projeta a cultura Terena — artesanato OREKA, cerâmica ancestral, aldeia urbana Marçal de Souza · Campo Grande, MS.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://institutocaciqueenirterena.com.br">
+<meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="keywords" content="Instituto Cacique Enir Terena, OREKA, artesanato indígena, cerâmica Terena, Campo Grande MS">
+<meta name="keywords" content="Instituto Cacique Enir Terena, OREKA, artesanato indígena, cerâmica Terena, marca coletiva indígena, Campo Grande MS, aldeia Marçal de Souza">
 </head>
 <body class="lang-pt">
 
@@ -620,7 +661,7 @@ html{scroll-behavior:smooth}
         <h2 class="st to">Uma liderança histórica e singular</h2>
         <p><strong>Enir da Silva Bezerra</strong> — para todos, Enir Terena — nasceu na Aldeia Limão Verde, em Aquidauana, MS, em 8 de março de 1955. Filha do povo Terena, desde criança já demonstrava vocação para a liderança: destacou-se na escola como organizadora e porta-voz de sua turma, traço que marcaria toda a sua trajetória de vida. Mãe de sete filhos, em paralelo às responsabilidades familiares compôs ativamente o movimento popular da época, conciliando a vida doméstica com o engajamento político e comunitário. Em 1985 ingressou na Associação Indígena Kaguateca. Em 9 de junho de 1995 chegou com 20 famílias ao Desbarrancado — que se tornaria a <strong>Aldeia Urbana Marçal de Souza</strong>, a primeira aldeia indígena em contexto urbano do Brasil.</p>
 
-<div style="background:rgba(139,58,15,.08);border-left:3px solid var(--r);padding:1rem 1.2rem;margin:1rem 0 1.4rem;border-radius:0 4px 4px 0">
+<div style="background:rgba(255,255,255,.95);border-left:3px solid var(--r);padding:1rem 1.2rem;margin:1rem 0 1.4rem;border-radius:0 4px 4px 0">
   <p style="font-size:.82rem;font-weight:700;color:var(--rd);margin:0 0 .5rem;letter-spacing:.04em">MARCOS PESSOAIS</p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .8rem">
     <div style="font-size:.82rem;color:var(--tx);line-height:1.5"><strong style="color:var(--r)">Liderança escolar</strong><br>Desde criança, organizadora e porta-voz da comunidade na escola — primeiro espaço de exercício da liderança que definiria sua vida.</div>
@@ -687,7 +728,7 @@ html{scroll-behavior:smooth}
     </div>
     <div class="crt">
       <span class="eyb t">Saber ancestral · Patrimônio vivo</span>
-      <h2>A Cerâmica Terena — Patrimônio Vivo do Brasil</h2><div style="background:rgba(255,255,255,.06);border:1px solid rgba(242,196,90,.15);padding:1rem 1.2rem;margin:.8rem 0 1.5rem;border-radius:4px"><p style="font-size:.65rem;font-weight:700;color:var(--ou);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">📚 REFERÊNCIAS ACADÊMICAS</p><p style="font-size:.75rem;color:rgba(249,245,237,.75);line-height:1.8;margin:0">VILARIM, Paulo Roberto; MARTINS, Décio Ruivo; RODRIGUES, Sérgio Paulo Jorge. <em>Etnoconhecimento Terena na literatura científica.</em> Revista ODEERE, v. 6, n. 2, 2021. <a href="https://doi.org/10.22481/odeere.v6i2.9768" target="_blank" style="color:var(--ou)">DOI: 10.22481/odeere.v6i2.9768</a><br><br>INSTITUTO CACIQUE ENIR TERENA — ICET. <em>Em homenagem à liderança feminina que lutou pela fundação da primeira aldeia urbana do Brasil.</em> Campo Grande, MS: ICET, 2016–2025.</p></div>
+      <h2>A Cerâmica Terena — Patrimônio Vivo do Brasil</h2><div style="background:rgba(255,255,255,.06);border:1px solid rgba(242,196,90,.15);padding:1rem 1.2rem;margin:.8rem 0 1.5rem;border-radius:4px"><p style="font-size:.65rem;font-weight:700;color:var(--ou);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">📚 REFERÊNCIAS ACADÊMICAS</p><p style="font-size:.75rem;color:rgba(249,245,237,.75);line-height:1.8;margin:0">VILARIM, Paulo Roberto; MARTINS, Décio Ruivo; RODRIGUES, Sérgio Paulo Jorge. <em>Etnoconhecimento Terena na literatura científica: um estudo bibliográfico para o Estado da Arte.</em> Revista ODEERE: Relações Étnicas, v. 6, n. 2, 2021. <a href="https://doi.org/10.22481/odeere.v6i2.9768" target="_blank" style="color:var(--ou)">DOI: 10.22481/odeere.v6i2.9768</a><br><br>INSTITUTO CACIQUE ENIR TERENA — ICET. <em>Em homenagem à liderança feminina que lutou pela fundação da primeira aldeia urbana do Brasil.</em> Cultura Terena — para o Brasil e para o mundo. Campo Grande, MS: ICET, 2016–2025.</p></div>
       <p>Reconhecida como patrimônio imaterial de MS, a cerâmica Terena é expressão de uma tradição secular: <strong>barro avermelhado, grafismo branco, fogo e mãos de mulher</strong>.</p>
       <div style="margin-top:1.3rem">
         <div class="stp"><div class="sn">1</div><p><strong>Coleta do barro</strong> — argila avermelhada, seca e purificada manualmente.</p></div>
@@ -717,13 +758,38 @@ html{scroll-behavior:smooth}
   <div class="w">
     <span class="eyb">Mato Grosso do Sul</span>
     <h2 class="st tl">8 Povos · 3ª Maior População Indígena do Brasil</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem">
-      <div style="background:rgba(139,58,15,.15);border:1px solid rgba(242,196,90,.2);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">117.261</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Pessoas indígenas no MS</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">IBGE · Censo 2022</div></div>
-      <div style="background:rgba(45,106,79,.15);border:1px solid rgba(45,106,79,.3);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:#52B788;font-family:Cinzel,serif">3º</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Estado c/ maior pop. indígena</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">entre os 27 estados</div></div>
-      <div style="background:rgba(27,73,101,.15);border:1px solid rgba(27,73,101,.3);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:#5BA4CF;font-family:Cinzel,serif">6,8%</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Da pop. indígena do Brasil</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">Total Brasil: 1.719.003</div></div>
-      <div style="background:rgba(180,30,30,.1);border:1px solid rgba(180,30,30,.25);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:#f87171;font-family:Cinzel,serif">18.679</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Indígenas em Campo Grande</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">1º município do MS</div></div>
-      <div style="background:rgba(139,58,15,.1);border:1px solid rgba(242,196,90,.15);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">79</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Municípios com indígenas</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">MS · IBGE 2022</div></div>
-      <div style="background:rgba(139,58,15,.1);border:1px solid rgba(242,196,90,.15);border-radius:6px;padding:1rem;text-align:center"><div style="font-size:1.8rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">8</div><div style="font-size:.68rem;color:rgba(249,245,237,.75);margin-top:.25rem;text-transform:uppercase;letter-spacing:.04em">Povos indígenas</div><div style="font-size:.6rem;color:rgba(249,245,237,.5);margin-top:.15rem">Terena · Guarani Kaiowá · Kadiwéu...</div></div>
+    <!-- Dados IBGE 2022 -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
+      <div style="background:rgba(139,58,15,.15);border:1px solid rgba(242,196,90,.2);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">117.261</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Pessoas indígenas no MS</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">IBGE · Censo 2022</div>
+      </div>
+      <div style="background:rgba(45,106,79,.15);border:1px solid rgba(45,106,79,.3);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#52B788;font-family:Cinzel,serif">3º</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Estado c/ maior pop. indígena</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">entre os 27 estados brasileiros</div>
+      </div>
+      <div style="background:rgba(27,73,101,.15);border:1px solid rgba(27,73,101,.3);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#5BA4CF;font-family:Cinzel,serif">6,8%</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Da pop. indígena do Brasil</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">Total Brasil: 1.719.003</div>
+      </div>
+      <div style="background:rgba(180,30,30,.1);border:1px solid rgba(180,30,30,.25);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#f87171;font-family:Cinzel,serif">18.679</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Indígenas em Campo Grande</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">1º município do MS · IBGE 2022</div>
+      </div>
+      <div style="background:rgba(139,58,15,.1);border:1px solid rgba(242,196,90,.15);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">79</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Municípios com pop. indígena</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">dos 79 municípios do MS</div>
+      </div>
+      <div style="background:rgba(139,58,15,.1);border:1px solid rgba(242,196,90,.15);border-radius:6px;padding:1.2rem;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:var(--ou);font-family:Cinzel,serif">8</div>
+        <div style="font-size:.72rem;color:rgba(249,245,237,.75);margin-top:.3rem;letter-spacing:.05em;text-transform:uppercase">Povos indígenas</div>
+        <div style="font-size:.65rem;color:rgba(249,245,237,.55);margin-top:.2rem">Terena, Guarani Kaiowá, Ñandeva, Kadiwéu, Kinikinau, Guató, Ofaié, Atikum</div>
+      </div>
     </div>
     <div class="eg rv">
       <div class="ec"><div class="ed" style="background:#8B3A0F"></div><h4>Terena</h4><p>+28.000 pessoas. Família Arawak. Cerâmica, tecelagem, língua viva. Primeira aldeia urbana do Brasil.</p></div>
@@ -885,7 +951,8 @@ html{scroll-behavior:smooth}
         <div class="fg"><label class="fl2">Prazo *</label><input type="text" class="fi" id="apr" placeholder="10–15 dias úteis"></div>
         <div class="fg"><label class="fl2">Dimensões</label><input type="text" class="fi" id="adi" placeholder="20×15×25 cm"></div>
         <div class="fg"><label class="fl2">Emoji</label><input type="text" class="fi" id="ae" placeholder="🏺" maxlength="4"></div>
-        <div class="fg"><label class="fl2">Aldeia</label><select class="fse" id="ao" onchange="var c=document.getElementById('ao-custom');if(c)c.style.display=this.value==='__outro__'?'block':'none'">
+        <div class="fg"><label class="fl2">Aldeia</label>
+  <select class="fse" id="ao" onchange="if(this.value==='__outro__'){document.getElementById('ao-custom').style.display='block';}else{document.getElementById('ao-custom').style.display='none';}">
     <option>Aldeia Marçal de Souza — Campo Grande</option>
     <option>Aldeia Cachoeirinha — Miranda</option>
     <option>Aldeia Babaçu — Miranda</option>
@@ -895,7 +962,8 @@ html{scroll-behavior:smooth}
     <option>Aldeia Bananal — Dois Irmãos do Buriti</option>
     <option value="__outro__">Outra aldeia (digitar)</option>
   </select>
-  <input type="text" class="fi" id="ao-custom" placeholder="Digite o nome da aldeia" style="display:none;margin-top:.4rem"></div>
+  <input type="text" class="fi" id="ao-custom" placeholder="Digite o nome da aldeia" style="display:none;margin-top:.4rem">
+</div>
         <div class="fg"><label class="fl2">Etiqueta</label><select class="fse" id="ab"><option value="">Nenhuma</option><option>Exclusivo</option><option>Novo</option><option>Destaque</option><option>Último</option><option>Promoção</option></select></div>
         <div class="fg fl"><label class="fl2">Foto (opcional)</label>
           <div class="faw" id="adm-fw" onclick="this.querySelector('input').click()">
@@ -1127,49 +1195,37 @@ html{scroll-behavior:smooth}
 <!-- ════════════════════════════════════════════════════════
      DIRETORIA
 ════════════════════════════════════════════════════════ -->
-
-<!-- ════ DIRETORIA ════ -->
 <section id="diretoria" class="sec dk">
   <div class="sec-w">
     <div class="eyb">Gestão e liderança</div>
     <h2 class="st td">Diretoria do Instituto</h2>
     <p class="sec-lead" style="color:rgba(249,245,237,.7)">Conheça os membros que conduzem as ações do Instituto Cacique Enir Terena.</p>
-    <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem"></div>
+
+    <div class="galeria-masonry" id="grid-diretoria" style="margin-top:1.5rem"></div>
+
+    <!-- ADM -->
     <div class="adm" style="margin-top:2rem">
-      <div style="background:rgba(139,58,15,.12);border-radius:6px;padding:1.2rem;border:1px solid rgba(242,196,90,.15)">
-        <div style="font-size:.85rem;font-weight:700;color:#F2C45A;margin-bottom:1rem">⚙ Gerenciar Diretoria</div>
-        <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.08)">
-          <div style="font-size:.75rem;color:rgba(249,245,237,.6);margin-bottom:.6rem;font-weight:600">✏️ Editar Maria Auxiliadora Bezerra</div>
-          <div style="margin-bottom:.5rem"><label class="fl2">Cargo</label><input type="text" class="fi" id="maria-cargo" placeholder="Presidente"></div>
-          <div style="margin-bottom:.5rem"><label class="fl2">Biografia</label><textarea class="ft2" id="maria-bio" rows="3" placeholder="Biografia..."></textarea></div>
-          <div style="margin-bottom:.5rem">
-            <input type="file" accept="image/*" id="maria-file" style="display:none" onchange="prevDirFoto(this,'maria-preview','maria-preview-img','maria')">
-            <button class="btn-p" onclick="document.getElementById('maria-file').click()" style="font-size:.72rem;padding:.35rem .8rem">📷 Alterar foto</button>
-            <div id="maria-preview" style="display:none;margin-top:.4rem"><img id="maria-preview-img" style="max-height:80px;border-radius:4px"></div>
+      <div style="background:rgba(139,58,15,.15);border-radius:6px;padding:1rem;border:1px solid rgba(242,196,90,.15)">
+        <div style="font-size:.8rem;font-weight:700;color:#F2C45A;margin-bottom:.8rem">⚙ Adicionar Membro da Diretoria</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+          <div><label class="fl2">Nome *</label><input type="text" class="fi" id="dir-nome" placeholder="Nome completo"></div>
+          <div><label class="fl2">Cargo *</label><input type="text" class="fi" id="dir-cargo" placeholder="Ex: Vice-Presidente"></div>
+        </div>
+        <div style="margin-top:.5rem"><label class="fl2">Biografia</label><textarea class="ft2" id="dir-bio" rows="2" placeholder="Breve descrição"></textarea></div>
+        <div style="margin-top:.5rem">
+          <label class="fl2">Foto</label>
+          <div style="display:flex;align-items:center;gap:.75rem;margin-top:.3rem">
+            <input type="file" accept="image/*" id="dir-file" style="display:none" onchange="uploadFotoDiretoria(this,'dir-status','dir-foto-url')">
+            <button class="btn-p" onclick="document.getElementById('dir-file').click()" style="font-size:.75rem;padding:.4rem .9rem">📷 Selecionar foto</button>
+            <div id="dir-status" style="font-size:.8rem;display:none"></div>
           </div>
-          <button class="btn-p" onclick="salvarMaria()" style="font-size:.72rem;padding:.35rem .8rem;margin-top:.4rem">💾 Salvar alterações</button>
+          <input type="hidden" id="dir-foto-url">
         </div>
-        <div style="font-size:.75rem;color:rgba(249,245,237,.6);margin-bottom:.6rem;font-weight:600">➕ Adicionar Membro</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
-          <div><label class="fl2">Nome *</label><input type="text" class="fi" id="dir-nome" placeholder="Nome completo" oninput="this.style.borderColor=this.value.trim()?'':'#c0392b'"></div>
-          <div><label class="fl2">Cargo *</label><input type="text" class="fi" id="dir-cargo" placeholder="Ex: Vice-Presidente" oninput="this.style.borderColor=this.value.trim()?'':'#c0392b'"></div>
-        </div>
-        <div style="margin-bottom:.6rem"><label class="fl2">Biografia</label><textarea class="ft2" id="dir-bio" rows="2" placeholder="Breve descrição"></textarea></div>
-        <div style="margin-bottom:.6rem">
-          <input type="file" accept="image/*" id="dir-file" style="display:none" onchange="prevDirFoto(this,'dir-preview','dir-preview-img','dir')">
-          <button class="btn-p" onclick="document.getElementById('dir-file').click()" style="font-size:.72rem;padding:.35rem .8rem">📷 Selecionar foto</button>
-          <div id="dir-preview" style="display:none;margin-top:.4rem"><img id="dir-preview-img" style="max-height:80px;border-radius:4px"></div>
-        </div>
-        <button class="btn-p" onclick="pubDiretoria()">✅ Publicar membro</button>
+        <button class="btn-p" onclick="pubDiretoria()" style="margin-top:.75rem">✅ Publicar membro</button>
       </div>
     </div>
   </div>
 </section>
-
-
-<!-- ════════════════════════════════════════════════════════
-     ASSOCIADOS/AS
-════════════════════════════════════════════════════════ -->
 <section id="associados" class="sec lt">
   <div class="sec-w">
     <div class="eyb">Comunidade</div>
@@ -1476,9 +1532,10 @@ html{scroll-behavior:smooth}
     <div class="cg rv">
       <div>
         <div class="cl"><span style="color:var(--ou)">📍</span><span>Aldeia Urbana Marçal de Souza<br>Rua da Serra, n.217<br>Aldeia Marçal de Souza — Bairro Tiradentes<br>Campo Grande — MS, CEP 79041-011</span></div>
-        
+        <div class="cl"><span style="color:var(--ou)"></div>
         <div class="cl"><span style="color:var(--ou)">✉️</span><span>mariiaauxi@gmail.com</span></div>
         <div class="cl"><span style="color:var(--ou)">📱</span><span><strong>WhatsApp: (67) 99305-2534</strong><br>Maria Auxiliadora Bezerra</span></div>
+        <div class="cl"><span style="color:var(--ou)">📷</span><span><a href="https://www.instagram.com/institutocaciqueenirerena" target="_blank" style="color:var(--ou);font-weight:700;text-decoration:none">@institutocaciqueenirerena</a><br>Instagram oficial do Instituto</span></div>
         <div class="cl"><span style="color:var(--ou)">🕐</span><span>Domingo a domingo · Atendimento todos os dias</span></div>
         <div class="fs dk3" style="aspect-ratio:4/3" onclick="this.querySelector('input').click()"><input type="file" accept="image/*" onchange="carregarFoto(this)" style="display:none"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Sede do Instituto</div>
       </div>
@@ -1495,6 +1552,16 @@ html{scroll-behavior:smooth}
       </div>
     </div>
   </div>
+
+    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08)">
+      <h3 style="font-size:.95rem;color:var(--ou);margin-bottom:.8rem">🤝 Parcerias Institucionais</h3>
+      <p style="font-size:.8rem;color:rgba(249,245,237,.6);line-height:1.7;margin-bottom:1rem">Universidades, institutos de pesquisa, órgãos públicos e organizações do terceiro setor interessados em parcerias com o ICET:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:.6rem">
+        <a href="mailto:mariiaauxi@gmail.com?subject=Proposta de Parceria Institucional — ICET" style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(139,58,15,.2);border:1px solid rgba(242,196,90,.2);color:var(--ou);padding:.5rem 1rem;font-size:.75rem;font-weight:700;text-decoration:none;border-radius:3px">✉ Propor parceria</a>
+        <a href="https://wa.me/5567993052534?text=Olá,%20gostaria%20de%20propor%20uma%20parceria%20com%20o%20ICET" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(45,106,79,.2);border:1px solid rgba(45,106,79,.3);color:#52B788;padding:.5rem 1rem;font-size:.75rem;font-weight:700;text-decoration:none;border-radius:3px">📱 WhatsApp</a>
+      </div>
+    </div>
+
 </section>
 <footer>
   <div class="fg2">
@@ -1568,8 +1635,8 @@ var GH_TOKEN = 'ghp_lBOhtA9ekMqmr6uLlhu' + 'SY0LPllbVRy1U9enp';
 var GH_API = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE;
 var _memDb = {};
 var _ghSha = '0967ef424bce6791893e9a57bb952f80fd536e93';
-var CLOUD_NAME = 'dn1ubybc0';
-var CLOUD_PRESET = 'cmddi_galeria';
+var CLOUD_NAME = 'dms41mdfa';
+var CLOUD_PRESET = 'icet_galeria';
 
 function dbLer() {
   try {
@@ -1644,12 +1711,12 @@ function renderTodosDoStorage() {
   }
 }
 
-// inicialização via DOMContentLoaded unificado
-/* ═══ DADOS ═══ */
+document.addEventListener('DOMContentLoaded', carregarDoGitHub);
+/* === DADOS === */
 const PRODS = [{"id": 1, "name": "Vaso Floral Grande", "artisan": "Rosenir Batista", "cat": "Cer\u00e2mica \u00b7 Vasos", "price": 280, "parcelas": 6, "prazo": "15\u201320 dias \u00fateis", "dim": "20\u00d718\u00d730 cm", "emoji": "\ud83c\udffa", "desc": "Barro vermelho, grafismo floral em branco. Acordelamento, polimento com pedra e queima a c\u00e9u aberto. Pe\u00e7a \u00fanica.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Cachoeirinha \u2014 Miranda", "badge": "Exclusivo", "foto": ""}, {"id": 2, "name": "Anta do Pantanal", "artisan": "Artes\u00e3s Terena", "cat": "Madeira entalhada", "price": 95, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "18\u00d78\u00d712 cm", "emoji": "\ud83e\udd8c", "desc": "Escultura de anta em madeira de cedro, entalhada \u00e0 m\u00e3o. Fauna viva do Pantanal sul-mato-grossense.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "", "foto": ""}, {"id": 3, "name": "Pote Ritual M\u00e9dio", "artisan": "Maria Auxiliadora Bezerra", "cat": "Cer\u00e2mica \u00b7 Utens\u00edlios", "price": 185, "parcelas": 3, "prazo": "12\u201318 dias \u00fateis", "dim": "16\u00d716\u00d714 cm", "emoji": "\u26b1\ufe0f", "desc": "Pote com tampa, grafismo pontilhado em branco. Resina de jatob\u00e1. T\u00e9cnica ancestral.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Destaque", "foto": ""}, {"id": 4, "name": "Colar Sementes Terena", "artisan": "Artes\u00e3s Mar\u00e7al", "cat": "Bijuteria", "price": 58, "parcelas": 1, "prazo": "7\u201310 dias \u00fateis", "dim": "60 cm", "emoji": "\ud83d\udcff", "desc": "Sementes nativas do Cerrado e Pantanal, montado \u00e0 m\u00e3o. Cada colar \u00e9 \u00fanico.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Novo", "foto": ""}, {"id": 5, "name": "Jacar\u00e9 em Barro", "artisan": "Ceramistas Terena", "cat": "Cer\u00e2mica \u00b7 Bichos", "price": 120, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "28\u00d77\u00d76 cm", "emoji": "\ud83d\udc0a", "desc": "Esculpido em barro vermelho com detalhes em branco. Fauna do Pantanal. Cada pe\u00e7a \u00e9 irrepet\u00edvel.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Baba\u00e7u \u2014 Miranda", "badge": "", "foto": ""}, {"id": 6, "name": "Cestaria de Buriti", "artisan": "Artes\u00e3s Terena", "cat": "Fibra e Palha", "price": 145, "parcelas": 3, "prazo": "15\u201320 dias \u00fateis", "dim": "35\u00d735\u00d712 cm", "emoji": "\ud83e\uddfa", "desc": "Fibra de buriti tran\u00e7ada \u00e0 m\u00e3o. Decorativa ou funcional. Tradi\u00e7\u00e3o centen\u00e1ria.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Lim\u00e3o Verde \u2014 Aquidauana", "badge": "\u00daltimo", "foto": ""}];
 let carrinho=[], atual=null, pgto=null;
 
-/* ═══ INIT ═══ */
+/* === INIT === */
 document.addEventListener('DOMContentLoaded', () => {
   const io = new IntersectionObserver(
     es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); }),
@@ -1659,18 +1726,18 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProds(); renderAdm();
 });
 
-/* ═══ PRODUTOS ═══ */
+/* === PRODUTOS === */
 const GR = {'Cerâmica':'#8B3A0F,#E8A853','Madeira':'#5C2207,#C4621A','Bijuteria':'#1B4965,#5FA8D3','Fibra':'#2D6A4F,#52B788'};
 function gr(cat){ const k=Object.keys(GR).find(k=>cat.includes(k))||'Cerâmica'; return GR[k].split(','); }
-const STAMP=`<svg viewBox="0 0 44 44" width="32" height="32"><circle cx="22" cy="22" r="19.5" fill="rgba(139,58,15,.92)" stroke="#F2C45A" stroke-width="1.3"/><circle cx="22" cy="22" r="14" fill="none" stroke="rgba(242,196,90,.28)" stroke-width=".6"/><text x="22" y="19.5" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#F2C45A" letter-spacing=".8">OREKA</text><text x="22" y="27.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.2" fill="rgba(242,196,90,.78)">TERENA</text></svg>`;
+const STAMP='<svg viewBox="0 0 44 44" width="32" height="32"><circle cx="22" cy="22" r="19.5" fill="rgba(139,58,15,.92)" stroke="#F2C45A" stroke-width="1.3"/><circle cx="22" cy="22" r="14" fill="none" stroke="rgba(242,196,90,.28)" stroke-width=".6"/><text x="22" y="19.5" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#F2C45A" letter-spacing=".8">OREKA</text><text x="22" y="27.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.2" fill="rgba(242,196,90,.78)">TERENA</text></svg>';
 
 function cardP(p){
   const [c1,c2]=gr(p.cat);
-  const bdg=p.badge?`<span class="pb2">${p.badge}</span>`:'';
-  const parc=p.parcelas>1?`<p class="ppa">ou ${p.parcelas}x de R$ ${(p.price/p.parcelas).toFixed(0)} s/juros</p>`:'';
+  const bdg=p.badge?'<span class="pb2">'+(p.badge)+'</span>':'';
+  const parc=p.parcelas>1?'<p class="ppa">ou '+(p.parcelas)+'x de R$ '+((p.price/p.parcelas).toFixed(0))+' s/juros</p>':'';
   const img=p.foto
-    ?`<img src="${p.foto}" class="pfr"><div class="pnf" style="opacity:0">${p.emoji}</div>`
-    :`<div class="pnf">${p.emoji}Foto em breve</div>`;
+    ?'<img src="'+(p.foto)+'" class="pfr"><div class="pnf" style="opacity:0">'+(p.emoji)+'</div>'
+    :'<div class="pnf">'+(p.emoji)+'Foto em breve</div>';
   return `<article class="pc" data-id="${p.id}" onclick="abrirChk(${p.id})">
     <div class="pi" id="pi-${p.id}" style="background:linear-gradient(135deg,${c1},${c2})">${img}${bdg}<span class="ps2">${STAMP}</span></div>
     <div class="pd"><p class="pa2">${p.artisan}</p><h3 class="pn">${p.name}</h3><p class="pca">${p.cat}</p>
@@ -1682,11 +1749,11 @@ function cardP(p){
 }
 function renderProds(){ const g=document.getElementById('pg'); if(g) g.innerHTML=PRODS.map(cardP).join(''); }
 
-/* ═══ CHECKOUT ═══ */
+/* === CHECKOUT === */
 function abrirChk(id){
   atual=PRODS.find(p=>p.id===id); if(!atual) return;
   const mi=document.getElementById('m-img');
-  mi.innerHTML=atual.foto?`<img src="${atual.foto}" style="width:100%;height:100%;object-fit:cover">`:`${atual.emoji}`;
+  mi.innerHTML=atual.foto?'<img src="'+(atual.foto)+'" style="width:100%;height:100%;object-fit:cover">':''+(atual.emoji)+'';
   document.getElementById('m-art').textContent=atual.artisan;
   document.getElementById('m-nom').textContent=atual.name;
   document.getElementById('m-ori').textContent='📍 '+atual.origem;
@@ -1704,7 +1771,7 @@ function abrirChk(id){
   }
   pgto=atual.payments[0];
   document.getElementById('pgto-g').innerHTML=atual.payments.map(p=>
-    `<button class="pgb${p===pgto?' on':''}" onclick="selPgto('${p}',this)">${p}</button>`
+    '<button class="pgb'+(p===pgto?' on':'')+'" onclick="selPgto(''+(p)+'',this)">'+(p)+'</button>'
   ).join('');
   updPgto();
   document.getElementById('mo').classList.add('open');
@@ -1732,8 +1799,20 @@ function confirmar(){
 }
 document.getElementById('mo')?.addEventListener('click', function(e){ if(e.target===this) fecharChk(); });
 
-/* ═══ ADMIN PRODUTOS ═══ */
-
+/* === ADMIN PRODUTOS === */
+function addProd(){
+  const n=v('an'),a=v('aa'),c=v('ac'),p=parseFloat(v('ap')||0),pr=v('apr'),de=v('ade'),em=v('ae')||'🏺',or=v('ao'),ba=v('ab'),pa=parseInt(v('apa')||1),di=v('adi')||'A confirmar';
+  if(!n||!a||!c||!p||!pr||!de){ alert('Preencha os campos *'); return; }
+  const pays=[];
+  [['ax','PIX'],['acc','Cartão de Crédito'],['abo','Boleto'],['atr','Transferência'],['ade2','Débito'],['amp','Mercado Pago']].forEach(([id,lbl])=>{
+    if(document.getElementById(id)?.checked) pays.push(lbl);
+  });
+  const foto=document.querySelector('#adm-fw .prev')?.src||'';
+  PRODS.unshift({id:Date.now(),name:n,artisan:a,cat:c,price:p,parcelas:pa,prazo:pr,dim:di,emoji:em,desc:de,payments:pays.length?pays:['PIX'],origem:or,badge:ba,foto});
+  renderProds(); renderAdm(); limpar();
+  notif('✓ Produto adicionado!');
+  document.getElementById('pg').scrollIntoView({behavior:'smooth',block:'start'});
+}
 function updFoto(id,input){
   if(!input.files||!input.files[0]) return;
   const r=new FileReader();
@@ -1741,7 +1820,7 @@ function updFoto(id,input){
     const p=PRODS.find(x=>x.id===id); if(p) p.foto=e.target.result;
     const img=document.getElementById('pi-'+id);
     if(img){ let el=img.querySelector('.pfr'); if(!el){el=document.createElement('img');el.className='pfr';img.prepend(el);} el.src=e.target.result; const sf=img.querySelector('.pnf'); if(sf) sf.style.opacity='0'; }
-    const th=input.closest('.ath'); if(th){ th.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`; th.appendChild(input); }
+    const th=input.closest('.ath'); if(th){ th.innerHTML='<img src="'+(e.target.result)+'" style="width:100%;height:100%;object-fit:cover">'; th.appendChild(input); }
     notif('📷 Foto atualizada!');
   };
   r.readAsDataURL(input.files[0]);
@@ -1766,14 +1845,14 @@ function editarP(id){
 function excluirP(id){
   if(!confirm('Excluir?')) return;
   PRODS.splice(PRODS.findIndex(p=>p.id===id),1);
-  const c=document.querySelector(`[data-id="${id}"]`); if(c) c.remove();
+  const c=document.querySelector('[data-id="'+(id)+'"]'); if(c) c.remove();
   renderAdm(); notif('🗑️ Excluído.');
 }
 function renderAdm(){
   const ul=document.getElementById('adm-li2'); if(!ul) return;
   ul.innerHTML=PRODS.map(p=>`<div class="ai">
     <div class="ath" onclick="this.querySelector('input').click()">
-      ${p.foto?`<img src="${p.foto}">`:'📷'}
+      ${p.foto?'<img src="'+(p.foto)+'">':'📷'}
       <input type="file" accept="image/*" style="display:none" onchange="updFoto(${p.id},this)">
     </div>
     <div class="aem">${p.emoji}</div>
@@ -1802,18 +1881,28 @@ function pubNoticia(){
   const grade=document.getElementById('nc-grade');
   if(grade){
     const card=document.createElement('article'); card.className='ncc';
-    card.innerHTML=`<div class="nch" style="background:${cor}"><span class="nct">${cat}</span><span class="ncd">${data}</span></div><div class="ncb"><div class="ncfo">${fonte}</div><h3 class="ncti">${ti}</h3><p class="ncde">${de}</p>${link&&link!='#'?`<a href="${link}" target="_blank" class="nclk" style="color:${cor};border-color:${cor}">Ler notícia ↗</a>`:''}</div>`;
+    card.innerHTML='<div class="nch" style="background:'+(cor)+'"><span class="nct">'+(cat)+'</span><span class="ncd">'+(data)+'</span></div><div class="ncb"><div class="ncfo">'+(fonte)+'</div><h3 class="ncti">'+(ti)+'</h3><p class="ncde">'+(de)+'</p>${link&&link!='#'?'<a href="${link}" target="_blank" class="nclk" style="color:${cor};border-color:${cor}">Ler notícia ↗</a>':''}</div>';
     grade.prepend(card);
   }
   notif('✓ Notícia publicada!');
   ['nc-ti','nc-da','nc-fo2','nc-lk2','nc-de'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
-
+function carregarFoto(input){
+  if(!input.files||!input.files[0]) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const s=input.parentElement;
+    s.style.backgroundImage='url('+(e.target.result)+')';
+    s.style.backgroundSize='cover'; s.style.backgroundPosition='center';
+    s.querySelectorAll('svg,span').forEach(el=>el.style.display='none');
+  };
+  r.readAsDataURL(input.files[0]);
+}
 function v(id){ return document.getElementById(id)?.value?.trim()||''; }
 function sv(id,val){ const el=document.getElementById(id); if(el) el.value=val||''; }
 
 
-/* ═══ ADMIN AUTH ═══ */
+/* === ADMIN AUTH === */
 var ADM_HASH = 'c337e3cb';  // hash de 'icet2026'  // hash simples de 'icet2025'
 
 function admHash(s){
@@ -1827,10 +1916,9 @@ function admLogin(){
   if(admHash(pw)===ADM_HASH){
     document.body.classList.add('adm-unlocked');
     document.body.classList.add('adm-ok');
-    var modal=document.getElementById('adm-modal');
-    if(modal){modal.classList.remove('open');modal.style.display='none';}
+    document.getElementById('adm-modal').classList.remove('open');
     document.getElementById('adm-pw').value='';
-    if(err) err.style.display='none';
+    err.style.display='none';
     setTimeout(function(){
       ativarBotoesFotos();
       var fir=document.querySelector('.adm');
@@ -1838,7 +1926,7 @@ function admLogin(){
     },300);
     notif('✅ Acesso liberado! Passe o mouse sobre as fotos para editá-las.');
   } else {
-    if(err) err.style.display='block';
+    err.style.display='block';
     document.getElementById('adm-pw').value='';
     document.getElementById('adm-pw').focus();
   }
@@ -1892,12 +1980,12 @@ function renderFotoGaleria(item, fbKey) {
   var src = item.src || '';
   var album = item.album || 'eventos';
   var finalSrc = src.indexOf('/upload/') > -1 ? src.replace('/upload/','/upload/w_800,q_auto,f_auto/') : src;
-  var itemHtml = `<div class="galeria-item lb-item" data-src="${src}" data-leg="${leg}" data-fbkey="${fbKey||''}" style="break-inside:avoid;margin-bottom:.75rem" onclick="abrirLightbox(event,this)">` +
-    `<img src="${finalSrc}" alt="${leg}" style="width:100%;display:block;object-fit:cover" onerror="this.style.display='none'">` +
-    `<div class="galeria-overlay"><div class="galeria-leg">${leg}</div></div>` +
-    `<button class="adm-panel" onclick="event.stopPropagation();excluirGalItem(this)" style="position:absolute;top:.4rem;right:.4rem;width:26px;height:26px;background:rgba(180,30,30,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Excluir">✕</button>` +
-    `<button class="adm-panel" onclick="event.stopPropagation();editarLegenda(event,this)" style="position:absolute;top:.4rem;left:.4rem;width:26px;height:26px;background:rgba(42,74,28,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Editar legenda">✏️</button>` +
-    `</div>`;
+  var itemHtml = '<div class="galeria-item lb-item" data-src="'+(src)+'" data-leg="'+(leg)+'" data-fbkey="'+(fbKey||'')+'" style="break-inside:avoid;margin-bottom:.75rem" onclick="abrirLightbox(event,this)">' +
+    '<img src="'+(finalSrc)+'" alt="'+(leg)+'" style="width:100%;display:block;object-fit:cover" onerror="this.style.display='none'">' +
+    '<div class="galeria-overlay"><div class="galeria-leg">'+(leg)+'</div></div>' +
+    '<button class="adm-panel" onclick="event.stopPropagation();excluirGalItem(this)" style="position:absolute;top:.4rem;right:.4rem;width:26px;height:26px;background:rgba(180,30,30,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Excluir">✕</button>' +
+    '<button class="adm-panel" onclick="event.stopPropagation();editarLegenda(event,this)" style="position:absolute;top:.4rem;left:.4rem;width:26px;height:26px;background:rgba(42,74,28,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Editar legenda">✏️</button>' +
+    '</div>';
   var gridTodos = document.getElementById('gal-grid-todos');
   if(gridTodos) gridTodos.insertAdjacentHTML('afterbegin', itemHtml);
   var gridAlbum = document.getElementById('gal-grid-' + album);
@@ -2460,19 +2548,19 @@ document.addEventListener('click', function(e) {
 });
 
 
-// ════════════════════════════════════════════════
-// SISTEMA COMPLETO DE FOTOS E ADM — ICET
-// ════════════════════════════════════════════════
-
-var _SELETORES = '.fs,.galeria-item,.foto-container,.pi,.dir-foto-wrap';
-
-// ── Ativar botões em todas as fotos ──
+// === BOTÕES ADM NAS FOTOS ===
 function ativarBotoesFotos(){
-  document.querySelectorAll(_SELETORES).forEach(function(el){
+  document.querySelectorAll('.fs,.galeria-item,.foto-container').forEach(function(el){
     if(el.querySelector('.foto-overlay')) return;
+    el.style.position='relative'; el.style.overflow='hidden';
+    var temFoto=!!(el.style.backgroundImage&&el.style.backgroundImage!=='none')||!!el.querySelector('img[src]:not([src=""])');
     var ov=document.createElement('div'); ov.className='foto-overlay';
-    var temFoto=!!(el.style.backgroundImage&&el.style.backgroundImage!=='none'&&el.style.backgroundImage!=='')||!!(el.querySelector('img[src]:not([src=""])'));
-    _atualizarOverlay(ov, temFoto);
+    ov.innerHTML=temFoto
+      ?'<button class="fbtn fbtn-tro" onclick="fbTrocar(this)">📷 Trocar</button>'+
+        '<button class="fbtn fbtn-leg" onclick="fbLegenda(this)">✏️ Legenda</button>'+
+        '<button class="fbtn fbtn-exc" onclick="fbExcluir(this)">🗑 Excluir</button>'+
+        '<button class="fbtn fbtn-mov" draggable="true" ondragstart="fbDrag(event)">↕ Mover</button>'
+      :'<button class="fbtn fbtn-ins" onclick="fbTrocar(this)" style="background:#2E75B6;color:#fff">📷 Inserir foto</button>';
     var inp=document.createElement('input');
     inp.type='file';inp.accept='image/*';inp.style.display='none';
     inp.onchange=function(){carregarFoto(this);};
@@ -2481,85 +2569,26 @@ function ativarBotoesFotos(){
   ativarBotoesProdutos();
 }
 
-function _atualizarOverlay(ov, temFoto){
-  if(temFoto){
-    ov.innerHTML=
-      '<button class="fbtn fbtn-tro" onclick="fbTrocar(this)">📷 Trocar</button>'+
-      '<button class="fbtn fbtn-leg" onclick="fbLegenda(this)">✏️ Legenda</button>'+
-      '<button class="fbtn fbtn-exc" onclick="fbExcluir(this)">🗑 Excluir</button>'+
-      '<button class="fbtn fbtn-mov" draggable="true" ondragstart="fbDrag(event)">↕ Mover</button>';
-  } else {
-    ov.innerHTML='<button class="fbtn fbtn-ins" onclick="fbTrocar(this)">📷 Inserir foto</button>';
-  }
-}
-
-function atualizarOverlayEl(el){
-  var ov=el.querySelector('.foto-overlay');
-  if(!ov){ativarBotoesFotos();return;}
-  var temFoto=!!(el.style.backgroundImage&&el.style.backgroundImage!=='none'&&el.style.backgroundImage!=='')||!!(el.querySelector('img[src]:not([src=""])'));
-  _atualizarOverlay(ov, temFoto);
-}
-
-// ── Upload via Cloudinary ──
-function carregarFoto(input){
-  if(!input||!input.files||!input.files[0]) return;
-  var el=input.parentElement;
-  notif('⏳ Enviando foto...');
-  var fd=new FormData();
-  fd.append('file',input.files[0]);
-  fd.append('upload_preset',CLOUD_PRESET);
-  fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.secure_url){
-      aplicarFotoEl(el, d.secure_url);
-      notif('✅ Foto salva!');
-    } else {
-      notif('❌ Cloudinary: '+(d.error&&d.error.message||JSON.stringify(d)));
-    }
-  })
-  .catch(function(e){notif('❌ Erro: '+e.message);});
-  input.value='';
-}
-
-function aplicarFotoEl(el, url){
-  if(el.tagName==='DIV'||el.tagName==='SECTION'){
-    el.style.backgroundImage='url('+url+')';
-    el.style.backgroundSize='cover';
-    el.style.backgroundPosition='center top';
-    el.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
-    var leg=el.querySelector('.foto-legenda-bar');
-    var legText=leg?leg.textContent:(el.dataset.defaultLeg||'');
-    if(!leg&&legText){
-      leg=document.createElement('div');leg.className='foto-legenda-bar';leg.textContent=legText;el.appendChild(leg);
-    }
-  }
-  atualizarOverlayEl(el);
-}
-
-// ── Botões ──
 function fbTrocar(btn){
-  var c=btn.closest(_SELETORES);
+  var c=btn.closest('.fs,.galeria-item,.foto-container');
   var inp=c?c.querySelector('input[type=file]'):null;
   if(inp) inp.click();
 }
-
 function fbExcluir(btn){
   if(!confirm('Excluir esta foto?')) return;
-  var c=btn.closest(_SELETORES);
+  var c=btn.closest('.fs,.galeria-item,.foto-container');
   if(!c) return;
   c.style.backgroundImage='';
-  var img=c.querySelector('img'); if(img) img.src='';
+  var img=c.querySelector('img'); if(img) img.remove();
   var leg=c.querySelector('.foto-legenda-bar'); if(leg) leg.remove();
-  c.querySelectorAll('svg,span,.fs-label').forEach(function(el){el.style.display='';});
-  atualizarOverlayEl(c);
+  var ov=c.querySelector('.foto-overlay'); if(ov) ov.remove();
+  c.querySelectorAll('svg,span').forEach(function(el){el.style.display='';});
   notif('🗑 Foto excluída.');
 }
-
 function fbLegenda(btn){
-  var c=btn.closest(_SELETORES);
+  var c=btn.closest('.fs,.galeria-item,.foto-container');
   var leg=c?c.querySelector('.foto-legenda-bar'):null;
-  var nova=prompt('Legenda (vazio para remover):', leg?leg.textContent:'');
+  var nova=prompt('Legenda (vazio para remover):',leg?leg.textContent:'');
   if(nova===null) return;
   if(nova.trim()===''){if(leg)leg.remove();}
   else{
@@ -2568,63 +2597,63 @@ function fbLegenda(btn){
   }
   notif('✅ Legenda atualizada!');
 }
-
-// ── Drag & Drop ──
-var _fbDrag=null;
+var _fbDragEl=null;
 function fbDrag(e){
-  _fbDrag=e.target.closest(_SELETORES);
-  if(_fbDrag){e.dataTransfer.effectAllowed='move';setTimeout(function(){_fbDrag.style.opacity='.4';},0);}
+  _fbDragEl=e.target.closest('.fs,.galeria-item,.foto-container');
+  if(_fbDragEl){e.dataTransfer.effectAllowed='move';setTimeout(function(){_fbDragEl.style.opacity='.4';},0);}
 }
 document.addEventListener('dragover',function(e){
   e.preventDefault();
-  var t=e.target.closest&&e.target.closest(_SELETORES);
-  if(t&&t!==_fbDrag)t.style.outline='2px dashed #D4AC0D';
+  var t=e.target.closest&&e.target.closest('.fs,.galeria-item,.foto-container');
+  if(t&&t!==_fbDragEl)t.style.outline='2px dashed #D4AC0D';
 });
 document.addEventListener('dragleave',function(e){
-  var t=e.target.closest&&e.target.closest(_SELETORES);
+  var t=e.target.closest&&e.target.closest('.fs,.galeria-item,.foto-container');
   if(t)t.style.outline='';
 });
 document.addEventListener('drop',function(e){
   e.preventDefault();
-  var t=e.target.closest&&e.target.closest(_SELETORES);
-  if(t&&_fbDrag&&t!==_fbDrag){
+  var t=e.target.closest&&e.target.closest('.fs,.galeria-item,.foto-container');
+  if(t&&_fbDragEl&&t!==_fbDragEl){
     t.style.outline='';
-    t.parentNode.insertBefore(_fbDrag,t.nextSibling===_fbDrag?t:t.nextSibling);
-    notif('✅ Posição alterada!');
+    var p=_fbDragEl.parentNode;
+    p.insertBefore(_fbDragEl,t.nextSibling===_fbDragEl?t:t.nextSibling);
+    notif('✅ Foto movida!');
   }
-  if(_fbDrag){_fbDrag.style.opacity='1';_fbDrag=null;}
+  if(_fbDragEl){_fbDragEl.style.opacity='1';_fbDragEl=null;}
 });
 document.addEventListener('dragend',function(){
-  if(_fbDrag){_fbDrag.style.opacity='1';_fbDrag=null;}
-  document.querySelectorAll(_SELETORES).forEach(function(el){el.style.outline='';});
+  if(_fbDragEl){_fbDragEl.style.opacity='1';_fbDragEl=null;}
+  document.querySelectorAll('.fs,.galeria-item,.foto-container').forEach(function(el){el.style.outline='';});
 });
 
-// ── Produtos ──
+// === BOTÕES PRODUTOS ===
 function ativarBotoesProdutos(){
   document.querySelectorAll('.pi').forEach(function(pi){
     if(pi.querySelector('.foto-overlay')) return;
-    var ov=document.createElement('div');ov.className='foto-overlay';
+    pi.style.position='relative'; pi.style.overflow='hidden';
+    var ov=document.createElement('div'); ov.className='foto-overlay';
     ov.innerHTML='<button class="fbtn fbtn-tro" onclick="trocarFotoProd(this)">📷 Trocar foto</button>'+
       '<button class="fbtn fbtn-exc" onclick="excluirFotoProd(this)">🗑 Excluir foto</button>';
     var inp=document.createElement('input');
     inp.type='file';inp.accept='image/*';inp.style.display='none';
     inp.onchange=function(){uploadFotoProd(this);};
-    pi.appendChild(ov);pi.appendChild(inp);
+    pi.appendChild(ov); pi.appendChild(inp);
   });
 }
-
 function trocarFotoProd(btn){
   var pi=btn.closest('.pi');
   var inp=pi?pi.querySelector('input[type=file]'):null;
   if(inp) inp.click();
 }
-
 function uploadFotoProd(input){
   if(!input.files||!input.files[0]) return;
   var pi=input.closest('.pi');
   var prodId=pi?pi.id.replace('pi-',''):null;
+  var fd=new FormData();
+  fd.append('file',input.files[0]);
+  fd.append('upload_preset',CLOUD_PRESET);
   notif('⏳ Enviando foto...');
-  var fd=new FormData();fd.append('file',input.files[0]);fd.append('upload_preset',CLOUD_PRESET);
   fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd})
   .then(function(r){return r.json();})
   .then(function(res){
@@ -2634,489 +2663,75 @@ function uploadFotoProd(input){
       var img=pi.querySelector('img');
       if(!img){img=document.createElement('img');img.className='pfr';pi.insertBefore(img,pi.firstChild);}
       img.src=res.secure_url;
-      var nf=pi.querySelector('.pnf');if(nf)nf.style.opacity='0';
+      var nf=pi.querySelector('.pnf'); if(nf) nf.style.opacity='0';
+      var dados=dbLer(); dados.prods=PRODS; dbSalvar(dados); salvarNoGitHub();
       notif('✅ Foto do produto salva!');
     } else {
-      notif('⚠️ Erro: '+(res.error&&res.error.message||'verifique o preset'));
+      notif('⚠️ Erro Cloudinary: '+(res.error&&res.error.message||'verifique o preset icet_galeria'));
     }
   })
   .catch(function(){notif('⚠️ Erro de conexão');});
 }
-
 function excluirFotoProd(btn){
-  if(!confirm('Excluir foto?')) return;
+  if(!confirm('Excluir foto deste produto?')) return;
   var pi=btn.closest('.pi');
   var prodId=pi?pi.id.replace('pi-',''):null;
-  var img=pi?pi.querySelector('img'):null;if(img)img.remove();
-  var nf=pi?pi.querySelector('.pnf'):null;if(nf)nf.style.opacity='1';
+  var img=pi?pi.querySelector('img'):null; if(img) img.remove();
+  var nf=pi?pi.querySelector('.pnf'):null; if(nf) nf.style.opacity='1';
   var prod=PRODS.find(function(p){return String(p.id)===String(prodId);});
   if(prod) prod.foto='';
-  notif('🗑 Foto excluída.');
+  var dados=dbLer(); dados.prods=PRODS; dbSalvar(dados); salvarNoGitHub();
+  notif('🗑 Foto do produto excluída.');
 }
-
 var _origRenderProds=renderProds;
 renderProds=function(){
   _origRenderProds();
   setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesProdutos();},100);
 };
 
-// ── Diretoria ──
-function ajustarPosDir(el){
-  var img=el.querySelector?el.querySelector('img'):(el.tagName==='IMG'?el:null);
-  if(!img){notif('Sem foto.');return;}
-  var ops=['center top','center center','center bottom','left top','left center','right top','right center'];
-  var idx=ops.indexOf(img.style.objectPosition||'center top');
-  img.style.objectPosition=ops[(idx+1)%ops.length];
-  notif('↕ Posição: '+img.style.objectPosition);
+
+function ajustarPosDir(el) {
+  var wrap = el.classList && el.classList.contains('card-membro') ? el : el.closest('[data-key]');
+  var img = wrap ? wrap.querySelector('img') : null;
+  if (!img) { notif('Sem foto para reposicionar.'); return; }
+  var opcoes = ['center top','center center','center bottom','left top','left center','right top','right center'];
+  var atual = img.style.objectPosition || 'center top';
+  var idx = opcoes.indexOf(atual);
+  img.style.objectPosition = opcoes[(idx+1)%opcoes.length];
+  notif('↕ Posição: ' + img.style.objectPosition);
 }
 
-function uploadFotoDiretoria(input){
+function uploadFotoDiretoria(input, statusId, urlId) {
   if(!input||!input.files||!input.files[0]) return;
-  var st=document.getElementById('dir-status');
-  var prev=document.getElementById('dir-preview');
-  var prevImg=document.getElementById('dir-preview-img');
-  var url=document.getElementById('dir-foto-url');
-  // Preview imediato
-  var reader=new FileReader();
-  reader.onload=function(e){
-    if(prev&&prevImg){prev.style.display='block';prevImg.src=e.target.result;}
-  };
-  reader.readAsDataURL(input.files[0]);
-  if(st){st.style.display='block';st.style.background='rgba(200,135,58,.15)';st.style.color='#c8873a';st.textContent='⏳ Enviando...';}
-  var fd=new FormData();fd.append('file',input.files[0]);fd.append('upload_preset',CLOUD_PRESET);
+  var st=document.getElementById(statusId), ui=document.getElementById(urlId);
+  if(st){st.style.display='block';st.style.color='#c8873a';st.textContent='⏳ Enviando...';}
+  var fd=new FormData();
+  fd.append('file',input.files[0]);
+  fd.append('upload_preset',CLOUD_PRESET);
   fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd})
   .then(function(r){return r.json();})
   .then(function(d){
     if(d.secure_url){
-      if(url) url.value=d.secure_url;
-      if(st){st.style.background='rgba(76,175,80,.15)';st.style.color='#4caf50';st.textContent='✅ Foto pronta! Clique em Publicar.';}
+      if(ui) ui.value=d.secure_url;
+      if(st){st.style.color='#4caf50';st.textContent='✅ Foto pronta! Clique em Publicar.';}
     } else {
-      if(st){st.style.background='rgba(192,57,43,.15)';st.style.color='#f87171';st.textContent='❌ '+(d.error&&d.error.message||'Erro Cloudinary');}
+      if(st){st.style.color='#f87171';st.textContent='❌ Erro: '+(d.error&&d.error.message||'verifique preset');}
     }
   })
-  .catch(function(){
-    if(st){st.style.background='rgba(192,57,43,.15)';st.style.color='#f87171';st.textContent='❌ Erro de conexão';}
-  });
+  .catch(function(){if(st){st.style.color='#f87171';st.textContent='❌ Erro de conexão';}});
 }
 
-function pubDiretoria(){
-  var nome=document.getElementById('dir-nome').value.trim();
-  var cargo=document.getElementById('dir-cargo').value.trim();
-  var bio=document.getElementById('dir-bio').value.trim();
-  var foto=document.getElementById('dir-foto-url').value;
-  // Validação com vermelho
-  var ok=true;
-  ['dir-nome','dir-cargo'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el||!el.value.trim()){if(el)el.style.borderColor='#c0392b';ok=false;}
-    else{if(el)el.style.borderColor='';}
-  });
-  if(!ok){notif('⚠️ Preencha os campos em vermelho.');return;}
-  var key='dir_'+Date.now();
-  var grid=document.getElementById('grid-diretoria');
-  if(!grid) return;
-  var card=document.createElement('div');
-  card.className='card-membro';card.dataset.key=key;
-  card.style.cssText='background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
-  if(foto){
-    var wrap=document.createElement('div');
-    wrap.className='dir-foto-wrap';wrap.dataset.key=key;
-    wrap.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:1rem;cursor:pointer;position:relative';
-    wrap.onclick=function(){ajustarPosDir(this);};
-    wrap.title='Clique para reposicionar';
-    var img=document.createElement('img');
-    img.src=foto;img.alt=nome;
-    img.style.cssText='width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:object-position .3s';
-    var ov=document.createElement('div');ov.className='foto-overlay';
-    wrap.appendChild(img);wrap.appendChild(ov);
-    card.appendChild(wrap);
-    setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesFotos();},100);
+window.addEventListener('scroll', function(){
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  if (window.scrollY > 60) {
+    nav.style.background = 'rgba(10,6,3,.92)';
+    nav.style.backdropFilter = 'blur(12px)';
   } else {
-    var ph=document.createElement('div');
-    ph.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem';
-    ph.textContent='👤';card.appendChild(ph);
+    nav.style.background = '';
+    nav.style.backdropFilter = '';
   }
-  var nomDiv=document.createElement('div');
-  nomDiv.style.cssText='font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem';
-  nomDiv.textContent=nome;card.appendChild(nomDiv);
-  var carDiv=document.createElement('div');
-  carDiv.style.cssText='font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem';
-  carDiv.textContent=cargo;card.appendChild(carDiv);
-  if(bio){
-    var bioDiv=document.createElement('div');
-    bioDiv.style.cssText='font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem';
-    bioDiv.textContent=bio;card.appendChild(bioDiv);
-  }
-  grid.appendChild(card);
-  // Limpar
-  ['dir-nome','dir-cargo','dir-bio','dir-foto-url'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.value='';
-  });
-  var st=document.getElementById('dir-status');if(st)st.style.display='none';
-  var prev=document.getElementById('dir-preview');if(prev)prev.style.display='none';
-  notif('✅ Membro publicado!');
-}
-
-// ── addProd com validação vermelha ──
-function addProd(){
-  var erros=[];
-  var marcar=function(id,cond){
-    var el=document.getElementById(id);
-    if(el){el.style.borderColor=cond?'':'#c0392b';}
-    if(!cond)erros.push(id);
-    return cond;
-  };
-  var n=v('an'),a=v('aa'),c=v('ac'),p=parseFloat(v('ap')||0),pr=v('apr'),de=v('ade');
-  marcar('an',n&&n.trim());marcar('aa',a&&a.trim());
-  marcar('ac',c&&c.trim()&&c!=='');marcar('ap',p&&p>0);
-  marcar('apr',pr&&pr.trim());marcar('ade',de&&de.trim());
-  if(erros.length>0){
-    notif('⚠️ Campos em vermelho precisam ser preenchidos.');
-    var primeiro=document.getElementById(erros[0]);
-    if(primeiro)primeiro.focus();
-    return;
-  }
-  var or=v('ao')==='__outro__'?(v('ao-custom')||'Aldeia não informada'):v('ao');
-  var pays=[];
-  [['ax','PIX'],['acc','Cartão de Crédito'],['abo','Boleto'],['atr','Transferência'],['ade2','Débito'],['amp','Mercado Pago']].forEach(function(p2){
-    if(document.getElementById(p2[0])&&document.getElementById(p2[0]).checked)pays.push(p2[1]);
-  });
-  var foto=document.querySelector('#adm-fw .prev')?document.querySelector('#adm-fw .prev').src:'';
-  PRODS.unshift({id:Date.now(),name:n.trim(),artisan:a.trim(),cat:c,price:p,
-    parcelas:parseInt(v('apa')||1),prazo:pr.trim(),dim:v('adi')||'A confirmar',
-    emoji:v('ae')||'🏺',desc:de.trim(),payments:pays.length?pays:['PIX'],
-    origem:or,badge:v('ab'),foto:foto});
-  renderProds();renderAdm();limpar();
-  notif('✓ Produto adicionado!');
-}
-
-// ── Nav blur ao scroll ──
-window.addEventListener('scroll',function(){
-  var nav=document.querySelector('nav');
-  if(!nav)return;
-  if(window.scrollY>60){
-    nav.style.background='rgba(10,6,3,.92)';
-    nav.style.backdropFilter='blur(12px)';
-    nav.style.webkitBackdropFilter='blur(12px)';
-  } else {
-    nav.style.background='';
-    nav.style.backdropFilter='';
-    nav.style.webkitBackdropFilter='';
-  }
-},{passive:true});
-
-// ── Animações dos slots ──
-document.addEventListener('DOMContentLoaded',function(){
-  // vaso-anim nos slots fs_006 e fs_007
-  ['fs_006','fs_007'].forEach(function(key){
-    var el=document.querySelector('[data-slot-key="'+key+'"]');
-    if(el)el.classList.add('vaso-anim');
-  });
-  // grafismo-anim no fs_008
-  var el8=document.querySelector('[data-slot-key="fs_008"]');
-  if(el8)el8.classList.add('grafismo-anim');
-  // Limpar bordas vermelhas ao digitar
-  ['an','aa','ac','ap','apr','ade','dir-nome','dir-cargo'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){
-      el.addEventListener('input',function(){this.style.borderColor='';});
-      el.addEventListener('change',function(){this.style.borderColor='';});
-    }
-  });
-});
-
-
-// ══════════════════════════════════════════════════════
-// STORAGE — localStorage como principal (igual CMDDI)
-// ══════════════════════════════════════════════════════
-var _memDb = {};
-var _ghSha = '';
-var DB_KEY = 'icet_db_v1';
-var _FOTO_MARIA = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAGQAQoDASIAAhEBAxEB/8QAHAAAAAcBAQAAAAAAAAAAAAAAAQIDBAUGBwAI/8QAQxAAAQMCBAMGAwYDBwMEAwAAAQACAwQRBRIhMQZBUQcTImFxgRQykSNCUqGxwRXR8AgkM1NiouFDgvEWRGRykrLC/8QAGgEAAwEBAQEAAAAAAAAAAAAAAAECBAMFBv/EACoRAAICAQQCAQQCAgMAAAAAAAABAhEDBBIhMSJBMgUTFFFCYXGhI7Hh/9oADAMBAAIRAxEAPwCsAEDZDZ3RTpw7TZcMO02XoHnkXT3uLAqVpA8kaJaDDyCDZStHSBpvZMQrRNdYaKapA7TRJU0IFtFJ07LWKllIWiBsLhOmg5dkVjRpdOWkZFJZG1QJB0Ub3Zz7KantZMHFuZNEsWpGWspBrSQmlMWp9G8FDGhGVhLdlHVMBPJTTiCE3eGm6EDK5PSkg2UXV0LyNlb3wgnySMtO08lSZDRQZMNeXHwoGYdIHbFXOSmbm2RRSgnQKrJorlPQvFtFK0dG8EaaKYhpWi2ifQwNvspbKSG9JTvFlIxscBslYY2gjROmho0XNs6IjpIj0TaeE5L2Uw8CyQmDctkAU7FI7A6Kt4q20JCueLRixVOxjSFytHNlYeAXJIt8VksTqk7XeqAbVTcqLSyWvZKV3hamEDjqkBLNqcvNc+rBGqYMzEoXMdZAxSSe6S71qI5pRLBIZpAAsbhCA1MpKgAaFJ/FWO6ZJLRgC1k7isFCMqdtU8gnH4k6FZOQvAATqOoAUIycW+ZKslB2cih2TrKodUqKmw3UHG6+pcnFrj5kUG4eTVOm6Ympbm3SFQbA+JRrn/abpqInIsMFSLaFOmVQHNQMBBG6exNB+8lQKRLiqBG6KZ7m6Zxxg80rkFrXSoe4VE90V02mqTyAc0lINDYp0FhnTC65kouo6ocI9Xva0dSbJGKshcfDUROt0cEUKywMmaAnEc7d7qBjqmOcWBwuCBvuT0TtsrGWa6Rod0vqlQ7JtlQLaJRlRc7qJie0gWcD6FLsI5FKirJMTXSNRJbmm7N/mRagW5pUFkXicoLSqVjT/A4K14rcNNjdU/GSchXRI5t2yDbzQD/EF0ePmi2+0QMa4mPDom2HxF1yQpKsjDm3slMNhBFgEmMJT0hJ2Tp1H4dlL0VLrYhPpKMZdAkBTp6Sw2TPuCrRXU2W+ijjE2+ykoF732OpRA59t0vIw22SLY3roc7FYi6+6fw5rjVM4Y3cgpGmjebaKkJjiNrupTiFjs+66ON45JeKJ+ZAh1DGcoTtsZQQQvIF0+ZC4tvySKRE1DDYqJc37VT9XC6xULJE7vb8k0Sx5TtuApCGNNKWNxAUrBTkjVJlIUii8KU7vojshcFTu0Tjqi4QpBHpU4nILx04do3/AFO6BQ5JcspRb4RKcUcQYbw3RfEYnOG30ZG3V8h6NH77LG+Ie1bEaxzmYYI6GLllGeS3m7b6D3VAxzGa/Ha6StxSd0s7+Z0DR0A5BRpkBBbsB0WWWdt0jVDCkuSwT8Q4jVPLqmvq5Sd88hP/AISbMUmhs6GXMQb3vcqEic1o2v8Amgc9r3/LbrZQ2zoki4N4vrYYXASEyW8L77E8/UWTN3GmOsmdJHWTXcbkvAP0J1Hsq063cPAdfL4h/XumLZiD43FTvl+x7F+jWMI7TcSpXg1MznRmxLXHOAfUhadwp2hUGMPjikdGJnfdBs76c/Y38l5kgBk1jks7oTul43S0zwQXRyA315FdIZpLs5ywxfR7Tp7StD4zmaeaPUsNrLBezTtOmpKmKhx2bNERlZPIdW+TjzHnyW+xyMq6Vs0Lg5jhfQ3WmM1LlGaUHHhlfxVlmFU/GG2jV7xSMmMql43HaNdUcmV1oACAN8aVa1GazxpFCdQ3wJ3hLQdwkqltmpxhWhSYFhoWC+qfyABiZUZ2TyV12qWUiIxBoIJUGb3KnK++UqEI1KBj10IshipwU7Ia7ZKxMaLK7OdCNPAL2KkoKYDZFgYC9SsDG6IsKEooANbJxTxAyahO442huyVhjAeErHQeKAaaJ6yHwo0TRonzWjJspbLUSEqoPCdFBvitKQQrXVgZTooKW2c6KkyWjqaEDVStLHmTGncMmiSx/iCk4bwGoxKtIyRjwt5vdyASkxxRB9qXGsHB2FhkZbJic7SIYr/7j5BeWcUr6ivrJauumdPVSnM97zc3TzinHqvH8aqcSxCQvqJnaDkxvJo8goUENBc7VYpzc2bIQUV/YoCXAZr26ITML5Q1tuiCnz1Bs1uhUzhuBd6bk2PkFyc1E7Rg5dEVG650/VHc5ptmcGkbaXV0puG4SBePN1upKPhemy6xNv6Lm9QjstNJmbsfkfe7XA79CmdVCDIXx7HWy1N/B9OdRH9Rp7JpVcMMZE8sjB9d1KzRsb08jMA4sde1uim6CcVUHdyHxN+Unl5JXGsHkiFwwWA5bqKoSY5rc9tV2jJPozyi48Mle4a9haSWkah3Np/ktW7HePJsOmbg2MSfYGzInk/L0F+h5dD5FZlAfEA4A30uei6dvdgPivmbt1t0XWMnF2c5RUlR64ryHwZmm7SLg9VTMcb9kbqM7L+LP41gvwlS8GpgFtdyP6/dS2OaxGy3Qdq0YZqnTK20aIWjxhCwb3QsHjCsgGqHgCWwwWGqSqSA1L4cdFLQ0TlGeqePIATGluEvKTlUlIY1x0NlDEC5UpWHRRx32QNEg14CXZILKOa4lKNcQFRJLwyAEKRppRcXKrcUrg5SlK8lwToRZGSDRKxPGdRkLyAnETznU0UmTUb9Qn7HXYFDQuJspSH5AVLRSEq0+FQExtIVO1pOUlQc+rrpxFIWge1sZL7NaBck8l567aeKzi+Nfw+nf/cqI2IB+Z//AAtI7VOJ/wCA4EYadw+Ln8LR0/rf2Xmmsmc6RxcS51ySTuXHcrhnn/FHbDD+TE5JPES7knVFRvq3NFtCmUURkkb5lXrh/Dg2Jrj0WHJPYjdix72HwnB2sLdLnmrbh+GBrQbWQ4bSeIGysVNARa7brz5zbZ6uPGkJ0dG21soT9lI0202S9PF4dU+ih2suds70kRrqXwgAfkm9RR3FnNuFYu6a5uwuimBuUi1yhMTozvGMHbLG45S30WY8QYTJSy52XvuD6L0PU0AIH6Kn8TYDDPC67bE7EDZacWVxfJlz4FJcGN01WSGuIs4aOA5+alI5A43uHMcPp5phiNJ8DWOjkFmm7bj8kyp6p0MgadQdl6Cd8nlNU6ZaeG8RmwTHIKmFxEbjcgfmP39luNTUMrcPjnjN2PaHCy88QS98HNabPHjYfMLWeAsU+NwPuHHWMeEeR1/r0WvTy5oy6iPG4lmhC3/ECEjdAz5wtRkCVpIHknOGfKm9cLgI+GGyllLosNJrunUo8Kb0ADgpB8QyqGUiDrGaKNJ1KnKyPQqJMep0CAAB5lDmuNkpYW21R42Ej5VZInCfFspakHiGia08XivlUvTNsRcIAcRA6JeFhL7pSMDQ2TqBvi+VTZSFoIzpopWJpyAWSUDdtFIRAW2UNlpEbWtPdnRQUrSDroOZVnrW+E6LOu1HGxgPC9VO12WeRpjj9/6/NNSpWJq3Rgnadjpxfiislue4pnGKMX6I/ZBgFLjWJV1VidLHVU0LAxkcou0vcd/YD81Rq+Yua7M4lx8Tj1JK1L+z3iMkFVi1ILA922dhtqDfKfyIWCbttnoYkk0i1YnwhwVRysFbSx0U0rbxtimeDbrludFGU2G4dGXMp6wEN+XM02d6H+aNx0DNxxWGR3hjbFEPIBgP6ko+GUjHBt5GNFj97osGbyPU07jHtWSVJHGyMvt4Bu8ahWCghbMzM05m9Qq67CHvZmoKuSGYjQsOl+hHNNcPrMbwuZzsRpoZo2usZYX91IdLkcwdORFln+22anlxddf9F7ZTDQgeqciKzdFGwYtTVGHRVtPUiaBzsj80ZY+J2nheNgfMaHkpaCRr4wQQQjY0LcmIluugXBpOttEvE+INc6R7W+psl4Y45hdj2keRBRtY7QwmbdoNrqMroBKw3Csj4A0ZSo2sgLSbBLpi7Mc444c7+KSWEfaNN9FltWwxTOY8WsdfIr0ZjMIfFKCPu2IWJcS4e3445fCSd/Nb9PO1R5mqxpO0Q1FUOjLXX8cZ+oV84DrzTYx3Wb7OQ5QPI6j9/qs3ILJbHcHKVY8BqCJad4NpGeG/mDcLZjlTMM1uVG3m5v0QNHiCCimFRSRSgaSNDvqlQPEvSPNYjWaixS2FtuSm2IGwulsJeFLGuiy0DbKSI0UXQSAlSbnDu1LLRH1ugKhidSpWueLFQ5cLoETQp2HklYqZp0skhKLpaOcdUAOqembdSUVO3TQKNgnGbdSMdQ226XJXBIRQN0TyGNg2TCCYFu6dQytzDVJjJWBjTbRPmRjKo6GUC1in4eMmhUMtCFZGLWXmP+0TjHe43S4ZG64jZ3jx66AfqV6YxCoEUD3ucBYHUrxFx9jH8Y4txSuBvGZXMi/+rfCP0v7qMjqNF41crKxP4nnndy0zsuglw2cVgytfOMjswuMnT8lR+HsO/iOIxxuv3bfE8+XRbDhNKxrWxtAAAsAOS83Pl28I9PS4tz3MS4ulfPjNXVSROYZXCS7Gkt1aFTpazE62sbT0znUsJNhI/wAN/dbCzChPGx01iXRsOh38ITKXBactfDJFFkduHDRcI5FfKNUsTapMyvhzGauCun7+bPDThznl1YInOA5NB3d0Aur3HxG7GWNgqXPLGm0Ze0B7f9LtNTrvzSr+C8Oz5xSx5gbhwfcpKswr4bFWVz53uf8Afa6xz6WHuuzlBqzPHFOMuSXhmZS0VfAyP7IRls0gsABvl83ECw9VP0M2Hy4ZCMLcQyGPv52RtJdckAg323tb3CpGExyYjLIHZjEXkllzYkaAkfop0Uk1NiET4IHyCMEOLTozNbK8/Qj6rO5WzVGFRsRrmTipdLQAROLvs4pftsnlcjVRctRjAkdlbQTOJ/yi038rFSGP10lK90kZsQ29/VUio4lrqQCVrnMiz2a9rL69L81UYbvQPUTxe2aJRYxMYGtqcMkpnN+Z8NS8tPsQbKWgr2STNY107onGwe+xAv8Ai18Prss9oOOJKN7WVobnfZ7onxOikynZwDtLH81ZJ+IcMqaSCsoy2WVzSHNsWFhBGhsfVc54nHs6Y9YsnFWWHF8Bqjd9O1k7XC+VjtfYc/ZYVxnTPpMSmhqInxuab5HtLTZeieC8UjraCeaaha2kfLliiLzoWgAuDt9/qs07YKCHGq5zWzxx1kOWnikLxYvtfu3dCdSD/wCFrxRUKa9mLPc7Rg9WCJ331/cJfCpjHO0E6ZgUjVNeyR8czCyaMlrmncEbhIU78s7T5rTZhPQXB0/xOBwHm0Fv0KmQPGFSuzCq7zD5oSb5XAgeo/4VzGr16eN3FM87Iqk0M8VNgiYVIWghBi7k0oZN7KmR6LRh9QAdVKuqgW7qp08xab3T8VXhSodj2rmDmlRRfqumqLgpkZtVJQ+dXuAQNxNwGiaSNJakbW3QBLw4k8uG6kYMTfcXUBTkZgpCBt3hNIVlihxF9huloMTf3luSimDQI8GsiKCy3Ute8gKWiq3mPVVujPhapyPSO56KGi0ys9qWNHDeEMQmz5XmMsZrzOg/UlePZ/kt1W+f2hMUc2kpqBh0f43D1On5A/VYQyO8zASB6rJnfNGvCuC48A0wZA+Yi7nuy+wWl4bTd7axseZVH4ajFPRQN2IFz6q/YLM0WN7rx83lI9zTxqKRNQ1NVRENfTumgtuz5h7JVmJ4fVuyCZsUm2WVuUp7RSNc0E6pxWNw4RufWRRuAH3gFCjZ2bI90cbWlzSHjrdVPHKh0lS2KMjOdQAjYjiVJUVjocLYaaO3jeHEXHkChpm0scjHteHPcfmJufqh8CSslsEpBTtDnXc9xu4nclSOICZuV9K4gyARvH4rG7fzunGH0wmIDXN2va6WqoC2JzRcG1wehB0P1UU1yzpxVIrGO4WJm5nxNlZu5pHluq5UcOfxGibSvkkbC12eMB1g09QtEfUMqYWvy5JL5XsPI8wm/wAM1kuZjbNOpsu0cjj0Z5YlPszY8Ey09LW96/4p0zAxslQ8vfGAdMpUbwvgdXT4h3FYT3Ujh42nQn9ithljY5lmszH6JqzCpXtb3LGNLz0vYcyqlncuGTHTKPKH9Wz+H4HHh+Hyd1LHCI2OGpZzLvW5P1WF8a8P1NNBJUmTvS13iJOpHndbm6ibBFkeLgDQ81QuOGNdhNSD0sqjluSJyYagzBaqpkqJu8neXvIDS47m21zzPmmw0lCdV0JZOco0Oqc19AyNneQB1m2zXN1ttI8xRbtl/wCyucCZ7PxR3+jlpzfmWM9ms+TFqdpOjg5q2iMahejp3cDBnVSIvFmEg3TKjjOUqTxYXFkhh0V2ld6OCOhY6+qdZTbVOoKfMdAnbqPw7KGUiCmBSFipWemynZNTFrskA5kphl3SQprhTrqB+WxXR4cbagqhETTUgzKUgpW5gnMGHOz6KShoDcIsBGOkaQNUvT0Te8UlDQmw6p1DQkOupspIJTUgGWx1TnEKinoKUyVUmSMEAute108ipLWKzvtBrHPxYwOv3LGhpA99T5hY9XqVghvZq02D70tpj/bRWmr4hmmcTkkeBCOkYaLH30VIwKD4iuzkm0fi9SrTxvSmqzVIe1z4InDL11Hi+ihuDnQNbUGR+Wa+jT0tusTzrLHejbDC4TUWWOlcWxN5aKy4LUloAvqoOFjXRsttYKzYPQtkaLc1kkelj4JxmJinjJuM3TqozFa6SsbaV+WPkwHf1SOKRfCPzv1FufVV+fGaSF5MszCR90G6SX6LcrHU1CZfFDJldzBGhCYjA6ukm+MoA8SDV0TPkf7JxTcQUepYx5c7zCsmD8QUeW0jXMdfQkXCaUkVs3cgYLiVc6QNbTyh9tQ8FtlJxcTYjQV4gxPC3CkcdJ2SB4b68wpCCWOWUPY5rr9Cn09DS10Y+JiD7De5BSdew5RXMYdDNjMFXHJJHG9ojfkdYX3BI2Km6dlZlDYpYZWjbOyx+oKRxPD4nYdJT07A0AXb1umnDOIl8QbIbvboQeoUNcFJk7TtqSMr6eO50u2U2+llL0bXU8OWTxOdu79vREppowATuuratuTKDqP0VKKirFd8DetkaWO1Fwsw49dahkaDq91hZXStqSL6+qpPEX99qqOAbOlBJ9EsfysnN8aKjhWBQTS5nx/aA2AOoI8uhUHxDSilbWxAWyudp01C1iio4/irQahjr3WXcbSZK6uH+bIQ30v/AMLVCTkzHOKhEi+EZjS1tNL0f+63qlOdkZvuFgeGsEdM0k2IP63W54HL32H0z980bXX9QvX0z9HialdMNiTb3Q4WzwFGxFqVwoAt8lpZmJOjYLqRLBl1CQomC6kjECzRQykQFZELmyjDHqVPVsdgVElupTBlqdlOnJc0tCjTWAcwifHNtukBNwluZSMNswVahr29QpOmrmlwsQhoaZYo7DknbCCFDR1YPNOIqtt7XUNFpk0yRrWHRZH2qUVVGKzFKUCSAObnA0LCP2K04zgRGxubLD+0rEMRjxWringLaSTwXYSGSC3PkTZYNfCMsVSXs3aBTeTwZnbJ2SAmV96Z7rtuNWknY/VJcR4DG6jlqqf7OVoAbl5jomtY0MkhbA5uV5DQ1x+UXGpPl1Vuxh4hoQA0vAbYBv6rxNRJ4ckPt+z08KeSMlk9Edw9IZqCHMdQ0XV84dOyzXheoaTJEHXLHG9/PVaBgsojkbrotMi8T4Q94nYwjK3mLlZ1R4Vh8PETZ6yISUt8xYb6Hf3C0PGXCWUEW1Vcq8NM9yw5ZBseqcJ7WW4KXDL/AIDhHBGKRCF0dF3sEID2XyOudbk6XKeHsjpBh3f4bXTR1Fi8Mf4mHmB1HLVZpQumpSGVUbm2OjhqCrhhHEVdQR5KWpzsd90vIt+a0KSfZf42WPOKZIV/Z/xFQUhqIn0dRa3gaXBxJNuig5sYxTAax1Pi1FMzurd5fxAX1HiGn1V2h47xruLSUJkDSC0jb3Ka13HmG1FLLT4th0gZM60rbBwc3lfW5TlGL4Feoj842R9Bi1LiUQkpntIO45j1CqlRKcJxx7QfspTmHqkKzDpMQx9lbwlmooCS6fvm2jJJ2DenQBLY3A6eFrnm00bspA2vfcLPOCjxYtzfqi00WIEsBzb7I8tZmuHHXqoightTMzHkjTMcXBoJuuLOyYFVUhzzc3CYUNN32MU5cAS27rHmnfw5zgv+XdHoA0fF1ZcA9mrW8yE06OcuWPMZuDama2MuZZzgNSsH4zmbLxG6GM3jiGXT8XNa7xvjFVDwk+poITJUh4YCPu6an/hYDHK58he8lz75iTuSStOlanckYdXKvEmqYEU7TzuB+a2TgyTvMHpBe5EYafIjRZExmWkcBb5rhaT2Z1JkoZonfceCPQr1sDqVHk51cbLPiOgSmEkFlgksTNij4Xq3RbGYkWGjOgUi0nKo/D23apIt8K5suiNxA6EKDINypytbobqFc3xFNCGkk5t8yRE176oJInEGyTZTvIOiYDiKfXQqXoZtRqoOKjlzbKXoaaQEXTEWCCW/NOYpLv0KZ0sD9NE8pqd3eaqSiSif9ncnbVY3xfPLX1stRMzvXOdkiZlvpsAPotphp3AALKO0aGODGhT0LnGZgvKQdG6aNA5AD9V5X1SNwi26SZ6X063NpLmjNccoInl4gYGSO0fY6N8tE+lqficIhzkvna3K5twLkaJ03C5paaN8gIyPAyt566kpzVUdPBFDGGM8TsuY6G5P814+TU4Zzil6PThp54oyt9mcYHVuoeIXxz2Y2Xw7WF+S06gqgGtcCss4ztFjT2wlwY3K5oJvlNhcexVn4axb4ujjc4/aDR481vyR3JSRwwT2twZoJlEpBJTqGAFwuq9QVQccpKsVK+4aVlkqN8HZJw0LZGEFocjtwmAHxsHonuHgFovsVMRQh+wCcWy6roioMIgkbbxgcxmKTl4dw5rs74y9w5OOisGQR3sLeaaVAJdc+tk5TZSlL9jF0TYYw2FoAAsB0UScPD6mQSa3U89ufbQBM5XNBIbq7ZRYhs2nbG0Aahc2DLqUuzUeIpGrqWwxlxIvZITIvGallOwBxDb7+QVWw6unxqi/iWHtuI5X0skbTYmMnR/8/JQnaZxAYqUwRO+3n8IsdQ3mn3ZbVxR8LYs4xDPBS94A0WLsp8dvO1vqlnxzji3R7OCyxeTay0U8oMs9O9rY6Wmj+InLgHXIGg/Vee3yB8z5GjK1zy4DoCb2W8YVMzEaWV1d3cEGJOJ8Tspcw9TyB2Va4y7OmQxTVtDOxzScway2Ro9l20uOGmjcnzIx6nP+RKoroptK4vpyLi4aCrh2YVfd4hNE4/O2yp1LDJEWskbZ+rT+al+DakUuPRknTNqvYxS8kzBkjcWjW8TNwD5I2EO8KRrHB0APsgw55a1egzzkWqgflO6knSAtVdpJ+d0/fUDJoVDRaYWul3AUOZdTonNTNcKOL9eSVAPjBpqNUeOC/JPwAeQTiJrQNgiwGUdM7SzVI01O4H5UtAW3GikIS0OFgEWFBYYngbJ3BE8O2TqLKSNE4ZYOCmy0jo2usLBUfjzAaalwvF8TDSauSzs34WktC0RrmgBVftHmZT8JYpUOa0juwLO2+YLPnxrLBpo74ZvHJNMyNrHsZGY3CzXHMDzFt1XOKK80dMZhbNFI2UX1uQ4EhNuFeIq3EKfF4qoQtqKWlf3JG75HODfyBJ9l2F4LTcQcGYtjOJ4jIzEqSZ7IYc7RHIBYDw2udb7L5rD9OnCanPqz28msjKO2JT+0mmZT8YYiITeF5ZKzXk9od+6ZcNTuikkaDobH3TfFZZq5755zd8YZCSTr4RYfolOHGZppR6L2ZKoUYIO52XWjry1zXHcbq4YRiLZGgX03BWfMuNOae0lTJAbtJssklZvhJo2PD6sWsCFM0lYGu3sskoOITGPEbHzUzTcTQjV8lj6qKa6NCmn2agaljmnVM56hguSdAqI3iljj4HF56BEfi8tS/wARDG9AdVLTfY96RbajEGnwRHUpt3mtydVBR1TWC5eE0rMbZGLB13cgEbb4FvS5LBVYi2Fhu4Ks4xiwjp5aiZ+WGMEknmmRlqK0l7rsiGpJWfcc4w6qk+DhJFPGddfmK648Vs4Zc21WQ1bXHF8WlqppMmto2He2wAWu4HQvwThjG301paN9DbJ+KQ6Anz1WQcJ0QxDiXDqVzg1sk7Q4nQAbleqqjh6Ktwmpoo5HMZURNYHhoJJabg/t7rL9S1H2ZQiujjpY71KTKHhMMc+C0UL5RN3VOyJxDbXcG256o+CTyU9Z8PCXNp5wQ+NxJHPUFOMIoqusrGQUjAZCS1xB8BAvqeh097qSqKV+GO76rhyfDkBxey1h1BWjUyisXn36Ri0cJyyya6MZxlj4MVqY3m4bJ4SOl02oXGLG4suhLxb3UpxnPTTY5K+ncLuJLmg7HzHIqCkcW1EErfmAB+hW3TSbxxbKyqpNGzMkz0cbvxC58il6TRii6GdstIHA6E5gPIi/7qSpD4CvaTs8lrkfwOPVOnONt0ypzYpySk0JCcriQmeZO5WmyaluuyQyw980hKwzNtqVXpKlw2ugjqn6ooLLRHM2+6f01Q0uGqprKp+awT6nnkziyNotxe4ahvVLR1Dc+4VUjqZAAlWVUucWKnaUpFx78G3RU/tjq2w9nWJci/u2Dy+0af2UlHUvytuVVO2WW/Ac7HnR72Eje9joPrZc5qkdYO5GKcDU7aDFaeunvNHNS1D3WF/EQ4N+tiqi0UtRh8kzJXDFjNmbG0HW5+UD3Wq4BhzKvC4o4mvZEKaJjp7FndvaHEkX3390k1zKXs/w6anZTx18EjZu8dC0mQXdvp0K8nPrIQe1c/8Ap6eHSznyzNpKWRseJxSMyyRhrntcLEOvqEThoWqJVYcYdHUibEaGSQuqBaoaDctdax9iNlBYCzu6twvcHZW5qeO0UsTxzpliMZzXTuKIFouEpFDdgunlPBoFkbNiQwdSX1ASEkDwP5qzR0txqEHwDXnUKVIraVlhqGfIncD6wnwqywYRGdm/RS9HhULR42ajonvQlBlXpaDEKqzS8taVOYdw3Gw553ZiFYW00cTBlaAByTWvqhHG45sjbak7BTvb6L2JdlZ4urmUdKYKcDMdLBY5iUgmqHuZ4m3+bqVZOLcWmxSrkEDX/CM8ILRo/qSVMYVwXhtThEM1VXPNS9of3dLbQdDm/VbcUaX9nnZ8lv8AopvCUoo8doauS4jZO1pIHI7/AJL0Vw5xnT1WNR0sPjjkDY4SAQAdXG/tb1WRVuF0OHhtJQF4e0OvNM8E3Nr2A58vZIRQ1NC29NVPla52YPZ4XMcOnRY9dovyVua6NGjyQvZfLN4ocLfhnE1bJTOZ3FQ4vAubtvrb6qZx+Smnwktr2NkiILJGu3LCNbFZh2fcWVdfjD6XEJWuJizd482cSDa3mdUw7WuKGvijw+CVwBcQ/KbWtqPzC8THh1E9UoTfFGrNGGCDrsy/GIIqPiKsgpZjPAyRzY5CdXN5XRqg+CJ42uRf1CjWEiZpO4d+6kJLmjcPwH9F9bFUqPG7NC4Zqu+w2lvuGZD6g/yVrpiO7Wc8G1P92yn7rg4LRKHWLdejilcTBljUiQpW3sAn3d6aJHDmXKmBD4RorbOaRFviOVNjEbqaki0NhsmRZrslYEVIPDoiRtsnMjAGosbQqJCMHi2UjS/MFD4ridJhFHJV1r8kbOXNx5AeayTiPjnE8WkeymlfR0nKOI2cR5uUTyRh2XDFKfRvdViVFRMzVlZTwNH+ZIAoCs7ReGqFxvXGoI+7Awuv77Lzy+R7yS9xcepN0m4lZ3qX6RoWmXtm24j21QMBbhmEPfbZ1RLl/IfzVSx3tNxniIRUlVHSQ0xcPDFH4h53JWekm1keM5RfmuM8kpKmd444xdo2Six3FcboGYHgtA6oqXxua2xAuLauJOg9+ar9fT1kTTg+KxPpZ6FrWOge7V/RwI3HmmfA/EuO4LIyXh6mZPVwh0kxcwuvEBctOugGpTDiPi2o4h4hOL18bI5Z7Nf3dwA0CwAXnx0yU7rg2/kNx7pklW8PyQUbKukmystq0jY8woXDWEVpuP8AylDxJVSPc2O3duYY5BykHIkdR1SuHQlgYTuu0+FQsblJ2y10UedgB6KTp4AzcaJthDMzWkjRTZjs2wWFm9LgTbHybqnFJAXkmwQRsLnWb9VKU8XdtUtlJBoIgy1/zSxcGnXRJvkDRc7Dko+srMrCc1gkuSnwP6yujp4S5zgABqqzB3fE0b3SOPwbjYCJ+p8z5fqqVxLjdVjuIxYPhJL3SvEeh+dx5X6dVp+FcBuwzBqWGlqZ6auYy8rmEZXP5p5c2PSx3ZHy+jJOUsr2wKBxPwhVwV7TT1bqljbPZHOABIAflBGnspbhp1GJJaepdHBXOd8jm5SPQhWGvmqcMEVLxJSOma4nuqqEXuTptzPoqTiOEV00tXWd8MlPcx5mkPLQdDZdNF9SUac1z/p/4OU9J95ShupP/Q+4ipaJtRE+sZ8UxhJyxk3PT1Ch6GOOU3oyRTuJAab3G2nmrFgkrJY2OqG2qHNac50D789d9bj2UhU0kQewxNY6Qa5dr23AXu7Vk/5L4PF3PE/tIpGN4e2lpz3E7mztu7MNC0jW3kqUaiaaR0k8j5HO1zPNyVe+Naunpq53cyB73xtu24OU7ELP5iQXaWaTceSwQjUnwexqJ74wbfNcihcbjzCko3d5TvFzqAbqHifmAvuDspGjOeN7ediF1MqJvg+bLO+LmQdD9f5rVMHcH0rS03GyxnA5+4xRkh2uCf6+q13h+S8LwNRda9PLijLnXNltwxg0sp9jRkCrGFzW5qfZOAwarszgKSMAaVHkC52S8892nVRxm1KBEdITl5oveiOJ73aNaLknYBSEkbbbKjdqeLjDeHxSQHLPWHJcbhg+b+ScpqKsUYuTozjjTiB+O4o7I4ijiJETev8Aq91XigbuuJsvOlJyds9GKUVSOKAAkoSi5rHRIYYjXRTdBw1VVLHPlnpqVgAdeZ9ib7abpPhfCKjG8RbHTyRwsjs+SeX5Ix1P8lqMWF4YKo0kDHVdZ3ZcaqRoaCdPlHvusmbVwwyUX2dY4pTTaM4qMOkwqKWOjxW7J/A7I1zWuBGxKjaqkdG6OAjxBo21vutCxHA64Utu9bUUbrm0vzNt0PooCgpm1EmdzCHsOTXU2Gy0PIkrIxQeTsZYXhTjZz2mwU98NlLA0KTpKRxaAG29k7+AsAbLFPJZ6MMVDrDYgyFt9FIZ8zgBe6bs+zY1qe0UZJuVwbNCQ8oobC7gnztGkkaIkRDGC5TWuqgxhsfop7K6EqmdrGkk+yzTjjiVzi+hoXWdtK8fd/0jz6p1xfxHJTh1PTPIqHjUg3yDr6rPna76lbNPg/lIw6nPXhEPhFfLheJwVsBLZYXZmEcivR/D/Fc2K8MnEK5sAmabWiBNxbn5rzS9l1NYRxHiGE0/w9M9phvezhf9dkazQY9WkpnDDneK6NGx7jvF4ayGIUsQifcRse7Ued7aKZ4UlmxVlXXYzVwiKnADIMoFza5NtyLdbrFanFquqrGVFQ4SPa64DgnWKcQVNbJEWWgMbS0mPS/VVj0GDGvFU/RGTPklJc2vY/4v4uq8dxbv4CaemhHdwNGhDRzPmVDS4zXySMcaqUOZexabbpg5FaDe62LxVI4tJu2OZZnyEOe7M7mTuUAOYWdqkwjDdBQm+ndG/NHq3mOac0ElpzrvquabIwyF4dazhzCQBy0xzm1/61C1bhGfvMPa++rv+FlpIMjDuNj6f0VofAWeWhkYNTG+/sf6K76d1KjjnXjZcqObK86qXZV+EaqBiikB2KcszgbFbKMZJyVNxumRmdcpJ8jgNjdId45FCLc6mYWrz12pYmK/iypijdmhpfsGeo+b81vGPYizCsEra17tIInP97afnZeWp5Xz1D5ZTd73F7j1JNysud8UacEebOAXFDyQDUrMajjsic0cm6KQgQ9wapFLiMD3l4izguDTutyoI6Stq4quGYCXOG77G2zVgDRqpbBajEW1tPFhskvxDpB3bQb+JYtVo/yGmnTR3xZvtm1Y7URytMdNFdkQc0t21ad1WcMoGtzSZMuc5iFbeI8G/hmH4TTVErpa6WM1NTJtmc7TblsVFxgAZQNBouUl9tbL6NeCN+X7DQwhoHMBLPAOuwSYOUaHRGBvoNlxs20Ea27h0UhDIGnkE1Y0DUoS7xaIFVD2apAGhVS4rx9uG0hy2dUSXEbT+p8gpPE6uOlp5J535I4wXOPQLIsXxGTE8QlqX3DXGzG3+VvILvgxb3z0ZtRl2Kl2NJpXyzPllcXyPN3OO5KDldcusvSPKfIFuq6wRiusALlABHm2g3KINAuBzHM7mhPkgANzqjDTdFAQkoAEFGBsEQI4KBhr2QtOuiIfE7yRxogBS5HNT3C/E1TgNV3jGNnhdo+N/MeR5FVwuXZimm07Qmk1TN+4e4rwLGpGQQT9zVO2hmGUk9Adj9VaHUTbaCy8tB5BvtZbv2VcVuxvCX0VbJnr6QDxE6yx7Bx8xsfZaceXdwzLkxKKtFnlom22Tb4AdApaZ49E37xi7WziUPtexExcIOgGhqJmsPoNT+iw1tyVrXbfOG0eF04+898h9gB+6yhg0WPM7ma8CqAbYIctgiXu5HJuuZ1C2RTuhJXMFygA7W6XW09hPBxqquLFauPWQ5YARs3m732Cz3gLhqTiXHI4CCKOG0lQ8cm9PU7fVeseFaSLCsGqsQDGxxQQuMbQLBrWt0/RDe1DStmc8dVTaziiue0gxROFPHbowW/W6r2Uj0Tp5MgzSavcczj5nVJloBuvHnLc7PchDakghZoNUoxmlkYNzaWSwjtra6g6CRFtkQBxkDGNLnuNg1ouSegU7gvD+IYu4GniDKcHWd+jB6dT6KK7Useo+B8P/hGCP7zH6uP7arPzU8R/D+FzuXMDXou2PFKZny54w/yZh2gYsZ61+Gwn7OnfaUg3zPHLTkP19FT9kZx5Irl6cIKCpHk5JuctzAc8MFzc3RTOOTSjDX0XGO3oqIC99p8pRjJnjsAR1RbAI3JABUOwQboR0QBy4C65cEAdsuGui5+lkIFhZABvIIQgK66YAlcN1wXN31QBxCluFcYlwHHKWuiOjHWkb+Jh0cPp+iiwL7IDuhOnYmr4PUUzw6Jskbs0bgHNd1B1BUaamxOhUVwDiLsQ4JoXPdmkgBp3f9psPysnLvmOvNb48qzBLh0Zx22SZ8Vw2O/ywOP1d/ws7cbBXjtcmbLxNFGDcw07QfIkkqjP10CxZPkzbj+KBYNLnmh2C7oEBN1zLOTmlgknmjhgjMk0jgxrW7uJ2CRYOa2XsP4QMsh4gro/A27KVp5nYv8A2HuqSAvXZ9ws3AMHp6BjQ6rmIfUSDm4/sNgtF45Iw7gSpijsHTBkA9yL/kCgwGkDqvvLbKL7Wqu1NhtGDu90zh5AWH6lcM0/Fs74IXNIy11jclFazTUBDNobKc4X4eq8dmtCO7p2m0k7h4W+Q6nyXlpOTpHsSkoq2McPo5qudkNPG6WV3ysYNf8AwtCwPgyCnDJsWyzybiEHwD1/F+isGFYRRYFS9zRs8R+eV2r3nzP7KP4t4iouHMFqMSxKXJDCNh8z3HZrRzJWvHgUeZcswZdS58R4RCdpnG1LwXgJka2N9bKDHR0w0BPUjk1vP2HNeSsSr6nEq+orK+Z89VO8ySSPOrnFSPGHEdbxTjk+J4g7xv8ADHED4YmDZg/rU3KhCtsY0YpSs4oLdVxOqE6lUQANUJIbqVxIaLlIklxud0AHvnN7WXLmjRCmAC6y665IDuaOAuGoRZDZt0AFbq4nkNkok49G2RkwDFcAgQg2QBx3XbI26CyABa6xF0Z46JPZKN8TfMIA1Tsdqi/CsUpCf8OVsoHk4WP/AOquhZqdlm/YtJm4hraflLSk+7XD+ZWuGlF9lrxPxMeVVI848W1hruIa+e9w6UhvoNB+ih2i5ujSuzvc48zdcNAsbduzWlSo42AQNbcrkvTxOkkYyNpdI4hrWtFySdgEDLJwHwxNxTjsNFHmbTs8dRIPus/mdgvVmHYfFh9BDT08bY4YmhjGN2AGgVb7J+D28N4FG2ZgNbNaSod/q/D6Db6q9vZmcABoESdKhxVux3gseRmoWddoNUKniuoYSMlNG2Ia87XP5labRtyZRbRV3C+EI/4rU4pjJbPNLM6VkA1Yy50zfiNreXqsmaLlHajVgnGEnJlT4X4Mkxh7KuvzwYfu0bPl9Og8/p1WmMZBQ0rKekjZFEwZWsYLAI9TUBjbNTB0uW736lOEFjVIWTJLK7YXEKqGipJqqsmZFDEwve95s1jRqSSvJXapxxLxljf2JfHhNMS2liOhd1kcOp/IadVZO23tFOP1LsEwea+FQP8At5WnSokHIf6AfqdeQWSErvGPtnCT9IEot7ribrlZB264uDW3K4uDRrukxdxuUAdq43KGyGy4DmgAQEDt1yAjRMAULR1XBGGiABtYJGTxPAGw1SpPRJM1JPUpAHGy5cuITAGy46BcEZABWutojHqi7FGBQBx1F0eMjmi2RSbDRAF87GX91x/Tx8pYZWf7b/st/NLrsvOXZTLl7QMFfteVzD7scF6UzLTh+JkzryPG9tkJ0K4dUKyGwFg1WwdhHBzsRxH+OVkZNPTuy04I+Z/N3oNvX0Wc8I4DUcRY7SYbSgh8zvE+3yMGrnH0C9kcOYPTYJhVNRUcQjhhYGNb5D91XSsXY+jjEUYASsEeZwJCADM+5TuFo35Bc3ydOhxGAxuYpvLMXuIGyLLIXDdN3OytJUsaE5neI3WH9uXaIaWObhzBJv7y8Za2dh/w2n/pg/iPM8hpudLB2wdoTeGKM0OHPDsaqGXbz7hh++fPoPflr5jke6SRz5HOe9xLnOcbkk7klEI3ywnKuAvLRAEJPRAd11OQC4uAF+fJc45fU8kQA7ndAHDxG5RwAgGiMLIAALjtohQBAAFcNkJ1QhuyAOC4oeSKdEwCyGzSUDBYAIJT8o87ozUgD20QXQgDZcRqgAAbI1+iLZCCmAK4FDZAUAHauaL3CTabFKA+JAFg7NpO546wUkf+6YPrp+69QkC68u8AC/HWB9Pi4z+d16eM4utGHoy5+0eO+SMwXROaeYdTSVlXBTwi8sz2xtHmTYfqsqNZ6F/s5cMtpsInxyoZ9tVuMcRI2jaeXq79AtrI5KI4VoIcJwSjoIABHTxNjb7CylXORLsIggagJaUiNojG+5SNPq8vd8rRdIh5c9znHUlSykKPdZUvtK4ypeEcCfVSZZKyS7KWnJ/xH+f+kbk+3NTvEGL0uDYXVV9dKI6WnYXvd5dB1J2A6leQuN+J6vivHpsRq7sb8kEN7iKO+jfXmTzKlLcxt0ROK19VimI1FdiEzpquoeXySO5n9hyA5BNChKC66nM70RXG3r0QkoLdd0AAAb3O6NZcByRigALLl17LnFMDig5ISuISAAIzd0GwXckwBcUVdzsik2KQCTjeW3RK32skAbvJ6lLNQAoFyHkuCYBSu5oSdUG6QBrrrIPNCEwOQgIL6owOiALBwC8M4zwh5+7Nf6Arff4iOq89cInLxHQObuHk/wC0rUvjZFrwLxMmf5GGgq79kVGKzj3CmvF2xPdMR/8AVpI/Oyo4Wndg0YPGb5D9ymcR7kBZI9muXR6dppbMAulJJrN3TGN/hFkV8utkpDRLd5lpGi+rzc+iauksDqkqiXI4i/ytA/JUTtP4u/8ATXDU0tO8CvqLw0w6OI1f/wBo19bLmykZl27cYuxXFv4FRS3oaJ95y06STdPMN29b9FlBK6RznOLnOLnE3JJuT5lANlaVIluwDuuOguikoAc2p9kxBhrqUKAI2+yAAsUIQkaIL2QBy6y62q5AHWQoBoVyYwUBC5cgQW1iiSaAlK9UhP8AIR1SATYLpZiTjGiU2IQAs21l26I1HAQBxGl0CMUX1QAO22qBddd6pgcdkMfQovNCDYpAWHgWB0/FFNG3ez3D2aVqX8Ol6LN+zOQN42wy+znPYfdjlvfcx9AteB+Jkz/I8pt3WjdidSKfjJrSbd7A9v0sf2WcN3Vg4MrzhvE2HVN7BsoDvQ6H9Vli6ZrfJ64iku0FEMn95jB5kBMsMrG1NO1zSDcI73kVcfW6UmND3EJftpSOq8xdreNvxbjCoia+9PRf3dgvpfd5+unst4xvGBRU2JVEh0pmySH/ALQSF5UllfPK+WUkySOL3E8yTcqF2N9BSV3JAgvZqskB29kOyAIyABGyH0RQjNQB19V3NdYLkACPNAR0QrhdAwEJ8kBXXTEBdCNFw+ZdzQADtk3mNyAl+abzf4oSANHoEcaorQjiyADDTVHGoRN0ZuiABPmilHGu6KdkDAQjVFKEahMAbc0CECyDmkBZ+zrTjXCb/wCb/wDyV6ABFtwvPXAhI4vwkjfvgPyK3fM7qVqwdGTP8jy+DayWjcWuDmmxGoSASgOiyGs9F9m2NfFUEWZ17tBVzqZf7xG5qwnsvxTuS2EutkeRbyOq2ZkucRuuqfPIkUrtTrjT8P4tY2M5EP8A+RH7XWELVO2artDFTj/qTh59GtP81lXJREqTO3RSbutyC5xsCURiZIoN0IRb2KMEwDaIQioQgAb6oQRdAuQAYmyC/RAVwTAG9zquvzQbrt9EgO21Q3XbFASUAA7RNpv8QJwUhKPtQgA8eqPZJN0KUaQgA6EIo1RgUADfVcV1rrkDOIQbIUFtUADquK5qAoEWDgEX4xwgf/Ib+hW/ZFg3ZvH3nG2FNHKUu+jSV6A7srVg6Mufs8ot3SjUmClN1kNZL8M1ZpMSbY2D/wBRqFvuE13fUcTgeS82seY3te3dpBC2Dg3Fe/oWC+oFk0Irfa/P3mN0kY+7EXH3db9lQxqdVZ+0mfvuKpBfSOJjfyv+6q91KGwku9kDQguS4lDsmIMAuXBDqmAPJGadkVcNCgAzihugK4JgC4nkuaUBQApAGBXDdAuv1QAc6hFshCGyYBDdIyH7RqXeLNJTQnxhJgLkXXZULNQjEFABRujtREfldABuWq4aIL3XFAAdV2t13NdsgLBGi4oEY/KgC5dkUfecd0XkyV3+wrfjGbrAux9+Xj2gHVko/wBhXoQkXWrD8TJn+R//2Q==';
-var _BIO_MARIA = 'Maria Auxiliadora Bezerra nasceu em Campo Grande, MS, com raízes na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, o Cacique Enir Terena, herdou da mãe a missão de proteger, valorizar e projetar a cultura indígena. Com a ancestralização de sua mãe em 2016, assumiu a presidência do Instituto Cacique Enir Terena.';
-var _mariaFotoData = null;
-var _dirFotoData = null;
-
-function dbLer() {
-  try {
-    var s = localStorage.getItem(DB_KEY);
-    if (s) { _memDb = JSON.parse(s); return _memDb; }
-  } catch(e) {}
-  return _memDb || {};
-}
-
-function dbSalvar(dados) {
-  _memDb = dados;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
-}
-
-function salvarNoGitHub() {
-  var dados = dbLer();
-  // Remover fotos base64 grandes antes de enviar ao GitHub (economizar espaço)
-  var dadosGH = JSON.parse(JSON.stringify(dados));
-  if (dadosGH.fotos) {
-    Object.keys(dadosGH.fotos).forEach(function(k) {
-      if (dadosGH.fotos[k] && dadosGH.fotos[k].src && dadosGH.fotos[k].src.startsWith('data:')) {
-        dadosGH.fotos[k].src = ''; // não enviar base64 ao GitHub
-      }
-    });
-  }
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dadosGH))));
-  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    var sha = res.sha || _ghSha;
-    return fetch(GH_API, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Atualizar dados ICET', content: conteudo, sha: sha })
-    });
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    if (res.content) { _ghSha = res.content.sha; }
-  })
-  .catch(function() {});
-}
-
-function carregarDoGitHub() {
-  // Carregar localStorage PRIMEIRO (imediato)
-  renderTodosDoStorage();
-  // GitHub apenas para sincronizar metadados (não sobrescreve fotos locais)
-  fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    if (res.sha) _ghSha = res.sha;
-    // NÃO sobrescreve localStorage — localStorage tem prioridade total
-  })
-  .catch(function() {});
-}
-
-function renderTodosDoStorage() {
-  var dados = dbLer();
-  // Slots de foto
-  if (dados.fotos) {
-    Object.keys(dados.fotos).forEach(function(slotKey) {
-      var item = dados.fotos[slotKey];
-      if (!item || !item.src) return;
-      var el = document.querySelector('[data-slot-key="' + slotKey + '"]');
-      if (!el) return;
-      el.style.backgroundImage = 'url(' + item.src + ')';
-      el.style.backgroundSize = 'cover';
-      el.style.backgroundPosition = 'center top';
-      el.querySelectorAll('svg,span,.fs-label').forEach(function(x) { x.style.display = 'none'; });
-      if (item.leg) {
-        var lb = el.querySelector('.foto-legenda-bar');
-        if (!lb) { lb = document.createElement('div'); lb.className = 'foto-legenda-bar'; el.appendChild(lb); }
-        lb.textContent = item.leg;
-      }
-    });
-  }
-  // Galeria
-  if (dados.galeria) {
-    Object.keys(dados.galeria).sort(function(a,b) {
-      return (dados.galeria[b].ts||0) - (dados.galeria[a].ts||0);
-    }).forEach(function(key) {
-      var item = dados.galeria[key];
-      if (item && item.src && typeof renderFotoGaleria === 'function') renderFotoGaleria(item, key);
-    });
-  }
-  // Diretoria
-  setTimeout(initDiretoria, 200);
-}
-
-// Foto preview (base64 local — igual CMDDI)
-function prevDirFoto(input, previewId, imgId, tipo) {
-  if (!input.files || !input.files[0]) return;
-  var r = new FileReader();
-  r.onload = function(e) {
-    var b64 = e.target.result;
-    if (tipo === 'maria') _mariaFotoData = b64;
-    else _dirFotoData = b64;
-    var prev = document.getElementById(previewId);
-    var img = document.getElementById(imgId);
-    if (prev) prev.style.display = 'block';
-    if (img) img.src = b64;
-  };
-  r.readAsDataURL(input.files[0]);
-}
-
-// Diretoria
-function initDiretoria() {
-  var db = dbLer();
-  var maria = (db.diretoria && db.diretoria['dir_001']) || {};
-  var cargo = maria.cargo || 'Presidente';
-  var bio = maria.bio || _BIO_MARIA;
-  var foto = maria.foto || _FOTO_MARIA;
-  var campoC = document.getElementById('maria-cargo');
-  var campoB = document.getElementById('maria-bio');
-  if (campoC && !campoC.value) campoC.value = cargo;
-  if (campoB && !campoB.value) campoB.value = bio;
-  renderCardMaria(foto, cargo, bio);
-  if (db.diretoria) {
-    Object.keys(db.diretoria).sort().forEach(function(key) {
-      if (key === 'dir_001') return;
-      var item = db.diretoria[key];
-      if (item && !document.querySelector('[data-key="' + key + '"]')) renderMembroDiretoria(item, key);
-    });
-  }
-}
-
-function renderCardMaria(foto, cargo, bio) {
-  var grid = document.getElementById('grid-diretoria');
-  if (!grid) return;
-  var old = grid.querySelector('[data-key="dir_001"]');
-  if (old) old.remove();
-  var card = criarCardMembro({nome:'Maria Auxiliadora Bezerra',cargo:cargo,bio:bio,foto:foto}, 'dir_001');
-  grid.insertBefore(card, grid.firstChild);
-  setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesFotos();},100);
-}
-
-function salvarMaria() {
-  var cargo = document.getElementById('maria-cargo').value.trim() || 'Presidente';
-  var bio = document.getElementById('maria-bio').value.trim() || _BIO_MARIA;
-  var db = dbLer();
-  var fotoAtual = (db.diretoria && db.diretoria['dir_001'] && db.diretoria['dir_001'].foto) || _FOTO_MARIA;
-  var foto = _mariaFotoData || fotoAtual;
-  if (!db.diretoria) db.diretoria = {};
-  db.diretoria['dir_001'] = {cargo:cargo, bio:bio, foto:foto, ts:Date.now()};
-  dbSalvar(db); salvarNoGitHub();
-  renderCardMaria(foto, cargo, bio);
-  _mariaFotoData = null;
-  var p=document.getElementById('maria-preview');if(p)p.style.display='none';
-  notif('✅ Maria Auxiliadora atualizada!');
-}
-
-function criarCardMembro(item, key) {
-  var card = document.createElement('div');
-  card.className='card-membro'; card.dataset.key=key;
-  card.style.cssText='background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
-  if (item.foto) {
-    var wrap=document.createElement('div');
-    wrap.className='dir-foto-wrap'; wrap.dataset.key=key;
-    wrap.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:1rem;cursor:pointer;position:relative';
-    wrap.onclick=function(){ajustarPosDir(this);};
-    wrap.title='Clique para reposicionar';
-    var img=document.createElement('img');
-    img.src=item.foto; img.alt=item.nome||'';
-    img.style.cssText='width:100%;height:100%;object-fit:cover;object-position:'+(item.pos||'center top')+';display:block;transition:object-position .3s';
-    var ov=document.createElement('div'); ov.className='foto-overlay';
-    wrap.appendChild(img); wrap.appendChild(ov); card.appendChild(wrap);
-  } else {
-    var ph=document.createElement('div');
-    ph.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem';
-    ph.textContent='👤'; card.appendChild(ph);
-  }
-  var nd=document.createElement('div');
-  nd.style.cssText='font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem';
-  nd.textContent=item.nome||''; card.appendChild(nd);
-  var cd=document.createElement('div');
-  cd.style.cssText='font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem';
-  cd.textContent=item.cargo||''; card.appendChild(cd);
-  if(item.bio){
-    var bd=document.createElement('div');
-    bd.style.cssText='font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem';
-    bd.textContent=item.bio; card.appendChild(bd);
-  }
-  return card;
-}
-
-function ajustarPosDir(el) {
-  var img = el.querySelector ? el.querySelector('img') : null;
-  if (!img) return;
-  var ops=['center top','center center','center bottom','left top','left center','right top','right center'];
-  var idx=ops.indexOf(img.style.objectPosition||'center top');
-  img.style.objectPosition=ops[(idx+1)%ops.length];
-  notif('↕ Posição: '+img.style.objectPosition);
-}
-
-function pubDiretoria() {
-  var nome=document.getElementById('dir-nome').value.trim();
-  var cargo=document.getElementById('dir-cargo').value.trim();
-  var bio=document.getElementById('dir-bio').value.trim();
-  var ok=true;
-  ['dir-nome','dir-cargo'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el||!el.value.trim()){if(el)el.style.borderColor='#c0392b';ok=false;}
-    else{if(el)el.style.borderColor='';}
-  });
-  if(!ok){notif('⚠️ Preencha os campos em vermelho.');return;}
-  var foto=_dirFotoData||'';
-  var key='dir_'+Date.now();
-  var item={nome:nome,cargo:cargo,bio:bio,foto:foto,ts:Date.now()};
-  var db=dbLer();
-  if(!db.diretoria)db.diretoria={};
-  db.diretoria[key]=item;
-  dbSalvar(db); salvarNoGitHub();
-  var card=criarCardMembro(item,key);
-  var admDiv=document.createElement('div');
-  admDiv.className='adm';admDiv.style.cssText='margin-top:.7rem;display:flex;gap:.4rem;justify-content:center';
-  var excBtn=document.createElement('button');
-  excBtn.className='btn-p';excBtn.style.cssText='background:rgba(180,30,30,.3);font-size:.65rem;padding:.3rem .7rem';
-  excBtn.textContent='✕ Excluir';
-  excBtn.onclick=(function(k,c){return function(){
-    if(!confirm('Excluir?'))return;
-    c.remove();
-    var db2=dbLer();if(db2.diretoria&&db2.diretoria[k]){delete db2.diretoria[k];dbSalvar(db2);salvarNoGitHub();}
-    notif('🗑 Membro excluído.');
-  };})(key,card);
-  admDiv.appendChild(excBtn);card.appendChild(admDiv);
-  document.getElementById('grid-diretoria').appendChild(card);
-  ['dir-nome','dir-cargo','dir-bio'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  _dirFotoData=null;
-  var dp=document.getElementById('dir-preview');if(dp)dp.style.display='none';
-  document.getElementById('dir-file').value='';
-  setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesFotos();},100);
-  notif('✅ Membro publicado!');
-}
-
-// carregarFoto via base64 local (não Cloudinary)
-function carregarFoto(input) {
-  if(!input||!input.files||!input.files[0]) return;
-  var el=input.parentElement;
-  var slotKey=el.dataset.slotKey||('slot_'+Math.random().toString(36).slice(2));
-  el.dataset.slotKey=slotKey;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var b64=e.target.result;
-    var imgEl=new Image();
-    imgEl.onload=function(){
-      var maxW=800,maxH=800,w=imgEl.width,h=imgEl.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
-      var canvas=document.createElement('canvas');
-      canvas.width=w;canvas.height=h;
-      canvas.getContext('2d').drawImage(imgEl,0,0,w,h);
-      aplicarESalvar(el,slotKey,canvas.toDataURL('image/jpeg',.75));
-    };
-    imgEl.onerror=function(){aplicarESalvar(el,slotKey,b64);};
-    imgEl.src=b64;
-  };
-  reader.readAsDataURL(input.files[0]);
-  input.value='';
-}
-
-function aplicarESalvar(el,slotKey,src){
-  el.style.backgroundImage='url('+src+')';
-  el.style.backgroundSize='cover';
-  el.style.backgroundPosition='center top';
-  el.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
-  var lb=el.querySelector('.foto-legenda-bar');
-  var legText=lb?lb.textContent:(el.dataset.defaultLeg||'');
-  if(!lb&&legText){lb=document.createElement('div');lb.className='foto-legenda-bar';lb.textContent=legText;el.appendChild(lb);}
-  if(typeof atualizarOverlayEl==='function')atualizarOverlayEl(el);
-  var db=dbLer();
-  if(!db.fotos)db.fotos={};
-  db.fotos[slotKey]={src:src,ts:Date.now(),leg:legText};
-  dbSalvar(db);
-  notif('✅ Foto salva!');
-}
-
-// ÚNICO DOMContentLoaded
-document.addEventListener('DOMContentLoaded',function(){
-  renderTodosDoStorage();
-  carregarDoGitHub();
-});
+}, {passive:true});
 
 </script>
 
