@@ -1477,7 +1477,7 @@ html { scroll-behavior: smooth; }
       </div>
       <div class="adm-form-group" style="margin-top:.5rem">
         <label class="adm-label">📤 Upload para Cloudinary</label>
-        <input class="adm-input" id="gal-file" type="file" accept="image/*" style="padding:.4rem" onchange="uploadCloudinaryFoto(this)">
+        <input class="adm-input" id="gal-file" type="file" accept="image/*" style="padding:.4rem" onchange="uploadCloudinaryFoto(this)" onchange="uploadCloudinaryGaleria(this)">
         <div id="gal-upload-status" style="font-size:.8rem;margin-top:.4rem;padding:.4rem .6rem;border-radius:4px;display:none"></div>
       </div>
       <div id="gal-preview-wrap" style="display:none;margin:.5rem 0"><img id="gal-preview-img" style="max-height:120px;border-radius:4px"></div>
@@ -1770,7 +1770,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">Presidente</div>
     <div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, o Cacique Enir Terena, herdou da mãe a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo. Com a ancestralização de sua mãe em 2016, assumiu a presidência do Instituto, conduzindo com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano.</div>
     <div class="adm-panel" style="margin-top:.7rem;display:flex;gap:.4rem;justify-content:center">
-      <button onclick="escolherFotoMaria()" style="background:rgba(200,135,58,.2);border:1px solid rgba(200,135,58,.3);color:#F2C45A;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .8rem;border-radius:3px">📷 Adicionar foto</button>
+      <button onclick="escolherFotoMariaCloud()" style="background:rgba(200,135,58,.2);border:1px solid rgba(200,135,58,.3);color:#F2C45A;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .8rem;border-radius:3px">📷 Adicionar foto</button>
     </div>
   </div>
 </div>
@@ -2485,33 +2485,25 @@ function carregarFoto(input){
   var s = input.parentElement;
   var slotKey = s.dataset.slotKey || ('slot_' + Math.random().toString(36).slice(2));
   s.dataset.slotKey = slotKey;
-  var file = input.files[0];
-  var reader = new FileReader();
-  reader.onload = function(e){
-    var original = e.target.result;
-    // Tentar comprimir via canvas
-    var img = new Image();
-    img.onload = function(){
-      try {
-        var maxW = 800, maxH = 800;
-        var w = img.width, h = img.height;
-        if(w > maxW){ h = Math.round(h*maxW/w); w = maxW; }
-        if(h > maxH){ w = Math.round(w*maxH/h); h = maxH; }
-        var canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var b64 = canvas.toDataURL('image/jpeg', 0.75);
-        aplicarFoto(s, slotKey, b64);
-      } catch(err) {
-        // Fallback: usar original sem compressão
-        aplicarFoto(s, slotKey, original);
-      }
-    };
-    img.onerror = function(){ aplicarFoto(s, slotKey, original); };
-    img.src = original;
-  };
-  reader.onerror = function(){ notif('⚠️ Erro ao ler o arquivo.'); };
-  reader.readAsDataURL(file);
+  uploadCloudinarySlot(input, slotKey, function(url) {
+    // Aplicar visualmente
+    s.style.backgroundImage = 'url('+url+')';
+    s.style.backgroundSize = 'cover';
+    s.style.backgroundPosition = 'center top';
+    s.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
+    var lb = s.querySelector('.foto-legenda-bar');
+    var legText = lb ? lb.textContent : (s.dataset.defaultLeg || '');
+    if (!lb && legText) {
+      lb = document.createElement('div'); lb.className='foto-legenda-bar'; lb.textContent=legText; s.appendChild(lb);
+    }
+    atualizarOverlayEl(s);
+    // Salvar URL (não base64) no dados.json
+    var dados = dbLer();
+    if (!dados.fotos) dados.fotos = {};
+    dados.fotos[slotKey] = { src: url, ts: Date.now(), leg: legText };
+    dbSalvar(dados);
+    salvarNoGitHub();
+  });
   input.value = '';
 }
 
@@ -2830,15 +2822,80 @@ function ativarDragDrop(grid) {
 
 // === UPLOAD GENÉRICO ===
 function uploadFotoGenerica(input, statusId, urlId) {
-  if (!input||!input.files||!input.files[0]) return;
-  var st=document.getElementById(statusId), ui=document.getElementById(urlId);
-  if(st){st.style.display='block';st.style.color='#c8873a';st.textContent='⏳ Carregando...';}
-  var r=new FileReader();
-  r.onload=function(e){
-    if(ui) ui.value=e.target.result;
-    if(st){st.style.color='#4caf50';st.textContent='✅ Foto pronta! Clique em Publicar.';}
-  };
-  r.readAsDataURL(input.files[0]);
+  if (!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var st = statusId ? document.getElementById(statusId) : null;
+  var ui = urlId ? document.getElementById(urlId) : null;
+  if (st) { st.style.display='block'; st.style.color='#c8873a'; st.textContent='⏳ Enviando...'; }
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUD_PRE);
+  fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.secure_url) {
+      if (ui) ui.value = d.secure_url;
+      if (st) { st.style.color='#4caf50'; st.textContent='✅ Foto enviada! Clique em Publicar.'; }
+      window._lastCloudinaryUrl = d.secure_url;
+    } else {
+      if (st) { st.style.color='#f87171'; st.textContent='❌ Erro: '+(d.error&&d.error.message?d.error.message:'verifique o preset'); }
+    }
+  })
+  .catch(function(err){
+    if (st) { st.style.color='#f87171'; st.textContent='❌ Erro de conexão'; }
+  });
+}
+
+// Upload Cloudinary para galeria — igual ao CMDDI
+function uploadCloudinaryGaleria(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var status = document.getElementById('gal-upload-status');
+  var pw = document.getElementById('gal-preview-wrap');
+  var pi = document.getElementById('gal-preview-img');
+  // Preview imediato
+  var reader = new FileReader();
+  reader.onload = function(e) { if (pw && pi) { pw.style.display='block'; pi.src=e.target.result; } };
+  reader.readAsDataURL(file);
+  window._galCloudinaryUrl = null;
+  if (status) { status.style.display='block'; status.style.color='#c8873a'; status.textContent='⏳ Enviando para Cloudinary...'; }
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUD_PRE);
+  fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.secure_url) {
+      window._galCloudinaryUrl = d.secure_url;
+      if (status) { status.style.color='#4caf50'; status.innerHTML='✅ Foto enviada! Preencha a legenda e clique em <strong>Publicar</strong>.'; }
+    } else {
+      if (status) { status.style.color='#f87171'; status.textContent='❌ Erro: '+(d.error&&d.error.message?d.error.message:JSON.stringify(d)); }
+    }
+  })
+  .catch(function(err){
+    if (status) { status.style.color='#f87171'; status.textContent='❌ Erro de conexão'; }
+  });
+}
+
+// Upload Cloudinary para slots de foto (.fs) e diretoria
+function uploadCloudinarySlot(input, slotKey, onSuccess) {
+  if (!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  notif('⏳ Enviando foto...');
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUD_PRE);
+  fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.secure_url) {
+      notif('✅ Foto salva permanentemente!');
+      if (onSuccess) onSuccess(d.secure_url);
+    } else {
+      notif('❌ Erro Cloudinary: '+(d.error&&d.error.message?d.error.message:'verifique preset'));
+    }
+  })
+  .catch(function(){ notif('❌ Erro de conexão com Cloudinary'); });
 }
 
 // === UPLOAD DOCUMENTO ===
@@ -3877,6 +3934,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   } catch(e) {}
 });
+
+
+function escolherFotoMariaCloud() {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = function() {
+    if (!this.files || !this.files[0]) return;
+    notif('⏳ Enviando foto...');
+    var fd = new FormData();
+    fd.append('file', this.files[0]);
+    fd.append('upload_preset', CLOUD_PRE);
+    fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.secure_url) {
+        var img = document.getElementById('img-maria');
+        var ph = document.getElementById('ph-maria');
+        if (img) { img.src = d.secure_url; img.style.display = 'block'; }
+        if (ph) ph.style.display = 'none';
+        try { localStorage.setItem('icet_foto_maria', d.secure_url); } catch(e) {}
+        notif('📸 Foto da presidente salva!');
+      } else {
+        notif('❌ Erro: '+(d.error&&d.error.message?d.error.message:'verifique preset'));
+      }
+    })
+    .catch(function(){ notif('❌ Erro de conexão'); });
+  };
+  inp.click();
+}
 
 </script>
 
