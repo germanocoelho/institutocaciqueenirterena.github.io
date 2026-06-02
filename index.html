@@ -1165,7 +1165,7 @@ html{scroll-behavior:smooth}
         <div style="margin-bottom:.75rem">
           <label class="fl2">Foto</label>
           <div style="display:flex;align-items:center;gap:.75rem;margin-top:.3rem;flex-wrap:wrap">
-            <input type="file" accept="image/*" id="dir-file" style="display:none" onchange="uploadFotoDiretoria(this)">
+            <input type="file" accept="image/*" id="dir-file" style="display:none" onchange="prevDirFoto(this)">
             <button class="btn-p" onclick="document.getElementById('dir-file').click()" style="font-size:.75rem;padding:.4rem .9rem">📷 Selecionar foto</button>
             <div id="dir-status" style="font-size:.78rem;display:none;padding:.3rem .6rem;border-radius:3px"></div>
           </div>
@@ -2472,6 +2472,152 @@ document.addEventListener('click', function(e) {
 });
 
 
+
+// ════════════════════════════════════════════════
+// STORAGE — igual ao CMDDI
+// ════════════════════════════════════════════════
+var _memDb = {};
+var _ghSha = '0967ef424bce6791893e9a57bb952f80fd536e93';
+var DB_KEY = 'icet_db_v1';
+var _dirFotoData = null; // foto base64 do membro da diretoria
+
+function dbLer() {
+  try {
+    var s = localStorage.getItem(DB_KEY);
+    if (s) { _memDb = JSON.parse(s); return _memDb; }
+  } catch(e) {}
+  return _memDb || {};
+}
+
+function dbSalvar(dados) {
+  _memDb = dados;
+  try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
+}
+
+function salvarNoGitHub() {
+  var dados = dbLer();
+  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    var sha = res.sha || _ghSha;
+    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
+    return fetch(GH_API, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res.content) { _ghSha = res.content.sha; notif('💾 Salvo na nuvem!'); }
+    else { notif('⚠️ Erro: ' + (res.message||'verifique conexão')); }
+  })
+  .catch(function(){ notif('⚠️ Erro de conexão ao salvar'); });
+}
+
+function carregarDoGitHub() {
+  fetch(GH_API + '?t=' + Date.now(), {
+    headers: { 'Authorization': 'token ' + GH_TOKEN }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res.content) {
+      _ghSha = res.sha;
+      var decoded = atob(res.content.replace(/\n/g,''));
+      var json = JSON.parse(decodeURIComponent(escape(decoded)));
+      _memDb = json;
+      try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
+      renderTodosDoStorage();
+    } else {
+      var local = dbLer();
+      if (local && Object.keys(local).length) renderTodosDoStorage();
+    }
+  })
+  .catch(function(){
+    // GitHub falhou (CORS etc) — usar localStorage
+    var local = dbLer();
+    if (local && Object.keys(local).length) renderTodosDoStorage();
+  });
+}
+
+function renderTodosDoStorage() {
+  var dados = dbLer();
+  // Galeria
+  if (dados.galeria) {
+    Object.keys(dados.galeria).sort(function(a,b){
+      return (dados.galeria[b].ts||0)-(dados.galeria[a].ts||0);
+    }).forEach(function(key){
+      var item = dados.galeria[key];
+      if (item && item.src) renderFotoGaleria(item, key);
+    });
+  }
+  // Diretoria
+  if (dados.diretoria) {
+    Object.keys(dados.diretoria).sort(function(a,b){
+      return (dados.diretoria[a].ts||0)-(dados.diretoria[b].ts||0);
+    }).forEach(function(key){
+      var item = dados.diretoria[key];
+      if (item && key !== 'dir_001') renderMembroDiretoria(item, key);
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  carregarDoGitHub();
+});
+
+// ── Upload Cloudinary para galeria (igual CMDDI) ──
+function uploadCloudinaryFoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var status = document.getElementById('gal-upload-status');
+  var pw = document.getElementById('gal-preview-wrap');
+  var pi = document.getElementById('gal-preview-img');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    if (pw && pi) { pw.style.display='block'; pi.src=e.target.result; }
+  };
+  reader.readAsDataURL(file);
+  window._galCloudinaryUrl = null;
+  if (status) {
+    status.style.display='block';
+    status.style.color='var(--ou)';
+    status.innerHTML='⏳ Enviando para Cloudinary...';
+  }
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUD_PRESET);
+  fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload', {method:'POST', body:fd})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.secure_url) {
+      window._galCloudinaryUrl = d.secure_url;
+      if(status){status.style.color='#7bc67e';status.innerHTML='✅ Foto enviada! Preencha a legenda e clique em <strong>Adicionar à Galeria</strong>';}
+    } else {
+      var msg=(d.error&&d.error.message)?d.error.message:JSON.stringify(d);
+      if(status){status.style.color='#f87171';status.innerHTML='❌ Erro: '+msg;}
+    }
+  })
+  .catch(function(err){
+    if(status){status.style.color='#f87171';status.innerHTML='❌ Erro de conexão: '+(err.message||'');}
+  });
+}
+
+// ── Preview foto de membro da diretoria (base64, igual CMDDI) ──
+function prevDirFoto(input) {
+  if (!input.files[0]) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    _dirFotoData = e.target.result;
+    var prev = document.getElementById('dir-preview');
+    var prevImg = document.getElementById('dir-preview-img');
+    if (prev) prev.style.display = 'block';
+    if (prevImg) prevImg.src = _dirFotoData;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
 // ════════════════════════════════════════════════
 // SISTEMA COMPLETO DE FOTOS E ADM — ICET
 // ════════════════════════════════════════════════
@@ -2715,7 +2861,6 @@ function pubDiretoria(){
   var nome=document.getElementById('dir-nome').value.trim();
   var cargo=document.getElementById('dir-cargo').value.trim();
   var bio=document.getElementById('dir-bio').value.trim();
-  var foto=document.getElementById('dir-foto-url').value;
   // Validação com vermelho
   var ok=true;
   ['dir-nome','dir-cargo'].forEach(function(id){
@@ -2725,48 +2870,78 @@ function pubDiretoria(){
   });
   if(!ok){notif('⚠️ Preencha os campos em vermelho.');return;}
   var key='dir_'+Date.now();
-  var grid=document.getElementById('grid-diretoria');
+  // Usar foto base64 (_dirFotoData) como CMDDI
+  var fotoSrc = _dirFotoData || '';
+  var item = {nome:nome, cargo:cargo, bio:bio, foto:fotoSrc, ts:Date.now()};
+  // Salvar no localStorage
+  var db = dbLer();
+  if(!db.diretoria) db.diretoria = {};
+  db.diretoria[key] = item;
+  dbSalvar(db);
+  salvarNoGitHub();
+  // Renderizar
+  renderMembroDiretoria(item, key);
+  // Limpar
+  ['dir-nome','dir-cargo','dir-bio'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  _dirFotoData = null;
+  var prev=document.getElementById('dir-preview');if(prev)prev.style.display='none';
+  var prevImg=document.getElementById('dir-preview-img');if(prevImg)prevImg.src='';
+  document.getElementById('dir-file').value='';
+  notif('✅ Membro publicado e salvo!');
+}
+
+function renderMembroDiretoria(item, key) {
+  var grid = document.getElementById('grid-diretoria');
   if(!grid) return;
-  var card=document.createElement('div');
-  card.className='card-membro';card.dataset.key=key;
+  var card = document.createElement('div');
+  card.className='card-membro'; card.dataset.key=key;
   card.style.cssText='background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
-  if(foto){
+  if(item.foto){
     var wrap=document.createElement('div');
-    wrap.className='dir-foto-wrap';wrap.dataset.key=key;
+    wrap.className='dir-foto-wrap'; wrap.dataset.key=key;
     wrap.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:1rem;cursor:pointer;position:relative';
     wrap.onclick=function(){ajustarPosDir(this);};
     wrap.title='Clique para reposicionar';
     var img=document.createElement('img');
-    img.src=foto;img.alt=nome;
-    img.style.cssText='width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:object-position .3s';
-    var ov=document.createElement('div');ov.className='foto-overlay';
-    wrap.appendChild(img);wrap.appendChild(ov);
-    card.appendChild(wrap);
+    img.src=item.foto; img.alt=item.nome;
+    img.style.cssText='width:100%;height:100%;object-fit:cover;object-position:'+(item.pos||'center top')+';display:block;transition:object-position .3s';
+    var ov=document.createElement('div'); ov.className='foto-overlay';
+    wrap.appendChild(img); wrap.appendChild(ov); card.appendChild(wrap);
     setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesFotos();},100);
   } else {
     var ph=document.createElement('div');
     ph.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem';
-    ph.textContent='👤';card.appendChild(ph);
+    ph.textContent='👤'; card.appendChild(ph);
   }
   var nomDiv=document.createElement('div');
   nomDiv.style.cssText='font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem';
-  nomDiv.textContent=nome;card.appendChild(nomDiv);
+  nomDiv.textContent=item.nome; card.appendChild(nomDiv);
   var carDiv=document.createElement('div');
   carDiv.style.cssText='font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem';
-  carDiv.textContent=cargo;card.appendChild(carDiv);
-  if(bio){
+  carDiv.textContent=item.cargo; card.appendChild(carDiv);
+  if(item.bio){
     var bioDiv=document.createElement('div');
     bioDiv.style.cssText='font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem';
-    bioDiv.textContent=bio;card.appendChild(bioDiv);
+    bioDiv.textContent=item.bio; card.appendChild(bioDiv);
   }
+  // Botão excluir (ADM)
+  var admDiv=document.createElement('div');
+  admDiv.className='adm'; admDiv.style.cssText='margin-top:.7rem;display:flex;gap:.4rem;justify-content:center';
+  var btnExc=document.createElement('button');
+  btnExc.className='btn-p'; btnExc.style.cssText='background:rgba(180,30,30,.3);font-size:.65rem;padding:.3rem .7rem';
+  btnExc.textContent='✕ Excluir'; btnExc.onclick=function(){excluirMembroDiretoria(key,card);};
+  admDiv.appendChild(btnExc); card.appendChild(admDiv);
   grid.appendChild(card);
-  // Limpar
-  ['dir-nome','dir-cargo','dir-bio','dir-foto-url'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.value='';
-  });
-  var st=document.getElementById('dir-status');if(st)st.style.display='none';
-  var prev=document.getElementById('dir-preview');if(prev)prev.style.display='none';
-  notif('✅ Membro publicado!');
+}
+
+function excluirMembroDiretoria(key, card) {
+  if(!confirm('Excluir este membro?')) return;
+  if(card) card.remove();
+  var db=dbLer();
+  if(db.diretoria&&db.diretoria[key]){delete db.diretoria[key];dbSalvar(db);salvarNoGitHub();}
+  notif('🗑 Membro excluído.');
 }
 
 // ── addProd com validação vermelha ──
@@ -2835,6 +3010,43 @@ document.addEventListener('DOMContentLoaded',function(){
       el.addEventListener('change',function(){this.style.borderColor='';});
     }
   });
+});
+
+
+// ── Editar foto da Maria (base64 como CMDDI) ──
+function editarFotoMaria() {
+  var inp = document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange = function(){
+    if(!this.files||!this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function(e){
+      var b64 = e.target.result;
+      var img = document.getElementById('img-maria');
+      if(img){ img.src=b64; img.style.display='block'; }
+      // Salvar no localStorage
+      var db = dbLer();
+      if(!db.diretoria) db.diretoria={};
+      if(!db.diretoria['dir_001']) db.diretoria['dir_001']={nome:'Maria Auxiliadora Bezerra',cargo:'Presidente'};
+      db.diretoria['dir_001'].foto = b64;
+      dbSalvar(db);
+      salvarNoGitHub();
+      notif('📸 Foto da presidente atualizada!');
+    };
+    r.readAsDataURL(this.files[0]);
+  };
+  inp.click();
+}
+
+// ── Carregar foto da Maria do localStorage ──
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    var db = dbLer();
+    if(db.diretoria && db.diretoria['dir_001'] && db.diretoria['dir_001'].foto){
+      var img = document.getElementById('img-maria');
+      if(img) img.src = db.diretoria['dir_001'].foto;
+    }
+  } catch(e){}
 });
 
 </script>
