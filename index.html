@@ -620,6 +620,27 @@ body.adm-unlocked .nc-exc-btn{display:block!important}
 .sec.lt .bp { color: #F9F5ED !important; } /* bp tem fundo escuro próprio */
 .sec.lt .bo { color: #F9F5ED !important; }
 
+
+/* Vídeos e Publicações — fundo escuro, texto sempre claro */
+.sec.dk .yt-card-titulo,
+.sec.dk2 .yt-card-titulo { color: rgba(249,245,237,.92) !important; }
+.sec.dk .yt-card-data,
+.sec.dk2 .yt-card-data { color: rgba(249,245,237,.45) !important; }
+.sec.dk .card-obra-titulo,
+.sec.dk2 .card-obra-titulo { color: rgba(249,245,237,.92) !important; }
+.sec.dk .card-obra-autores,
+.sec.dk2 .card-obra-autores { color: rgba(200,135,58,.85) !important; }
+.sec.dk .card-obra-resumo,
+.sec.dk2 .card-obra-resumo { color: rgba(249,245,237,.65) !important; }
+.sec.dk .card-obra-ano,
+.sec.dk2 .card-obra-ano { color: rgba(200,135,58,.7) !important; }
+.sec.dk h2, .sec.dk2 h2,
+.sec.dk h3, .sec.dk2 h3 { color: rgba(249,245,237,.95) !important; }
+.sec.dk .sec-lead,
+.sec.dk2 .sec-lead { color: rgba(249,245,237,.7) !important; }
+.sec.dk .eyb,
+.sec.dk2 .eyb { color: var(--ou) !important; }
+
 </style>
 
 
@@ -1461,6 +1482,39 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- ════════════════════════════════════════════════════════
      ASSOCIADOS/AS
 ════════════════════════════════════════════════════════ -->
+
+<!-- ════════════════════════════════════════════════════════
+     DIRETORIA
+════════════════════════════════════════════════════════ -->
+<section id="diretoria" class="sec dk">
+  <div class="sec-w">
+    <div class="eyb">Gestão e liderança</div>
+    <h2 class="st td">Diretoria do Instituto</h2>
+    <p class="sec-lead" style="color:rgba(249,245,237,.7)">Conheça os membros que conduzem as ações do Instituto Cacique Enir Terena.</p>
+
+    <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem;margin-top:1.5rem"></div>
+
+    <div class="adm" style="margin-top:2rem">
+      <div class="admcb"><div class="admti">⚙ Adicionar Membro da Diretoria</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="fg"><label class="fl2">Nome *</label><input type="text" class="fi" id="dir-nome" placeholder="Nome completo"></div>
+        <div class="fg"><label class="fl2">Cargo *</label><input type="text" class="fi" id="dir-cargo" placeholder="Ex: Presidente"></div>
+      </div>
+      <div class="fg" style="margin-top:.5rem"><label class="fl2">Biografia (opcional)</label><textarea class="ft2" id="dir-bio" rows="2" placeholder="Breve descrição"></textarea></div>
+      <div class="fg" style="margin-top:.5rem">
+        <label class="fl2">Foto</label>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-top:.3rem">
+          <input type="file" accept="image/*" id="dir-file" style="display:none" onchange="uploadFotoGenerica(this,'dir-foto-status','dir-foto-url')">
+          <button class="btn-p" onclick="document.getElementById('dir-file').click()" style="font-size:.75rem;padding:.4rem .9rem">📷 Selecionar foto</button>
+          <div id="dir-foto-status" style="font-size:.8rem;display:none"></div>
+        </div>
+        <input type="hidden" id="dir-foto-url">
+      </div>
+      <button class="btn-p" onclick="pubDiretoria()" style="margin-top:.75rem">✅ Publicar</button>
+    </div>
+  </div>
+</section>
+
 <section id="associados" class="sec lt">
   <div class="sec-w">
     <div class="eyb">Comunidade</div>
@@ -2151,44 +2205,58 @@ function carregarFoto(input){
   var slotKey = s.dataset.slotKey || ('slot_' + Math.random().toString(36).slice(2));
   s.dataset.slotKey = slotKey;
   var file = input.files[0];
-  // Redimensionar antes de salvar — máx 800px, qualidade 0.75
-  var img = new Image();
-  var url = URL.createObjectURL(file);
-  img.onload = function(){
-    var maxW = 800, maxH = 800;
-    var w = img.width, h = img.height;
-    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-    if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
-    var canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    var b64 = canvas.toDataURL('image/jpeg', 0.75);
-    URL.revokeObjectURL(url);
-    // Aplicar visualmente
-    s.style.backgroundImage = 'url('+b64+')';
-    s.style.backgroundSize = 'cover';
-    s.style.backgroundPosition = 'center top';
-    s.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
-    // Legenda padrão
-    var lb = s.querySelector('.foto-legenda-bar');
-    var legText = lb ? lb.textContent : (s.dataset.defaultLeg || '');
-    if (!lb && legText) {
-      lb = document.createElement('div');
-      lb.className = 'foto-legenda-bar';
-      lb.textContent = legText;
-      s.appendChild(lb);
-    }
-    atualizarOverlayEl(s);
-    // Salvar no dados.json
-    var dados = dbLer();
-    if (!dados.fotos) dados.fotos = {};
-    dados.fotos[slotKey] = { src: b64, ts: Date.now(), leg: legText };
-    dbSalvar(dados);
-    salvarNoGitHub();
-    input.value = '';
-    notif('📸 Foto salva!');
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var original = e.target.result;
+    // Tentar comprimir via canvas
+    var img = new Image();
+    img.onload = function(){
+      try {
+        var maxW = 800, maxH = 800;
+        var w = img.width, h = img.height;
+        if(w > maxW){ h = Math.round(h*maxW/w); w = maxW; }
+        if(h > maxH){ w = Math.round(w*maxH/h); h = maxH; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var b64 = canvas.toDataURL('image/jpeg', 0.75);
+        aplicarFoto(s, slotKey, b64);
+      } catch(err) {
+        // Fallback: usar original sem compressão
+        aplicarFoto(s, slotKey, original);
+      }
+    };
+    img.onerror = function(){ aplicarFoto(s, slotKey, original); };
+    img.src = original;
   };
-  img.src = url;
+  reader.onerror = function(){ notif('⚠️ Erro ao ler o arquivo.'); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function aplicarFoto(s, slotKey, b64) {
+  // Aplicar visualmente
+  s.style.backgroundImage = 'url('+b64+')';
+  s.style.backgroundSize = 'cover';
+  s.style.backgroundPosition = 'center top';
+  s.querySelectorAll('svg,span,.fs-label').forEach(function(x){x.style.display='none';});
+  // Legenda padrão
+  var lb = s.querySelector('.foto-legenda-bar');
+  var legText = lb ? lb.textContent : (s.dataset.defaultLeg || '');
+  if(!lb && legText){
+    lb = document.createElement('div');
+    lb.className = 'foto-legenda-bar';
+    lb.textContent = legText;
+    s.appendChild(lb);
+  }
+  atualizarOverlayEl(s);
+  // Salvar
+  var dados = dbLer();
+  if(!dados.fotos) dados.fotos = {};
+  dados.fotos[slotKey] = {src:b64, ts:Date.now(), leg:legText};
+  dbSalvar(dados);
+  salvarNoGitHub();
+  notif('📸 Foto salva!');
 }
 
 function v(id){ return document.getElementById(id)?.value?.trim()||''; }
@@ -2275,7 +2343,7 @@ function renderFotoGaleria(item, fbKey) {
   var album = item.album || 'eventos';
   var finalSrc = src.indexOf('/upload/') > -1 ? src.replace('/upload/','/upload/w_800,q_auto,f_auto/') : src;
   var itemHtml = `<div class="galeria-item lb-item" data-src="${src}" data-leg="${leg}" data-fbkey="${fbKey||''}" style="break-inside:avoid;margin-bottom:.75rem" onclick="abrirLightbox(event,this)">` +
-    `<img src="${finalSrc}" alt="${leg}" style="width:100%;display:block;object-fit:cover" onerror="this.remove()"">` +
+    `<img src="${finalSrc}" alt="${leg}" style="width:100%;display:block;object-fit:cover" onerror="this.remove()">` +
     `<div class="galeria-overlay"><div class="galeria-leg">${leg}</div></div>` +
     `<button class="adm-panel" onclick="event.stopPropagation();excluirGalItem(this)" style="position:absolute;top:.4rem;right:.4rem;width:26px;height:26px;background:rgba(180,30,30,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Excluir">✕</button>` +
     `<button class="adm-panel" onclick="event.stopPropagation();editarLegenda(event,this)" style="position:absolute;top:.4rem;left:.4rem;width:26px;height:26px;background:rgba(42,74,28,.85);border:none;color:white;font-size:.75rem;cursor:pointer;border-radius:50%" title="Editar legenda">✏️</button>` +
@@ -2574,7 +2642,7 @@ function renderDiretoria(item, key) {
   var posicao = item.pos || 'center top';
   var foto = item.foto
     ? '<div class="dir-foto-wrap" style="width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:6px;margin-bottom:.8rem;position:relative">' +
-        '<img src="'+item.foto+'" alt="'+item.nome+'" style="width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block" onerror="this.remove()"">' +
+        '<img src="'+item.foto+'" alt="'+item.nome+'" style="width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block" onerror="this.remove()">' +
         '<div class="foto-overlay"></div>' +
       '</div>'
     : '<div class="dir-foto-placeholder" style="width:100%;aspect-ratio:4/3;border-radius:6px;background:rgba(200,135,58,.15);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">👤</div>';
@@ -2846,7 +2914,17 @@ function renderTodosDoStorage() {
       if (item) renderNoticia(item, key);
     });
   }
+  // Restaurar diretoria
+  if (dados.diretoria) {
+    Object.keys(dados.diretoria).sort(function(a,b){
+      return (dados.diretoria[a].ts||0) - (dados.diretoria[b].ts||0);
+    }).forEach(function(key) {
+      var item = dados.diretoria[key];
+      if (item) renderDiretoria(item, key);
+    });
+  }
 }
+
 
 // Event delegation para botões excluir
 document.addEventListener('click', function(e) {
