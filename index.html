@@ -1738,14 +1738,14 @@ function cardP(p){
   const img=p.foto
     ?'<img src="'+(p.foto)+'" class="pfr"><div class="pnf" style="opacity:0">'+(p.emoji)+'</div>'
     :'<div class="pnf">'+(p.emoji)+'Foto em breve</div>';
-  return `<article class="pc" data-id="${p.id}" onclick="abrirChk(${p.id})">
-    <div class="pi" id="pi-${p.id}" style="background:linear-gradient(135deg,${c1},${c2})">${img}${bdg}<span class="ps2">${STAMP}</span></div>
-    <div class="pd"><p class="pa2">${p.artisan}</p><h3 class="pn">${p.name}</h3><p class="pca">${p.cat}</p>
-    <p class="pde">${p.desc.slice(0,68)}…</p>
-    <div class="pf"><div class="ppr"><span class="ppx">R$</span>${p.price}</div>
-    <button class="bco" onclick="event.stopPropagation();addCart(${p.id})">
+  return '<article class="pc" data-id="'+(p.id)+'" onclick="abrirChk('+(p.id)+')">
+    <div class="pi" id="pi-'+(p.id)+'" style="background:linear-gradient(135deg,'+(c1)+','+(c2)+')">'+(img)+''+(bdg)+'<span class="ps2">'+(STAMP)+'</span></div>
+    <div class="pd"><p class="pa2">'+(p.artisan)+'</p><h3 class="pn">'+(p.name)+'</h3><p class="pca">'+(p.cat)+'</p>
+    <p class="pde">'+(p.desc.slice(0,68))+'…</p>
+    <div class="pf"><div class="ppr"><span class="ppx">R$</span>'+(p.price)+'</div>
+    <button class="bco" onclick="event.stopPropagation();addCart('+(p.id)+')">
       Comprar
-    </button></div>${parc}<p class="por">📍 ${p.origem}</p></div></article>`;
+    </button></div>'+(parc)+'<p class="por">📍 '+(p.origem)+'</p></div></article>';
 }
 function renderProds(){ const g=document.getElementById('pg'); if(g) g.innerHTML=PRODS.map(cardP).join(''); }
 
@@ -1850,17 +1850,17 @@ function excluirP(id){
 }
 function renderAdm(){
   const ul=document.getElementById('adm-li2'); if(!ul) return;
-  ul.innerHTML=PRODS.map(p=>`<div class="ai">
+  ul.innerHTML=PRODS.map(p=>'<div class="ai">
     <div class="ath" onclick="this.querySelector('input').click()">
-      ${p.foto?'<img src="'+(p.foto)+'">':'📷'}
-      <input type="file" accept="image/*" style="display:none" onchange="updFoto(${p.id},this)">
+      '+(p.foto?'<img src="'+(p.foto)+'">':'📷')+'
+      <input type="file" accept="image/*" style="display:none" onchange="updFoto('+(p.id)+',this)">
     </div>
-    <div class="aem">${p.emoji}</div>
-    <div class="ain"><div class="an2">${p.name}</div><div class="am">${p.artisan} · ${p.cat} · R$${p.price}</div></div>
+    <div class="aem">'+(p.emoji)+'</div>
+    <div class="ain"><div class="an2">'+(p.name)+'</div><div class="am">'+(p.artisan)+' · '+(p.cat)+' · R$'+(p.price)+'</div></div>
     <div class="ab">
-      <button class="ba" onclick="editarP(${p.id})">✏️</button>
-      <button class="ba dl" onclick="excluirP(${p.id})">🗑️</button>
-    </div></div>`).join('');
+      <button class="ba" onclick="editarP('+(p.id)+')">✏️</button>
+      <button class="ba dl" onclick="excluirP('+(p.id)+')">🗑️</button>
+    </div></div>').join('');
 }
 function limpar(){
   ['an','aa','ap','apr','adi','ae','ade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
