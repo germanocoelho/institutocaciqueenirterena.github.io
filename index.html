@@ -2957,6 +2957,33 @@ function initDiretoria() {
   }
 }
 
+
+function renderMembroDiretoria(item, key) {
+  var grid = document.getElementById('grid-diretoria');
+  if (!grid) return;
+  var foto = item.foto || '';
+  var nome = item.nome || 'Membro';
+  var cargo = item.cargo || '';
+  var div = document.createElement('div');
+  div.className = 'dir-card';
+  div.setAttribute('data-key', key);
+  div.innerHTML = '<div class="dir-foto">' +
+    (foto ? '<img src="' + foto + '" alt="' + nome + '" style="width:100%;height:100%;object-fit:cover">' : '<span style="font-size:2.5rem">\u{1F464}</span>') +
+    '</div>' +
+    '<div class="dir-info"><strong>' + nome + '</strong><span>' + cargo + '</span></div>' +
+    '<button class="adm-panel" onclick="excluirMembro(this,\"' + key + '\")" style="position:absolute;top:.4rem;right:.4rem;background:rgba(180,30,30,.85);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.7rem">x</button>';
+  grid.appendChild(div);
+}
+
+function excluirMembro(btn, key) {
+  if (!confirm('Remover este membro?')) return;
+  var db = dbLer();
+  if (db.diretoria) { delete db.diretoria[key]; dbSalvar(db); }
+  var card = btn.closest('[data-key]');
+  if (card) card.remove();
+  notif('Membro removido.');
+}
+
 function renderCardMaria(foto, cargo, bio) {
   var grid = document.getElementById('grid-diretoria');
   if (!grid) return;
