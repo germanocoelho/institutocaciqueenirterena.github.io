@@ -1625,20 +1625,15 @@ function carregarDoGitHub() {
       var json = JSON.parse(decodeURIComponent(escape(decoded)));
       _memDb = json;
       try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
-      renderTodosDoStorage();
-      initDiretoria();
-    } else {
-      var local = dbLer();
-      renderTodosDoStorage();
-      initDiretoria();
     }
+    renderTodosDoStorage();
+    initDiretoria();
   })
   .catch(function(){
-    var local = dbLer();
-    if (local && local.galeria) renderTodosDoStorage();
+    renderTodosDoStorage();
+    initDiretoria();
   });
 }
-
 function renderTodosDoStorage() {
   var dados = dbLer();
   ['gal-grid-todos','gal-grid-eventos','gal-grid-cultura','gal-grid-natureza'].forEach(function(id) {
