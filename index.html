@@ -2199,7 +2199,7 @@ var GH_FILE = 'dados.json';
 var GH_TOKEN = 'ghp_lBOhtA9ekMqmr6uLlhu' + 'SY0LPllbVRy1U9enp';
 var GH_API = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE;
 var _memDb = {};
-var _ghSha = '6a559e5208f5404dab6d58ac0de11576ba5ea1e6';
+var _ghSha = 'e113f5e6a108b6f51ed976abac9a25d7887f9cbb';
 var CLOUD_NAME = 'dms41mdfa';
 var CLOUD_PRESET = 'icet_galeria';
 
@@ -3490,32 +3490,33 @@ function dbSalvar(dados) {
 
 function salvarNoGitHub() {
   var dados = dbLer();
+  if (!dados || Object.keys(dados).length === 0) return;
   var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
-  // Buscar SHA atual antes de salvar
+  // Sempre buscar SHA atual antes de salvar para evitar conflito
   fetch(GH_API + '?t=' + Date.now(), {
     headers: { 'Authorization': 'token ' + GH_TOKEN }
   })
   .then(function(r){ return r.json(); })
   .then(function(res){
-    var body = { message: 'ICET: atualizar dados', content: conteudo };
-    if (res.sha) { body.sha = res.sha; _ghSha = res.sha; }
-    else if (_ghSha) { body.sha = _ghSha; }
+    var sha = res.sha || _ghSha;
+    if (!sha) { notif('⚠️ Erro: SHA não encontrado'); return Promise.reject('no sha'); }
+    _ghSha = sha;
     return fetch(GH_API, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ message: 'ICET: atualizar dados', content: conteudo, sha: sha })
     });
   })
   .then(function(r){ return r.json(); })
   .then(function(res){
     if (res.content && res.content.sha) {
       _ghSha = res.content.sha;
-      notif('💾 Foto salva permanentemente!');
+      notif('💾 Salvo!');
     } else {
-      notif('⚠️ Erro ao salvar: ' + (res.message || 'verifique conexão'));
+      notif('⚠️ Erro ao salvar: ' + (res.message || ''));
     }
   })
-  .catch(function(){ notif('⚠️ Erro de conexão'); });
+  .catch(function(e){ if(e !== 'no sha') notif('⚠️ Erro de conexão'); });
 }
 
 function carregarDoGitHub() {
@@ -3524,21 +3525,28 @@ function carregarDoGitHub() {
   })
   .then(function(r){ return r.json(); })
   .then(function(res){
-    if (res.sha) _ghSha = res.sha;
-    if (res.content) {
-      var decoded = atob(res.content.replace(/\n/g,''));
-      var json = JSON.parse(decodeURIComponent(escape(decoded)));
-      // MERGE — preserva dados existentes + adiciona novos
-      var local = dbLer();
-      var merged = Object.assign({}, local, json);
-      if (local.galeria && json.galeria) merged.galeria = Object.assign({}, local.galeria, json.galeria);
-      if (local.fotos && json.fotos) merged.fotos = Object.assign({}, local.fotos, json.fotos);
-      _memDb = merged;
-      try { localStorage.setItem(DB_KEY, JSON.stringify(merged)); } catch(e) {}
-      renderTodosDoStorage();
-    }
+    if (res.sha) { _ghSha = res.sha; }
+    if (!res.content || res.content.trim() === '') return; // arquivo vazio — ignorar
+    var decoded;
+    try {
+      decoded = atob(res.content.replace(/\n/g,''));
+    } catch(e) { return; }
+    if (!decoded || !decoded.trim()) return;
+    var parsed;
+    try { parsed = JSON.parse(decodeURIComponent(escape(decoded))); }
+    catch(e) { try { parsed = JSON.parse(decoded); } catch(e2) { return; } }
+    // MERGE
+    var local = dbLer();
+    var merged = Object.assign({}, local, parsed);
+    if (parsed.galeria) merged.galeria = Object.assign({}, (local.galeria||{}), parsed.galeria);
+    if (parsed.fotos) merged.fotos = Object.assign({}, (local.fotos||{}), parsed.fotos);
+    if (parsed.diretoria) merged.diretoria = Object.assign({}, (local.diretoria||{}), parsed.diretoria);
+    if (parsed.noticias) merged.noticias = Object.assign({}, (local.noticias||{}), parsed.noticias);
+    _memDb = merged;
+    try { localStorage.setItem(DB_KEY, JSON.stringify(merged)); } catch(e) {}
+    renderTodosDoStorage();
   })
-  .catch(function(){ /* sem dados.json ainda */ });
+  .catch(function(e){ console.warn('carregarDoGitHub erro:', e); });
 }
 
 function renderTodosDoStorage() {
