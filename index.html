@@ -659,6 +659,28 @@ body.adm-unlocked .nc-exc-btn{display:block!important}
 .btn-p:hover { background: var(--rd); color: #fff; }
 .sec.lt .btn-p { background: var(--r); color: #F9F5ED !important; }
 
+
+/* ── Efeito shimmer no título do hero ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.hti {
+  background: linear-gradient(
+    90deg,
+    #F9F5ED 20%,
+    #F2C45A 40%,
+    #fff    50%,
+    #F2C45A 60%,
+    #F9F5ED 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fu .8s .4s forwards, shimmer 4s linear 1.5s infinite;
+}
+
 </style>
 
 
@@ -2636,42 +2658,80 @@ function pubDiretoria() {
 }
 function renderDiretoria(item, key) {
   var posicao = item.pos || 'center top';
-
-  var fotoHtml = item.foto
-    ? '<div class="dir-foto-wrap" data-key="'+key+'" title="Clique para ajustar posição da foto" ' +
-        'style="width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:8px;margin-bottom:1rem;position:relative;cursor:pointer" ' +
-        'onclick="ajustarPosDir(this)">' +
-        '<img src="'+item.foto+'" alt="'+item.nome+'" ' +
-          'style="width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block;transition:object-position .3s" ' +
-          'onerror="this.parentElement.innerHTML='\ud83d\udc64'">' +
-        '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);color:#fff;font-size:.6rem;text-align:center;padding:.3rem;opacity:0;transition:.2s" class="pos-hint">🖱 Clique para reposicionar</div>' +
-      '</div>'
-    : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem">👤</div>';
-
-  var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
-    fotoHtml +
-    '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
-    '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
-    (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem;margin-top:.2rem">'+item.bio+'</div>' : '') +
-    '<div class="adm-panel" style="margin-top:.7rem;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap">' +
-      '<button onclick="excluirDir(this)" data-key="'+key+'" ' +
-        'style="background:rgba(180,30,30,.25);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .7rem;border-radius:3px">✕ Excluir</button>' +
-    '</div>' +
-  '</div>';
-
   var grid = document.getElementById('grid-diretoria');
-  if (grid) grid.insertAdjacentHTML('beforeend', card);
+  if (!grid) return;
 
-  // Hint ao hover
-  var cards = grid ? grid.querySelectorAll('.card-membro') : [];
-  var last = cards[cards.length-1];
-  if (last) {
-    var wrap = last.querySelector('.dir-foto-wrap');
-    if (wrap) {
-      wrap.addEventListener('mouseenter', function(){ var h=this.querySelector('.pos-hint'); if(h) h.style.opacity='1'; });
-      wrap.addEventListener('mouseleave', function(){ var h=this.querySelector('.pos-hint'); if(h) h.style.opacity='0'; });
-    }
+  var card = document.createElement('div');
+  card.className = 'card-membro';
+  card.dataset.key = key;
+  card.style.cssText = 'background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
+
+  // Foto
+  if (item.foto) {
+    var wrap = document.createElement('div');
+    wrap.className = 'dir-foto-wrap';
+    wrap.dataset.key = key;
+    wrap.title = 'Clique para ajustar posição';
+    wrap.style.cssText = 'width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:8px;margin-bottom:1rem;position:relative;cursor:pointer';
+    wrap.onclick = function(){ ajustarPosDir(this); };
+
+    var img = document.createElement('img');
+    img.src = item.foto;
+    img.alt = item.nome;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:'+posicao+';display:block;transition:object-position .3s';
+    img.onerror = function(){ this.remove(); };
+
+    var hint = document.createElement('div');
+    hint.className = 'pos-hint';
+    hint.textContent = '🖱 Clique para reposicionar';
+    hint.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;font-size:.6rem;text-align:center;padding:.3rem;opacity:0;transition:.2s;pointer-events:none';
+
+    wrap.appendChild(img);
+    wrap.appendChild(hint);
+    wrap.addEventListener('mouseenter', function(){ hint.style.opacity='1'; });
+    wrap.addEventListener('mouseleave', function(){ hint.style.opacity='0'; });
+    card.appendChild(wrap);
+  } else {
+    var ph = document.createElement('div');
+    ph.style.cssText = 'width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem';
+    ph.textContent = '👤';
+    card.appendChild(ph);
   }
+
+  // Nome
+  var nome = document.createElement('div');
+  nome.style.cssText = 'font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem';
+  nome.textContent = item.nome;
+  card.appendChild(nome);
+
+  // Cargo
+  var cargo = document.createElement('div');
+  cargo.style.cssText = 'font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem';
+  cargo.textContent = item.cargo;
+  card.appendChild(cargo);
+
+  // Bio
+  if (item.bio) {
+    var bio = document.createElement('div');
+    bio.style.cssText = 'font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem;margin-top:.2rem';
+    bio.textContent = item.bio;
+    card.appendChild(bio);
+  }
+
+  // Botões ADM
+  var admDiv = document.createElement('div');
+  admDiv.className = 'adm-panel';
+  admDiv.style.cssText = 'margin-top:.7rem;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap';
+
+  var btnExc = document.createElement('button');
+  btnExc.dataset.key = key;
+  btnExc.textContent = '✕ Excluir';
+  btnExc.style.cssText = 'background:rgba(180,30,30,.25);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.65rem;font-weight:700;cursor:pointer;padding:.3rem .7rem;border-radius:3px';
+  btnExc.onclick = function(){ excluirDir(this); };
+  admDiv.appendChild(btnExc);
+  card.appendChild(admDiv);
+
+  grid.appendChild(card);
 }
 
 
