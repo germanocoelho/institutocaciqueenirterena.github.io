@@ -1713,29 +1713,29 @@ function renderTodosDoStorage() {
 
 document.addEventListener('DOMContentLoaded', carregarDoGitHub);
 /* === DADOS === */
-const PRODS = [{"id": 1, "name": "Vaso Floral Grande", "artisan": "Rosenir Batista", "cat": "Cer\u00e2mica \u00b7 Vasos", "price": 280, "parcelas": 6, "prazo": "15\u201320 dias \u00fateis", "dim": "20\u00d718\u00d730 cm", "emoji": "\ud83c\udffa", "desc": "Barro vermelho, grafismo floral em branco. Acordelamento, polimento com pedra e queima a c\u00e9u aberto. Pe\u00e7a \u00fanica.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Cachoeirinha \u2014 Miranda", "badge": "Exclusivo", "foto": ""}, {"id": 2, "name": "Anta do Pantanal", "artisan": "Artes\u00e3s Terena", "cat": "Madeira entalhada", "price": 95, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "18\u00d78\u00d712 cm", "emoji": "\ud83e\udd8c", "desc": "Escultura de anta em madeira de cedro, entalhada \u00e0 m\u00e3o. Fauna viva do Pantanal sul-mato-grossense.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "", "foto": ""}, {"id": 3, "name": "Pote Ritual M\u00e9dio", "artisan": "Maria Auxiliadora Bezerra", "cat": "Cer\u00e2mica \u00b7 Utens\u00edlios", "price": 185, "parcelas": 3, "prazo": "12\u201318 dias \u00fateis", "dim": "16\u00d716\u00d714 cm", "emoji": "\u26b1\ufe0f", "desc": "Pote com tampa, grafismo pontilhado em branco. Resina de jatob\u00e1. T\u00e9cnica ancestral.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Destaque", "foto": ""}, {"id": 4, "name": "Colar Sementes Terena", "artisan": "Artes\u00e3s Mar\u00e7al", "cat": "Bijuteria", "price": 58, "parcelas": 1, "prazo": "7\u201310 dias \u00fateis", "dim": "60 cm", "emoji": "\ud83d\udcff", "desc": "Sementes nativas do Cerrado e Pantanal, montado \u00e0 m\u00e3o. Cada colar \u00e9 \u00fanico.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Novo", "foto": ""}, {"id": 5, "name": "Jacar\u00e9 em Barro", "artisan": "Ceramistas Terena", "cat": "Cer\u00e2mica \u00b7 Bichos", "price": 120, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "28\u00d77\u00d76 cm", "emoji": "\ud83d\udc0a", "desc": "Esculpido em barro vermelho com detalhes em branco. Fauna do Pantanal. Cada pe\u00e7a \u00e9 irrepet\u00edvel.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Baba\u00e7u \u2014 Miranda", "badge": "", "foto": ""}, {"id": 6, "name": "Cestaria de Buriti", "artisan": "Artes\u00e3s Terena", "cat": "Fibra e Palha", "price": 145, "parcelas": 3, "prazo": "15\u201320 dias \u00fateis", "dim": "35\u00d735\u00d712 cm", "emoji": "\ud83e\uddfa", "desc": "Fibra de buriti tran\u00e7ada \u00e0 m\u00e3o. Decorativa ou funcional. Tradi\u00e7\u00e3o centen\u00e1ria.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Lim\u00e3o Verde \u2014 Aquidauana", "badge": "\u00daltimo", "foto": ""}];
-let carrinho=[], atual=null, pgto=null;
+var PRODS = [{"id": 1, "name": "Vaso Floral Grande", "artisan": "Rosenir Batista", "cat": "Cer\u00e2mica \u00b7 Vasos", "price": 280, "parcelas": 6, "prazo": "15\u201320 dias \u00fateis", "dim": "20\u00d718\u00d730 cm", "emoji": "\ud83c\udffa", "desc": "Barro vermelho, grafismo floral em branco. Acordelamento, polimento com pedra e queima a c\u00e9u aberto. Pe\u00e7a \u00fanica.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Cachoeirinha \u2014 Miranda", "badge": "Exclusivo", "foto": ""}, {"id": 2, "name": "Anta do Pantanal", "artisan": "Artes\u00e3s Terena", "cat": "Madeira entalhada", "price": 95, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "18\u00d78\u00d712 cm", "emoji": "\ud83e\udd8c", "desc": "Escultura de anta em madeira de cedro, entalhada \u00e0 m\u00e3o. Fauna viva do Pantanal sul-mato-grossense.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "", "foto": ""}, {"id": 3, "name": "Pote Ritual M\u00e9dio", "artisan": "Maria Auxiliadora Bezerra", "cat": "Cer\u00e2mica \u00b7 Utens\u00edlios", "price": 185, "parcelas": 3, "prazo": "12\u201318 dias \u00fateis", "dim": "16\u00d716\u00d714 cm", "emoji": "\u26b1\ufe0f", "desc": "Pote com tampa, grafismo pontilhado em branco. Resina de jatob\u00e1. T\u00e9cnica ancestral.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Destaque", "foto": ""}, {"id": 4, "name": "Colar Sementes Terena", "artisan": "Artes\u00e3s Mar\u00e7al", "cat": "Bijuteria", "price": 58, "parcelas": 1, "prazo": "7\u201310 dias \u00fateis", "dim": "60 cm", "emoji": "\ud83d\udcff", "desc": "Sementes nativas do Cerrado e Pantanal, montado \u00e0 m\u00e3o. Cada colar \u00e9 \u00fanico.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Mar\u00e7al de Souza \u2014 CG", "badge": "Novo", "foto": ""}, {"id": 5, "name": "Jacar\u00e9 em Barro", "artisan": "Ceramistas Terena", "cat": "Cer\u00e2mica \u00b7 Bichos", "price": 120, "parcelas": 3, "prazo": "10\u201315 dias \u00fateis", "dim": "28\u00d77\u00d76 cm", "emoji": "\ud83d\udc0a", "desc": "Esculpido em barro vermelho com detalhes em branco. Fauna do Pantanal. Cada pe\u00e7a \u00e9 irrepet\u00edvel.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Baba\u00e7u \u2014 Miranda", "badge": "", "foto": ""}, {"id": 6, "name": "Cestaria de Buriti", "artisan": "Artes\u00e3s Terena", "cat": "Fibra e Palha", "price": 145, "parcelas": 3, "prazo": "15\u201320 dias \u00fateis", "dim": "35\u00d735\u00d712 cm", "emoji": "\ud83e\uddfa", "desc": "Fibra de buriti tran\u00e7ada \u00e0 m\u00e3o. Decorativa ou funcional. Tradi\u00e7\u00e3o centen\u00e1ria.", "payments": ["PIX", "Cart\u00e3o de Cr\u00e9dito"], "origem": "Aldeia Lim\u00e3o Verde \u2014 Aquidauana", "badge": "\u00daltimo", "foto": ""}];
+var carrinho=[], atual=null, pgto=null;
 
 /* === INIT === */
-document.addEventListener('DOMContentLoaded', () => {
-  const io = new IntersectionObserver(
-    es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); }),
+document.addEventListenerfunction('DOMContentLoaded', (){
+  var io = new IntersectionObserver(
+    function(es){ return es.forEach(e => ; }{ if(e.isIntersecting) e.target.classList.add('vis'); }),
     {threshold: 0.05}
   );
-  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+  document.querySelectorAll('.rv').forEach(function(el){ return io.observe(el)); };
   renderProds(); renderAdm();
 });
 
 /* === PRODUTOS === */
-const GR = {'Cerâmica':'#8B3A0F,#E8A853','Madeira':'#5C2207,#C4621A','Bijuteria':'#1B4965,#5FA8D3','Fibra':'#2D6A4F,#52B788'};
-function gr(cat){ const k=Object.keys(GR).find(k=>cat.includes(k))||'Cerâmica'; return GR[k].split(','); }
-const STAMP='<svg viewBox="0 0 44 44" width="32" height="32"><circle cx="22" cy="22" r="19.5" fill="rgba(139,58,15,.92)" stroke="#F2C45A" stroke-width="1.3"/><circle cx="22" cy="22" r="14" fill="none" stroke="rgba(242,196,90,.28)" stroke-width=".6"/><text x="22" y="19.5" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#F2C45A" letter-spacing=".8">OREKA</text><text x="22" y="27.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.2" fill="rgba(242,196,90,.78)">TERENA</text></svg>';
+var GR = {'Cerâmica':'#8B3A0F,#E8A853','Madeira':'#5C2207,#C4621A','Bijuteria':'#1B4965,#5FA8D3','Fibra':'#2D6A4F,#52B788'};
+function gr(cat){ var k=Object.keys(GR).find(function(k){ return cat.includes(k))||'Cerâmica'; }; return GR[k].split(','); }
+var STAMP='<svg viewBox="0 0 44 44" width="32" height="32"><circle cx="22" cy="22" r="19.5" fill="rgba(139,58,15,.92)" stroke="#F2C45A" stroke-width="1.3"/><circle cx="22" cy="22" r="14" fill="none" stroke="rgba(242,196,90,.28)" stroke-width=".6"/><text x="22" y="19.5" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#F2C45A" letter-spacing=".8">OREKA</text><text x="22" y="27.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.2" fill="rgba(242,196,90,.78)">TERENA</text></svg>';
 
 function cardP(p){
-  const [c1,c2]=gr(p.cat);
-  const bdg=p.badge?'<span class="pb2">'+(p.badge)+'</span>':'';
-  const parc=p.parcelas>1?'<p class="ppa">ou '+(p.parcelas)+'x de R$ '+((p.price/p.parcelas).toFixed(0))+' s/juros</p>':'';
-  const img=p.foto
+  var [c1,c2]=gr(p.cat);
+  var bdg=p.badge?'<span class="pb2">'+(p.badge)+'</span>':'';
+  var parc=p.parcelas>1?'<p class="ppa">ou '+(p.parcelas)+'x de R$ '+((p.price/p.parcelas).toFixed(0))+' s/juros</p>':'';
+  var img=p.foto
     ?'<img src="'+(p.foto)+'" class="pfr"><div class="pnf" style="opacity:0">'+(p.emoji)+'</div>'
     :'<div class="pnf">'+(p.emoji)+'Foto em breve</div>';
   return '<article class="pc" data-id="'+(p.id)+'" onclick="abrirChk('+(p.id)+')">
@@ -1747,52 +1747,51 @@ function cardP(p){
       Comprar
     </button></div>'+(parc)+'<p class="por">📍 '+(p.origem)+'</p></div></article>';
 }
-function renderProds(){ const g=document.getElementById('pg'); if(g) g.innerHTML=PRODS.map(cardP).join(''); }
+function renderProds(){ var g=document.getElementById('pg'); if(g) g.innerHTML=PRODS.map(cardP).join(''); }
 
 /* === CHECKOUT === */
 function abrirChk(id){
-  atual=PRODS.find(p=>p.id===id); if(!atual) return;
-  const mi=document.getElementById('m-img');
+  atual=PRODS.find(function(p){ return p.id===id); }; if(!atual) return;
+  var mi=document.getElementById('m-img');
   mi.innerHTML=atual.foto?'<img src="'+(atual.foto)+'" style="width:100%;height:100%;object-fit:cover">':''+(atual.emoji)+'';
   document.getElementById('m-art').textContent=atual.artisan;
   document.getElementById('m-nom').textContent=atual.name;
   document.getElementById('m-ori').textContent='📍 '+atual.origem;
   document.getElementById('m-prz').textContent='📦 '+atual.prazo+' | '+atual.dim;
-  const pr='R$ '+atual.price.toFixed(2).replace('.',',');
+  var pr='R$ '+atual.price.toFixed(2).replace('.',',');
   document.getElementById('m-pre').textContent=pr;
   document.getElementById('r-sub').textContent=pr;
   document.getElementById('r-tot').textContent=pr;
   document.getElementById('r-prz').textContent=atual.prazo;
-  const sel=document.getElementById('m-par'); sel.innerHTML='';
-  for(let i=1;i<=atual.parcelas;i++){
-    const o=document.createElement('option');
+  var sel=document.getElementById('m-par'); sel.innerHTML='';
+  for(var i=1;i<=atual.parcelas;i++){
+    var o=document.createElement('option');
     o.textContent=i+'x de R$ '+(atual.price/i).toFixed(2).replace('.',',')+(i>1?' s/juros':'');
     sel.appendChild(o);
   }
   pgto=atual.payments[0];
-  document.getElementById('pgto-g').innerHTML=atual.payments.map(p=>
-    '<button class="pgb'+(p===pgto?' on':'')+'" onclick="selPgto(''+(p)+'',this)">'+(p)+'</button>'
+  document.getElementById('pgto-g').innerHTML=atual.payments.map(function(p){ return '<button class="pgb'+(p===pgto?' on':'')+'" onclick="selPgto(''+(p)+''; },this)">'+(p)+'</button>'
   ).join('');
   updPgto();
   document.getElementById('mo').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function selPgto(p,btn){ pgto=p; document.querySelectorAll('.pgb').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); updPgto(); }
+function selPgto(p,btn){ pgto=p; document.querySelectorAll('.pgb').forEach(function(b){ return b.classList.remove('on')); }; btn.classList.add('on'); updPgto(); }
 function updPgto(){
   document.getElementById('f-cc').style.display=pgto?.includes('Cart')?'block':'none';
   document.getElementById('f-pix').style.display=pgto==='PIX'?'block':'none';
 }
 function fecharChk(){ document.getElementById('mo').classList.remove('open'); document.body.style.overflow=''; }
 function addCart(id){
-  const p=PRODS.find(x=>x.id===id); carrinho.push(p);
-  const b=document.getElementById('cb'); b.textContent=carrinho.length; b.style.display='flex';
+  var p=PRODS.find(function(x){ return x.id===id); }; carrinho.push(p);
+  var b=document.getElementById('cb'); b.textContent=carrinho.length; b.style.display='flex';
   notif('✓ '+p.name+' adicionado!');
 }
 function toggleCart(){
   if(!carrinho.length){ notif('Carrinho vazio.'); return; }
-  notif(carrinho.length+' item(s) · R$ '+carrinho.reduce((s,p)=>s+p.price,0).toFixed(2).replace('.',','));
+  notif(carrinho.length+' item(s) · R$ '+carrinho.reducefunction((s,p){ return s+p.price; },0).toFixed(2).replace('.',','));
 }
-function notif(msg){ const n=document.getElementById('ntf'); n.textContent=msg; n.classList.add('on'); setTimeout(()=>n.classList.remove('on'),3600); }
+function notif(msg){ var n=document.getElementById('ntf'); n.textContent=msg; n.classList.add('on'); setTimeoutfunction((){ return n.classList.remove('on'); },3600); }
 function confirmar(){
   if(!document.getElementById('e-nom').value||!document.getElementById('e-em').value){ alert('Preencha nome e e-mail.'); return; }
   fecharChk(); notif('✓ Pedido confirmado! Entraremos em contato.');
@@ -1801,13 +1800,13 @@ document.getElementById('mo')?.addEventListener('click', function(e){ if(e.targe
 
 /* === ADMIN PRODUTOS === */
 function addProd(){
-  const n=v('an'),a=v('aa'),c=v('ac'),p=parseFloat(v('ap')||0),pr=v('apr'),de=v('ade'),em=v('ae')||'🏺',or=v('ao'),ba=v('ab'),pa=parseInt(v('apa')||1),di=v('adi')||'A confirmar';
+  var n=v('an'),a=v('aa'),c=v('ac'),p=parseFloat(v('ap')||0),pr=v('apr'),de=v('ade'),em=v('ae')||'🏺',or=v('ao'),ba=v('ab'),pa=parseInt(v('apa')||1),di=v('adi')||'A confirmar';
   if(!n||!a||!c||!p||!pr||!de){ alert('Preencha os campos *'); return; }
-  const pays=[];
-  [['ax','PIX'],['acc','Cartão de Crédito'],['abo','Boleto'],['atr','Transferência'],['ade2','Débito'],['amp','Mercado Pago']].forEach(([id,lbl])=>{
+  var pays=[];
+  [['ax','PIX'],['acc','Cartão de Crédito'],['abo','Boleto'],['atr','Transferência'],['ade2','Débito'],['amp','Mercado Pago']].forEachfunction(([id,lbl]){
     if(document.getElementById(id)?.checked) pays.push(lbl);
   });
-  const foto=document.querySelector('#adm-fw .prev')?.src||'';
+  var foto=document.querySelector('#adm-fw .prev')?.src||'';
   PRODS.unshift({id:Date.now(),name:n,artisan:a,cat:c,price:p,parcelas:pa,prazo:pr,dim:di,emoji:em,desc:de,payments:pays.length?pays:['PIX'],origem:or,badge:ba,foto});
   renderProds(); renderAdm(); limpar();
   notif('✓ Produto adicionado!');
@@ -1815,42 +1814,42 @@ function addProd(){
 }
 function updFoto(id,input){
   if(!input.files||!input.files[0]) return;
-  const r=new FileReader();
+  var r=new FileReader();
   r.onload=e=>{
-    const p=PRODS.find(x=>x.id===id); if(p) p.foto=e.target.result;
-    const img=document.getElementById('pi-'+id);
-    if(img){ let el=img.querySelector('.pfr'); if(!el){el=document.createElement('img');el.className='pfr';img.prepend(el);} el.src=e.target.result; const sf=img.querySelector('.pnf'); if(sf) sf.style.opacity='0'; }
-    const th=input.closest('.ath'); if(th){ th.innerHTML='<img src="'+(e.target.result)+'" style="width:100%;height:100%;object-fit:cover">'; th.appendChild(input); }
+    var p=PRODS.find(function(x){ return x.id===id); }; if(p) p.foto=e.target.result;
+    var img=document.getElementById('pi-'+id);
+    if(img){ var el=img.querySelector('.pfr'); if(!el){el=document.createElement('img');el.className='pfr';img.prepend(el);} el.src=e.target.result; var sf=img.querySelector('.pnf'); if(sf) sf.style.opacity='0'; }
+    var th=input.closest('.ath'); if(th){ th.innerHTML='<img src="'+(e.target.result)+'" style="width:100%;height:100%;object-fit:cover">'; th.appendChild(input); }
     notif('📷 Foto atualizada!');
   };
   r.readAsDataURL(input.files[0]);
 }
 function prevFoto(input){
   if(!input.files||!input.files[0]) return;
-  const r=new FileReader();
+  var r=new FileReader();
   r.onload=e=>{
-    const w=document.getElementById('adm-fw'); let pr=w.querySelector('.prev');
+    var w=document.getElementById('adm-fw'); var pr=w.querySelector('.prev');
     if(pr){ pr.src=e.target.result; pr.style.display='block'; }
-    else{ const img=document.createElement('img'); img.className='prev'; img.src=e.target.result; img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block'; w.appendChild(img); }
-    w.querySelectorAll('svg,span').forEach(el=>el.style.display='none');
+    else{ var img=document.createElement('img'); img.className='prev'; img.src=e.target.result; img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block'; w.appendChild(img); }
+    w.querySelectorAll('svg,span').forEach(function(el){ return el.style.display='none'); };
   };
   r.readAsDataURL(input.files[0]);
 }
 function editarP(id){
-  const p=PRODS.find(x=>x.id===id); if(!p) return;
+  var p=PRODS.find(function(x){ return x.id===id); }; if(!p) return;
   sv('an',p.name);sv('aa',p.artisan);sv('ac',p.cat);sv('ap',p.price);sv('apr',p.prazo);sv('ade',p.desc);sv('ae',p.emoji);sv('ao',p.origem);sv('ab',p.badge);sv('apa',p.parcelas);sv('adi',p.dim);
   PRODS.splice(PRODS.indexOf(p),1); renderAdm();
   document.getElementById('adm-form').scrollIntoView({behavior:'smooth'});
 }
 function excluirP(id){
   if(!confirm('Excluir?')) return;
-  PRODS.splice(PRODS.findIndex(p=>p.id===id),1);
-  const c=document.querySelector('[data-id="'+(id)+'"]'); if(c) c.remove();
+  PRODS.splice(PRODS.findIndex(function(p){ return p.id===id); },1);
+  var c=document.querySelector('[data-id="'+(id)+'"]'); if(c) c.remove();
   renderAdm(); notif('🗑️ Excluído.');
 }
 function renderAdm(){
-  const ul=document.getElementById('adm-li2'); if(!ul) return;
-  ul.innerHTML=PRODS.map(p=>'<div class="ai">
+  var ul=document.getElementById('adm-li2'); if(!ul) return;
+  ul.innerHTML=PRODS.map(function(p){ return '<div class="ai">; }
     <div class="ath" onclick="this.querySelector('input').click()">
       '+(p.foto?'<img src="'+(p.foto)+'">':'📷')+'
       <input type="file" accept="image/*" style="display:none" onchange="updFoto('+(p.id)+',this)">
@@ -1863,43 +1862,43 @@ function renderAdm(){
     </div></div>').join('');
 }
 function limpar(){
-  ['an','aa','ap','apr','adi','ae','ade'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['an','aa','ap','apr','adi','ae','ade'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});
   sv('ac','');sv('apa','1');sv('ab','');
-  const w=document.getElementById('adm-fw'); if(w){ const pr=w.querySelector('.prev'); if(pr) pr.style.display='none'; }
-  ['ax','acc'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=true;});
+  var w=document.getElementById('adm-fw'); if(w){ var pr=w.querySelector('.prev'); if(pr) pr.style.display='none'; }
+  ['ax','acc'].forEach(id=>{var el=document.getElementById(id);if(el)el.checked=true;});
 }
 function pubConteudo(tp){
-  const ti=v('pub-ti'),de=v('pub-de'); if(!ti||!de){ alert('Preencha título e descrição.'); return; }
+  var ti=v('pub-ti'),de=v('pub-de'); if(!ti||!de){ alert('Preencha título e descrição.'); return; }
   notif('✓ '+tp+' publicado(a) com sucesso!');
-  ['pub-ti','pub-da','pub-lo','pub-de','pub-lk'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['pub-ti','pub-da','pub-lo','pub-de','pub-lk'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});
 }
 function pubNoticia(){
-  const ti=v('nc-ti'),de=v('nc-de'); if(!ti||!de){ alert('Preencha título e descrição.'); return; }
-  const cat=v('nc-ca')||'Notícia',data=v('nc-da')||new Date().toLocaleDateString('pt-BR'),fonte=v('nc-fo2')||'Assessoria ICET',link=v('nc-lk2')||'#';
-  const cores={'Criação':'#8B3A0F','OREKA':'#A0451A','Parceria':'#1B4965','Evento':'#2D6A4F','Premiação':'#C4621A','Release':'#8B3A0F','Cultura':'#5C2207','Repasse':'#2D6A4F'};
-  const cor=Object.entries(cores).find(([k])=>cat.includes(k))?.[1]||'#8B3A0F';
-  const grade=document.getElementById('nc-grade');
+  var ti=v('nc-ti'),de=v('nc-de'); if(!ti||!de){ alert('Preencha título e descrição.'); return; }
+  var cat=v('nc-ca')||'Notícia',data=v('nc-da')||new Date().toLocaleDateString('pt-BR'),fonte=v('nc-fo2')||'Assessoria ICET',link=v('nc-lk2')||'#';
+  var cores={'Criação':'#8B3A0F','OREKA':'#A0451A','Parceria':'#1B4965','Evento':'#2D6A4F','Premiação':'#C4621A','Release':'#8B3A0F','Cultura':'#5C2207','Repasse':'#2D6A4F'};
+  var cor=Object.entries(cores).findfunction(([k]){ return cat.includes(k))?.[1]||'#8B3A0F'; };
+  var grade=document.getElementById('nc-grade');
   if(grade){
-    const card=document.createElement('article'); card.className='ncc';
+    var card=document.createElement('article'); card.className='ncc';
     card.innerHTML='<div class="nch" style="background:'+(cor)+'"><span class="nct">'+(cat)+'</span><span class="ncd">'+(data)+'</span></div><div class="ncb"><div class="ncfo">'+(fonte)+'</div><h3 class="ncti">'+(ti)+'</h3><p class="ncde">'+(de)+'</p>${link&&link!='#'?'<a href="${link}" target="_blank" class="nclk" style="color:${cor};border-color:${cor}">Ler notícia ↗</a>':''}</div>';
     grade.prepend(card);
   }
   notif('✓ Notícia publicada!');
-  ['nc-ti','nc-da','nc-fo2','nc-lk2','nc-de'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['nc-ti','nc-da','nc-fo2','nc-lk2','nc-de'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});
 }
 function carregarFoto(input){
   if(!input.files||!input.files[0]) return;
-  const r=new FileReader();
+  var r=new FileReader();
   r.onload=e=>{
-    const s=input.parentElement;
+    var s=input.parentElement;
     s.style.backgroundImage='url('+(e.target.result)+')';
     s.style.backgroundSize='cover'; s.style.backgroundPosition='center';
-    s.querySelectorAll('svg,span').forEach(el=>el.style.display='none');
+    s.querySelectorAll('svg,span').forEach(function(el){ return el.style.display='none'); };
   };
   r.readAsDataURL(input.files[0]);
 }
 function v(id){ return document.getElementById(id)?.value?.trim()||''; }
-function sv(id,val){ const el=document.getElementById(id); if(el) el.value=val||''; }
+function sv(id,val){ var el=document.getElementById(id); if(el) el.value=val||''; }
 
 
 /* === ADMIN AUTH === */
