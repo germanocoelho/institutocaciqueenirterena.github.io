@@ -1636,24 +1636,39 @@ function salvarNoGitHub() {
 }
 
 function carregarDoGitHub() {
-  fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  fetch(GH_API + '?t=' + Date.now(), {
+    headers: { 'Authorization': 'token ' + GH_TOKEN }
+  })
   .then(function(r){ return r.json(); })
   .then(function(res){
-    if (res.content) {
-      _ghSha = res.sha;
-      var decoded = atob(res.content.replace(/\n/g,''));
-      var json = JSON.parse(decodeURIComponent(escape(decoded)));
-      _memDb = json;
-      try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
-      renderTodosDoStorage();
-    } else {
-      var local = dbLer();
-      if (local && local.galeria) renderTodosDoStorage();
+    if (res.sha) _ghSha = res.sha;
+    // Sempre usar localStorage como base
+    var local = dbLer();
+    if (res.content && res.content.trim()) {
+      try {
+        var decoded = atob(res.content.replace(/\n/g,''));
+        var remoto = JSON.parse(decodeURIComponent(escape(decoded)));
+        // MERGE: localStorage tem prioridade sobre GitHub
+        // (localStorage tem as fotos base64 mais recentes)
+        var merged = Object.assign({}, remoto, local);
+        if (remoto.galeria && local.galeria)
+          merged.galeria = Object.assign({}, remoto.galeria, local.galeria);
+        if (remoto.fotos && local.fotos)
+          merged.fotos = Object.assign({}, remoto.fotos, local.fotos);
+        if (remoto.diretoria && local.diretoria)
+          merged.diretoria = Object.assign({}, remoto.diretoria, local.diretoria);
+        _memDb = merged;
+        try { localStorage.setItem(DB_KEY, JSON.stringify(merged)); } catch(e) {}
+      } catch(e) {
+        // GitHub com erro — usar só localStorage
+        _memDb = local;
+      }
     }
+    renderTodosDoStorage();
   })
   .catch(function(){
-    var local = dbLer();
-    if (local && local.galeria) renderTodosDoStorage();
+    // GitHub falhou (CORS etc) — usar localStorage
+    renderTodosDoStorage();
   });
 }
 
