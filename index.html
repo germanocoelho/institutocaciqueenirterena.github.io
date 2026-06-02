@@ -2721,6 +2721,10 @@ function uploadFotoDiretoria(input, statusId, urlId) {
   .catch(function(){if(st){st.style.color='#f87171';st.textContent='❌ Erro de conexão';}});
 }
 
+window.addEventListener('scroll', function(){
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  if (window.scrollY > 60) {
     nav.style.background = 'rgba(10,6,3,.92)';
     nav.style.backdropFilter = 'blur(12px)';
   } else {
