@@ -2829,7 +2829,7 @@ function uploadFotoGenerica(input, statusId, urlId) {
   if (st) { st.style.display='block'; st.style.color='#c8873a'; st.textContent='⏳ Enviando...'; }
   var fd = new FormData();
   fd.append('file', file);
-  fd.append('upload_preset', CLOUD_PRE);
+  fd.append('upload_preset', CLOUD_PRESET);
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
   .then(function(r){ return r.json(); })
   .then(function(d){
@@ -2861,7 +2861,7 @@ function uploadCloudinaryGaleria(input) {
   if (status) { status.style.display='block'; status.style.color='#c8873a'; status.textContent='⏳ Enviando para Cloudinary...'; }
   var fd = new FormData();
   fd.append('file', file);
-  fd.append('upload_preset', CLOUD_PRE);
+  fd.append('upload_preset', CLOUD_PRESET);
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
   .then(function(r){ return r.json(); })
   .then(function(d){
@@ -2884,7 +2884,7 @@ function uploadCloudinarySlot(input, slotKey, onSuccess) {
   notif('⏳ Enviando foto...');
   var fd = new FormData();
   fd.append('file', file);
-  fd.append('upload_preset', CLOUD_PRE);
+  fd.append('upload_preset', CLOUD_PRESET);
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
   .then(function(r){ return r.json(); })
   .then(function(d){
@@ -3944,7 +3944,7 @@ function escolherFotoMariaCloud() {
     notif('⏳ Enviando foto...');
     var fd = new FormData();
     fd.append('file', this.files[0]);
-    fd.append('upload_preset', CLOUD_PRE);
+    fd.append('upload_preset', CLOUD_PRESET);
     fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method:'POST', body:fd })
     .then(function(r){ return r.json(); })
     .then(function(d){
