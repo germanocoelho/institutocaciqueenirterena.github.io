@@ -1669,9 +1669,9 @@ function cardP(p){
     '<div class="pd"><p class="pa2">'+p.artisan+'</p><h3 class="pn">'+p.name+'</h3><p class="pca">'+p.cat+'</p>' +
     '<p class="pde">'+p.desc.slice(0,68)+'...</p>' +
     '<div class="pf"><div class="ppr"><span class="ppx">R$</span>'+p.price+'</div>' +
-    '<button class="bco" onclick="event.stopPropagation();addCart('+p.id+')">Comprar</button></div>'+parc+'<p class="por">Origem: '+p.origem+'</p></div>' +
-    '<button class="adm-panel" onclick="event.stopPropagation();trocarFotoProd('+p.id+')" style="'+bs+'top:.4rem;left:.4rem;background:rgba(42,74,28,.85)" title="Trocar foto">Foto</button>' +
-    '<button class="adm-panel" onclick="event.stopPropagation();excluirFotoProd('+p.id+')" style="'+bs+'top:.4rem;right:.4rem;background:rgba(180,30,30,.85)" title="Excluir">X</button>' +
+    '<button class="bco" onclick="event.stopPropagation();addCart('+p.id+')">Comprar</button></div>'+parc+'<p class="por">'+p.origem+'</p></div>' +
+    '<button class="adm-panel" onclick="event.stopPropagation();trocarFotoProd('+p.id+')" style="'+bs+'top:.4rem;left:.4rem;background:rgba(42,74,28,.85)">Foto</button>' +
+    '<button class="adm-panel" onclick="event.stopPropagation();excluirFotoProd('+p.id+')" style="'+bs+'top:.4rem;right:.4rem;background:rgba(180,30,30,.85)">X</button>' +
     '</article>';
 }
 function renderProds(){ var g=document.getElementById('pg'); if(g) g.innerHTML=PRODS.map(cardP).join(''); }
@@ -2795,15 +2795,16 @@ window.addEventListener('scroll',function(){
 },{passive:true});
 
 // ── Animações dos slots ──
-document.addEventListener('DOMContentLoaded', function() {
-  var io = new IntersectionObserver(function(es) {
-    es.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('vis'); });
-  }, {threshold: 0.05});
-  document.querySelectorAll('.rv').forEach(function(el) { io.observe(el); });
-  carregarDoGitHub();
-  renderProds();
-  if(typeof renderAdm === 'function') renderAdm();
-});r bordas vermelhas ao digitar
+document.addEventListener('DOMContentLoaded',function(){
+  // vaso-anim nos slots fs_006 e fs_007
+  ['fs_006','fs_007'].forEach(function(key){
+    var el=document.querySelector('[data-slot-key="'+key+'"]');
+    if(el)el.classList.add('vaso-anim');
+  });
+  // grafismo-anim no fs_008
+  var el8=document.querySelector('[data-slot-key="fs_008"]');
+  if(el8)el8.classList.add('grafismo-anim');
+  // Limpar bordas vermelhas ao digitar
   ['an','aa','ac','ap','apr','ade','dir-nome','dir-cargo'].forEach(function(id){
     var el=document.getElementById(id);
     if(el){
