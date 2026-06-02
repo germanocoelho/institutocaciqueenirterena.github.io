@@ -2415,34 +2415,7 @@ function excluirItem(colecao, key, el) {
 
 // === CARREGAR TUDO DO STORAGE (expandido) ===
 var _origRenderTodos = renderTodosDoStorage;
-function renderTodosDoStorage() {
-  _origRenderTodos();
-  var db = dbLer();
 
-  // Diretoria
-  if (db.diretoria) Object.keys(db.diretoria).forEach(function(k){ renderDiretoria(db.diretoria[k], k); });
-
-  // Associados
-  if (db.associados) Object.keys(db.associados).sort(function(a,b){return (db.associados[b].ts||0)-(db.associados[a].ts||0);}).forEach(function(k){ renderAssociado(db.associados[k], k); });
-
-  // Vídeos YouTube
-  if (db.videos) Object.keys(db.videos).sort(function(a,b){return (db.videos[b].ts||0)-(db.videos[a].ts||0);}).forEach(function(k){ renderYouTube(db.videos[k], k); });
-
-  // Canal YouTube
-  if (db.yt_canal) { var btn=document.getElementById('yt-canal-link'); if(btn) btn.href=db.yt_canal; }
-
-  // Homenageados
-  if (db.homenageados) Object.keys(db.homenageados).sort(function(a,b){return (db.homenageados[b].ts||0)-(db.homenageados[a].ts||0);}).forEach(function(k){ renderHomenageado(db.homenageados[k], k); });
-
-  // Obras
-  if (db.obras) Object.keys(db.obras).sort(function(a,b){return (db.obras[b].ts||0)-(db.obras[a].ts||0);}).forEach(function(k){ renderObra(db.obras[k], k); });
-
-  // Atos/Documentos
-  if (db.atos) Object.keys(db.atos).sort(function(a,b){return (db.atos[b].ts||0)-(db.atos[a].ts||0);}).forEach(function(k){ renderAto(db.atos[k], k); });
-}
-
-
-// Event delegation para botões excluir
 document.addEventListener('click', function(e) {
   if (!e.target.dataset.excluir || !document.body.classList.contains('adm-ok')) return;
   var el = e.target.closest('[data-key]');
@@ -2481,87 +2454,10 @@ var _ghSha = '0967ef424bce6791893e9a57bb952f80fd536e93';
 var DB_KEY = 'icet_db_v1';
 var _dirFotoData = null; // foto base64 do membro da diretoria
 
-function dbLer() {
-  try {
-    var s = localStorage.getItem(DB_KEY);
-    if (s) { _memDb = JSON.parse(s); return _memDb; }
-  } catch(e) {}
-  return _memDb || {};
-}
 
-function dbSalvar(dados) {
-  _memDb = dados;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
-}
 
-function salvarNoGitHub() {
-  var dados = dbLer();
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
-  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    var sha = res.sha || _ghSha;
-    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
-    return fetch(GH_API, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    if (res.content) { _ghSha = res.content.sha; notif('💾 Salvo na nuvem!'); }
-    else { notif('⚠️ Erro: ' + (res.message||'verifique conexão')); }
-  })
-  .catch(function(){ notif('⚠️ Erro de conexão ao salvar'); });
-}
 
-function carregarDoGitHub() {
-  fetch(GH_API + '?t=' + Date.now(), {
-    headers: { 'Authorization': 'token ' + GH_TOKEN }
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    if (res.content) {
-      _ghSha = res.sha;
-      var decoded = atob(res.content.replace(/\n/g,''));
-      var json = JSON.parse(decodeURIComponent(escape(decoded)));
-      _memDb = json;
-      try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
-      renderTodosDoStorage();
-    } else {
-      var local = dbLer();
-      if (local && Object.keys(local).length) renderTodosDoStorage();
-    }
-  })
-  .catch(function(){
-    // GitHub falhou (CORS etc) — usar localStorage
-    var local = dbLer();
-    if (local && Object.keys(local).length) renderTodosDoStorage();
-  });
-}
 
-function renderTodosDoStorage() {
-  var dados = dbLer();
-  // Galeria
-  if (dados.galeria) {
-    Object.keys(dados.galeria).sort(function(a,b){
-      return (dados.galeria[b].ts||0)-(dados.galeria[a].ts||0);
-    }).forEach(function(key){
-      var item = dados.galeria[key];
-      if (item && item.src) renderFotoGaleria(item, key);
-    });
-  }
-  // Diretoria
-  if (dados.diretoria) {
-    Object.keys(dados.diretoria).sort(function(a,b){
-      return (dados.diretoria[a].ts||0)-(dados.diretoria[b].ts||0);
-    }).forEach(function(key){
-      var item = dados.diretoria[key];
-      if (item && key !== 'dir_001') renderMembroDiretoria(item, key);
-    });
-  }
-}
 
 document.addEventListener('DOMContentLoaded', function(){
   carregarDoGitHub();
@@ -2857,40 +2753,6 @@ function uploadFotoDiretoria(input){
   });
 }
 
-function pubDiretoria(){
-  var nome=document.getElementById('dir-nome').value.trim();
-  var cargo=document.getElementById('dir-cargo').value.trim();
-  var bio=document.getElementById('dir-bio').value.trim();
-  // Validação com vermelho
-  var ok=true;
-  ['dir-nome','dir-cargo'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el||!el.value.trim()){if(el)el.style.borderColor='#c0392b';ok=false;}
-    else{if(el)el.style.borderColor='';}
-  });
-  if(!ok){notif('⚠️ Preencha os campos em vermelho.');return;}
-  var key='dir_'+Date.now();
-  // Usar foto base64 (_dirFotoData) como CMDDI
-  var fotoSrc = _dirFotoData || '';
-  var item = {nome:nome, cargo:cargo, bio:bio, foto:fotoSrc, ts:Date.now()};
-  // Salvar no localStorage
-  var db = dbLer();
-  if(!db.diretoria) db.diretoria = {};
-  db.diretoria[key] = item;
-  dbSalvar(db);
-  salvarNoGitHub();
-  // Renderizar
-  renderMembroDiretoria(item, key);
-  // Limpar
-  ['dir-nome','dir-cargo','dir-bio'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.value='';
-  });
-  _dirFotoData = null;
-  var prev=document.getElementById('dir-preview');if(prev)prev.style.display='none';
-  var prevImg=document.getElementById('dir-preview-img');if(prevImg)prevImg.src='';
-  document.getElementById('dir-file').value='';
-  notif('✅ Membro publicado e salvo!');
-}
 
 function renderMembroDiretoria(item, key) {
   var grid = document.getElementById('grid-diretoria');
