@@ -518,6 +518,17 @@ html{scroll-behavior:smooth}
 .grafismo-anim{animation:grafismo-pulse 8s ease-in-out infinite;border-radius:8px;overflow:hidden}
 .grafismo-anim:hover{animation-play-state:paused;transform:scale(1.05)!important;box-shadow:0 16px 40px rgba(139,58,15,.3);transition:transform .3s,box-shadow .3s}
 
+
+/* Fix encavalamento nome/cargo na diretoria */
+.card-membro .dir-foto-wrap { overflow: hidden !important; }
+.card-membro .foto-legenda-bar { 
+  position: absolute; 
+  bottom: 0; 
+  left: 0; 
+  right: 0;
+  z-index: 5;
+}
+
 </style>
 
 
