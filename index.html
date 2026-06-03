@@ -1864,16 +1864,43 @@ function updFoto(id,input){
   r.readAsDataURL(input.files[0]);
 }
 function prevFoto(input){
-  if(!input.files||!input.files[0]) return;
-  var r=new FileReader();
-  r.onload=e=>{
-    var w=document.getElementById('adm-fw'); var pr=w.querySelector('.prev');
-    if(pr){ pr.src=e.target.result; pr.style.display='block'; }
-    else{ var img=document.createElement('img'); img.className='prev'; img.src=e.target.result; img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block'; w.appendChild(img); }
-    w.querySelectorAll('svg,span').forEach(el=>el.style.display='none');
+  if(!input||!input.files||!input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var b64 = e.target.result;
+    // Comprimir
+    var imgEl = new Image();
+    imgEl.onload = function(){
+      var maxW=800, maxH=800, w=imgEl.width, h=imgEl.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(imgEl,0,0,w,h);
+      var compressed = canvas.toDataURL('image/jpeg',0.78);
+      window._prodFotoB64 = compressed;
+      // Mostrar preview
+      var w2=document.getElementById('adm-fw');
+      var pr=w2?w2.querySelector('.prev'):null;
+      if(pr){pr.src=compressed;pr.style.display='block';}
+      else if(w2){
+        var img2=document.createElement('img');
+        img2.className='prev';img2.src=compressed;
+        img2.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block';
+        w2.appendChild(img2);
+      }
+      if(w2) w2.querySelectorAll('svg,span').forEach(function(el){el.style.display='none';});
+      notif('📷 Foto pronta!');
+    };
+    imgEl.onerror = function(){
+      window._prodFotoB64 = b64;
+      notif('📷 Foto pronta!');
+    };
+    imgEl.src = b64;
   };
-  r.readAsDataURL(input.files[0]);
+  reader.readAsDataURL(input.files[0]);
 }
+
 function editarP(id){
   var p=PRODS.find(x=>x.id===id); if(!p) return;
   sv('an',p.name);sv('aa',p.artisan);sv('ac',p.cat);sv('ap',p.price);sv('apr',p.prazo);sv('ade',p.desc);sv('ae',p.emoji);sv('ao',p.origem);sv('ab',p.badge);sv('apa',p.parcelas);sv('adi',p.dim);
@@ -1901,6 +1928,9 @@ function limpar(){
   var w=document.getElementById('adm-fw'); if(w){ var pr=w.querySelector('.prev'); if(pr) pr.style.display='none'; }
   ['ax','acc'].forEach(id=>{var el=document.getElementById(id);if(el)el.checked=true;});
 }
+  window._prodFotoB64 = null;
+}
+
 function pubConteudo(tp){
   var ti=v('pub-ti'),de=v('pub-de'); if(!ti||!de){ alert('Preencha título e descrição.'); return; }
   notif('✓ '+tp+' publicado(a) com sucesso!');
@@ -2893,7 +2923,7 @@ function addProd(){
   [['ax','PIX'],['acc','Cartão de Crédito'],['abo','Boleto'],['atr','Transferência'],['ade2','Débito'],['amp','Mercado Pago']].forEach(function(p2){
     if(document.getElementById(p2[0])&&document.getElementById(p2[0]).checked)pays.push(p2[1]);
   });
-  var foto=document.querySelector('#adm-fw .prev')?document.querySelector('#adm-fw .prev').src:'';
+  var foto=window._prodFotoB64||'';
   PRODS.unshift({id:Date.now(),name:n.trim(),artisan:a.trim(),cat:c,price:p,
     parcelas:parseInt(v('apa')||1),prazo:pr.trim(),dim:v('adi')||'A confirmar',
     emoji:v('ae')||'🏺',desc:de.trim(),payments:pays.length?pays:['PIX'],
