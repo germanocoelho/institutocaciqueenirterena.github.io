@@ -1077,6 +1077,8 @@ html{scroll-behavior:smooth}
 
     <div id="doc-tabs-bar" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem">
       <button class="yt-tab ativo" onclick="trocarDocTab(this,'doc-legislacao')">📜 Legislação</button>
+      <button class="yt-tab" onclick="trocarDocTab(this,'doc-ibge-brasil')">🇧🇷 IBGE · Brasil</button>
+      <button class="yt-tab" onclick="trocarDocTab(this,'doc-ibge-ms')">📍 IBGE · MS</button>
       <button class="yt-tab" onclick="trocarDocTab(this,'doc-atos')">📋 Atos</button>
       <button class="yt-tab" onclick="trocarDocTab(this,'doc-convenios')">🤝 Convênios</button>
       <button class="yt-tab" onclick="trocarDocTab(this,'doc-relatorios')">📊 Relatórios</button>
@@ -1142,6 +1144,85 @@ html{scroll-behavior:smooth}
       <button class="btn-p" onclick="pubDocICET()" style="margin-top:.5rem">✅ Publicar Documento</button>
     </div>
   </div>
+<!-- ═══ TABELA INTERATIVA MS + DOWNLOAD EXCEL ═══ -->
+<div id="doc-ibge-ms" class="yt-panel" style="display:none">
+  <div style="background:rgba(139,58,15,.08);border:1px solid rgba(242,196,90,.15);border-radius:6px;padding:1.2rem;margin-bottom:1.2rem">
+    <p style="font-size:.72rem;color:var(--ou);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem">📊 Fonte oficial · IBGE Censo 2022</p>
+    <p style="font-size:.78rem;color:rgba(249,245,237,.75);line-height:1.6;margin:0 0 .8rem">
+      Tabela complementar 25 — Pessoas indígenas por etnia, povo ou grupo, segundo os Municípios — MS, 2022.<br>
+      <strong style="color:var(--ou)">Total MS: 117.261 pessoas · 79 municípios · 3º estado do Brasil</strong>
+    </p>
+    <a href="https://raw.githubusercontent.com/germanocoelho/institutocaciqueenirterena.github.io/main/ibge_populacao_indigena_municipios_2022.xlsx" download="IBGE_populacao_indigena_MS_2022.xlsx"
+       style="display:inline-flex;align-items:center;gap:.4rem;background:#2D6A4F;color:#fff;padding:.45rem 1rem;font-size:.72rem;font-weight:700;text-decoration:none;border-radius:3px;letter-spacing:.05em">
+      ⬇ Baixar Excel completo (IBGE 2022)
+    </a>
+  </div>
+  <div style="margin-bottom:1rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <input type="text" id="ms-busca" placeholder="🔍 Buscar município..."
+      oninput="filtrarTabelaMS()"
+      style="flex:1;min-width:180px;padding:.5rem .8rem;background:rgba(255,255,255,.07);border:1px solid rgba(242,196,90,.2);color:var(--c);font-size:.82rem;border-radius:3px;outline:none">
+    <span id="ms-contagem" style="font-size:.72rem;color:rgba(249,245,237,.4);white-space:nowrap">79 municípios</span>
+  </div>
+  <div style="overflow-x:auto;border-radius:6px;border:1px solid rgba(255,255,255,.06)">
+    <table style="width:100%;border-collapse:collapse;font-size:.78rem" id="tabela-ms">
+      <thead>
+        <tr style="background:rgba(139,58,15,.35);color:var(--ou)">
+          <th onclick="ordenarTabelaMS('rank')" style="padding:.55rem .7rem;text-align:left;cursor:pointer"># ⇅</th>
+          <th onclick="ordenarTabelaMS('mun')" style="padding:.55rem .7rem;text-align:left;cursor:pointer">Município ⇅</th>
+          <th onclick="ordenarTabelaMS('total')" style="padding:.55rem .7rem;text-align:right;cursor:pointer">Pop. Indígena ⇅</th>
+          <th onclick="ordenarTabelaMS('pct')" style="padding:.55rem .7rem;text-align:right;cursor:pointer">% MS ⇅</th>
+          <th style="padding:.55rem .7rem;text-align:left">Principais etnias</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-ms" style="color:rgba(249,245,237,.85)"></tbody>
+      <tfoot>
+        <tr style="background:rgba(139,58,15,.25);font-weight:700;color:var(--ou)">
+          <td colspan="2" style="padding:.5rem .7rem">TOTAL MATO GROSSO DO SUL</td>
+          <td style="padding:.5rem .7rem;text-align:right">117.261</td>
+          <td style="padding:.5rem .7rem;text-align:right">100%</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div style="margin-top:1.5rem">
+    <p style="font-size:.7rem;color:rgba(249,245,237,.5);margin-bottom:.6rem;letter-spacing:.06em;text-transform:uppercase">Top 10 municípios</p>
+    <div id="ms-barras"></div>
+  </div>
+</div>
+<script>
+var _dadosMS = [{"rank": 1, "mun": "Campo Grande", "total": 18679, "pct": 15.9, "etnias": ["Terena", "Não sabe", "Sem declaração"]}, {"rank": 2, "mun": "Dourados", "total": 12130, "pct": 10.3, "etnias": ["Guarani Kaiowá", "Terena", "Guarani"]}, {"rank": 3, "mun": "Amambai", "total": 10014, "pct": 8.5, "etnias": ["Guarani Kaiowá", "Terena", "Guarani"]}, {"rank": 4, "mun": "Aquidauana", "total": 9490, "pct": 8.1, "etnias": ["Terena", "Não sabe", "Sem declaração"]}, {"rank": 5, "mun": "Miranda", "total": 8951, "pct": 7.6, "etnias": ["Terena", "Kadiwéu", "Não sabe"]}, {"rank": 6, "mun": "Itaporã", "total": 6427, "pct": 5.5, "etnias": ["Guarani Kaiowá", "Guarani", "Terena"]}, {"rank": 7, "mun": "Paranhos", "total": 5611, "pct": 4.8, "etnias": ["Guarani Kaiowá", "Guarani", "Guarani Nhandeva"]}, {"rank": 8, "mun": "Caarapó", "total": 5324, "pct": 4.5, "etnias": ["Guarani Kaiowá", "Guarani", "Guarani Nhandeva"]}, {"rank": 9, "mun": "Japorã", "total": 4732, "pct": 4.0, "etnias": ["Guarani Nhandeva", "Guarani", "Guarani Kaiowá"]}, {"rank": 10, "mun": "Tacuru", "total": 4260, "pct": 3.6, "etnias": ["Guarani Kaiowá", "Guarani", "Terena"]}, {"rank": 11, "mun": "Coronel Sapucaia", "total": 3671, "pct": 3.1, "etnias": ["Guarani Kaiowá", "Sem declaração", "Guarani"]}, {"rank": 12, "mun": "Sidrolândia", "total": 3327, "pct": 2.8, "etnias": ["Terena", "Guarani Kaiowá", "Sem declaração"]}, {"rank": 13, "mun": "Anastácio", "total": 2724, "pct": 2.3, "etnias": ["Terena", "Não sabe", "Sem declaração"]}, {"rank": 14, "mun": "Dois Irmãos do Buriti", "total": 2465, "pct": 2.1, "etnias": ["Terena", "Guarani Kaiowá", "Sem declaração"]}, {"rank": 15, "mun": "Nioaque", "total": 2154, "pct": 1.8, "etnias": ["Terena", "Atikum", "Não sabe"]}, {"rank": 16, "mun": "Antônio João", "total": 1521, "pct": 1.3, "etnias": ["Guarani Kaiowá", "Não sabe", "Guarani"]}, {"rank": 17, "mun": "Aral Moreira", "total": 1282, "pct": 1.1, "etnias": ["Guarani Kaiowá", "Guarani", "Pataxó Hã-Hã-Hãe"]}, {"rank": 18, "mun": "Porto Murtinho", "total": 1245, "pct": 1.1, "etnias": ["Kadiwéu", "Terena", "Kinikinau"]}, {"rank": 19, "mun": "Laguna Carapã", "total": 926, "pct": 0.8, "etnias": ["Guarani Kaiowá", "Guarani Nhandeva", "Guarani"]}, {"rank": 20, "mun": "Guia Lopes da Laguna", "total": 860, "pct": 0.7, "etnias": ["Não sabe", "Sem declaração", "Guarani Kaiowá"]}, {"rank": 21, "mun": "Maracaju", "total": 847, "pct": 0.7, "etnias": ["Guarani Kaiowá", "Terena", "Sem declaração"]}, {"rank": 22, "mun": "Iguatemi", "total": 793, "pct": 0.7, "etnias": ["Guarani Kaiowá", "Guarani", "Não sabe"]}, {"rank": 23, "mun": "Jardim", "total": 782, "pct": 0.7, "etnias": ["Não sabe", "Guarani Kaiowá", "Terena"]}, {"rank": 24, "mun": "Eldorado", "total": 778, "pct": 0.7, "etnias": ["Guarani Kaiowá", "Guarani", "Guarani Nhandeva"]}, {"rank": 25, "mun": "Juti", "total": 770, "pct": 0.7, "etnias": ["Guarani Kaiowá", "Guarani", "Não sabe"]}, {"rank": 26, "mun": "Douradina", "total": 748, "pct": 0.6, "etnias": ["Guarani Kaiowá", "Não sabe", "Sem declaração"]}, {"rank": 27, "mun": "Rio Brilhante", "total": 706, "pct": 0.6, "etnias": ["Guarani Kaiowá", "Sem declaração", "Terena"]}, {"rank": 28, "mun": "Ponta Porã", "total": 694, "pct": 0.6, "etnias": ["Guarani Kaiowá", "Guarani", "Sem declaração"]}, {"rank": 29, "mun": "Bodoquena", "total": 627, "pct": 0.5, "etnias": ["Kadiwéu", "Terena", "Paumarí"]}, {"rank": 30, "mun": "Naviraí", "total": 626, "pct": 0.5, "etnias": ["Guarani Kaiowá", "Guarani", "Sem declaração"]}, {"rank": 31, "mun": "Bonito", "total": 548, "pct": 0.5, "etnias": ["Terena", "Kadiwéu", "Sem declaração"]}, {"rank": 32, "mun": "Corumbá", "total": 539, "pct": 0.5, "etnias": ["Guató", "Terena", "Sem declaração"]}, {"rank": 33, "mun": "Bela Vista", "total": 394, "pct": 0.3, "etnias": ["Guarani Kaiowá", "Sem declaração", "Kadiwéu"]}, {"rank": 34, "mun": "Terenos", "total": 272, "pct": 0.2, "etnias": ["Terena", "Sem declaração", "Não determinada"]}, {"rank": 35, "mun": "Sete Quedas", "total": 226, "pct": 0.2, "etnias": ["Guarani Nhandeva", "Guarani Kaiowá", "Guarani"]}, {"rank": 36, "mun": "Três Lagoas", "total": 219, "pct": 0.2, "etnias": ["Terena", "Sem declaração", "Não sabe"]}, {"rank": 37, "mun": "Nova Alvorada do Sul", "total": 151, "pct": 0.1, "etnias": ["Terena", "Guarani Kaiowá", "Não sabe"]}, {"rank": 38, "mun": "Brasilândia", "total": 149, "pct": 0.1, "etnias": ["Ofayé", "Guarani Kaiowá", "Sem declaração"]}, {"rank": 39, "mun": "Ribas do Rio Pardo", "total": 148, "pct": 0.1, "etnias": ["Terena", "Não sabe", "Sem declaração"]}, {"rank": 40, "mun": "Itaquiraí", "total": 143, "pct": 0.1, "etnias": ["Guarani", "Guarani Kaiowá", "Guarani Nhandeva"]}, {"rank": 41, "mun": "São Gabriel do Oeste", "total": 128, "pct": 0.1, "etnias": ["Terena", "Sem declaração", "Não sabe"]}, {"rank": 42, "mun": "Jaraguari", "total": 93, "pct": 0.1, "etnias": ["Terena", "Mal definida", "Não sabe"]}, {"rank": 43, "mun": "Coxim", "total": 84, "pct": 0.1, "etnias": ["Terena", "Sem declaração", "Não sabe"]}, {"rank": 44, "mun": "Bataguassu", "total": 81, "pct": 0.1, "etnias": ["Guarani Kaiowá", "Sem declaração", "Terena"]}, {"rank": 45, "mun": "Mundo Novo", "total": 62, "pct": 0.1, "etnias": ["Guarani Kaiowá", "Sem declaração", "Terena"]}, {"rank": 46, "mun": "Ivinhema", "total": 57, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Não sabe", "Guarani"]}, {"rank": 47, "mun": "Ladário", "total": 55, "pct": 0.0, "etnias": ["Guató", "Terena", "Sem declaração"]}, {"rank": 48, "mun": "Rio Verde de Mato Grosso", "total": 54, "pct": 0.0, "etnias": ["Terena", "Sem declaração", "Não determinada"]}, {"rank": 49, "mun": "Chapadão do Sul", "total": 52, "pct": 0.0, "etnias": ["Terena", "Sem declaração", "Não determinada"]}, {"rank": 50, "mun": "Água Clara", "total": 49, "pct": 0.0, "etnias": ["Não sabe", "Sem declaração", "Terena"]}, {"rank": 51, "mun": "Bandeirantes", "total": 45, "pct": 0.0, "etnias": ["Sem declaração", "Guarani Kaiowá", "Terena"]}, {"rank": 52, "mun": "Rochedo", "total": 41, "pct": 0.0, "etnias": ["Terena", "Guarani", "Não sabe"]}, {"rank": 53, "mun": "Glória de Dourados", "total": 40, "pct": 0.0, "etnias": ["Terena", "Guarani", "Guarani Kaiowá"]}, {"rank": 54, "mun": "Nova Andradina", "total": 39, "pct": 0.0, "etnias": ["Sem declaração", "Terena", "Guarani Kaiowá"]}, {"rank": 55, "mun": "Vicentina", "total": 35, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Guarani", "Sem declaração"]}, {"rank": 56, "mun": "Deodápolis", "total": 30, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Mal definida", "Guarani Nhandeva"]}, {"rank": 57, "mun": "Angélica", "total": 24, "pct": 0.0, "etnias": ["Terena", "Não determinada", "Sem declaração"]}, {"rank": 58, "mun": "Costa Rica", "total": 24, "pct": 0.0, "etnias": ["Não sabe", "Guarani Kaiowá", "Mal definida"]}, {"rank": 59, "mun": "Jateí", "total": 23, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Guarani", "Terena"]}, {"rank": 60, "mun": "Rio Negro", "total": 22, "pct": 0.0, "etnias": ["Terena", "Não sabe", "Sem declaração"]}, {"rank": 61, "mun": "Cassilândia", "total": 21, "pct": 0.0, "etnias": ["Sem declaração", "Guarani Kaiowá", "Xavante"]}, {"rank": 62, "mun": "Batayporã", "total": 20, "pct": 0.0, "etnias": ["Sem declaração", "Terena", "Guarani"]}, {"rank": 63, "mun": "Novo Horizonte do Sul", "total": 20, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Sem declaração"]}, {"rank": 64, "mun": "Paranaíba", "total": 20, "pct": 0.0, "etnias": ["Não sabe", "Sem declaração", "Bororo"]}, {"rank": 65, "mun": "Aparecida do Taboado", "total": 19, "pct": 0.0, "etnias": ["Mal definida", "Sem declaração", "Potiguara"]}, {"rank": 66, "mun": "Corguinho", "total": 19, "pct": 0.0, "etnias": ["Terena", "Sem declaração", "Guarani Kaiowá"]}, {"rank": 67, "mun": "Inocência", "total": 19, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Sem declaração", "Guarani Nhandeva"]}, {"rank": 68, "mun": "Caracol", "total": 18, "pct": 0.0, "etnias": ["Sem declaração", "Não sabe", "Terena"]}, {"rank": 69, "mun": "Camapuã", "total": 15, "pct": 0.0, "etnias": ["Não determinada", "Guarani Kaiowá", "Terena"]}, {"rank": 70, "mun": "Fátima do Sul", "total": 15, "pct": 0.0, "etnias": ["Guarani", "Guarani Kaiowá", "Não sabe"]}, {"rank": 71, "mun": "Santa Rita do Pardo", "total": 14, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Terena", "Xipáya"]}, {"rank": 72, "mun": "Selvíria", "total": 13, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Terena", "Sem declaração"]}, {"rank": 73, "mun": "Anaurilândia", "total": 11, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Mal definida", "Sem declaração"]}, {"rank": 74, "mun": "Figueirão", "total": 11, "pct": 0.0, "etnias": ["Sem declaração", "Mal definida"]}, {"rank": 75, "mun": "Paraíso das Águas", "total": 11, "pct": 0.0, "etnias": ["Tremembé", "Atikum", "Terena"]}, {"rank": 76, "mun": "Sonora", "total": 11, "pct": 0.0, "etnias": ["Sem declaração", "Terena", "Guarani Kaiowá"]}, {"rank": 77, "mun": "Alcinópolis", "total": 7, "pct": 0.0, "etnias": ["Guarani Kaiowá", "Kadiwéu"]}, {"rank": 78, "mun": "Pedro Gomes", "total": 3, "pct": 0.0, "etnias": ["Terena", "Kayapó"]}, {"rank": 79, "mun": "Taquarussu", "total": 3, "pct": 0.0, "etnias": ["Guarani", "Guarani Kaiowá", "Sem declaração"]}];
+var _msOrdem = 'rank'; var _msAsc = true;
+function renderTabelaMS(dados) {
+  var tbody = document.getElementById('tbody-ms'); if(!tbody) return;
+  tbody.innerHTML = '';
+  dados.forEach(function(d,i) {
+    var dest = d.mun==='Campo Grande' ? 'background:rgba(139,58,15,.18);font-weight:600' : (i%2===0?'':'background:rgba(255,255,255,.02)');
+    tbody.innerHTML += '<tr style="'+dest+'"><td style="padding:.42rem .7rem;color:rgba(249,245,237,.4)">'+(i+1)+'</td><td style="padding:.42rem .7rem">'+d.mun+'</td><td style="padding:.42rem .7rem;text-align:right;font-weight:600">'+d.total.toLocaleString('pt-BR')+'</td><td style="padding:.42rem .7rem;text-align:right">'+d.pct+'%</td><td style="padding:.42rem .7rem;font-size:.7rem;color:rgba(249,245,237,.55)">'+d.etnias.join(' · ')+'</td></tr>';
+  });
+  var c=document.getElementById('ms-contagem'); if(c) c.textContent=dados.length+' município'+(dados.length!==1?'s':'');
+}
+function filtrarTabelaMS() {
+  var q=(document.getElementById('ms-busca').value||'').toLowerCase();
+  renderTabelaMS(_dadosMS.filter(function(d){ return d.mun.toLowerCase().includes(q); }));
+}
+function ordenarTabelaMS(campo) {
+  if(_msOrdem===campo){_msAsc=!_msAsc;}else{_msOrdem=campo;_msAsc=campo==='mun';}
+  var q=(document.getElementById('ms-busca').value||'').toLowerCase();
+  var dados=_dadosMS.filter(function(d){return d.mun.toLowerCase().includes(q);});
+  dados.sort(function(a,b){ return campo==='mun'?(_msAsc?a.mun.localeCompare(b.mun,'pt-BR'):b.mun.localeCompare(a.mun,'pt-BR')):(_msAsc?a[campo]-b[campo]:b[campo]-a[campo]); });
+  renderTabelaMS(dados);
+}
+function renderBarrasMS() {
+  var cont=document.getElementById('ms-barras'); if(!cont) return;
+  var top10=_dadosMS.slice(0,10); var max=top10[0].total;
+  cont.innerHTML=top10.map(function(d){
+    var pct=Math.round(d.total/max*100); var cor=d.mun==='Campo Grande'?'#8B3A0F':'#2D6A4F';
+    return '<div style="margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem"><span style="width:120px;font-size:.68rem;color:rgba(249,245,237,.7);text-align:right;flex-shrink:0">'+d.mun+'</span><div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px;height:18px;position:relative"><div style="width:'+pct+'%;background:'+cor+';height:100%;border-radius:2px;transition:.4s"></div><span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.65rem;color:rgba(249,245,237,.6)">'+d.total.toLocaleString('pt-BR')+'</span></div></div>';
+  }).join('');
+}
+document.addEventListener('DOMContentLoaded',function(){ renderTabelaMS(_dadosMS); renderBarrasMS(); });
+</script>
 </section>
 
 
