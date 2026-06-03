@@ -1923,12 +1923,13 @@ function renderAdm(){
   }).join('');
 }
 function limpar(){
-  ['an','aa','ap','apr','adi','ae','ade'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});
+  ['an','aa','ap','apr','adi','ae','ade'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';
+  window._prodFotoB64 = null;
+});
   sv('ac','');sv('apa','1');sv('ab','');
   var w=document.getElementById('adm-fw'); if(w){ var pr=w.querySelector('.prev'); if(pr) pr.style.display='none'; }
   ['ax','acc'].forEach(id=>{var el=document.getElementById(id);if(el)el.checked=true;});
 }
-  window._prodFotoB64 = null;
 }
 
 function pubConteudo(tp){
