@@ -2779,7 +2779,7 @@ function addProd(){
   marcar('ac',c&&c.trim()&&c!=='');marcar('ap',p&&p>0);
   marcar('apr',pr&&pr.trim());marcar('ade',de&&de.trim());
   if(erros.length>0){
-    notif('⚠️ Campos em vermelho precisam ser preenchidos.');
+    notif('⚠️ Preencha os campos marcados em vermelho.'); alert('Preencha todos os campos obrigatórios (*) marcados em vermelho.');
     var primeiro=document.getElementById(erros[0]);
     if(primeiro)primeiro.focus();
     return;
