@@ -1552,6 +1552,10 @@ html{scroll-behavior:smooth}
 <div class="adm-modal" id="adm-modal">
   <div class="adm-box">
     <button onclick="document.getElementById('adm-modal').classList.remove('open')" style="position:absolute;top:.8rem;right:1rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--tx2)">✕</button>
+    <button onclick="if(confirm('Limpar dados do navegador? Use se houver duplicatas.')){localStorage.removeItem('icet_db_v1');localStorage.removeItem('cmddi_db_v3');location.reload();}" 
+      style="position:absolute;top:.8rem;right:3.5rem;background:rgba(180,30,30,.2);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem">
+      🗑 Limpar cache
+    </button>
     <h3>🔒 Área Administrativa</h3>
     <p>Instituto Cacique Enir Terena — acesso restrito à equipe autorizada.</p>
     <div class="adm-pw-err" id="adm-err">Senha incorreta. Tente novamente.</div>
