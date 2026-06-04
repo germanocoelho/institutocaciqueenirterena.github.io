@@ -1709,7 +1709,10 @@ function salvarNoGitHubBtn(btn) {
   var orig = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled=true; btn.innerHTML='⏳ Salvando...'; btn.style.background='rgba(139,58,15,.6)'; btn.style.color='#F2C45A'; }
   var dados = dbLer();
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  var jsonStr = JSON.stringify(dados);
+  var bytes = new TextEncoder().encode(jsonStr);
+  var binStr = Array.from(bytes).map(function(b){return String.fromCharCode(b);}).join('');
+  var conteudo = btoa(binStr);
   fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
   .then(function(res){
@@ -1743,7 +1746,10 @@ function salvarNoGitHubBtn(btn) {
 
 function salvarNoGitHub() {
   var dados = dbLer();
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  var jsonStr = JSON.stringify(dados);
+  var bytes = new TextEncoder().encode(jsonStr);
+  var binStr = Array.from(bytes).map(function(b){return String.fromCharCode(b);}).join('');
+  var conteudo = btoa(binStr);
   fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
   .then(function(res){
@@ -3038,7 +3044,10 @@ function salvarNoGitHubBtn(btn) {
   var orig = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled=true; btn.innerHTML='⏳ Salvando...'; btn.style.background='rgba(139,58,15,.6)'; btn.style.color='#F2C45A'; }
   var dados = dbLer();
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  var jsonStr = JSON.stringify(dados);
+  var bytes = new TextEncoder().encode(jsonStr);
+  var binStr = Array.from(bytes).map(function(b){return String.fromCharCode(b);}).join('');
+  var conteudo = btoa(binStr);
   fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
   .then(function(res){
