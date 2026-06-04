@@ -1727,23 +1727,14 @@ function salvarNoGitHub() {
 }
 
 function carregarDoGitHub() {
+  // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
+  renderTodosDoStorage();
+  initDiretoria();
+  // GitHub apenas para capturar SHA (backup)
   fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
-  .then(function(res){
-    if (res.content) {
-      _ghSha = res.sha;
-      var decoded = atob(res.content.replace(/\n/g,''));
-      var json = JSON.parse(decodeURIComponent(escape(decoded)));
-      _memDb = json;
-      try { localStorage.setItem(DB_KEY, JSON.stringify(json)); } catch(e) {}
-    }
-    renderTodosDoStorage();
-    initDiretoria();
-  })
-  .catch(function(){
-    renderTodosDoStorage();
-    initDiretoria();
-  });
+  .then(function(res){ if (res.sha) _ghSha = res.sha; })
+  .catch(function(){});
 }
 function renderTodosDoStorage() {
   var dados = dbLer();
