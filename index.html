@@ -2323,6 +2323,12 @@ function renderDiretoria(item, key) {
     '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
     '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
     (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">'+item.bio+'</div>' : '') +
+    '<div class="adm" style="margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center">' +
+      '<button class="fbtn fbtn-exc" onclick="excluirMembroDir(\''+key+'\',this)" style="font-size:.6rem;padding:.25rem .6rem">🗑 Excluir</button>' +
+      '<button class="fbtn fbtn-leg" onclick="editarBioDir(\''+key+'\',this)" style="font-size:.6rem;padding:.25rem .6rem">✏️ Editar</button>' +
+      '<button class="fbtn fbtn-mov" onclick="moverCardDir(this,-1)" style="font-size:.6rem;padding:.25rem .6rem">◀</button>' +
+      '<button class="fbtn fbtn-mov" onclick="moverCardDir(this,1)" style="font-size:.6rem;padding:.25rem .6rem">▶</button>' +
+    '</div>' +
     '</div>';
   var grid = document.getElementById('grid-diretoria');
   if(grid) grid.insertAdjacentHTML('beforeend', card);
@@ -3080,6 +3086,12 @@ function renderMembroDiretoria(item, key) {
     '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
     '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
     (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">'+item.bio+'</div>' : '') +
+    '<div class="adm" style="margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center">' +
+      '<button class="fbtn fbtn-exc" onclick="excluirMembroDir(\''+key+'\',this)" style="font-size:.6rem;padding:.25rem .6rem">🗑 Excluir</button>' +
+      '<button class="fbtn fbtn-leg" onclick="editarBioDir(\''+key+'\',this)" style="font-size:.6rem;padding:.25rem .6rem">✏️ Editar</button>' +
+      '<button class="fbtn fbtn-mov" onclick="moverCardDir(this,-1)" style="font-size:.6rem;padding:.25rem .6rem">◀</button>' +
+      '<button class="fbtn fbtn-mov" onclick="moverCardDir(this,1)" style="font-size:.6rem;padding:.25rem .6rem">▶</button>' +
+    '</div>' +
     '</div>';
   var grid = document.getElementById('grid-diretoria');
   if(grid) grid.insertAdjacentHTML('beforeend', card);
@@ -3267,6 +3279,58 @@ document.addEventListener('DOMContentLoaded',function(){
   renderTodosDoStorage();
   carregarDoGitHub();
 });
+
+
+// ── Botões ADM nos cards de Diretoria ──
+function excluirMembroDir(key, btn) {
+  if (!confirm('Excluir este membro?')) return;
+  var card = btn.closest('.card-membro');
+  if (card) card.remove();
+  var db = dbLer();
+  if (db.diretoria && db.diretoria[key]) {
+    delete db.diretoria[key];
+    dbSalvar(db);
+    salvarNoGitHub();
+  }
+  notif('🗑 Membro excluído.');
+}
+
+function editarBioDir(key, btn) {
+  var card = btn.closest('.card-membro');
+  var db = dbLer();
+  var item = db.diretoria && db.diretoria[key];
+  if (!item) return;
+  var novaBio = prompt('Editar biografia:', item.bio || '');
+  if (novaBio === null) return;
+  item.bio = novaBio.trim();
+  var novoCargo = prompt('Editar cargo:', item.cargo || '');
+  if (novoCargo === null) return;
+  item.cargo = novoCargo.trim();
+  db.diretoria[key] = item;
+  dbSalvar(db);
+  salvarNoGitHub();
+  // Atualizar card na tela
+  var grid = document.getElementById('grid-diretoria');
+  if (grid && card) {
+    card.remove();
+    renderMembroDiretoria(item, key);
+    if (document.body.classList.contains('adm-unlocked')) ativarBotoesFotos();
+  }
+  notif('✅ Membro atualizado!');
+}
+
+function moverCardDir(btn, dir) {
+  var card = btn.closest('.card-membro');
+  var grid = card && card.parentElement;
+  if (!grid) return;
+  var cards = Array.from(grid.querySelectorAll('.card-membro'));
+  var idx = cards.indexOf(card);
+  var novo = idx + dir;
+  if (novo < 0 || novo >= cards.length) return;
+  if (dir === 1) grid.insertBefore(card, cards[novo].nextSibling);
+  else grid.insertBefore(card, cards[novo]);
+  notif('↕ Posição alterada!');
+}
 
 </script>
 
