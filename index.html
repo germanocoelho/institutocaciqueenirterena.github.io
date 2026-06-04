@@ -1738,6 +1738,24 @@ function carregarDoGitHub() {
 }
 function renderTodosDoStorage() {
   var dados = dbLer();
+  // Slots .fs — restaurar fotos
+  if (dados.fotos) {
+    Object.keys(dados.fotos).forEach(function(slotKey){
+      var item=dados.fotos[slotKey];
+      if(!item||!item.src) return;
+      var el=document.querySelector('[data-slot-key="'+slotKey+'"]');
+      if(!el) return;
+      el.style.backgroundImage='url('+item.src+')';
+      el.style.backgroundSize='cover';
+      el.style.backgroundPosition='center top';
+      el.querySelectorAll('svg,span,.fs-embreve').forEach(function(x){x.style.display='none';});
+      if(item.leg){
+        var lb=el.querySelector('.foto-legenda-bar');
+        if(!lb){lb=document.createElement('div');lb.className='foto-legenda-bar';el.appendChild(lb);}
+        lb.textContent=item.leg;
+      }
+    });
+  }
   // Galeria
   ['gal-grid-todos','gal-grid-eventos','gal-grid-cultura','gal-grid-natureza'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.innerHTML = '';
@@ -1750,13 +1768,13 @@ function renderTodosDoStorage() {
       if (item && item.src) renderFotoGaleria(item, key);
     });
   }
-  // Produtos — restaurar do localStorage
+  // Produtos
   if (dados.prods && dados.prods.length > 0) {
     PRODS.length = 0;
     dados.prods.forEach(function(p){ PRODS.push(p); });
     if (typeof renderProds === 'function') renderProds();
   }
-  // Diretoria — via initDiretoria
+  // Diretoria
   if (typeof initDiretoria === 'function') setTimeout(initDiretoria, 100);
 }
 function gr(cat){ var k=Object.keys(GR).find(k=>cat.includes(k))||'Cerâmica'; return GR[k].split(','); }
@@ -2615,21 +2633,24 @@ function atualizarOverlayEl(el){
 function carregarFoto(input){
   if(!input||!input.files||!input.files[0]) return;
   var el=input.parentElement;
-  notif('⏳ Enviando foto...');
-  var fd=new FormData();
-  fd.append('file',input.files[0]);
-  fd.append('upload_preset',CLOUD_PRESET);
-  fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload',{method:'POST',body:fd})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.secure_url){
-      aplicarFotoEl(el, d.secure_url);
-      notif('✅ Foto salva!');
-    } else {
-      notif('❌ Cloudinary: '+(d.error&&d.error.message||JSON.stringify(d)));
-    }
-  })
-  .catch(function(e){notif('❌ Erro: '+e.message);});
+  var slotKey=el.dataset.slotKey||('slot_'+Math.random().toString(36).slice(2,8));
+  el.dataset.slotKey=slotKey;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var imgEl=new Image();
+    imgEl.onload=function(){
+      var maxW=800,maxH=800,w=imgEl.width,h=imgEl.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(imgEl,0,0,w,h);
+      aplicarESalvar(el,slotKey,canvas.toDataURL('image/jpeg',.78));
+    };
+    imgEl.onerror=function(){aplicarESalvar(el,slotKey,e.target.result);};
+    imgEl.src=e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
   input.value='';
 }
 
