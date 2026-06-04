@@ -3072,28 +3072,17 @@ function initDiretoria() {
   }
 }
 function renderMembroDiretoria(item, key) {
-  var grid = document.getElementById('grid-diretoria');
-  if (!grid) return;
-  var foto = item.foto || '';
-  var nome = item.nome || 'Membro';
-  var cargo = item.cargo || '';
-  var div = document.createElement('div');
-  div.className = 'dir-card';
-  div.setAttribute('data-key', key);
-  div.style.position = 'relative';
-  var btnStyle = 'border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.75rem';
-  var fotoHtml = foto
-    ? '<img src="' + foto + '" alt="' + nome + '" style="width:100%;height:100%;object-fit:cover">'
-    : '<span style="font-size:2.5rem">\u{1F464}</span>';
-  div.innerHTML =
-    '<div class="dir-foto">' + fotoHtml + '</div>' +
-    '<div class="dir-info"><strong>' + nome + '</strong><span>' + cargo + '</span></div>' +
-    '<div class="adm" style="position:absolute;top:.3rem;right:.3rem;display:flex;gap:.3rem">' +
-      '<button title="Mover esquerda" style="background:rgba(42,74,28,.85);' + btnStyle + '" onclick="moverMembro(this,-1)">&#9664;</button>' +
-      '<button title="Mover direita" style="background:rgba(42,74,28,.85);' + btnStyle + '" onclick="moverMembro(this,1)">&#9654;</button>' +
-      '<button title="Excluir" style="background:rgba(180,30,30,.85);' + btnStyle + '" onclick="excluirMembro(this)">&#x2715;</button>' +
+  var fotoHtml = item.foto
+    ? '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
+    : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">👤</div>';
+  var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
+    fotoHtml +
+    '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
+    '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
+    (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">'+item.bio+'</div>' : '') +
     '</div>';
-  grid.appendChild(div);
+  var grid = document.getElementById('grid-diretoria');
+  if(grid) grid.insertAdjacentHTML('beforeend', card);
 }
 
 function moverMembro(btn, direcao) {
