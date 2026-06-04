@@ -1221,7 +1221,16 @@ function renderBarrasMS() {
     return '<div style="margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem"><span style="width:120px;font-size:.68rem;color:rgba(249,245,237,.7);text-align:right;flex-shrink:0">'+d.mun+'</span><div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px;height:18px;position:relative"><div style="width:'+pct+'%;background:'+cor+';height:100%;border-radius:2px;transition:.4s"></div><span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.65rem;color:rgba(249,245,237,.6)">'+d.total.toLocaleString('pt-BR')+'</span></div></div>';
   }).join('');
 }
-document.addEventListener('DOMContentLoaded',function(){ renderTabelaMS(_dadosMS); renderBarrasMS(); });
+document.addEventListener('DOMContentLoaded',function(){
+  // Carregar produtos salvos do localStorage
+  try {
+    var db=dbLer();
+    if(db.prods && db.prods.length > 0) {
+      PRODS.length = 0;
+      db.prods.forEach(function(p){ PRODS.push(p); });
+      renderProds();
+    }
+  } catch(e){} renderTabelaMS(_dadosMS); renderBarrasMS(); });
 </script>
 </section>
 
@@ -2726,6 +2735,7 @@ function uploadFotoProd(input){
       if(!img){img=document.createElement('img');img.className='pfr';pi.insertBefore(img,pi.firstChild);}
       img.src=res.secure_url;
       var nf=pi.querySelector('.pnf');if(nf)nf.style.opacity='0';
+      var db2=dbLer(); db2.prods=PRODS; dbSalvar(db2);
       notif('✅ Foto do produto salva!');
     } else {
       notif('⚠️ Erro: '+(res.error&&res.error.message||'verifique o preset'));
@@ -2878,6 +2888,8 @@ function addProd(){
     emoji:v('ae')||'🏺',desc:de.trim(),payments:pays.length?pays:['PIX'],
     origem:or,badge:v('ab'),foto:foto});
   renderProds();renderAdm();limpar();
+  // Salvar produtos no localStorage
+  var db=dbLer(); db.prods=PRODS; dbSalvar(db);
   notif('✓ Produto adicionado!');
 }
 
