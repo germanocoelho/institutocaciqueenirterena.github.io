@@ -2316,7 +2316,7 @@ function pubDiretoria() {
 }
 function renderDiretoria(item, key) {
   var fotoHtml = item.foto
-    ? '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
+    ? '<div class="dir-foto-wrap" style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
     : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">\u{1F464}</div>';
   var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
     fotoHtml +
@@ -3073,7 +3073,7 @@ function initDiretoria() {
 }
 function renderMembroDiretoria(item, key) {
   var fotoHtml = item.foto
-    ? '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
+    ? '<div class="dir-foto-wrap" style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
     : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">👤</div>';
   var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
     fotoHtml +
