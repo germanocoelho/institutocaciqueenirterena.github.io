@@ -306,7 +306,7 @@ footer{background:var(--k);color:var(--pa);padding:3.8rem 2.5rem 1.8rem;border-t
 .adm-locked .adm{display:none!important}
 body:not(.adm-unlocked) .adm{display:none!important}
 body:not(.adm-unlocked) .adm-panel{display:none!important}
-body.adm-unlocked .adm{display:block!important}
+body.adm-unlocked .adm{display:block!important}body.adm-unlocked #btn-salvar-gh{display:flex!important;align-items:center;gap:.4rem}
 body.adm-unlocked .adm-panel{display:inline-flex!important}
 body.adm-unlocked .galeria-item .adm-panel{display:flex!important}
 body.adm-unlocked .dir-card .adm{display:flex!important}
@@ -413,7 +413,7 @@ body.adm-ok .adm-drag-hint { display:block; }
 
 /* ═══ ADM OCULTO ═══ */
 .adm{display:none!important}
-body.adm-unlocked .adm{display:block!important}
+body.adm-unlocked .adm{display:block!important}body.adm-unlocked #btn-salvar-gh{display:flex!important;align-items:center;gap:.4rem}
 .adm-panel{display:none!important}
 body.adm-unlocked .adm-panel{display:block!important}
 .nc-exc-btn{display:none!important}
@@ -1249,13 +1249,7 @@ document.addEventListener('DOMContentLoaded',function(){
     <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem"></div>
     <div class="adm" style="margin-top:2rem">
       <div style="background:rgba(139,58,15,.12);border-radius:6px;padding:1.2rem;border:1px solid rgba(242,196,90,.15)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <span style="font-size:.85rem;font-weight:700;color:#F2C45A">⚙ Gerenciar Diretoria</span>
-          <button id="btn-salvar-gh" onclick="salvarNoGitHubBtn(this)" 
-            style="background:rgba(42,74,28,.85);border:1px solid rgba(82,183,136,.4);color:#7bc67e;font-size:.65rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.3rem .7rem">
-            💾 Salvar tudo no GitHub
-          </button>
-        </div>
+        <div style="font-size:.85rem;font-weight:700;color:#F2C45A;margin-bottom:1rem">⚙ Gerenciar Diretoria</div>
         <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.08)">
           <div style="font-size:.75rem;color:rgba(249,245,237,.6);margin-bottom:.6rem;font-weight:600">✏️ Editar Maria Auxiliadora Bezerra</div>
           <div style="margin-bottom:.5rem"><label class="fl2">Cargo</label><input type="text" class="fi" id="maria-cargo" placeholder="Presidente"></div>
@@ -1660,6 +1654,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <!-- ══ BOTÃO ADMIN FLUTUANTE ══ -->
 <button class="adm-fab" onclick="document.getElementById('adm-modal').classList.add('open')" title="Área Administrativa — publicar notícias, eventos, fotos e gerenciar produtos">⚙ ADM</button>
+<button id="btn-salvar-gh" class="adm" onclick="salvarNoGitHubBtn(this)"
+  style="display:none;position:fixed;bottom:5rem;right:1.2rem;z-index:9998;background:rgba(42,74,28,.92);border:1px solid rgba(82,183,136,.5);color:#7bc67e;font-size:.7rem;font-weight:700;cursor:pointer;border-radius:20px;padding:.45rem 1rem;box-shadow:0 2px 12px rgba(0,0,0,.4)">
+  💾 Salvar no GitHub
+</button>
 
 <!-- ══ MODAL DE SENHA ADMIN ══ -->
 <div class="adm-modal" id="adm-modal">
