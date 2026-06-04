@@ -1727,51 +1727,14 @@ function salvarNoGitHub() {
 }
 
 function carregarDoGitHub() {
-  var dbLocal = dbLer();
-  var temDados = dbLocal && (
-    (dbLocal.fotos && Object.keys(dbLocal.fotos).length > 0) ||
-    (dbLocal.galeria && Object.keys(dbLocal.galeria).length > 0) ||
-    (dbLocal.prods && dbLocal.prods.length > 0) ||
-    (dbLocal.diretoria && Object.keys(dbLocal.diretoria).length > 0)
-  );
-  if (temDados) {
-    // localStorage tem dados — restaurar e capturar SHA
-    renderTodosDoStorage();
-    initDiretoria();
-    fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-    .then(function(r){ return r.json(); })
-    .then(function(res){ if (res.sha) _ghSha = res.sha; })
-    .catch(function(){});
-  } else {
-    // localStorage vazio — carregar dados do GitHub
-    notif('⏳ Carregando dados...');
-    fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-    .then(function(r){ return r.json(); })
-    .then(function(res){
-      if (res.sha) _ghSha = res.sha;
-      if (res.content) {
-        try {
-          var conteudo = decodeURIComponent(escape(atob(res.content.replace(/\n/g,''))));
-          var dados = JSON.parse(conteudo);
-          dbSalvar(dados);
-          renderTodosDoStorage();
-          initDiretoria();
-          renderProds();
-          notif('✅ Dados carregados do servidor!');
-        } catch(e) {
-          renderTodosDoStorage();
-          initDiretoria();
-        }
-      } else {
-        renderTodosDoStorage();
-        initDiretoria();
-      }
-    })
-    .catch(function(){
-      renderTodosDoStorage();
-      initDiretoria();
-    });
-  }
+  // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
+  renderTodosDoStorage();
+  initDiretoria();
+  // GitHub apenas para capturar SHA (backup)
+  fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  .then(function(r){ return r.json(); })
+  .then(function(res){ if (res.sha) _ghSha = res.sha; })
+  .catch(function(){});
 }
 function renderTodosDoStorage() {
   var dados = dbLer();
