@@ -1774,14 +1774,41 @@ function salvarNoGitHub() {
 }
 
 function carregarDoGitHub() {
-  // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
-  renderTodosDoStorage();
-  initDiretoria();
-  // GitHub apenas para capturar SHA (backup)
   fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
-  .then(function(res){ if (res.sha) _ghSha = res.sha; })
-  .catch(function(){});
+  .then(function(res){
+    if (res.sha) _ghSha = res.sha;
+    // Sempre carregar dados do GitHub e mesclar com localStorage
+    if (res.content) {
+      try {
+        var bytes = Uint8Array.from(atob(res.content.replace(/\n/g,'')), function(c){return c.charCodeAt(0);});
+        var jsonStr = new TextDecoder().decode(bytes);
+        var dadosGH = JSON.parse(jsonStr);
+        var dadosLocal = dbLer();
+        // Mesclar: GitHub tem prioridade para fotos, local tem prioridade para o resto
+        var dadosMerge = Object.assign({}, dadosGH, dadosLocal);
+        // Para fotos: mesclar chave a chave (GitHub preenche o que local não tem)
+        if (dadosGH.fotos) {
+          dadosMerge.fotos = Object.assign({}, dadosGH.fotos, dadosLocal.fotos || {});
+        }
+        if (dadosGH.galeria) {
+          dadosMerge.galeria = Object.assign({}, dadosGH.galeria, dadosLocal.galeria || {});
+        }
+        if (dadosGH.diretoria) {
+          dadosMerge.diretoria = Object.assign({}, dadosGH.diretoria, dadosLocal.diretoria || {});
+        }
+        dbSalvar(dadosMerge);
+      } catch(e) {}
+    }
+    renderTodosDoStorage();
+    initDiretoria();
+    renderProds();
+  })
+  .catch(function(){
+    renderTodosDoStorage();
+    initDiretoria();
+    renderProds();
+  });
 }
 function renderTodosDoStorage() {
   var dados = dbLer();
