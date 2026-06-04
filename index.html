@@ -1249,7 +1249,13 @@ document.addEventListener('DOMContentLoaded',function(){
     <div id="grid-diretoria" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:1.5rem"></div>
     <div class="adm" style="margin-top:2rem">
       <div style="background:rgba(139,58,15,.12);border-radius:6px;padding:1.2rem;border:1px solid rgba(242,196,90,.15)">
-        <div style="font-size:.85rem;font-weight:700;color:#F2C45A;margin-bottom:1rem">⚙ Gerenciar Diretoria</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <span style="font-size:.85rem;font-weight:700;color:#F2C45A">⚙ Gerenciar Diretoria</span>
+          <button id="btn-salvar-gh" onclick="salvarNoGitHubBtn(this)" 
+            style="background:rgba(42,74,28,.85);border:1px solid rgba(82,183,136,.4);color:#7bc67e;font-size:.65rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.3rem .7rem">
+            💾 Salvar tudo no GitHub
+          </button>
+        </div>
         <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.08)">
           <div style="font-size:.75rem;color:rgba(249,245,237,.6);margin-bottom:.6rem;font-weight:600">✏️ Editar Maria Auxiliadora Bezerra</div>
           <div style="margin-bottom:.5rem"><label class="fl2">Cargo</label><input type="text" class="fi" id="maria-cargo" placeholder="Presidente"></div>
@@ -1663,10 +1669,7 @@ document.addEventListener('DOMContentLoaded',function(){
       style="position:absolute;top:.8rem;right:3.5rem;background:rgba(180,30,30,.2);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem">
       🗑 Limpar cache
     </button>
-    <button id="btn-salvar-gh" onclick="salvarNoGitHubBtn(this)" 
-      style="position:absolute;top:3.2rem;right:1rem;background:rgba(42,74,28,.85);border:1px solid rgba(82,183,136,.4);color:#7bc67e;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem;min-width:140px">
-      💾 Salvar tudo no GitHub
-    </button>
+
     <h3>🔒 Área Administrativa</h3>
     <p>Instituto Cacique Enir Terena — acesso restrito à equipe autorizada.</p>
     <div class="adm-pw-err" id="adm-err">Senha incorreta. Tente novamente.</div>
