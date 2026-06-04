@@ -3307,6 +3307,9 @@ function aplicarESalvar(el,slotKey,src){
 document.addEventListener('DOMContentLoaded',function(){
   renderTodosDoStorage();
   carregarDoGitHub();
+  renderProds();
+  if(typeof renderTabelaMS==='function') renderTabelaMS(_dadosMS);
+  if(typeof renderBarrasMS==='function') renderBarrasMS();
 });
 
 
