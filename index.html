@@ -2315,15 +2315,17 @@ function pubDiretoria() {
   notif('✅ Membro da diretoria publicado!');
 }
 function renderDiretoria(item, key) {
-  var foto = item.foto ? '<img src="'+item.foto+'" alt="'+item.nome+'" onerror="this.style.display=\'none\'">' : '<div style="width:100px;height:100px;border-radius:50%;background:rgba(200,135,58,.2);margin:0 auto .8rem;display:flex;align-items:center;justify-content:center;font-size:2rem">👤</div>';
-  var html = '<div class="card-membro" data-key="'+key+'">' + foto +
-    '<div class="cm-nome">'+item.nome+'</div>' +
-    '<div class="cm-cargo">'+item.cargo+'</div>' +
-    (item.bio?'<div class="cm-bio">'+item.bio+'</div>':'') +
-    '<button class="adm-panel btn-excluir" style="margin-top:.6rem;background:rgba(180,30,30,.2);border:none;color:#f87171;font-size:.7rem;cursor:pointer;padding:.2rem .6rem;border-radius:3px">✕</button>' +
+  var fotoHtml = item.foto
+    ? '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
+    : '<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:.8rem">\u{1F464}</div>';
+  var card = '<div class="card-membro" data-key="'+key+'" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center">' +
+    fotoHtml +
+    '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem">'+item.nome+'</div>' +
+    '<div style="font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">'+item.cargo+'</div>' +
+    (item.bio ? '<div style="font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem">'+item.bio+'</div>' : '') +
     '</div>';
   var grid = document.getElementById('grid-diretoria');
-  if(grid) grid.insertAdjacentHTML('beforeend', html);
+  if(grid) grid.insertAdjacentHTML('beforeend', card);
 }
 
 // === PUBLICAR ASSOCIADO/A ===
