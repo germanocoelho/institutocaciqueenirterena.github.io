@@ -1228,9 +1228,12 @@ document.addEventListener('DOMContentLoaded',function(){
     if(db.prods && db.prods.length > 0) {
       PRODS.length = 0;
       db.prods.forEach(function(p){ PRODS.push(p); });
-      renderProds();
     }
-  } catch(e){} renderTabelaMS(_dadosMS); renderBarrasMS(); });
+  } catch(e){}
+  renderProds();
+  if(typeof renderTabelaMS==='function') renderTabelaMS(_dadosMS);
+  if(typeof renderBarrasMS==='function') renderBarrasMS();
+});
 </script>
 </section>
 
