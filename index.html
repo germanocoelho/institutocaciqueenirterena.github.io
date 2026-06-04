@@ -1222,15 +1222,15 @@ function renderBarrasMS() {
   }).join('');
 }
 document.addEventListener('DOMContentLoaded',function(){
-  // Carregar produtos salvos do localStorage
-  try {
-    var db=dbLer();
-    if(db.prods && db.prods.length > 0) {
-      PRODS.length = 0;
-      db.prods.forEach(function(p){ PRODS.push(p); });
-      renderProds();
-    }
-  } catch(e){} renderTabelaMS(_dadosMS); renderBarrasMS(); });
+  // Restaurar tudo do localStorage
+  renderTodosDoStorage();
+  carregarDoGitHub();
+  // Sempre renderizar produtos (localStorage ou PRODS padrão)
+  renderProds();
+  // Tabela MS
+  if(typeof renderTabelaMS==='function') renderTabelaMS(_dadosMS);
+  if(typeof renderBarrasMS==='function') renderBarrasMS();
+});
 </script>
 </section>
 
