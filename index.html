@@ -1663,8 +1663,8 @@ document.addEventListener('DOMContentLoaded',function(){
       style="position:absolute;top:.8rem;right:3.5rem;background:rgba(180,30,30,.2);border:1px solid rgba(180,30,30,.4);color:#f87171;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem">
       🗑 Limpar cache
     </button>
-    <button onclick="salvarNoGitHub()" 
-      style="position:absolute;top:3.2rem;right:1rem;background:rgba(42,74,28,.85);border:1px solid rgba(82,183,136,.4);color:#7bc67e;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem">
+    <button id="btn-salvar-gh" onclick="salvarNoGitHubBtn(this)" 
+      style="position:absolute;top:3.2rem;right:1rem;background:rgba(42,74,28,.85);border:1px solid rgba(82,183,136,.4);color:#7bc67e;font-size:.6rem;font-weight:700;cursor:pointer;border-radius:3px;padding:.2rem .5rem;min-width:140px">
       💾 Salvar tudo no GitHub
     </button>
     <h3>🔒 Área Administrativa</h3>
@@ -1702,6 +1702,42 @@ function dbLer() {
 function dbSalvar(dados) {
   _memDb = dados;
   try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
+}
+
+function salvarNoGitHubBtn(btn) {
+  var orig = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled=true; btn.innerHTML='⏳ Salvando...'; btn.style.background='rgba(139,58,15,.6)'; btn.style.color='#F2C45A'; }
+  var dados = dbLer();
+  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    var sha = res.sha || _ghSha;
+    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
+    return fetch(GH_API, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res.content) {
+      _ghSha = res.content.sha;
+      if(btn){ btn.innerHTML='✅ Salvo com sucesso!'; btn.style.background='rgba(42,74,28,.95)'; btn.style.color='#7bc67e'; }
+      notif('💾 Dados salvos na nuvem!');
+      setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+    } else {
+      if(btn){ btn.innerHTML='⚠️ '+(res.message||'Erro'); btn.style.background='rgba(180,30,30,.5)'; btn.style.color='#f87171'; }
+      notif('⚠️ Erro: ' + (res.message || 'verifique conexão'));
+      setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+    }
+  })
+  .catch(function(){
+    if(btn){ btn.innerHTML='⚠️ Sem conexão'; btn.style.background='rgba(180,30,30,.5)'; btn.style.color='#f87171'; }
+    notif('⚠️ Erro de conexão ao salvar');
+    setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+  });
 }
 
 function salvarNoGitHub() {
@@ -2995,6 +3031,42 @@ function dbLer() {
 function dbSalvar(dados) {
   _memDb = dados;
   try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
+}
+
+function salvarNoGitHubBtn(btn) {
+  var orig = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled=true; btn.innerHTML='⏳ Salvando...'; btn.style.background='rgba(139,58,15,.6)'; btn.style.color='#F2C45A'; }
+  var dados = dbLer();
+  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    var sha = res.sha || _ghSha;
+    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
+    return fetch(GH_API, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res.content) {
+      _ghSha = res.content.sha;
+      if(btn){ btn.innerHTML='✅ Salvo com sucesso!'; btn.style.background='rgba(42,74,28,.95)'; btn.style.color='#7bc67e'; }
+      notif('💾 Dados salvos na nuvem!');
+      setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+    } else {
+      if(btn){ btn.innerHTML='⚠️ '+(res.message||'Erro'); btn.style.background='rgba(180,30,30,.5)'; btn.style.color='#f87171'; }
+      notif('⚠️ Erro: ' + (res.message || 'verifique conexão'));
+      setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+    }
+  })
+  .catch(function(){
+    if(btn){ btn.innerHTML='⚠️ Sem conexão'; btn.style.background='rgba(180,30,30,.5)'; btn.style.color='#f87171'; }
+    notif('⚠️ Erro de conexão ao salvar');
+    setTimeout(function(){ if(btn){ btn.disabled=false; btn.innerHTML=orig; btn.style.background='rgba(42,74,28,.85)'; btn.style.color='#7bc67e'; } }, 3000);
+  });
 }
 
 function salvarNoGitHub() {
