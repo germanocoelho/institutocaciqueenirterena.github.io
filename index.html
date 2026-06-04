@@ -2300,14 +2300,16 @@ function pubDiretoria() {
   var nome = document.getElementById('dir-nome').value.trim();
   var cargo = document.getElementById('dir-cargo').value.trim();
   var bio = document.getElementById('dir-bio').value.trim();
-  var foto = _dirFotoData || document.getElementById('dir-foto-url').value || '';
+  var foto = _dirFotoData || '';
   if (!nome || !cargo) { alert('Preencha nome e cargo.'); return; }
   var key = 'dir_' + Date.now();
   var item = { nome:nome, cargo:cargo, bio:bio, foto:foto, ts:Date.now() };
   var db = dbLer(); if(!db.diretoria) db.diretoria={};
   db.diretoria[key] = item; dbSalvar(db); salvarNoGitHub();
   renderDiretoria(item, key);
-  ['dir-nome','dir-cargo','dir-bio','dir-foto-url'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['dir-nome','dir-cargo','dir-bio'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var df=document.getElementById('dir-file');if(df)df.value='';
+  var dp=document.getElementById('dir-preview');if(dp)dp.style.display='none';
   _dirFotoData = null;
   var s=document.getElementById('dir-foto-status');if(s)s.style.display='none';
   notif('✅ Membro da diretoria publicado!');
