@@ -3520,6 +3520,7 @@ function aplicarESalvar(el,slotKey,src){
   if(!db.fotos)db.fotos={};
   db.fotos[slotKey]={src:src,ts:Date.now(),leg:legText};
   dbSalvar(db);
+  salvarNoGitHub();
   notif('✅ Foto salva!');
 }
 
