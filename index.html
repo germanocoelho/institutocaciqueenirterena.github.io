@@ -1253,12 +1253,9 @@ document.addEventListener('DOMContentLoaded',function(){
     if(db.prods && db.prods.length > 0) {
       PRODS.length = 0;
       db.prods.forEach(function(p){ PRODS.push(p); });
+      renderProds();
     }
-  } catch(e){}
-  renderProds();
-  renderTabelaMS(_dadosMS);
-  renderBarrasMS();
-});
+  } catch(e){} renderTabelaMS(_dadosMS); renderBarrasMS(); });
 </script>
 </section>
 
@@ -1762,7 +1759,6 @@ function carregarDoGitHub() {
   // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
   renderTodosDoStorage();
   initDiretoria();
-  if (typeof renderProds === 'function') renderProds();
   // GitHub apenas para capturar SHA (backup)
   fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
