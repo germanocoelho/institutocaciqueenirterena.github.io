@@ -1007,7 +1007,21 @@ html{scroll-behavior:smooth}
         if(n<30)setTimeout(function(){tentarRender(n+1);},100);
       }
       if(document.readyState==='loading'){
-        document.addEventListener('DOMContentLoaded',function(){tentarRender(0);});
+        function admLogin(){
+  var pw=document.getElementById('adm-pw').value;
+  var h=0;for(var i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}
+  var hx=(h>>>0).toString(16);
+  if(hx==='c337e3cb'){
+    document.body.classList.add('adm-unlocked');
+    document.getElementById('adm-modal').classList.remove('open');
+    document.getElementById('adm-err').style.display='none';
+    if(typeof ativarBotoesFotos==='function')ativarBotoesFotos();
+    notif('✅ Bem-vinda, equipe ICET!');
+  } else {
+    document.getElementById('adm-err').style.display='block';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){tentarRender(0);});
       } else {
         tentarRender(0);
       }
