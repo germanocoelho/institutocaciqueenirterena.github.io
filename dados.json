@@ -38,5 +38,13 @@
       "aldeia": "Aldeia Marçal de Souza — Campo Grande",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699828/kjthpbzbq7ci9soe3fno.jpg"
     }
+  },
+  "galeria": {
+    "g_1780699894369": {
+      "key": "g_1780699894369",
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699893/agc06oiyubyxlpmzopog.jpg",
+      "leg": "Teste",
+      "cat": "eventos"
+    }
   }
 }
