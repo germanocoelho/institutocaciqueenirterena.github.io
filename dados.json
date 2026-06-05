@@ -1,31 +1,11 @@
 {
   "diretoria": {
-    "dir_1780693590408": {
-      "key": "dir_1780693590408",
-      "nome": "Samara",
+    "dir_1780699664196": {
+      "key": "dir_1780699664196",
+      "nome": "Sâmara",
       "cargo": "Vice Presidente",
-      "bio": "teste",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780693592/erzr4fpnzsz8dki96elv.png"
-    },
-    "dir_1780694042127": {
-      "key": "dir_1780694042127",
-      "nome": "Germano Coelho Ramos Rocha-Silva",
-      "cargo": "Secretário Geral",
-      "bio": "Secretário Geral teste",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780694043/awzvblopp5wtz11fsbgf.png"
-    }
-  },
-  "produtos": {
-    "p_1780694154700": {
-      "key": "p_1780694154700",
-      "nome": "Colar com arte indígena - teste",
-      "artesa": "Sâmara",
-      "cat": "Bijuteria",
-      "desc": "colar com arte com iconografia indígena terena",
-      "preco": 60,
-      "prazo": "20",
-      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780694153/zg4b9ebfyuhlgfwdk44k.png"
+      "bio": "Teste vice presidente",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzvh.png"
     }
   }
 }
