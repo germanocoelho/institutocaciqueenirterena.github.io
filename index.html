@@ -1841,12 +1841,12 @@ function renderTodosDoStorage() {
       if (item && item.src) renderFotoGaleria(item, key);
     });
   }
-  // Produtos
+  // Produtos — sempre renderizar (localStorage ou padrão)
   if (dados.prods && dados.prods.length > 0) {
     PRODS.length = 0;
     dados.prods.forEach(function(p){ PRODS.push(p); });
-    if (typeof renderProds === 'function') renderProds();
   }
+  if (typeof renderProds === 'function') renderProds();
   // Diretoria
   if (typeof initDiretoria === 'function') setTimeout(initDiretoria, 100);
 }
