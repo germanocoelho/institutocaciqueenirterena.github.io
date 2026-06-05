@@ -1777,37 +1777,24 @@ function carregarDoGitHub() {
   .then(function(r){ return r.json(); })
   .then(function(res){
     if (res.sha) _ghSha = res.sha;
-    // Sempre carregar dados do GitHub e mesclar com localStorage
+    // Mesclar dados do GitHub com localStorage (fotos do GitHub preenchem o que local não tem)
     if (res.content) {
       try {
         var bytes = Uint8Array.from(atob(res.content.replace(/\n/g,'')), function(c){return c.charCodeAt(0);});
         var jsonStr = new TextDecoder().decode(bytes);
         var dadosGH = JSON.parse(jsonStr);
         var dadosLocal = dbLer();
-        // Mesclar: GitHub tem prioridade para fotos, local tem prioridade para o resto
         var dadosMerge = Object.assign({}, dadosGH, dadosLocal);
-        // Para fotos: mesclar chave a chave (GitHub preenche o que local não tem)
-        if (dadosGH.fotos) {
-          dadosMerge.fotos = Object.assign({}, dadosGH.fotos, dadosLocal.fotos || {});
-        }
-        if (dadosGH.galeria) {
-          dadosMerge.galeria = Object.assign({}, dadosGH.galeria, dadosLocal.galeria || {});
-        }
-        if (dadosGH.diretoria) {
-          dadosMerge.diretoria = Object.assign({}, dadosGH.diretoria, dadosLocal.diretoria || {});
-        }
+        if (dadosGH.fotos) dadosMerge.fotos = Object.assign({}, dadosGH.fotos, dadosLocal.fotos || {});
+        if (dadosGH.galeria) dadosMerge.galeria = Object.assign({}, dadosGH.galeria, dadosLocal.galeria || {});
+        if (dadosGH.diretoria) dadosMerge.diretoria = Object.assign({}, dadosGH.diretoria, dadosLocal.diretoria || {});
         dbSalvar(dadosMerge);
+        renderTodosDoStorage();
+        initDiretoria();
       } catch(e) {}
     }
-    renderTodosDoStorage();
-    initDiretoria();
-    renderProds();
   })
-  .catch(function(){
-    renderTodosDoStorage();
-    initDiretoria();
-    renderProds();
-  });
+  .catch(function(){});
 }
 function renderTodosDoStorage() {
   var dados = dbLer();
