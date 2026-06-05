@@ -3003,6 +3003,7 @@ function addProd(){
   renderProds();renderAdm();limpar();
   // Salvar produtos no localStorage
   var db=dbLer(); db.prods=PRODS; dbSalvar(db);
+  salvarNoGitHub();
   notif('✓ Produto adicionado!');
 }
 
