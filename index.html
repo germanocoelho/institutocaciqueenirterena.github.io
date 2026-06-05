@@ -1806,7 +1806,7 @@ var GH_FILE = 'dados.json';
 var GH_TOKEN = 'ghp_lBOhtA9ekMqmr6uLlhu' + 'SY0LPllbVRy1U9enp';
 var GH_API = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE;
 var _memDb = {};
-var _ghSha = '0967ef424bce6791893e9a57bb952f80fd536e93';
+var _ghSha = '1566afd1ceb5389494223ae7085c1bd767b15270';
 var CLOUD_NAME = 'dn1ubybc0';
 var CLOUD_PRESET = 'cmddi_galeria';
 
@@ -1868,11 +1868,13 @@ function salvarNoGitHub() {
   var bytes = new TextEncoder().encode(jsonStr);
   var binStr = Array.from(bytes).map(function(b){return String.fromCharCode(b);}).join('');
   var conteudo = btoa(binStr);
-  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
+  // Sempre buscar SHA fresco para evitar conflito 409
+  fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
   .then(function(res){
-    var sha = res.sha || _ghSha;
-    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
+    var shaNow = res.sha || _ghSha;
+    _ghSha = shaNow;
+    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: shaNow };
     return fetch(GH_API, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
@@ -1883,7 +1885,7 @@ function salvarNoGitHub() {
   .then(function(res){
     if (res.content) {
       _ghSha = res.content.sha;
-      notif('💾 Dados salvos na nuvem!');
+      notif('💾 Foto salva na nuvem!');
     } else {
       notif('⚠️ Erro: ' + (res.message || 'verifique conexão'));
     }
