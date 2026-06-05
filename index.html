@@ -894,6 +894,22 @@ html{scroll-behavior:smooth}
   </div>
   <div style="background:var(--ar);padding:3.5rem 2.5rem">
     <div class="pg" id="pg"></div>
+    <script>
+    (function(){
+      function tentarRender(n){
+        var g=document.getElementById('pg');
+        if(!g){if(n<20)setTimeout(function(){tentarRender(n+1);},100);return;}
+        if(typeof renderProds==='function'){renderProds();return;}
+        // renderProds ainda não carregou — tentar de novo
+        if(n<30)setTimeout(function(){tentarRender(n+1);},100);
+      }
+      if(document.readyState==='loading'){
+        document.addEventListener('DOMContentLoaded',function(){tentarRender(0);});
+      } else {
+        tentarRender(0);
+      }
+    })();
+    </script>
     <div class="adm rv" id="adm-form" style="margin-top:2.8rem">
       <div class="admcb"><div class="admti">⚙ Painel Admin — Gerenciar Produtos</div><span style="font-size:.67rem;color:rgba(242,196,90,.45)">Admin</span></div>
       <p class="admno">Adicione produtos. Clique em 📷 na lista abaixo para adicionar fotos individualmente.</p>
