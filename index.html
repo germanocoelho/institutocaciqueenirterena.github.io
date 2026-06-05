@@ -998,16 +998,8 @@ html{scroll-behavior:smooth}
     </article>
     </div>
     <script>
-    (function(){
-      function tentarRender(n){
-        var g=document.getElementById('pg');
-        if(!g){if(n<20)setTimeout(function(){tentarRender(n+1);},100);return;}
-        if(typeof renderProds==='function'){renderProds();return;}
-        // renderProds ainda não carregou — tentar de novo
-        if(n<30)setTimeout(function(){tentarRender(n+1);},100);
-      }
-      if(document.readyState==='loading'){
-        function admLogin(){
+// Funções críticas — devem estar disponíveis antes do HTML carregar
+function admLogin(){
   var pw=document.getElementById('adm-pw').value;
   var h=0;for(var i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}
   var hx=(h>>>0).toString(16);
@@ -1021,7 +1013,18 @@ html{scroll-behavior:smooth}
     document.getElementById('adm-err').style.display='block';
   }
 }
-document.addEventListener('DOMContentLoaded',function(){tentarRender(0);});
+var _BIO_MARIA = 'Maria Auxiliadora Bezerra é filha de Enir Terena, presidenta do Instituto Cacique Enir Terena (ICET) e guardiã da cultura Terena. Lidera o movimento de valorização do artesanato indígena e a marca coletiva OREKA — a primeira do Brasil.';
+var _FOTO_MARIA = '';
+    (function(){
+      function tentarRender(n){
+        var g=document.getElementById('pg');
+        if(!g){if(n<20)setTimeout(function(){tentarRender(n+1);},100);return;}
+        if(typeof renderProds==='function'){renderProds();return;}
+        // renderProds ainda não carregou — tentar de novo
+        if(n<30)setTimeout(function(){tentarRender(n+1);},100);
+      }
+      if(document.readyState==='loading'){
+        document.addEventListener('DOMContentLoaded',function(){tentarRender(0);});
       } else {
         tentarRender(0);
       }
