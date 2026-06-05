@@ -1222,15 +1222,11 @@ function renderBarrasMS() {
   }).join('');
 }
 document.addEventListener('DOMContentLoaded',function(){
-  // Carregar produtos salvos do localStorage
-  try {
-    var db=dbLer();
-    if(db.prods && db.prods.length > 0) {
-      PRODS.length = 0;
-      db.prods.forEach(function(p){ PRODS.push(p); });
-    }
-  } catch(e){}
-  renderProds();
+  // Restaurar tudo do localStorage
+  renderTodosDoStorage();
+  // Carregar do GitHub (mescla e re-renderiza)
+  carregarDoGitHub();
+  // Tabela MS
   if(typeof renderTabelaMS==='function') renderTabelaMS(_dadosMS);
   if(typeof renderBarrasMS==='function') renderBarrasMS();
 });
