@@ -1246,16 +1246,6 @@ function salvarNoGitHubBtn(btn){
     setTimeout(function(){if(btn){btn.disabled=false;btn.innerHTML=orig;btn.style.background='rgba(42,74,28,.92)';}},3000);
   });
 }
-document.addEventListener('DOMContentLoaded',function(){
-  // Carregar produtos salvos do localStorage
-  try {
-    var db=dbLer();
-    if(db.prods && db.prods.length > 0) {
-      PRODS.length = 0;
-      db.prods.forEach(function(p){ PRODS.push(p); });
-      renderProds();
-    }
-  } catch(e){} renderTabelaMS(_dadosMS); renderBarrasMS(); });
 </script>
 </section>
 
@@ -1716,96 +1706,6 @@ var _ghSha = '0967ef424bce6791893e9a57bb952f80fd536e93';
 var CLOUD_NAME = 'dn1ubybc0';
 var CLOUD_PRESET = 'cmddi_galeria';
 
-function dbLer() {
-  try {
-    var s = localStorage.getItem(DB_KEY);
-    if (s) { _memDb = JSON.parse(s); return _memDb; }
-  } catch(e) {}
-  return _memDb || {};
-}
-
-function dbSalvar(dados) {
-  _memDb = dados;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(dados)); } catch(e) {}
-}
-
-function salvarNoGitHub() {
-  var dados = dbLer();
-  var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
-  fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    var sha = res.sha || _ghSha;
-    var body = { message: 'Atualizar dados ICET', content: conteudo, sha: sha };
-    return fetch(GH_API, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    if (res.content) {
-      _ghSha = res.content.sha;
-      notif('💾 Dados salvos na nuvem!');
-    } else {
-      notif('⚠️ Erro: ' + (res.message || 'verifique conexão'));
-    }
-  })
-  .catch(function(){ notif('⚠️ Erro de conexão ao salvar'); });
-}
-
-function carregarDoGitHub() {
-  // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
-  renderTodosDoStorage();
-  initDiretoria();
-  // GitHub apenas para capturar SHA (backup)
-  fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
-  .then(function(r){ return r.json(); })
-  .then(function(res){ if (res.sha) _ghSha = res.sha; })
-  .catch(function(){});
-}
-function renderTodosDoStorage() {
-  var dados = dbLer();
-  // Slots .fs — restaurar fotos
-  if (dados.fotos) {
-    Object.keys(dados.fotos).forEach(function(slotKey){
-      var item=dados.fotos[slotKey];
-      if(!item||!item.src) return;
-      var el=document.querySelector('[data-slot-key="'+slotKey+'"]');
-      if(!el) return;
-      el.style.backgroundImage='url('+item.src+')';
-      el.style.backgroundSize='cover';
-      el.style.backgroundPosition='center top';
-      el.querySelectorAll('svg,span,.fs-embreve').forEach(function(x){x.style.display='none';});
-      if(item.leg){
-        var lb=el.querySelector('.foto-legenda-bar');
-        if(!lb){lb=document.createElement('div');lb.className='foto-legenda-bar';el.appendChild(lb);}
-        lb.textContent=item.leg;
-      }
-    });
-  }
-  // Galeria
-  ['gal-grid-todos','gal-grid-eventos','gal-grid-cultura','gal-grid-natureza'].forEach(function(id) {
-    var el = document.getElementById(id); if (el) el.innerHTML = '';
-  });
-  if (dados.galeria) {
-    Object.keys(dados.galeria).sort(function(a,b){
-      return (dados.galeria[b].ts||0) - (dados.galeria[a].ts||0);
-    }).forEach(function(key) {
-      var item = dados.galeria[key];
-      if (item && item.src) renderFotoGaleria(item, key);
-    });
-  }
-  // Produtos
-  if (dados.prods && dados.prods.length > 0) {
-    PRODS.length = 0;
-    dados.prods.forEach(function(p){ PRODS.push(p); });
-    if (typeof renderProds === 'function') renderProds();
-  }
-  // Diretoria
-  if (typeof initDiretoria === 'function') setTimeout(initDiretoria, 100);
-}
 function gr(cat){ var k=Object.keys(GR).find(k=>cat.includes(k))||'Cerâmica'; return GR[k].split(','); }
 var STAMP='<svg viewBox="0 0 44 44" width="32" height="32"><circle cx="22" cy="22" r="19.5" fill="rgba(139,58,15,.92)" stroke="#F2C45A" stroke-width="1.3"/><circle cx="22" cy="22" r="14" fill="none" stroke="rgba(242,196,90,.28)" stroke-width=".6"/><text x="22" y="19.5" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#F2C45A" letter-spacing=".8">OREKA</text><text x="22" y="27.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.2" fill="rgba(242,196,90,.78)">TERENA</text></svg';
 
@@ -1853,7 +1753,7 @@ function abrirChk(id){
   }
   pgto=atual.payments[0];
   document.getElementById('pgto-g').innerHTML=atual.payments.map(p=>
-    `<button class="pgb${p===pgto?' on':''}" onclick="selPgto('${p}',this)">${p}</button>`
+    '<button class="pgb'+(p===pgto?' on':'')+"\" onclick=\"selPgto('"+ p +"',this)\">" + p + "</button>"
   ).join('');
   updPgto();
   document.getElementById('mo').classList.add('open');
@@ -1890,7 +1790,7 @@ function updFoto(id,input){
     var p=PRODS.find(x=>x.id===id); if(p) p.foto=e.target.result;
     var img=document.getElementById('pi-'+id);
     if(img){ var el=img.querySelector('.pfr'); if(!el){el=document.createElement('img');el.className='pfr';img.prepend(el);} el.src=e.target.result; var sf=img.querySelector('.pnf'); if(sf) sf.style.opacity='0'; }
-    var th=input.closest('.ath'); if(th){ th.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`; th.appendChild(input); }
+    var th=input.closest('.ath'); if(th){ th.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">'; th.appendChild(input); }
     notif('📷 Foto atualizada!');
   };
   r.readAsDataURL(input.files[0]);
@@ -1917,7 +1817,7 @@ function editarP(id){
 function excluirP(id){
   if(!confirm('Excluir?')) return;
   PRODS.splice(PRODS.findIndex(p=>p.id===id),1);
-  var c=document.querySelector(`[data-id="${id}"]`); if(c) c.remove();
+  var c=document.querySelector('[data-id="'+id+'"]'); if(c) c.remove();
   renderAdm(); notif('🗑️ Excluído.');
 }
 function renderAdm(){
@@ -1949,7 +1849,7 @@ function pubNoticia(){
   var grade=document.getElementById('nc-grade');
   if(grade){
     var card=document.createElement('article'); card.className='ncc';
-    card.innerHTML=`<div class="nch" style="background:${cor}"><span class="nct">${cat}</span><span class="ncd">${data}</span></div><div class="ncb"><div class="ncfo">${fonte}</div><h3 class="ncti">${ti}</h3><p class="ncde">${de}</p>${link&&link!='#'?`<a href="${link}" target="_blank" class="nclk" style="color:${cor};border-color:${cor}">Ler notícia ↗</a>`:''}</div>`;
+    card.innerHTML='<div class="nch" style="background:'+cor+'"><span class="nct">'+cat+'</span><span class="ncd">'+data+'</span></div><div class="ncb"><div class="ncfo">'+fonte+'</div><h3 class="ncti">'+ti+'</h3><p class="ncde">'+de+'</p>'+(link&&link!='#'?'<a href="'+link+'" target="_blank" class="nclk" style="color:'+cor+';border-color:'+cor+'">Ler notícia ↗</a>':'')+'</div>';
     grade.prepend(card);
   }
   notif('✓ Notícia publicada!');
@@ -2343,24 +2243,6 @@ function trocarAtos(btn, id) {
 }
 
 // === PUBLICAR DIRETORIA ===
-function pubDiretoria() {
-  var nome = document.getElementById('dir-nome').value.trim();
-  var cargo = document.getElementById('dir-cargo').value.trim();
-  var bio = document.getElementById('dir-bio').value.trim();
-  var foto = _dirFotoData || '';
-  if (!nome || !cargo) { alert('Preencha nome e cargo.'); return; }
-  var key = 'dir_' + Date.now();
-  var item = { nome:nome, cargo:cargo, bio:bio, foto:foto, ts:Date.now() };
-  var db = dbLer(); if(!db.diretoria) db.diretoria={};
-  db.diretoria[key] = item; dbSalvar(db); salvarNoGitHub();
-  renderDiretoria(item, key);
-  ['dir-nome','dir-cargo','dir-bio'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  var df=document.getElementById('dir-file');if(df)df.value='';
-  var dp=document.getElementById('dir-preview');if(dp)dp.style.display='none';
-  _dirFotoData = null;
-  var s=document.getElementById('dir-foto-status');if(s)s.style.display='none';
-  notif('✅ Membro da diretoria publicado!');
-}
 function renderDiretoria(item, key) {
   var fotoHtml = item.foto
     ? '<div class="dir-foto-wrap" style="width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:.8rem"><img src="'+item.foto+'" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>'
@@ -2559,33 +2441,6 @@ function excluirItem(colecao, key, el) {
   notif('🗑 Item removido.');
 }
 
-// === CARREGAR TUDO DO STORAGE (expandido) ===
-var _origRenderTodos = renderTodosDoStorage;
-function renderTodosDoStorage() {
-  _origRenderTodos();
-  var db = dbLer();
-
-  // Diretoria
-  if (db.diretoria) Object.keys(db.diretoria).forEach(function(k){ renderDiretoria(db.diretoria[k], k); });
-
-  // Associados
-  if (db.associados) Object.keys(db.associados).sort(function(a,b){return (db.associados[b].ts||0)-(db.associados[a].ts||0);}).forEach(function(k){ renderAssociado(db.associados[k], k); });
-
-  // Vídeos YouTube
-  if (db.videos) Object.keys(db.videos).sort(function(a,b){return (db.videos[b].ts||0)-(db.videos[a].ts||0);}).forEach(function(k){ renderYouTube(db.videos[k], k); });
-
-  // Canal YouTube
-  if (db.yt_canal) { var btn=document.getElementById('yt-canal-link'); if(btn) btn.href=db.yt_canal; }
-
-  // Homenageados
-  if (db.homenageados) Object.keys(db.homenageados).sort(function(a,b){return (db.homenageados[b].ts||0)-(db.homenageados[a].ts||0);}).forEach(function(k){ renderHomenageado(db.homenageados[k], k); });
-
-  // Obras
-  if (db.obras) Object.keys(db.obras).sort(function(a,b){return (db.obras[b].ts||0)-(db.obras[a].ts||0);}).forEach(function(k){ renderObra(db.obras[k], k); });
-
-  // Atos/Documentos
-  if (db.atos) Object.keys(db.atos).sort(function(a,b){return (db.atos[b].ts||0)-(db.atos[a].ts||0);}).forEach(function(k){ renderAto(db.atos[k], k); });
-}
 
 
 // Event delegation para botões excluir
@@ -2659,29 +2514,6 @@ function atualizarOverlayEl(el){
 }
 
 // ── Upload via Cloudinary ──
-function carregarFoto(input){
-  if(!input||!input.files||!input.files[0]) return;
-  var el=input.parentElement;
-  var slotKey=el.dataset.slotKey||('slot_'+Math.random().toString(36).slice(2,8));
-  el.dataset.slotKey=slotKey;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var imgEl=new Image();
-    imgEl.onload=function(){
-      var maxW=800,maxH=800,w=imgEl.width,h=imgEl.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
-      var canvas=document.createElement('canvas');
-      canvas.width=w;canvas.height=h;
-      canvas.getContext('2d').drawImage(imgEl,0,0,w,h);
-      aplicarESalvar(el,slotKey,canvas.toDataURL('image/jpeg',.78));
-    };
-    imgEl.onerror=function(){aplicarESalvar(el,slotKey,e.target.result);};
-    imgEl.src=e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
-  input.value='';
-}
 
 function aplicarFotoEl(el, url){
   if(el.tagName==='DIV'||el.tagName==='SECTION'){
@@ -2824,21 +2656,7 @@ function excluirFotoProd(btn){
   notif('🗑 Foto excluída.');
 }
 
-var _origRenderProds=renderProds;
-renderProds=function(){
-  _origRenderProds();
-  setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesProdutos();},100);
-};
-
 // ── Diretoria ──
-function ajustarPosDir(el){
-  var img=el.querySelector?el.querySelector('img'):(el.tagName==='IMG'?el:null);
-  if(!img){notif('Sem foto.');return;}
-  var ops=['center top','center center','center bottom','left top','left center','right top','right center'];
-  var idx=ops.indexOf(img.style.objectPosition||'center top');
-  img.style.objectPosition=ops[(idx+1)%ops.length];
-  notif('↕ Posição: '+img.style.objectPosition);
-}
 
 function uploadFotoDiretoria(input){
   if(!input||!input.files||!input.files[0]) return;
@@ -2869,63 +2687,6 @@ function uploadFotoDiretoria(input){
   });
 }
 
-function pubDiretoria(){
-  var nome=document.getElementById('dir-nome').value.trim();
-  var cargo=document.getElementById('dir-cargo').value.trim();
-  var bio=document.getElementById('dir-bio').value.trim();
-  var foto=document.getElementById('dir-foto-url').value;
-  // Validação com vermelho
-  var ok=true;
-  ['dir-nome','dir-cargo'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el||!el.value.trim()){if(el)el.style.borderColor='#c0392b';ok=false;}
-    else{if(el)el.style.borderColor='';}
-  });
-  if(!ok){notif('⚠️ Preencha os campos em vermelho.');return;}
-  var key='dir_'+Date.now();
-  var grid=document.getElementById('grid-diretoria');
-  if(!grid) return;
-  var card=document.createElement('div');
-  card.className='card-membro';card.dataset.key=key;
-  card.style.cssText='background:rgba(255,255,255,.05);border-radius:10px;padding:1.2rem;text-align:center';
-  if(foto){
-    var wrap=document.createElement('div');
-    wrap.className='dir-foto-wrap';wrap.dataset.key=key;
-    wrap.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;margin-bottom:1rem;cursor:pointer;position:relative';
-    wrap.onclick=function(){ajustarPosDir(this);};
-    wrap.title='Clique para reposicionar';
-    var img=document.createElement('img');
-    img.src=foto;img.alt=nome;
-    img.style.cssText='width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:object-position .3s';
-    var ov=document.createElement('div');ov.className='foto-overlay';
-    wrap.appendChild(img);wrap.appendChild(ov);
-    card.appendChild(wrap);
-    setTimeout(function(){if(document.body.classList.contains('adm-unlocked'))ativarBotoesFotos();},100);
-  } else {
-    var ph=document.createElement('div');
-    ph.style.cssText='width:100%;aspect-ratio:1/1;border-radius:8px;background:rgba(200,135,58,.12);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:1rem';
-    ph.textContent='👤';card.appendChild(ph);
-  }
-  var nomDiv=document.createElement('div');
-  nomDiv.style.cssText='font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#F2C45A;margin-bottom:.3rem';
-  nomDiv.textContent=nome;card.appendChild(nomDiv);
-  var carDiv=document.createElement('div');
-  carDiv.style.cssText='font-size:.72rem;color:rgba(249,245,237,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem';
-  carDiv.textContent=cargo;card.appendChild(carDiv);
-  if(bio){
-    var bioDiv=document.createElement('div');
-    bioDiv.style.cssText='font-size:.78rem;color:rgba(249,245,237,.82);font-style:italic;line-height:1.65;text-align:left;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem';
-    bioDiv.textContent=bio;card.appendChild(bioDiv);
-  }
-  grid.appendChild(card);
-  // Limpar
-  ['dir-nome','dir-cargo','dir-bio','dir-foto-url'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.value='';
-  });
-  var st=document.getElementById('dir-status');if(st)st.style.display='none';
-  var prev=document.getElementById('dir-preview');if(prev)prev.style.display='none';
-  notif('✅ Membro publicado!');
-}
 
 // ── addProd com validação vermelha ──
 function addProd(){
@@ -3334,6 +3095,7 @@ function aplicarESalvar(el,slotKey,src){
 
 // ÚNICO DOMContentLoaded
 document.addEventListener('DOMContentLoaded',function(){
+  renderProds();
   renderTodosDoStorage();
   carregarDoGitHub();
 });
