@@ -306,7 +306,7 @@ footer{background:var(--k);color:var(--pa);padding:3.8rem 2.5rem 1.8rem;border-t
 .adm-locked .adm{display:none!important}
 body:not(.adm-unlocked) .adm{display:none!important}
 body:not(.adm-unlocked) .adm-panel{display:none!important}
-body.adm-unlocked .adm{display:block!important}
+body.adm-unlocked .adm{display:block!important}body.adm-unlocked #btn-salvar-gh{display:flex!important;align-items:center;gap:.4rem}
 body.adm-unlocked .adm-panel{display:inline-flex!important}
 body.adm-unlocked .galeria-item .adm-panel{display:flex!important}
 body.adm-unlocked .dir-card .adm{display:flex!important}
@@ -413,7 +413,7 @@ body.adm-ok .adm-drag-hint { display:block; }
 
 /* ═══ ADM OCULTO ═══ */
 .adm{display:none!important}
-body.adm-unlocked .adm{display:block!important}
+body.adm-unlocked .adm{display:block!important}body.adm-unlocked #btn-salvar-gh{display:flex!important;align-items:center;gap:.4rem}
 .adm-panel{display:none!important}
 body.adm-unlocked .adm-panel{display:block!important}
 .nc-exc-btn{display:none!important}
@@ -1221,6 +1221,31 @@ function renderBarrasMS() {
     return '<div style="margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem"><span style="width:120px;font-size:.68rem;color:rgba(249,245,237,.7);text-align:right;flex-shrink:0">'+d.mun+'</span><div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px;height:18px;position:relative"><div style="width:'+pct+'%;background:'+cor+';height:100%;border-radius:2px;transition:.4s"></div><span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.65rem;color:rgba(249,245,237,.6)">'+d.total.toLocaleString('pt-BR')+'</span></div></div>';
   }).join('');
 }
+function salvarNoGitHubBtn(btn){
+  var orig=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.innerHTML='⏳ Salvando...';btn.style.background='rgba(139,58,15,.85)';}
+  var dados=dbLer();
+  var jsonStr=JSON.stringify(dados);
+  var bytes=new TextEncoder().encode(jsonStr);
+  var binStr=Array.from(bytes).map(function(b){return String.fromCharCode(b);}).join('');
+  var conteudo=btoa(binStr);
+  fetch(GH_API+'?t='+Date.now(),{headers:{'Authorization':'token '+GH_TOKEN}})
+  .then(function(r){return r.json();})
+  .then(function(res){
+    var sha=res.sha||_ghSha; _ghSha=sha;
+    return fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({message:'Atualizar dados ICET',content:conteudo,sha:sha})});
+  })
+  .then(function(r){return r.json();})
+  .then(function(res){
+    if(res.content){_ghSha=res.content.sha;if(btn){btn.innerHTML='✅ Salvo!';btn.style.background='rgba(42,74,28,.95)';}}
+    else{if(btn){btn.innerHTML='⚠️ Erro';btn.style.background='rgba(180,30,30,.7)';}}
+    setTimeout(function(){if(btn){btn.disabled=false;btn.innerHTML=orig;btn.style.background='rgba(42,74,28,.92)';}},3000);
+  })
+  .catch(function(){
+    if(btn){btn.innerHTML='⚠️ Sem conexão';btn.style.background='rgba(180,30,30,.7)';}
+    setTimeout(function(){if(btn){btn.disabled=false;btn.innerHTML=orig;btn.style.background='rgba(42,74,28,.92)';}},3000);
+  });
+}
 document.addEventListener('DOMContentLoaded',function(){
   // Carregar produtos salvos do localStorage
   try {
@@ -1654,6 +1679,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <!-- ══ BOTÃO ADMIN FLUTUANTE ══ -->
 <button class="adm-fab" onclick="document.getElementById('adm-modal').classList.add('open')" title="Área Administrativa — publicar notícias, eventos, fotos e gerenciar produtos">⚙ ADM</button>
+<button id="btn-salvar-gh" class="adm" onclick="salvarNoGitHubBtn(this)" title="Salvar todas as fotos e dados no GitHub"
+  style="display:none;position:fixed;bottom:5rem;right:1.2rem;z-index:9998;background:rgba(42,74,28,.92);border:1px solid rgba(82,183,136,.5);color:#7bc67e;font-size:.7rem;font-weight:700;cursor:pointer;border-radius:20px;padding:.45rem 1rem;box-shadow:0 2px 12px rgba(0,0,0,.4)">
+  💾 Salvar no GitHub
+</button>
 
 <!-- ══ MODAL DE SENHA ADMIN ══ -->
 <div class="adm-modal" id="adm-modal">
