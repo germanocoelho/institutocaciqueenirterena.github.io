@@ -1759,6 +1759,7 @@ function carregarDoGitHub() {
   // localStorage TEM PRIORIDADE — nunca sobrescrever dados locais
   renderTodosDoStorage();
   initDiretoria();
+  if (typeof renderProds === 'function') renderProds();
   // GitHub apenas para capturar SHA (backup)
   fetch(GH_API + '?t=' + Date.now(), { headers: { 'Authorization': 'token ' + GH_TOKEN } })
   .then(function(r){ return r.json(); })
