@@ -3684,6 +3684,122 @@ document.addEventListener('click',function(e){
   if(painel)painel.classList.add('on');
 });
 
+
+// ── DEPOIMENTOS ──
+var DEP_FIXOS=[
+  {id:'df1',stars:5,texto:'Ter uma peça OREKA é poder tocar a história de um povo. Saber que remunerei diretamente a artesã torna tudo ainda mais especial.',autor:'Compradora · Campo Grande, MS'},
+  {id:'df2',stars:5,texto:'Presenteei minha mãe com um pote de cerâmica Terena. Ela ficou emocionada quando soubemos a história por trás da peça. Isso é arte que tem alma.',autor:'Comprador · São Paulo, SP'},
+  {id:'df3',stars:5,texto:'A iniciativa do Instituto é exatamente o que precisávamos: protagonismo indígena, proteção da PI e renda justa.',autor:'Pesquisador · Campo Grande, MS'}
+];
+function renderDepoimentos(){
+  var grid=document.getElementById('dep-grid');if(!grid)return;
+  var db=dbLer();
+  var custom=db.depoimentos?Object.keys(db.depoimentos).map(function(k){return db.depoimentos[k];}).reverse():[];
+  var todos=custom.concat(DEP_FIXOS);
+  grid.innerHTML='';
+  todos.forEach(function(d){
+    var isCustom=!!(db.depoimentos&&db.depoimentos[d.id]);
+    var stars='';for(var i=0;i<(d.stars||5);i++)stars+='★';
+    var card=document.createElement('div');card.className='dep-card reveal';
+    card.innerHTML='<div class="dep-stars">'+stars+'</div><div class="dep-texto">"'+d.texto+'"</div><div class="dep-autor">'+d.autor+'</div>'+(isCustom?'<button class="btn-sm del" data-dep-del="'+d.id+'">✕</button>':'');
+    grid.appendChild(card);
+  });
+}
+function pubDepoimento(){
+  var texto=document.getElementById('dep-texto').value.trim();
+  var autor=document.getElementById('dep-autor').value.trim();
+  if(!texto||!autor){notif('Preencha texto e autor','err');return;}
+  var stars=parseInt(document.getElementById('dep-stars').value)||5;
+  var id='dep_'+Date.now();
+  var db=dbLer();if(!db.depoimentos)db.depoimentos={};
+  db.depoimentos[id]={id:id,stars:stars,texto:texto,autor:autor};
+  dbSalvar(db);salvarGitHub();renderDepoimentos();
+  document.getElementById('dep-texto').value='';document.getElementById('dep-autor').value='';
+  notif('Depoimento publicado!','ok');
+}
+document.addEventListener('click',function(e){
+  var dd=e.target.getAttribute('data-dep-del');
+  if(dd){if(!confirm('Excluir?'))return;var db=dbLer();if(db.depoimentos&&db.depoimentos[dd])delete db.depoimentos[dd];dbSalvar(db);salvarGitHub();renderDepoimentos();}
+});
+// ── COMENDA ──
+var _comendaFotoUrl='';
+function prevComendaFoto(input){
+  if(!input.files||!input.files[0])return;
+  var r=new FileReader();
+  r.onload=function(e){_comendaFotoUrl=e.target.result;var img=document.getElementById('cm-drop-img');if(img){img.src=e.target.result;img.style.display='block';}};
+  r.readAsDataURL(input.files[0]);
+}
+function pubComenda(){
+  var nome=document.getElementById('cm-nome').value.trim();
+  var bio=document.getElementById('cm-bio').value.trim();
+  if(!nome||!bio){notif('Preencha nome e motivo','err');return;}
+  var key='cm_'+Date.now();
+  var cargo=document.getElementById('cm-cargo').value.trim();
+  var db=dbLer();if(!db.comenda)db.comenda={};
+  db.comenda[key]={key:key,nome:nome,cargo:cargo,bio:bio,foto:_comendaFotoUrl};
+  dbSalvar(db);salvarGitHub();renderComenda();
+  ['cm-nome','cm-cargo','cm-bio'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  _comendaFotoUrl='';notif('Agraciado registrado!','ok');
+}
+function renderComenda(){
+  var grid=document.getElementById('comenda-grid');if(!grid)return;
+  var db=dbLer();
+  if(!db.comenda||!Object.keys(db.comenda).length){grid.innerHTML='<div class="cal-vazio">Nenhuma comenda concedida ainda.</div>';return;}
+  grid.innerHTML='';
+  Object.keys(db.comenda).forEach(function(k){
+    var c=db.comenda[k];
+    var card=document.createElement('div');card.className='comenda-card reveal';
+    card.innerHTML=(c.foto?'<img src="'+c.foto+'" class="comenda-foto" alt="'+c.nome+'">'
+      :'<div class="comenda-foto-vazio">🏅</div>')
+      +'<div class="comenda-nome">'+c.nome+'</div>'
+      +(c.cargo?'<div class="comenda-cargo">'+c.cargo+'</div>':'')
+      +'<div class="comenda-bio">'+c.bio+'</div>'
+      +'<div class="comenda-adm"><button class="btn-sm del" data-cm-del="'+k+'">🗑</button></div>';
+    grid.appendChild(card);
+  });
+}
+document.addEventListener('click',function(e){
+  var dc=e.target.getAttribute('data-cm-del');
+  if(dc){if(!confirm('Excluir?'))return;var db=dbLer();if(db.comenda&&db.comenda[dc])delete db.comenda[dc];dbSalvar(db);salvarGitHub();renderComenda();}
+});
+// ── ACERVO DINAMICO ──
+function renderAcervoDinamico(){
+  var db=dbLer();if(!db.acervo)return;
+  ['legislacao','saude','internacional','pi','sobre'].forEach(function(cat){
+    var painel=document.getElementById('acervo-'+cat);if(!painel)return;
+    var ex=painel.querySelector('.acervo-dinamicos');if(ex)ex.remove();
+    var docs=Object.keys(db.acervo).map(function(k){return db.acervo[k];}).filter(function(d){return d.cat===cat;});
+    if(!docs.length)return;
+    var wrap=document.createElement('div');wrap.className='acervo-dinamicos acervo-grupo';
+    var lista='<div class="acervo-grupo-ti">Adicionados pelo ADM</div><div class="acervo-lista">';
+    docs.forEach(function(d){
+      lista+='<div class="acervo-item"><div class="acervo-item-linha"></div><div class="acervo-item-body">'
+        +'<div class="acervo-item-ti">'+d.ti+'</div>'
+        +(d.sub?'<div class="acervo-item-sub">'+d.sub+'</div>':'')
+        +'<a class="acervo-link" href="'+d.url+'" target="_blank">'+d.btn+'</a>'
+        +' <button class="btn-sm del" data-doc-del="'+d.key+'">✕</button>'
+        +'</div></div>';
+    });
+    lista+='</div>';wrap.innerHTML=lista;
+    painel.insertBefore(wrap,painel.firstChild);
+  });
+}
+document.addEventListener('click',function(e){
+  var ddoc=e.target.getAttribute('data-doc-del');
+  if(ddoc){if(!confirm('Excluir?'))return;var db=dbLer();if(db.acervo&&db.acervo[ddoc])delete db.acervo[ddoc];dbSalvar(db);salvarGitHub();renderAcervoDinamico();}
+});
+// ── AOS ──
+function initAOS(){
+  function checkAOS(){
+    document.querySelectorAll('.aos-fade,.aos-slide-left,.aos-slide-right,.aos-zoom').forEach(function(el){
+      var r=el.getBoundingClientRect();
+      if(r.top<window.innerHeight*0.9&&r.bottom>0)el.classList.add('aos-in');
+    });
+  }
+  window.addEventListener('scroll',checkAOS,{passive:true});
+  setTimeout(checkAOS,300);
+}
+
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded',function(){
   carregarDb();
