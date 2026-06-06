@@ -2683,10 +2683,8 @@ function carregarDoGitHub(){
     if(!texto)return;
     try{
       var remoto=JSON.parse(texto);
-      var local=dbLer();
-      var merged=Object.assign({},local,remoto);
-      dbSalvar(merged);
-      aplicarDadosNaTela(merged);
+      dbSalvar(remoto);
+      aplicarDadosNaTela(remoto);
     }catch(e){}
   })
   .catch(function(){});
