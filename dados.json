@@ -49,7 +49,8 @@
   },
   "vasos": {
     "vaso4": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780707972/ld8l40bnsq6kvemruhxl.png"
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780707972/ld8l40bnsq6kvemruhxl.png",
+      "leg": "Teste Foto 4"
     }
   }
 }
