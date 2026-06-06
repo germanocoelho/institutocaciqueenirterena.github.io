@@ -2279,6 +2279,8 @@ function editarInline(elId, tipo){
 // ══ DELEGATIONS DIRETORIA (editar + mover) ══
 document.addEventListener('click',function(e){
   var t=e.target;
+  var ibgeTab=t.getAttribute('data-ibge-tab');
+  if(ibgeTab){trocarIbgeAba(ibgeTab);return;}
   // Editar campos
   var editNome=t.getAttribute('data-dir-edit-nome');
   if(editNome){editarInline('dn-'+editNome,'nome');return;}
