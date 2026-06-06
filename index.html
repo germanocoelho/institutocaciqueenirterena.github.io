@@ -2140,6 +2140,35 @@ body.adm-on .comenda-adm{display:flex}
   <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
 </div>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos" style="background:var(--k2)">
+  <div class="grafismo-bg"></div>
+  <div class="container">
+    <span class="eyebrow reveal">Por trás de cada peça existe alguém</span>
+    <h2 class="sec-title reveal">O que dizem sobre a OREKA</h2>
+    <div class="divider"></div>
+    <div class="dep-grid" id="dep-grid"></div>
+    <div class="adm-panel">
+      <h4>Adicionar depoimento</h4>
+      <div class="form-row">
+        <div><label class="fl">Texto *</label><textarea class="fi" id="dep-texto" placeholder="Depoimento..."></textarea></div>
+        <div>
+          <div><label class="fl">Autor *</label><input class="fi" type="text" id="dep-autor" placeholder="Nome · Cidade, Estado"></div>
+          <div style="margin-top:.8rem"><label class="fl">Estrelas</label>
+            <select class="fi" id="dep-stars">
+              <option value="5">★★★★★</option>
+              <option value="4">★★★★</option>
+              <option value="3">★★★</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button class="btn-pub" onclick="pubDepoimento()">+ Publicar depoimento</button>
+    </div>
+  </div>
+</section>
+
 <section id="loja">
   <div class="container">
     <div class="loja-header">
@@ -2262,6 +2291,40 @@ body.adm-on .comenda-adm{display:flex}
 
 
 <!-- ACERVO DOCUMENTAL -->
+
+<!-- COMENDA -->
+<section id="comenda" style="background:var(--k)">
+  <div class="container">
+    <div style="text-align:center;max-width:700px;margin:0 auto 3rem">
+      <div style="width:72px;height:72px;margin:0 auto 1.5rem;background:linear-gradient(135deg,var(--r),var(--ou));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 0 24px rgba(242,196,90,.25)">🏅</div>
+      <span class="eyebrow reveal">Reconhecimento e gratidão</span>
+      <h2 class="sec-title reveal">Comenda Cacique Enir Terena</h2>
+      <div class="divider" style="margin:1rem auto"></div>
+      <p class="sec-lead" style="margin:0 auto">A mais alta distinção concedida pelo Instituto Cacique Enir Terena. Instituída em homenagem à primeira mulher eleita Cacique no Mato Grosso do Sul, a comenda reconhece pessoas físicas e jurídicas que contribuíram de forma relevante para a defesa, promoção e valorização dos direitos, da cultura e da dignidade dos povos indígenas do Mato Grosso do Sul e do Brasil.</p>
+    </div>
+    <div class="comenda-grid" id="comenda-grid">
+      <div class="cal-vazio">Nenhuma comenda concedida ainda. Entre no ADM para registrar.</div>
+    </div>
+    <div class="adm-panel">
+      <h4>Registrar agraciado com a Comenda</h4>
+      <div class="form-row">
+        <div><label class="fl">Nome *</label><input class="fi" type="text" id="cm-nome" placeholder="Nome completo"></div>
+        <div><label class="fl">Título / Cargo</label><input class="fi" type="text" id="cm-cargo" placeholder="Ex: Pesquisador..."></div>
+      </div>
+      <div class="form-full"><label class="fl">Motivo *</label><textarea class="fi" id="cm-bio" placeholder="Motivo do reconhecimento..."></textarea></div>
+      <div class="form-full">
+        <label class="fl">Foto</label>
+        <div class="drop-foto" id="cm-drop" onclick="document.getElementById('cm-foto-inp').click()">
+          <span>📷 Clique para selecionar foto</span>
+          <img id="cm-drop-img" alt="" style="display:none;width:100%;height:160px;object-fit:cover">
+          <input type="file" id="cm-foto-inp" accept="image/*" style="display:none" onchange="prevComendaFoto(this)">
+        </div>
+      </div>
+      <button class="btn-pub" onclick="pubComenda()">+ Registrar agraciado</button>
+    </div>
+  </div>
+</section>
+
 <section id="acervo">
   <div class="container">
     <span class="eyebrow reveal">Referências institucionais</span>
