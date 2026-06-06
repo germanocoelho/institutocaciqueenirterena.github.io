@@ -2191,6 +2191,66 @@ function salvarGitHub(){
   .catch(function(){notif('⚠️ Erro ao salvar na nuvem','err');});
 }
 
+// ══ CARREGAR DADOS DO GITHUB (sincroniza entre dispositivos) ══
+function carregarDoGitHub(){
+  var api='https://api.github.com/repos/'+GH.repo+'/contents/'+GH.file;
+  var headers={'Authorization':'token '+GH.token,'User-Agent':'ICET-site'};
+  fetch(api,{headers:headers})
+  .then(function(r){
+    if(!r.ok)return null;
+    return r.json();
+  })
+  .then(function(res){
+    if(!res||!res.content)return;
+    try{
+      var raw=atob(res.content.replace(/\n/g,''));
+      var remoto=JSON.parse(raw);
+      // Mesclar remoto com local — remoto tem prioridade
+      var local=dbLer();
+      var merged=Object.assign({},local,remoto);
+      dbSalvar(merged);
+      _ghSha=res.sha||'';
+      // Reaplicar dados na tela
+      aplicarDadosNaTela(merged);
+    }catch(e){}
+  })
+  .catch(function(){});
+}
+
+function aplicarDadosNaTela(db){
+  // Fotos fixas
+  if(db.fotos){
+    if(db.fotos.enir_foto){var e1=document.getElementById('enir-foto');if(e1)e1.src=db.fotos.enir_foto;}
+    if(db.fotos.maria_foto){var e2=document.getElementById('dir-maria-foto');if(e2)e2.src=db.fotos.maria_foto;}
+    if(db.fotos.oreka_logo){var e3=document.getElementById('oreka-logo-img');if(e3)e3.src=db.fotos.oreka_logo;}
+    if(db.fotos.loja_logo){var e4=document.getElementById('loja-logo');if(e4)e4.src=db.fotos.loja_logo;}
+  }
+  // Bio/nome/cargo de Maria
+  if(db.maria){
+    if(db.maria.nome){var mn=document.getElementById('dir-maria-nome');if(mn)mn.textContent=db.maria.nome;}
+    if(db.maria.cargo){var mc=document.getElementById('dir-maria-cargo');if(mc)mc.textContent=db.maria.cargo;}
+    if(db.maria.bio){var mb=document.getElementById('dir-maria-bio');if(mb)mb.textContent=db.maria.bio;}
+  }
+  // Diretoria — limpar cards dinâmicos existentes e rerenderizar
+  if(db.diretoria){
+    var grid=document.getElementById('dir-grid');
+    if(grid){
+      // Remover cards dinâmicos (manter só Maria)
+      var dinamicos=grid.querySelectorAll('.dir-card:not(#dir-maria)');
+      dinamicos.forEach(function(c){c.remove();});
+      // Rerenderizar
+      Object.keys(db.diretoria).forEach(function(k){renderMembro(db.diretoria[k]);});
+    }
+  }
+  // Notícias, galeria, vídeos, produtos, eventos, vasos
+  renderNoticias();
+  renderGaleria();
+  renderVideos();
+  renderProdutos();
+  renderCalendario();
+  renderGridVasos();
+}
+
 // ══ HELPER: trocar foto genérica ══
 function trocarFoto(imgEl, callback){
   var input=document.createElement('input');
@@ -3135,6 +3195,8 @@ document.addEventListener('DOMContentLoaded',function(){
   initSecFade();
   initCountUp();
   initParallax();
+  // Sincronizar dados do GitHub (funciona em qualquer dispositivo)
+  carregarDoGitHub();
 });
 </script>
 </body>
