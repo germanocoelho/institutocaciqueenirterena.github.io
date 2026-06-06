@@ -1114,6 +1114,45 @@ body.adm-on .cal-ev-del{display:block}
   margin-bottom:.8rem;font-style:normal;
 }
 
+
+/* ── DEPOIMENTOS ── */
+#depoimentos{background:var(--k2)}
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;margin-top:2.5rem}
+.dep-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--brd);
+  padding:1.6rem;transition:.3s;position:relative;
+}
+.dep-card:hover{border-color:rgba(242,196,90,.22);transform:translateY(-3px)}
+.dep-stars{color:var(--ou);font-size:.9rem;margin-bottom:.8rem;letter-spacing:.1rem}
+.dep-texto{font-size:.9rem;line-height:1.8;color:var(--tx2);font-style:italic;margin-bottom:1rem}
+.dep-autor{font-size:.75rem;font-family:'Inter',sans-serif;color:var(--tx3);letter-spacing:.06em}
+.dep-del{position:absolute;top:.7rem;right:.7rem;display:none;background:rgba(180,30,30,.2);border:none;color:rgba(220,80,80,.7);font-size:.68rem;padding:.22rem .55rem;cursor:pointer}
+body.adm-on .dep-del{display:block}
+/* ── COMENDA ── */
+#comenda{background:var(--k)}
+.comenda-header{text-align:center;max-width:700px;margin:0 auto 3rem}
+.comenda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.8rem;margin-top:2.5rem}
+.comenda-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--brd);
+  text-align:center;padding:2rem;transition:.35s;position:relative;
+  border-top:3px solid transparent;
+}
+.comenda-card:hover{border-top-color:var(--ou);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.comenda-foto-wrap{position:relative;overflow:hidden;margin:0 auto 1.2rem}
+.comenda-foto{width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:center top;display:block;margin:0 auto;border:2px solid rgba(242,196,90,.3)}
+.comenda-foto-vazio{width:110px;height:110px;border-radius:50%;background:rgba(139,58,15,.15);border:2px solid rgba(242,196,90,.2);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:2.5rem}
+.comenda-nome{font-family:'Cinzel',serif;font-size:.95rem;color:var(--ou);margin-bottom:.3rem}
+.comenda-cargo{font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:.8rem}
+.comenda-bio{font-size:.83rem;line-height:1.7;color:var(--tx2)}
+.comenda-adm{display:none;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem}
+body.adm-on .comenda-adm{display:flex}
+.comenda-simbolo{
+  width:72px;height:72px;margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,var(--r),var(--ou));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:2rem;box-shadow:0 0 24px rgba(242,196,90,.25);
+}
+
 </style>
 </head>
 <body>
@@ -1138,6 +1177,8 @@ body.adm-on .cal-ev-del{display:block}
     <li><a href="#videos" onclick="closeMenu()">Vídeos</a></li>
     <li><a href="#loja" onclick="closeMenu()">Loja</a></li>
     <li><a href="#acervo" onclick="closeMenu()">Acervo</a>
+    <li><a href="#depoimentos" onclick="closeMenu()">Depoimentos</a></li>
+    <li><a href="#comenda" onclick="closeMenu()">Comenda</a></li>
     <li><a href="#contato" onclick="closeMenu()">Contato</a></li>
     <li><a href="#" class="nav-adm" onclick="closeMenu();abrirAdm();return false;">⚙ ADM</a></li>
   </ul>
@@ -2118,7 +2159,7 @@ body.adm-on .cal-ev-del{display:block}
       <button class="acervo-tab" data-acervo="saude">Saúde Indígena</button>
       <button class="acervo-tab" data-acervo="internacional">Internacional</button>
       <button class="acervo-tab" data-acervo="pi">Propriedade Intelectual</button>
-      <button class="acervo-tab" data-acervo="sobre">Sobre o Autor</button>
+      <button class="acervo-tab" data-acervo="sobre">Sobre o ICET</button>
     </div>
 
     <!-- Painel: Legislação -->
@@ -2248,16 +2289,45 @@ body.adm-on .cal-ev-del{display:block}
     <!-- Painel: Sobre o Autor -->
     <div class="acervo-painel" id="acervo-sobre">
       <div class="acervo-grupo">
-        <div class="acervo-grupo-ti">Sobre o Desenvolvedor do Site</div>
+        <div class="acervo-grupo-ti">Instituto Cacique Enir Terena — ICET</div>
+        <div class="acervo-bio-box" style="margin-bottom:1.5rem">
+          <div class="acervo-bio-nome">Instituto Cacique Enir Terena — ICET</div>
+          Fundado em 12 de julho de 2025 e registrado em 22 de agosto de 2025, o ICET é uma associação privada sem fins lucrativos (CNPJ: 62.359.850/0001-38) com sede na Rua da Serra, nº 217, Aldeia Marçal de Souza, Campo Grande — MS, CEP 79041-011. Criado em homenagem à primeira mulher cacique do Mato Grosso do Sul, o Instituto tem missão educacional, cultural, científica, esportiva e social, voltada à defesa dos direitos dos povos originários e à valorização dos conhecimentos tradicionais Terena.
+          <br><br>
+          Selecionado entre 123 propostas no Edital Nacional conjunto do MPI e do Ministério das Mulheres, o ICET é titular da marca coletiva OREKA — a primeira marca coletiva indígena do Brasil — registrada junto ao INPI sob o processo nº 941549186, depositado em 12 de outubro de 2025.
+          <br><br>
+          <a href="https://institutocaciqueenirterena.github.io/docs/oreka_inpi.pdf" target="_blank" class="acervo-link" style="font-style:normal">Documentação completa do registro OREKA no INPI</a>
+        </div>
         <div class="acervo-bio-box">
-          <div class="acervo-bio-nome">Germano Coelho Ramos Rocha-Silva</div>
-          Nasceu em Campo Grande, Mato Grosso do Sul, trazendo em sua trajetória a força de quem constrói pontes entre tradição e inovação. Filho de uma terra marcada pela diversidade cultural e pela luta de seus povos, carrega consigo o compromisso de transformar conhecimento em ação e de projetar valores que unem raízes locais a horizontes globais.
+          <div class="acervo-bio-nome">Germano Coelho Ramos Rocha-Silva · Secretário Geral</div>
+          Nasceu em Campo Grande, Mato Grosso do Sul, trazendo em sua trajetória a força de quem constrói pontes entre tradição e inovação. Indígena Terena, Agente da Propriedade Industrial nº 588 junto ao INPI, Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação (PROFNIT/IFMS). Com determinação, assumiu o papel de articulador de ideias e práticas que unem ética, estratégia e impacto social — seja no campo da consultoria, da gestão ou da representação institucional. Sua jornada é marcada pelo compromisso de deixar um legado que ultrapasse fronteiras e abra portas para novas gerações.
           <br><br>
-          Desde cedo, aprendeu que liderança não é apenas ocupar espaços, mas criar caminhos para que outros também possam caminhar. Sua formação e atuação refletem essa visão: seja no campo da consultoria, da gestão ou da representação institucional. Com determinação, assumiu o papel de articulador de ideias e práticas que unem ética, estratégia e impacto social.
-          <br><br>
-          Sua jornada é marcada pela busca constante de excelência e pelo compromisso de deixar um legado que ultrapasse fronteiras — um legado que inspira e abre portas para novas gerações.
-          <br><br>
-          <span style="font-style:normal;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--tx3);letter-spacing:.06em">Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</span>
+          <span style="font-style:normal;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--tx3);letter-spacing:.06em">VERTTI Consultoria Ltda. · API INPI nº 588 · CPF: 489.396.091-15</span>
+        </div>
+        <!-- Painel ADM: adicionar documentos/links -->
+        <div class="adm-panel" style="margin-top:1.5rem">
+          <h4>Adicionar documento ou link ao Acervo</h4>
+          <div class="form-row">
+            <div><label class="fl">Categoria</label>
+              <select class="fi" id="doc-cat">
+                <option value="legislacao">Legislação</option>
+                <option value="saude">Saúde Indígena</option>
+                <option value="internacional">Internacional</option>
+                <option value="pi">Propriedade Intelectual</option>
+                <option value="sobre">Sobre o ICET</option>
+              </select>
+            </div>
+            <div><label class="fl">Título *</label><input class="fi" type="text" id="doc-ti" placeholder="Título do documento"></div>
+          </div>
+          <div class="form-row">
+            <div><label class="fl">Subtítulo / Descrição</label><input class="fi" type="text" id="doc-sub" placeholder="Órgão, data, contexto..."></div>
+            <div><label class="fl">URL ou Link *</label><input class="fi" type="url" id="doc-url" placeholder="https://..."></div>
+          </div>
+          <div class="form-row">
+            <div><label class="fl">Texto do botão</label><input class="fi" type="text" id="doc-btn" placeholder="Ex: Acessar documento, Ver PDF..."></div>
+            <div></div>
+          </div>
+          <button class="btn-pub" onclick="pubDocAcervo()">+ Adicionar ao Acervo</button>
         </div>
       </div>
     </div>
@@ -2484,6 +2554,9 @@ function aplicarDadosNaTela(db){
   renderProdutos();
   renderCalendario();
   renderGridVasos();
+  renderDepoimentos();
+  renderComenda();
+  renderAcervoDinamico();
 }
 
 // ══ HELPER: trocar foto genérica ══
@@ -2536,13 +2609,13 @@ function editarTexto(el){
 
 // ══ DADOS FIXOS ══
 var NOTICIAS_FIXAS = [
-  {id:'nf1',cat:'Criação do Instituto',data:'8 fev. 2025',fonte:'JD1 Notícias',titulo:'Comunidade indígena estrutura Instituto Cacique Enir Terena com apoio do IFMS',desc:'',link:''},
+  {id:'nf1',cat:'Criação do Instituto',data:'8 fev. 2025',fonte:'JD1 Notícias',titulo:'Comunidade indígena estrutura Instituto Cacique Enir Terena com apoio do IFMS',desc:'',link:'https://www.jd1news.com.br'},
   {id:'nf2',cat:'Premiação',data:'12 fev. 2025',fonte:'ANAI',titulo:'Mulheres indígenas criam Instituto Enir Terena com apoio do IFMS e Prêmio Nacional MPI',desc:'',link:''},
   {id:'nf3',cat:'Repasse Federal',data:'31 mai. 2025',fonte:'Campo Grande News',titulo:'Governo federal entrega recursos para projetos indígenas em MS',desc:'Cerimônia na Aldeia Marçal de Souza.',link:''},
   {id:'nf4',cat:'Patrimônio Cultural',data:'fev. 2026',fonte:'IPHAN',titulo:'Cerâmica Terena avança no processo de reconhecimento como Patrimônio Cultural do Brasil',desc:'',link:''},
-  {id:'nf5',cat:'Legado',data:'21 jun. 2016',fonte:'Campo Grande News',titulo:'Enir da Silva Bezerra — a Enir Terena — primeira cacique mulher do MS',desc:'',link:''},
-  {id:'nf6',cat:'Memorial',data:'18 mai. 2018',fonte:'Campo Grande News',titulo:'Memorial da Cultura Indígena recebe nome de Enir da Silva Bezerra — Lei 6006/18',desc:'',link:''},
-  {id:'nf7',cat:'Documentário',data:'26 nov. 2020',fonte:'Correio do Estado',titulo:'Documentário resgata trajetória da Aldeia Marçal de Souza — 25 anos',desc:'',link:''},
+  {id:'nf5',cat:'Legado',data:'21 jun. 2016',fonte:'Campo Grande News',titulo:'Enir da Silva Bezerra — a Enir Terena — primeira cacique mulher do MS',desc:'',link:'https://www.campograndenews.com.br'},
+  {id:'nf6',cat:'Memorial',data:'18 mai. 2018',fonte:'Campo Grande News',titulo:'Memorial da Cultura Indígena recebe nome de Enir da Silva Bezerra — Lei 6006/18',desc:'',link:'https://www.campograndenews.com.br'},
+  {id:'nf7',cat:'Documentário',data:'26 nov. 2020',fonte:'Correio do Estado',titulo:'Documentário resgata trajetória da Aldeia Marçal de Souza — 25 anos',desc:'',link:'https://correiodoestado.com.br'},
   {id:'nf8',cat:'Homenagem',data:'19 abr. 2023',fonte:'Diário Digital',titulo:'Mural de Enir da Silva Bezerra entregue no Memorial da Cultura Indígena',desc:'',link:''},
   {id:'nf9',cat:'Empreendedorismo',data:'mai. 2024',fonte:'Sebrae-MS',titulo:'Artesãs da Aldeia Marçal de Souza recebem capacitação em empreendedorismo indígena',desc:'',link:''}
 ];
@@ -3439,6 +3512,9 @@ document.addEventListener('DOMContentLoaded',function(){
   carregarDb();
   renderGridVasos();
   renderCalendario();
+  renderDepoimentos();
+  renderComenda();
+  renderAcervoDinamico();
   initSecFade();
   initCountUp();
   initParallax();
