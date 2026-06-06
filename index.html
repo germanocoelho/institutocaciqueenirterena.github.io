@@ -2494,29 +2494,20 @@ function salvarGitHub(){
 
 // ══ CARREGAR DADOS DO GITHUB (sincroniza entre dispositivos) ══
 function carregarDoGitHub(){
-  var api='https://api.github.com/repos/'+GH.repo+'/contents/'+GH.file;
-  var headers={'Authorization':'token '+GH.token,'User-Agent':'ICET-site'};
-  fetch(api,{headers:headers})
+  // Usar raw URL publica — sem autenticacao, sem CORS issues
+  var url='https://raw.githubusercontent.com/'+GH.repo+'/main/'+GH.file;
+  fetch(url)
   .then(function(r){
     if(!r.ok)return null;
-    return r.json();
+    return r.text();
   })
-  .then(function(res){
-    if(!res||!res.content)return;
+  .then(function(texto){
+    if(!texto)return;
     try{
-      // Decodificar base64 com suporte a UTF-8
-      var b64=res.content.replace(/\n/g,'');
-      var bin=atob(b64);
-      var bytes=new Uint8Array(bin.length);
-      for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-      var raw=new TextDecoder('utf-8').decode(bytes);
-      var remoto=JSON.parse(raw);
-      // Mesclar remoto com local — remoto tem prioridade
+      var remoto=JSON.parse(texto);
       var local=dbLer();
       var merged=Object.assign({},local,remoto);
       dbSalvar(merged);
-      _ghSha=res.sha||'';
-      // Reaplicar dados na tela
       aplicarDadosNaTela(merged);
     }catch(e){}
   })
