@@ -3394,8 +3394,8 @@ function renderIbgeConteudo(q){
       +'<td style="color:var(--tx3);font-size:.7rem;width:24px">'+(i+1)+'</td>'
       +'<td>'+(sub?'<button class="d-expand" data-dsub="ds'+i+'">+</button>':'')+d[0]+'</td>'
       +'<td class="td-n">'+fmtN(val)+'</td>'
-      +'<td><div class="d-bar"><div class="d-bar-track"><div class="d-bar-fill" style="width:'+pct+'%"></div></div>'
-      +'<span style="font-size:.63rem;color:var(--tx3);min-width:28px;text-align:right">'+pct+'%</span></div></td>'
+      +'<td><div class="d-bar"><div class="d-bar-track"><div class="d-bar-fill" style="width:'+pctBarra+'%"></div></div>'
+      +'<span style="font-size:.63rem;color:var(--tx3);min-width:42px;text-align:right">'+pctLabel+'</span></div></td>'
       +'</tr>'+sub;
   });
   var h=_ibgeAba==='ms-etnia'?'Etnia / Povo':_ibgeAba==='ms-municipio'?'Municipio (MS)':'Etnia / Povo (Brasil)';
