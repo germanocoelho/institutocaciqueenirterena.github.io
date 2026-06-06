@@ -2,16 +2,16 @@
   "diretoria": {
     "dir_1780699664196": {
       "key": "dir_1780699664196",
-      "nome": "Sâmara",
+      "nome": "SÃ¢mara",
       "cargo": "Vice Presidente",
-      "bio": "Filha da Aldeia Marçal de Souza, Samara carrega nas mãos o barro vermelho e na memória o grafismo branco que atravessa gerações.\nCeramista e guardiã dos saberes ancestrais, transforma argila em história viva — cada peça que molda é um elo entre o passado e o futuro do povo Terena.\nSua arte expressa o território, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra.  Samara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade.Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais e a força feminina em cada gesto.\nDetentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena.",
+      "bio": "Filha da Aldeia MarÃ§al de Souza, Samara carrega nas mÃ£os o barro vermelho e na memÃ³ria o grafismo branco que atravessa geraÃ§Ãµes.\nCeramista e guardiÃ£ dos saberes ancestrais, transforma argila em histÃ³ria viva â cada peÃ§a que molda Ã© um elo entre o passado e o futuro do povo Terena.\nSua arte expressa o territÃ³rio, a forÃ§a feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra.Â  Samara molda o barro e ensina a cerÃ¢mica indÃ­gena e o filtro da prosperidade.Apresentadora de vÃ­deos voltados para a cultura indÃ­gena, compartilha saberes ancestrais e a forÃ§a feminina em cada gesto.\nDetentora de conhecimentos em pintura, transforma tradiÃ§Ã£o em futuro, unindo arte, memÃ³ria e resistÃªncia do povo Terena.",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzvh.png"
     },
     "dir_1780708225094": {
       "key": "dir_1780708225094",
       "nome": "Germano Coelho Ramos Rocha-Silva",
-      "cargo": "Secretário Geral",
-      "bio": "Germano Coelho Ramos Rocha-Silva nasceu em Campo Grande, Mato Grosso do Sul, trazendo em sua trajetória a força de quem constrói pontes entre tradição e inovação. Filho de uma terra marcada pela diversidade cultural e pela luta de seus povos, carrega consigo o compromisso de transformar conhecimento em ação e de projetar valores que unem raízes locais a horizontes globais.Desde cedo, aprendeu que liderança não é apenas ocupar espaços, mas criar caminhos para que outros também possam caminhar. Sua formação e atuação refletem essa visão: seja no campo da consultoria, da gestão ou da representação institucional, Com determinação, assumiu o papel de articulador de ideias e práticas que unem ética, estratégia e impacto social. Sua jornada é marcada pela busca constante de excelência e pelo compromisso de deixar um legado que ultrapasse fronteiras — um legado que inspira e abre portas para novas gerações..",
+      "cargo": "SecretÃ¡rio Geral",
+      "bio": "Germano Coelho Ramos Rocha-Silva nasceu em Campo Grande, Mato Grosso do Sul, trazendo em sua trajetÃ³ria a forÃ§a de quem constrÃ³i pontes entre tradiÃ§Ã£o e inovaÃ§Ã£o. Filho de uma terra marcada pela diversidade cultural e pela luta de seus povos, carrega consigo o compromisso de transformar conhecimento em aÃ§Ã£o e de projetar valores que unem raÃ­zes locais a horizontes globais.Desde cedo, aprendeu que lideranÃ§a nÃ£o Ã© apenas ocupar espaÃ§os, mas criar caminhos para que outros tambÃ©m possam caminhar. Sua formaÃ§Ã£o e atuaÃ§Ã£o refletem essa visÃ£o: seja no campo da consultoria, da gestÃ£o ou da representaÃ§Ã£o institucional, Com determinaÃ§Ã£o, assumiu o papel de articulador de ideias e prÃ¡ticas que unem Ã©tica, estratÃ©gia e impacto social. Sua jornada Ã© marcada pela busca constante de excelÃªncia e pelo compromisso de deixar um legado que ultrapasse fronteiras â um legado que inspira e abre portas para novas geraÃ§Ãµes..",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708226/u32jaw9ndysskfqvfr1b.png"
     }
   },
@@ -20,11 +20,11 @@
       "key": "p_1780708171934",
       "nome": "Teste - Vaso Terena",
       "artesa": "Maria Auxiliadora",
-      "cat": "Cerâmica · Vasos",
+      "cat": "CerÃ¢mica Â· Vasos",
       "desc": "teste teste teste vaso terena",
       "preco": 300,
       "prazo": "20 dias",
-      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
+      "aldeia": "Aldeia MarÃ§al de Souza â Campo Grande",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg"
     }
   },
@@ -55,5 +55,8 @@
       "leg": "teste",
       "cat": "eventos"
     }
+  },
+  "maria": {
+    "bio": "Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, o Cacique Enir Terena, herdou da mãe não apenas o sangue e a memória do povo Terena, mas também a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo.\nCresceu entre dois mundos — a cidade e a aldeia —, aprendendo desde cedo que identidade e pertencimento são forças que nenhuma fronteira apaga. Com a ancestralização de sua mãe em 2016, continuou a luta e fundou o Instituto Cacique Enir Terena, dando continuidade ao legado que Enir construiu com décadas de luta: a primeira aldeia urbana indígena do Brasil, a marca coletiva OREKA e o reconhecimento internacional da cerâmica Terena como patrimônio cultural vivo.\nÀ frente do Instituto, Maria Auxiliadora conduz com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano. Sua liderança é a prova de que o legado de Enir Terena não terminou — ele continua, com força renovada, nas mãos de sua filha."
   }
 }
