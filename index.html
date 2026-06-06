@@ -970,6 +970,65 @@ section{
   box-shadow:0 8px 24px rgba(0,0,0,.25)!important;
 }
 
+
+/* IBGE botões */
+.ibge-btns{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2.5rem}
+.ibge-btn{background:rgba(139,58,15,.08);border:1px solid rgba(242,196,90,.25);color:var(--ou);padding:.7rem 1.4rem;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.25s}
+.ibge-btn:hover{border-color:var(--ou);background:rgba(139,58,15,.2);transform:translateY(-2px)}
+.ibge-btn-ico{display:inline-block;width:6px;height:6px;background:var(--ou);border-radius:50%;margin-right:.6rem;vertical-align:middle}
+.ibge-fonte{font-size:.67rem;color:var(--tx3);font-family:'Inter',sans-serif;margin-top:1rem;font-style:italic}
+/* Modal IBGE */
+.icet-modal{position:fixed;inset:0;background:rgba(10,6,3,.96);z-index:8000;display:none;align-items:center;justify-content:center;padding:1.5rem}
+.icet-modal.open{display:flex}
+.icet-modal-box{background:var(--k2);border:1px solid rgba(139,58,15,.4);width:100%;max-width:880px;max-height:90vh;display:flex;flex-direction:column}
+.icet-modal-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.icet-modal-head h3{font-family:'Cinzel',serif;font-size:1rem;color:var(--ou)}
+.icet-modal-close{background:none;border:none;color:var(--tx3);font-size:1.3rem;cursor:pointer;padding:.3rem .6rem}
+.icet-modal-close:hover{color:var(--cr)}
+.icet-modal-tabs{display:flex;border-bottom:1px solid var(--brd);flex-shrink:0}
+.icet-modal-tab{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--tx3);padding:.7rem 1.4rem;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:.2s;margin-bottom:-1px}
+.icet-modal-tab.on{border-bottom-color:var(--ou);color:var(--ou)}
+.icet-modal-body{padding:1.5rem;overflow-y:auto;flex:1}
+.icet-modal-search{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--brd);color:var(--cr);padding:.6rem 1rem;font-family:'Inter',sans-serif;font-size:.83rem;margin-bottom:1.2rem;outline:none}
+.icet-modal-search::placeholder{color:var(--tx3)}
+.d-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.d-table th{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);padding:.6rem .8rem;border-bottom:1px solid var(--brd);text-align:left;position:sticky;top:0;background:var(--k2)}
+.d-table td{padding:.55rem .8rem;border-bottom:1px solid rgba(139,58,15,.1);color:var(--tx2)}
+.d-table tr:hover td{background:rgba(139,58,15,.06)}
+.d-bar{display:flex;align-items:center;gap:.6rem}
+.d-bar-track{flex:1;height:4px;background:rgba(139,58,15,.15);border-radius:2px;overflow:hidden}
+.d-bar-fill{height:100%;background:linear-gradient(90deg,var(--r),var(--ou));border-radius:2px;transition:width 1s ease}
+.td-n{font-family:'Cinzel',serif;color:var(--ou);font-weight:600;text-align:right}
+.d-povo-tag{display:inline-block;padding:.15rem .55rem;background:rgba(139,58,15,.12);border:1px solid var(--brd);font-size:.65rem;font-family:'Inter',sans-serif;color:var(--tx2);margin:.15rem}
+.d-expand{background:none;border:none;color:var(--ou);font-size:.7rem;cursor:pointer;padding:.2rem .5rem;font-family:'Inter',sans-serif}
+.d-sub{display:none;padding:.5rem .8rem 1rem 2rem}
+.d-sub.open{display:block}
+/* Calendário */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.cal-mes{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--ou)}
+.cal-arrow{background:rgba(139,58,15,.15);border:1px solid var(--brd);color:var(--ou);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:.2s}
+.cal-arrow:hover{background:rgba(139,58,15,.35)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{text-align:center;font-size:.6rem;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);padding:.4rem 0}
+.cal-day{min-height:52px;padding:.3rem .4rem;background:rgba(255,255,255,.02);border:1px solid rgba(139,58,15,.1);font-size:.75rem;color:var(--tx3);cursor:pointer;transition:.2s;position:relative}
+.cal-day:hover{background:rgba(139,58,15,.08);border-color:var(--brd2)}
+.cal-day.today{border-color:rgba(242,196,90,.4);background:rgba(242,196,90,.04)}
+.cal-day.today .cal-day-n{color:var(--ou);font-weight:700}
+.cal-day.other-month{opacity:.3}
+.cal-day.has-event{border-color:rgba(196,98,26,.45)}
+.cal-day-n{display:block;font-size:.78rem;margin-bottom:.2rem}
+.cal-event-dot{display:block;font-size:.6rem;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-event-dot::before{content:'';display:inline-block;width:5px;height:5px;background:var(--r);border-radius:50%;margin-right:.3rem;vertical-align:middle}
+.cal-eventos-lista{margin-top:1.5rem}
+.cal-ev-item{display:flex;gap:1rem;align-items:flex-start;padding:.8rem 1rem;border-left:3px solid var(--r);background:rgba(139,58,15,.05);margin-bottom:.6rem;position:relative}
+.cal-ev-item:hover{background:rgba(139,58,15,.1)}
+.cal-ev-data{font-family:'Cinzel',serif;font-size:.8rem;color:var(--ou);min-width:70px;padding-top:.1rem}
+.cal-ev-ti{font-size:.88rem;color:var(--cr);margin-bottom:.2rem}
+.cal-ev-desc{font-size:.78rem;color:var(--tx2);line-height:1.5}
+.cal-ev-del{position:absolute;top:.6rem;right:.6rem;display:none;background:rgba(180,30,30,.2);border:none;color:rgba(220,80,80,.7);font-size:.68rem;padding:.2rem .4rem;cursor:pointer}
+body.adm-on .cal-ev-del{display:block}
+.cal-vazio{text-align:center;padding:2rem;font-size:.85rem;color:var(--tx3);font-style:italic}
+
 </style>
 </head>
 <body>
@@ -989,6 +1048,7 @@ section{
     <li><a href="#ceramica" onclick="closeMenu()">Cerâmica</a></li>
     <li><a href="#diretoria" onclick="closeMenu()">Diretoria</a></li>
     <li><a href="#noticias" onclick="closeMenu()">Notícias</a></li>
+    <li><a href="#calendario" onclick="closeMenu()">Agenda</a></li>
     <li><a href="#galeria" onclick="closeMenu()">Galeria</a></li>
     <li><a href="#videos" onclick="closeMenu()">Vídeos</a></li>
     <li><a href="#loja" onclick="closeMenu()">Loja</a></li>
@@ -1189,6 +1249,13 @@ section{
       <div class="povo-card"><div class="povo-nome">Ofaié</div><div class="povo-txt">~58 pessoas. Fronteira MS/SP. Resistência cultural extraordinária — um dos menores e mais resilientes povos do Brasil.</div></div>
       <div class="povo-card"><div class="povo-nome">Atikum</div><div class="povo-txt">Oriundos de Pernambuco. Presentes no MS desde o século XX, mantendo sua identidade e tradições.</div></div>
     </div>
+
+    <div class="ibge-btns reveal">
+      <button class="ibge-btn" onclick="abrirIbge('ms-etnia')"><span class="ibge-btn-ico"></span>Etnias no MS</button>
+      <button class="ibge-btn" onclick="abrirIbge('ms-municipio')"><span class="ibge-btn-ico"></span>Por Município</button>
+      <button class="ibge-btn" onclick="abrirIbge('brasil')"><span class="ibge-btn-ico"></span>Panorama Brasil</button>
+    </div>
+    <p class="ibge-fonte reveal">Fonte: IBGE · Censo Demográfico 2022 · Tabela complementar 25</p>
   </div>
 </section>
 
@@ -1381,6 +1448,40 @@ section{
   </defs>
   <rect width="100%" height="100%" fill="url(#pat-terena)"/>
 </svg>
+
+<!-- CALENDÁRIO DE EVENTOS -->
+<section id="calendario" style="background:var(--k2)">
+  <div class="grafismo-bg"></div>
+  <div class="container">
+    <span class="eyebrow reveal">Agenda ICET</span>
+    <h2 class="sec-title reveal">Calendário de Eventos</h2>
+    <div class="divider"></div>
+    <div id="cal-container"></div>
+    <div class="cal-eventos-lista" id="cal-lista"></div>
+    <div class="adm-panel">
+      <h4>Adicionar evento</h4>
+      <div class="form-row">
+        <div><label class="fl">Data *</label><input class="fi" type="date" id="ev-data"></div>
+        <div><label class="fl">Título *</label><input class="fi" type="text" id="ev-ti" placeholder="Nome do evento"></div>
+      </div>
+      <div class="form-full"><label class="fl">Descrição</label><input class="fi" type="text" id="ev-desc" placeholder="Local, horário, detalhes..."></div>
+      <div class="form-row">
+        <div><label class="fl">Categoria</label>
+          <select class="fi" id="ev-cat">
+            <option value="evento">Evento Cultural</option>
+            <option value="reuniao">Reunião</option>
+            <option value="feira">Feira / Exposição</option>
+            <option value="formacao">Formação / Capacitação</option>
+            <option value="data">Data Comemorativa</option>
+          </select>
+        </div>
+        <div><label class="fl">Link (opcional)</label><input class="fi" type="url" id="ev-link" placeholder="https://..."></div>
+      </div>
+      <button class="btn-pub" onclick="pubEvento()">+ Publicar evento</button>
+    </div>
+  </div>
+</section>
+
 <section id="galeria">
   <div class="container">
     <span class="eyebrow">Registros</span>
@@ -1558,6 +1659,21 @@ section{
   </div>
   <p class="footer-txt">© 2025 Instituto Cacique Enir Terena (ICET) · Campo Grande, MS · OREKA™ · INPI<br>Site desenvolvido por <strong style="color:var(--tx2)">Germano Coelho Ramos Rocha-Silva</strong> — Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</p>
 </footer>
+
+<!-- MODAL IBGE -->
+<div class="icet-modal" id="ibge-modal">
+  <div class="icet-modal-box">
+    <div class="icet-modal-head">
+      <h3 id="ibge-modal-titulo">Dados IBGE 2022</h3>
+      <button class="icet-modal-close" onclick="fecharIbge()">&#10005;</button>
+    </div>
+    <div class="icet-modal-tabs" id="ibge-tabs"></div>
+    <div class="icet-modal-body">
+      <input class="icet-modal-search" type="text" id="ibge-search" placeholder="Filtrar por nome..." oninput="filtrarIbge(this.value)">
+      <div id="ibge-conteudo"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ADM MODAL -->
 <div id="adm-modal">
@@ -2446,10 +2562,168 @@ function initParallax(){
   },{passive:true});
 }
 
+
+// IBGE + CALENDÁRIO
+var IBGE_MS_ETNIA=[["Guarani Kaiowá", 44575], ["Terena", 42492], ["Guarani", 7583], ["Guarani Nhandeva", 5968], ["Kadiwéu", 2402], ["Mal definida", 649], ["Guató", 407], ["Kinikinau", 307], ["Bororo", 236], ["Guarani Mbya", 177], ["Atikum", 136], ["Xavante", 122], ["Tupi-Guarani (**)", 114], ["Ofayé", 92], ["Avá-Guarani", 90], ["Tupinambá", 48], ["Outra etnia das Américas", 25], ["Kayapó", 23], ["Kaingang", 23], ["Pataxó", 23]];
+var IBGE_MS_MUN=[["Campo Grande", 12446], ["Dourados", 11373], ["Amambai", 9971], ["Miranda", 8789], ["Aquidauana", 8739], ["Itaporã", 6347], ["Paranhos", 5586], ["Caarapó", 5282], ["Japorã", 4731], ["Tacuru", 4260], ["Coronel Sapucaia", 3619], ["Sidrolândia", 3247], ["Dois Irmãos do Buriti", 2423], ["Anastácio", 2351], ["Nioaque", 1992], ["Antônio João", 1492], ["Aral Moreira", 1282], ["Porto Murtinho", 1243], ["Laguna Carapã", 905], ["Eldorado", 777], ["Juti", 752], ["Douradina", 742], ["Iguatemi", 714], ["Maracaju", 699], ["Ponta Porã", 665], ["Bodoquena", 622], ["Naviraí", 603], ["Rio Brilhante", 465], ["Bonito", 429], ["Corumbá", 426]];
+var IBGE_BRASIL=[["Tikúna", 74061], ["Kokama", 64327], ["Makuxí", 53446], ["Guarani Kaiowá", 50034], ["Kaingang", 45840], ["Terena", 44667], ["Pataxó", 39276], ["Guajajara", 38244], ["Potiguara", 37292], ["Múra", 36347], ["Baré", 35218], ["Munduruku", 32896], ["Sateré-Mawé", 28774], ["Xavante", 25360], ["Xukuru", 25321]];
+var IBGE_MUN_DET={"Campo Grande": {"total": 12446, "etnias": [["Terena", 9658], ["Guarani Kaiowá", 902], ["Guarani", 496], ["Mal definida", 368], ["Kadiwéu", 296]]}, "Dourados": {"total": 11373, "etnias": [["Guarani Kaiowá", 4412], ["Terena", 3879], ["Guarani", 2767], ["Bororo", 80], ["Mal definida", 62]]}, "Amambai": {"total": 9971, "etnias": [["Guarani Kaiowá", 9701], ["Terena", 109], ["Guarani", 78], ["Guarani Nhandeva", 68], ["Mal definida", 4]]}, "Miranda": {"total": 8789, "etnias": [["Terena", 8464], ["Kadiwéu", 162], ["Kinikinau", 85], ["Guarani", 21], ["Guarani Kaiowá", 18]]}, "Aquidauana": {"total": 8739, "etnias": [["Terena", 8439], ["Kadiwéu", 87], ["Guarani", 75], ["Guarani Kaiowá", 52], ["Kinikinau", 19]]}, "Itaporã": {"total": 6347, "etnias": [["Guarani Kaiowá", 4974], ["Guarani", 891], ["Terena", 450], ["Bororo", 12], ["Mal definida", 10]]}, "Paranhos": {"total": 5586, "etnias": [["Guarani Kaiowá", 2276], ["Guarani", 1999], ["Guarani Nhandeva", 1149], ["Guarani Mbya", 125], ["Avá-Guarani", 31]]}, "Caarapó": {"total": 5282, "etnias": [["Guarani Kaiowá", 5067], ["Guarani", 119], ["Guarani Nhandeva", 61], ["Terena", 25], ["Mal definida", 4]]}, "Japorã": {"total": 4731, "etnias": [["Guarani Nhandeva", 4381], ["Guarani", 176], ["Guarani Kaiowá", 157], ["Avá-Guarani", 12], ["Guarani Mbya", 2]]}, "Tacuru": {"total": 4260, "etnias": [["Guarani Kaiowá", 4189], ["Guarani", 59], ["Terena", 7], ["Avá-Guarani", 4], ["Kinikinau", 1]]}, "Coronel Sapucaia": {"total": 3619, "etnias": [["Guarani Kaiowá", 3564], ["Guarani", 45], ["Guarani Nhandeva", 7], ["Catokin", 2], ["Kaingang", 1]]}, "Sidrolândia": {"total": 3247, "etnias": [["Terena", 3075], ["Guarani Kaiowá", 105], ["Kadiwéu", 27], ["Guarani", 16], ["Bororo", 3]]}, "Dois Irmãos do Buriti": {"total": 2423, "etnias": [["Terena", 2361], ["Guarani Kaiowá", 41], ["Kinikinau", 6], ["Kadiwéu", 4], ["Atikum", 3]]}, "Anastácio": {"total": 2351, "etnias": [["Terena", 2262], ["Guarani", 26], ["Kadiwéu", 18], ["Guarani Kaiowá", 14], ["Kinikinau", 13]]}, "Nioaque": {"total": 1992, "etnias": [["Terena", 1800], ["Atikum", 104], ["Kinikinau", 57], ["Guarani Kaiowá", 13], ["Guarani", 9]]}, "Antônio João": {"total": 1492, "etnias": [["Guarani Kaiowá", 1468], ["Guarani", 17], ["Terena", 5], ["Guarani Mbya", 1], ["Guarani Nhandeva", 1]]}, "Aral Moreira": {"total": 1282, "etnias": [["Guarani Kaiowá", 1273], ["Guarani", 8], ["Pataxó Hã-Hã-Hãe", 1]]}, "Porto Murtinho": {"total": 1243, "etnias": [["Kadiwéu", 1052], ["Terena", 142], ["Kinikinau", 41], ["Guarani Kaiowá", 5], ["Outra etnia das Américas", 2]]}, "Laguna Carapã": {"total": 905, "etnias": [["Guarani Kaiowá", 866], ["Guarani Nhandeva", 22], ["Guarani", 12], ["Wai Wai", 2], ["Avá-Guarani", 1]]}, "Eldorado": {"total": 777, "etnias": [["Guarani Kaiowá", 635], ["Guarani", 109], ["Guarani Nhandeva", 28], ["Terena", 3], ["Mal definida", 2]]}, "Juti": {"total": 752, "etnias": [["Guarani Kaiowá", 680], ["Guarani", 53], ["Terena", 16], ["Guarani Nhandeva", 2], ["Mal definida", 1]]}, "Douradina": {"total": 742, "etnias": [["Guarani Kaiowá", 739], ["Guarani", 1], ["Karajá", 1], ["Terena", 1]]}, "Iguatemi": {"total": 714, "etnias": [["Guarani Kaiowá", 505], ["Guarani", 166], ["Guarani Nhandeva", 23], ["Akawaio", 9], ["Mal definida", 5]]}, "Maracaju": {"total": 699, "etnias": [["Guarani Kaiowá", 401], ["Terena", 242], ["Guarani", 26], ["Mal definida", 7], ["Guarani Mbya", 6]]}, "Ponta Porã": {"total": 665, "etnias": [["Guarani Kaiowá", 603], ["Guarani", 30], ["Terena", 14], ["Guarani Mbya", 6], ["Mal definida", 5]]}, "Bodoquena": {"total": 622, "etnias": [["Kadiwéu", 502], ["Terena", 93], ["Paumarí", 13], ["Guarani Kaiowá", 7], ["Mal definida", 6]]}, "Naviraí": {"total": 603, "etnias": [["Guarani Kaiowá", 535], ["Guarani", 23], ["Terena", 18], ["Guarani Nhandeva", 11], ["Avá-Guarani", 6]]}, "Rio Brilhante": {"total": 465, "etnias": [["Guarani Kaiowá", 323], ["Terena", 89], ["Guarani", 29], ["Kadiwéu", 5], ["Mal definida", 5]]}, "Bonito": {"total": 429, "etnias": [["Terena", 200], ["Kadiwéu", 162], ["Kinikinau", 35], ["Guarani Kaiowá", 17], ["Guarani", 6]]}, "Corumbá": {"total": 426, "etnias": [["Guató", 241], ["Terena", 132], ["Aimara", 12], ["Guarani Kaiowá", 11], ["Bororo", 5]]}};
+var _ibgeAba='ms-etnia';
+function abrirIbge(aba){
+  _ibgeAba=aba;
+  document.getElementById('ibge-modal').classList.add('open');
+  document.getElementById('ibge-search').value='';
+  renderIbgeTabs();renderIbgeConteudo('');
+  var t={'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Município - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
+  document.getElementById('ibge-modal-titulo').textContent=t[aba]||'Dados IBGE 2022';
+}
+function fecharIbge(){document.getElementById('ibge-modal').classList.remove('open');}
+function renderIbgeTabs(){
+  var abas=[{id:'ms-etnia',label:'Etnias MS'},{id:'ms-municipio',label:'Municipios MS'},{id:'brasil',label:'Brasil'}];
+  var h='';
+  abas.forEach(function(a){
+    h+='<button class="icet-modal-tab'+(_ibgeAba===a.id?' on':'')+'" data-ibge-tab="'+a.id+'">'+a.label+'</button>';
+  });
+  document.getElementById('ibge-tabs').innerHTML=h;
+}
+function trocarIbgeAba(aba){
+  _ibgeAba=aba;renderIbgeTabs();
+  document.getElementById('ibge-search').value='';renderIbgeConteudo('');
+  var t={'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Municipio - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
+  document.getElementById('ibge-modal-titulo').textContent=t[aba]||'';
+}
+function filtrarIbge(q){renderIbgeConteudo(q.toLowerCase().trim());}
+function fmtN(n){return n.toLocaleString('pt-BR');}
+function renderIbgeConteudo(q){
+  var cont=document.getElementById('ibge-conteudo');
+  var dados=[],max=1;
+  if(_ibgeAba==='ms-etnia'){dados=IBGE_MS_ETNIA;max=dados[0]?dados[0][1]:1;}
+  if(_ibgeAba==='ms-municipio'){dados=IBGE_MS_MUN;max=dados[0]?dados[0][1]:1;}
+  if(_ibgeAba==='brasil'){dados=IBGE_BRASIL;max=dados[0]?dados[0][1]:1;}
+  var fil=q?dados.filter(function(d){return d[0].toLowerCase().indexOf(q)>=0;}):dados;
+  if(!fil.length){cont.innerHTML='<p style="color:var(--tx3);padding:1rem">Nenhum resultado.</p>';return;}
+  var rows='';
+  fil.forEach(function(d,i){
+    var pct=Math.round(d[1]/max*100);
+    var sub='';
+    if(_ibgeAba==='ms-municipio'&&IBGE_MUN_DET[d[0]]){
+      sub='<tr><td colspan="4" style="padding:0"><div class="d-sub" id="ds'+i+'">';
+      IBGE_MUN_DET[d[0]].etnias.forEach(function(e){sub+='<span class="d-povo-tag">'+e[0]+': '+fmtN(e[1])+'</span>';});
+      sub+='</div></td></tr>';
+    }
+    rows+='<tr>'
+      +'<td style="color:var(--tx3);font-size:.7rem;width:24px">'+(i+1)+'</td>'
+      +'<td>'+(sub?'<button class="d-expand" data-dsub="ds'+i+'">+</button>':'')+d[0]+'</td>'
+      +'<td class="td-n">'+fmtN(d[1])+'</td>'
+      +'<td><div class="d-bar"><div class="d-bar-track"><div class="d-bar-fill" style="width:'+pct+'%"></div></div>'
+      +'<span style="font-size:.63rem;color:var(--tx3);min-width:28px;text-align:right">'+pct+'%</span></div></td>'
+      +'</tr>'+sub;
+  });
+  var h=_ibgeAba==='ms-etnia'?'Etnia / Povo':_ibgeAba==='ms-municipio'?'Municipio (MS)':'Etnia / Povo (Brasil)';
+  cont.innerHTML='<table class="d-table"><thead><tr><th>#</th><th>'+h+'</th><th style="text-align:right">Pessoas</th><th>Proporcao</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<p style="font-size:.63rem;color:var(--tx3);margin-top:.7rem;font-style:italic">IBGE Censo 2022 - Tabela complementar 25</p>';
+  setTimeout(function(){
+    var c=document.getElementById('ibge-conteudo');
+    if(c){c.querySelectorAll('.d-bar-fill').forEach(function(f){var w=f.style.width;f.style.width='0';setTimeout(function(){f.style.width=w;},30);});}
+  },30);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.getAttribute('data-ibge-tab');if(t){trocarIbgeAba(t);return;}
+  var s=e.target.getAttribute('data-dsub');if(s){var el=document.getElementById(s);if(el)el.classList.toggle('open');return;}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharIbge();});
+var _calAno,_calMes;
+(function(){var n=new Date();_calAno=n.getFullYear();_calMes=n.getMonth();})();
+var MESES=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+var EVCORES={'evento':'#C4621A','reuniao':'#2D6A4F','feira':'#8B3A6B','formacao':'#1B4965','data':'#F2C45A'};
+function renderCalendario(){
+  var cont=document.getElementById('cal-container');if(!cont)return;
+  var db=dbLer();var evs=db.eventos||{};
+  var evMap={};
+  Object.keys(evs).forEach(function(k){var ev=evs[k];if(!evMap[ev.data])evMap[ev.data]=[];evMap[ev.data].push(ev);});
+  var hoje=new Date();
+  var p1=new Date(_calAno,_calMes,1);
+  var ult=new Date(_calAno,_calMes+1,0);
+  var ini=p1.getDay();
+  var h='<div class="cal-nav">'
+    +'<button class="cal-arrow" onclick="calNav(-1)">&#8249;</button>'
+    +'<span class="cal-mes">'+MESES[_calMes]+' '+_calAno+'</span>'
+    +'<button class="cal-arrow" onclick="calNav(1)">&#8250;</button>'
+    +'</div><div class="cal-grid">';
+  DIAS.forEach(function(d){h+='<div class="cal-dow">'+d+'</div>';});
+  for(var i=0;i<ini;i++){var pd=new Date(_calAno,_calMes,i-ini+1);h+='<div class="cal-day other-month"><span class="cal-day-n">'+pd.getDate()+'</span></div>';}
+  for(var d=1;d<=ult.getDate();d++){
+    var ds=_calAno+'-'+String(_calMes+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var isH=(hoje.getFullYear()===_calAno&&hoje.getMonth()===_calMes&&hoje.getDate()===d);
+    var evD=evMap[ds]||[];
+    var cls='cal-day'+(isH?' today':'')+(evD.length?' has-event':'');
+    h+='<div class="'+cls+'"><span class="cal-day-n">'+d+'</span>';
+    evD.slice(0,2).forEach(function(ev){h+='<span class="cal-event-dot" style="color:'+(EVCORES[ev.cat]||'var(--ou)')+'">'+ev.titulo+'</span>';});
+    if(evD.length>2)h+='<span style="font-size:.58rem;color:var(--tx3)">+'+(evD.length-2)+'</span>';
+    h+='</div>';
+  }
+  var rest=(7-(ini+ult.getDate())%7)%7;
+  for(var r=1;r<=rest;r++){h+='<div class="cal-day other-month"><span class="cal-day-n">'+r+'</span></div>';}
+  h+='</div>';
+  cont.innerHTML=h;
+  renderListaEventos();
+}
+function calNav(dir){
+  _calMes+=dir;
+  if(_calMes>11){_calMes=0;_calAno++;}
+  if(_calMes<0){_calMes=11;_calAno--;}
+  renderCalendario();
+}
+function renderListaEventos(){
+  var lista=document.getElementById('cal-lista');if(!lista)return;
+  var db=dbLer();var evs=db.eventos||{};
+  var hoje=new Date();hoje.setHours(0,0,0,0);
+  var fut=Object.keys(evs).map(function(k){return evs[k];})
+    .filter(function(ev){return new Date(ev.data+'T00:00:00')>=hoje;})
+    .sort(function(a,b){return a.data<b.data?-1:1;});
+  if(!fut.length){lista.innerHTML='<div class="cal-vazio">Nenhum evento. Entre no ADM para adicionar.</div>';return;}
+  var h='<p style="font-family:Cinzel,serif;font-size:.82rem;color:var(--ou);margin-bottom:1rem;letter-spacing:.1em;text-transform:uppercase">Proximos eventos</p>';
+  fut.forEach(function(ev){
+    var d=new Date(ev.data+'T00:00:00');
+    var df=d.getDate()+' '+MESES[d.getMonth()].slice(0,3)+'. '+d.getFullYear();
+    var cor=EVCORES[ev.cat]||'var(--ou)';
+    h+='<div class="cal-ev-item" style="border-left-color:'+cor+'">'
+      +'<div class="cal-ev-data">'+df+'</div>'
+      +'<div><div class="cal-ev-ti">'+ev.titulo+'</div>'
+      +(ev.desc?'<div class="cal-ev-desc">'+ev.desc+'</div>':'')
+      +(ev.link?'<a href="'+ev.link+'" target="_blank" style="font-size:.72rem;color:'+cor+'">Ver mais</a>':'')
+      +'</div>'
+      +'<button class="cal-ev-del btn-sm del" data-ev-del="'+ev.key+'">&#10005;</button>'
+      +'</div>';
+  });
+  lista.innerHTML=h;
+}
+function pubEvento(){
+  var data=document.getElementById('ev-data').value;
+  var ti=document.getElementById('ev-ti').value.trim();
+  if(!data||!ti){notif('Preencha data e titulo','err');return;}
+  var key='ev_'+Date.now();
+  var ev={key:key,data:data,titulo:ti,
+    desc:document.getElementById('ev-desc').value.trim(),
+    cat:document.getElementById('ev-cat').value,
+    link:document.getElementById('ev-link').value.trim()};
+  var db=dbLer();if(!db.eventos)db.eventos={};
+  db.eventos[key]=ev;dbSalvar(db);salvarGitHub();
+  renderCalendario();
+  ['ev-data','ev-ti','ev-desc','ev-link'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  notif('Evento publicado!','ok');
+}
+document.addEventListener('click',function(e){
+  var evDel=e.target.getAttribute('data-ev-del');
+  if(evDel){if(!confirm('Excluir evento?'))return;var db=dbLer();if(db.eventos&&db.eventos[evDel])delete db.eventos[evDel];dbSalvar(db);salvarGitHub();renderCalendario();notif('Evento excluido');}
+});
+
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded',function(){
   carregarDb();
   renderGridVasos();
+  renderCalendario();
   initSecFade();
   initCountUp();
   initParallax();
