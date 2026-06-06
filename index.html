@@ -1029,6 +1029,24 @@ section{
 body.adm-on .cal-ev-del{display:block}
 .cal-vazio{text-align:center;padding:2rem;font-size:.85rem;color:var(--tx3);font-style:italic}
 
+
+/* ── DIVISOR TERENA ORNAMENTAL ── */
+.divisor-terena{
+  width:100%;overflow:hidden;
+  padding:0;margin:0;
+  position:relative;
+  line-height:0;
+  background:transparent;
+}
+.divisor-terena svg{
+  display:block;width:100%;
+  animation:divisor-pulse 6s ease-in-out infinite;
+}
+@keyframes divisor-pulse{
+  0%,100%{opacity:.85}
+  50%{opacity:1}
+}
+
 </style>
 </head>
 <body>
@@ -1102,17 +1120,44 @@ body.adm-on .cal-ev-del{display:block}
 
 <!-- PLACEHOLDER seções futuras -->
 
-<svg style="display:block;width:100%;height:40px;overflow:visible" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
   <defs>
-    <pattern id="pat-terena" x="0" y="0" width="60" height="36" patternUnits="userSpaceOnUse">
-      <polyline points="0,36 15,18 30,36 45,18 60,36" fill="none" stroke="#8B3A0F" stroke-width="1.6"/>
-      <polyline points="0,26 15,8 30,26 45,8 60,26" fill="none" stroke="#C4621A" stroke-width=".8"/>
-      <circle cx="15" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-      <circle cx="45" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-    </pattern>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="100%" height="100%" fill="url(#pat-terena)"/>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
+</div>
 <section id="enir">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -1172,7 +1217,44 @@ body.adm-on .cal-ev-del{display:block}
   </div>
 </section>
 
-
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="instituto">
   <div class="container">
     <div class="inst-grid">
@@ -1224,7 +1306,44 @@ body.adm-on .cal-ev-del{display:block}
   </div>
 </section>
 
-
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="ms">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -1259,7 +1378,44 @@ body.adm-on .cal-ev-del{display:block}
   </div>
 </section>
 
-
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="oreka">
   <div class="container">
     <div class="oreka-grid">
@@ -1301,7 +1457,44 @@ body.adm-on .cal-ev-del{display:block}
   </div>
 </section>
 
-
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="ceramica">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -1346,17 +1539,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
-<svg style="display:block;width:100%;height:40px;overflow:visible" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
   <defs>
-    <pattern id="pat-terena" x="0" y="0" width="60" height="36" patternUnits="userSpaceOnUse">
-      <polyline points="0,36 15,18 30,36 45,18 60,36" fill="none" stroke="#8B3A0F" stroke-width="1.6"/>
-      <polyline points="0,26 15,8 30,26 45,8 60,26" fill="none" stroke="#C4621A" stroke-width=".8"/>
-      <circle cx="15" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-      <circle cx="45" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-    </pattern>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="100%" height="100%" fill="url(#pat-terena)"/>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
+</div>
 <section id="diretoria">
   <div class="container">
     <span class="eyebrow">Gestão</span>
@@ -1406,6 +1626,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="noticias">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -1437,17 +1695,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
-<svg style="display:block;width:100%;height:40px;overflow:visible" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
   <defs>
-    <pattern id="pat-terena" x="0" y="0" width="60" height="36" patternUnits="userSpaceOnUse">
-      <polyline points="0,36 15,18 30,36 45,18 60,36" fill="none" stroke="#8B3A0F" stroke-width="1.6"/>
-      <polyline points="0,26 15,8 30,26 45,8 60,26" fill="none" stroke="#C4621A" stroke-width=".8"/>
-      <circle cx="15" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-      <circle cx="45" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-    </pattern>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="100%" height="100%" fill="url(#pat-terena)"/>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
+</div>
 
 <!-- CALENDÁRIO DE EVENTOS -->
 <section id="calendario" style="background:var(--k2)">
@@ -1525,6 +1810,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="videos">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -1554,6 +1877,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
+  <defs>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+</svg>
+</div>
 <section id="loja">
   <div class="container">
     <div class="loja-header">
@@ -1616,17 +1977,44 @@ body.adm-on .cal-ev-del{display:block}
 </section>
 
 
-<svg style="display:block;width:100%;height:40px;overflow:visible" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+<div class="divisor-terena" aria-hidden="true">
+<svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:48px">
   <defs>
-    <pattern id="pat-terena" x="0" y="0" width="60" height="36" patternUnits="userSpaceOnUse">
-      <polyline points="0,36 15,18 30,36 45,18 60,36" fill="none" stroke="#8B3A0F" stroke-width="1.6"/>
-      <polyline points="0,26 15,8 30,26 45,8 60,26" fill="none" stroke="#C4621A" stroke-width=".8"/>
-      <circle cx="15" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-      <circle cx="45" cy="18" r="2.2" fill="#F2C45A" opacity=".6"/>
-    </pattern>
+    <filter id="glow-or"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-wh"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="100%" height="100%" fill="url(#pat-terena)"/>
+  <!-- Ziguezague esquerdo -->
+  <polyline points="0,35 18,22 36,35 54,22 72,35 90,22 108,35 126,22 144,35 162,22 180,35 198,22 216,35 234,22 252,35 270,22 288,35 306,22 324,35 342,22 360,35 378,22 396,35 414,22 432,35 450,22 468,35 486,22 500,35" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="0,39 18,26 36,39 54,26 72,39 90,26 108,39 126,26 144,39 162,26 180,39 198,26 216,39 234,26 252,39 270,26 288,39 306,26 324,39 342,26 360,39 378,26 396,39 414,26 432,39 450,26 468,39 486,26 500,39" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Ziguezague direito -->
+  <polyline points="700,35 718,22 736,35 754,22 772,35 790,22 808,35 826,22 844,35 862,22 880,35 898,22 916,35 934,22 952,35 970,22 988,35 1006,22 1024,35 1042,22 1060,35 1078,22 1096,35 1114,22 1132,35 1150,22 1168,35 1186,22 1200,30" fill="none" stroke="#F2C45A" stroke-width="1.8" opacity=".75" filter="url(#glow-or)"/>
+  <polyline points="700,39 718,26 736,39 754,26 772,39 790,26 808,39 826,26 844,39 862,26 880,39 898,26 916,39 934,26 952,39 970,26 988,39 1006,26 1024,39 1042,26 1060,39 1078,26 1096,39 1114,26 1132,39 1150,26 1168,39 1186,26 1200,34" fill="none" stroke="#C4621A" stroke-width=".9" opacity=".5"/>
+  <!-- Espiral esquerda -->
+  <path d="M500,30 Q490,15 475,18 Q455,22 460,35 Q465,48 480,44 Q495,40 492,30 Q489,20 478,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M500,30 Q510,18 522,22 Q535,28 530,38 Q524,46 514,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Espiral direita (espelhada) -->
+  <path d="M700,30 Q710,15 725,18 Q745,22 740,35 Q735,48 720,44 Q705,40 708,30 Q711,20 722,23" fill="none" stroke="rgba(247,242,232,.88)" stroke-width="3.2" stroke-linecap="round" filter="url(#glow-wh)"/>
+  <path d="M700,30 Q690,18 678,22 Q665,28 670,38 Q676,46 686,42" fill="none" stroke="rgba(247,242,232,.65)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flores/pétalas centrais (cruz de 4 pétalas) -->
+  <ellipse cx="600" cy="22" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="600" cy="38" rx="5" ry="12" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="587" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <ellipse cx="613" cy="30" rx="12" ry="5" fill="rgba(247,242,232,.9)" filter="url(#glow-wh)"/>
+  <!-- Centro dourado -->
+  <circle cx="600" cy="30" r="5" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="600" cy="30" r="2.5" fill="#E8A853"/>
+  <!-- Pontos dourados -->
+  <circle cx="572" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="628" cy="30" r="4" fill="#F2C45A" filter="url(#glow-or)"/>
+  <circle cx="558" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="22" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="558" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <circle cx="642" cy="38" r="2.5" fill="#C4621A" opacity=".8"/>
+  <!-- Linhas de conexão espirais→ornamento -->
+  <line x1="530" y1="30" x2="548" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
+  <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
+</div>
 <section id="contato">
   <div class="container">
     <div class="contato-grid">
@@ -2597,14 +2985,17 @@ function fmtN(n){return n.toLocaleString('pt-BR');}
 function renderIbgeConteudo(q){
   var cont=document.getElementById('ibge-conteudo');
   var dados=[],max=1;
-  if(_ibgeAba==='ms-etnia'){dados=IBGE_MS_ETNIA;max=dados[0]?dados[0][1]:1;}
-  if(_ibgeAba==='ms-municipio'){dados=IBGE_MS_MUN;max=dados[0]?dados[0][1]:1;}
-  if(_ibgeAba==='brasil'){dados=IBGE_BRASIL;max=dados[0]?dados[0][1]:1;}
+  if(_ibgeAba==='ms-etnia'){dados=IBGE_MS_ETNIA;max=dados[0]?parseInt(dados[0][1])||1:1;}
+  if(_ibgeAba==='ms-municipio'){dados=IBGE_MS_MUN;max=dados[0]?parseInt(dados[0][1])||1:1;}
+  if(_ibgeAba==='brasil'){dados=IBGE_BRASIL;max=dados[0]?parseInt(dados[0][1])||1:1;}
   var fil=q?dados.filter(function(d){return d[0].toLowerCase().indexOf(q)>=0;}):dados;
   if(!fil.length){cont.innerHTML='<p style="color:var(--tx3);padding:1rem">Nenhum resultado.</p>';return;}
+  // recalcular max do conjunto filtrado para barras corretas
+  max=fil.reduce(function(m,d){return Math.max(m,parseInt(d[1])||0);},1);
   var rows='';
   fil.forEach(function(d,i){
-    var pct=Math.round(d[1]/max*100);
+    var val=parseInt(d[1])||0;
+    var pct=max>0?Math.round(val/max*100):0;
     var sub='';
     if(_ibgeAba==='ms-municipio'&&IBGE_MUN_DET[d[0]]){
       sub='<tr><td colspan="4" style="padding:0"><div class="d-sub" id="ds'+i+'">';
@@ -2614,7 +3005,7 @@ function renderIbgeConteudo(q){
     rows+='<tr>'
       +'<td style="color:var(--tx3);font-size:.7rem;width:24px">'+(i+1)+'</td>'
       +'<td>'+(sub?'<button class="d-expand" data-dsub="ds'+i+'">+</button>':'')+d[0]+'</td>'
-      +'<td class="td-n">'+fmtN(d[1])+'</td>'
+      +'<td class="td-n">'+fmtN(val)+'</td>'
       +'<td><div class="d-bar"><div class="d-bar-track"><div class="d-bar-fill" style="width:'+pct+'%"></div></div>'
       +'<span style="font-size:.63rem;color:var(--tx3);min-width:28px;text-align:right">'+pct+'%</span></div></td>'
       +'</tr>'+sub;
