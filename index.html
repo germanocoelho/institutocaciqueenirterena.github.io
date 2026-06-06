@@ -3422,6 +3422,18 @@ document.addEventListener('click',function(e){
   if(evDel){if(!confirm('Excluir evento?'))return;var db=dbLer();if(db.eventos&&db.eventos[evDel])delete db.eventos[evDel];dbSalvar(db);salvarGitHub();renderCalendario();notif('Evento excluido');}
 });
 
+
+// ── ACERVO TABS ──
+document.addEventListener('click',function(e){
+  var tab=e.target.getAttribute('data-acervo');
+  if(!tab)return;
+  document.querySelectorAll('.acervo-tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.acervo-painel').forEach(function(p){p.classList.remove('on');});
+  e.target.classList.add('on');
+  var painel=document.getElementById('acervo-'+tab);
+  if(painel)painel.classList.add('on');
+});
+
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded',function(){
   carregarDb();
