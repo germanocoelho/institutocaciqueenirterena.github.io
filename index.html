@@ -2667,7 +2667,13 @@ function carregarDb(){
   // Fotos fixas
   if(db.fotos){
     if(db.fotos.enir_foto){var el=document.getElementById('enir-foto');if(el)el.src=db.fotos.enir_foto;}
-    if(db.fotos.maria_foto){var el=document.getElementById('dir-maria-foto');if(el)el.src=db.fotos.maria_foto;}
+    if(db.fotos&&db.fotos.maria_foto){var el=document.getElementById('dir-maria-foto');if(el)el.src=db.fotos.maria_foto;}
+  // Carregar nome/cargo/bio de Maria se foram editados
+  if(db.maria){
+    if(db.maria.nome){var en=document.getElementById('dir-maria-nome');if(en)en.textContent=db.maria.nome;}
+    if(db.maria.cargo){var ec=document.getElementById('dir-maria-cargo');if(ec)ec.textContent=db.maria.cargo;}
+    if(db.maria.bio){var eb=document.getElementById('dir-maria-bio');if(eb)eb.textContent=db.maria.bio;}
+  }
     if(db.fotos.oreka_logo){var el=document.getElementById('oreka-logo-img');if(el)el.src=db.fotos.oreka_logo;}
     if(db.fotos.loja_logo){var el=document.getElementById('loja-logo');if(el)el.src=db.fotos.loja_logo;}
   }
@@ -2764,16 +2770,27 @@ function editarInline(elId, tipo){
     el.style.background='';
     var novo=el.textContent.trim();
     if(!novo){el.textContent=old;return;}
+    // Salvar Maria (IDs fixos)
+    if(elId==='dir-maria-nome'||elId==='dir-maria-cargo'||elId==='dir-maria-bio'){
+      var db=dbLer();
+      if(!db.maria)db.maria={};
+      if(elId==='dir-maria-nome')db.maria.nome=novo;
+      if(elId==='dir-maria-cargo')db.maria.cargo=novo;
+      if(elId==='dir-maria-bio')db.maria.bio=novo;
+      dbSalvar(db);salvarGitHub();
+      notif('✅ Salvo!','ok');
+      return;
+    }
     // Salvar se for membro dinâmico (tem ID com chave)
     var match=elId.match(/^d[ncb]-(.+)$/);
     if(match){
       var key=match[1];
-      var db=dbLer();
-      if(db.diretoria&&db.diretoria[key]){
-        if(elId.startsWith('dn-'))db.diretoria[key].nome=novo;
-        if(elId.startsWith('dc2-'))db.diretoria[key].cargo=novo;
-        if(elId.startsWith('db-'))db.diretoria[key].bio=novo;
-        dbSalvar(db);salvarGitHub();
+      var db2=dbLer();
+      if(db2.diretoria&&db2.diretoria[key]){
+        if(elId.startsWith('dn-'))db2.diretoria[key].nome=novo;
+        if(elId.startsWith('dc2-'))db2.diretoria[key].cargo=novo;
+        if(elId.startsWith('db-'))db2.diretoria[key].bio=novo;
+        dbSalvar(db2);salvarGitHub();
       }
     }
     notif('✅ Salvo','ok');
