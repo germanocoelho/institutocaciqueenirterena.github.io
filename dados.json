@@ -26,6 +26,17 @@
       "prazo": "20 dias",
       "aldeia": "Aldeia Marçal de Souza — Campo Grande",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg"
+    },
+    "p_1780722818589": {
+      "key": "p_1780722818589",
+      "nome": "Teste 2",
+      "artesa": "Sâmara",
+      "cat": "Bijuteria",
+      "desc": "teste de produto",
+      "preco": 100,
+      "prazo": "20",
+      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png"
     }
   },
   "vasos": {
