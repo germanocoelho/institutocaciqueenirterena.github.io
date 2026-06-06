@@ -3381,7 +3381,9 @@ function renderIbgeConteudo(q){
   var rows='';
   fil.forEach(function(d,i){
     var val=parseInt(d[1])||0;
-    var pct=max>0?Math.round(val/max*100):0;
+    var pctReal=max>0?(val/max*100):0;
+    var pctLabel=pctReal<0.1?'<0,1%':(pctReal.toFixed(1)+'%');
+    var pctBarra=pctReal<2&&pctReal>0?2:Math.round(pctReal); // mínimo 2% de barra se >0
     var sub='';
     if(_ibgeAba==='ms-municipio'&&IBGE_MUN_DET[d[0]]){
       sub='<tr><td colspan="4" style="padding:0"><div class="d-sub" id="ds'+i+'">';
