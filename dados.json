@@ -1,4 +1,60 @@
 {
+  "maria": {
+    "nome": "Maria Auxiliadora Bezerra",
+    "cargo": "Presidente",
+    "foto": "",
+    "bio": "Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, a Cacique Enir Terena, herdou da mãe não apenas o sangue e a memória do povo Terena, mas também a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo. Cresceu entre dois mundos — a cidade e a aldeia —, aprendendo desde cedo que identidade e pertencimento são forças que nenhuma fronteira apaga. Com a ancestralização de sua mãe em 2016, continuou a luta e fundou o Instituto Cacique Enir Terena, dando continuidade ao legado que Enir construiu com décadas de luta: a primeira aldeia urbana indígena do Brasil, a marca coletiva OREKA e o reconhecimento internacional da cerâmica Terena como patrimônio cultural vivo. À frente do Instituto, Maria Auxiliadora conduz com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano. Sua liderança é a prova de que o legado de Enir Terena não terminou — ele continua, com força renovada, nas mãos de sua filha."
+  },
+  "diretoria": {
+    "dir_1780699664196": {
+      "key": "dir_1780699664196",
+      "nome": "Sâmara Marina Bezerra de Figueiredo",
+      "cargo": "Vice Presidente",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzch.jpg",
+      "bio": "Neta de Enir e filha de Maria Auxiliadora, Sâmara carrega nas mãos a arte de seu povo. Na memória, traz o grafismo branco que atravessa gerações. Ceramista e guardiã dos saberes tradicionais, transforma argila em história viva, a cada peça que molda, um elo entre o passado e o futuro do povo Terena. Sua arte expressa a aldeia ancestral, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra. Sâmara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade. Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais em cada gesto. Detentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena."
+    },
+    "dir_1780708225094": {
+      "key": "dir_1780708225094",
+      "nome": "Germano Coelho Ramos Rocha da Silva",
+      "cargo": "Programador / Autor da Lógica do Site",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708226/u32jaw9ndysskfqvfryu.jpg",
+      "bio": "Germano Coelho Ramos Rocha da Silva é um indígena terena urbano. Mestre, consultor e uma voz que procura integrar entre Inovação, Propriedade Intelectual e os Direitos dos Povos Originários em Mato Grosso do Sul. Sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS.\n\nNo campo institucional e de mercado, Germano consolidou uma carreira de destaque no ecossistema de inovação. É Mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação (PROFNIT) pelo IFMS, mais de 30 anos como Agente da Propriedade Industrial credenciado junto ao INPI. Atuou como Consultor Sênior, Gerente do Setor de Protocolo do INPI/MS em cooperação com o SEBRAE/MS, finalizando sua carreira como Secretário Geral. Hoje lidera a VERTTI Consultoria, desenvolvendo estratégias nacionais e internacionais para o registro de marcas, patentes e ativos de inovação.\n\nSua atuação ganha seu significado mais profundo junto ao movimento indígena sul-mato-grossense. Destaca-se na estruturação do Instituto Cacique Enir Terena para a idealizadora Maria Auxiliadora Bezerra e na defesa da marca coletiva como uma tecnologia social. Por meio de sua pesquisa no IFMS e UFMS (Doutorando em Recursos Naturais), trabalha para que saberes ancestrais recebam a salvaguarda jurídica necessária. Unindo a precisão da consultoria à sensibilidade de quem conhece o valor da ancestralidade, prova que o futuro da inovação depende do respeito às nossas raízes."
+    }
+  },
+  "videos": {
+    "v_1780724140957": {
+      "key": "v_1780724140957",
+      "tipo": "ig",
+      "titulo": "O nascimento do ICET",
+      "url": "https://www.instagram.com/reel/DKc1EaUvSbu/"
+    },
+    "v_1780724557031": {
+      "key": "v_1780724557031",
+      "tipo": "ig",
+      "titulo": "Depoimento de associada",
+      "url": "https://www.instagram.com/reel/DLn1nbYPuIN/"
+    },
+    "v_1780724626018": {
+      "key": "v_1780724626018",
+      "tipo": "ig",
+      "titulo": "Depoimento de artesã 2",
+      "url": "https://www.instagram.com/reel/DLqKRI9Pqt1/"
+    },
+    "v_1780724736883": {
+      "key": "v_1780724736883",
+      "tipo": "ig",
+      "titulo": "Depoimento artesã 3",
+      "url": "https://www.instagram.com/reel/DL5ebZJvLpK/"
+    },
+    "v_1780724903357": {
+      "key": "v_1780724903357",
+      "tipo": "ig",
+      "titulo": "1a Oficina de Modelagem e Pintura em Argila",
+      "url": "https://www.instagram.com/reel/DM1GtnHPhtt/"
+    }
+  },
+  "galeria": {},
+  "produtos": {},
   "vasos": {
     "vaso4": {
       "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780773995/btkvdqcynipkbedbvnfr.png"
@@ -7,20 +63,7 @@
       "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780774053/ajhgvf6dw3ni6rijlbmh.png"
     }
   },
-  "diretoria": {
-    "dir_1780774139545": {
-      "key": "dir_1780774139545",
-      "nome": "Sâmara Marina Bezerra de Figueiredo",
-      "cargo": "Vice Presidente",
-      "bio": "Neta de Enir e filha de Maria Auxiliadora, Sâmara carrega nas mãos  a arte de seu povo. Na memória, traz  o grafismo branco que atravessa gerações. Ceramista e guardiã dos saberes tradicionais, transforma argila em história viva , a  cada peça que molda ,  um elo entre o passado e o futuro do povo Terena. Sua arte expressa a aldeia ancestral, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra. Sâmara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade. Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais,  em cada gesto. Detentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena.",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780774142/umayzlg24ojfbzrcfqfh.png"
-    },
-    "dir_1780774221960": {
-      "key": "dir_1780774221960",
-      "nome": "Germano Coelho Ramos Rocha-Silva",
-      "cargo": "Secretário Geral",
-      "bio": "Germano Coelho Ramos Rocha-Silva nasceu em Campo Grande, com ruas raízes na Aldeia Passarinho (Miranda/MS) , trazendo em sua trajetória a força de quem constrói pontes entre tradição e inovação. Filho  de uma terra marcada pela diversidade cultural e pela luta de seus povos, carrega consigo o compromisso de transformar conhecimento em ação e de projetar valores que unem raízes locais a horizontes globais. Desde cedo, aprendeu que liderança não é apenas ocupar espaços, mas criar caminhos para que outros também possam caminhar. Sua formação e atuação refletem essa visão: seja no campo da consultoria, da gestão ou da representação institucional. Com determinação, assumiu o papel de articulador de ideias e práticas que unem ética, estratégia e impacto social. Sua jornada é marcada pela busca constante de excelência e pelo compromisso de deixar um legado que ultrapasse fronteiras — um legado que inspira e abre portas para novas gerações.",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780774223/womanqapzfy8r582jqtn.png"
-    }
-  }
+  "depoimentos": {},
+  "comenda": {},
+  "acervo": {}
 }
