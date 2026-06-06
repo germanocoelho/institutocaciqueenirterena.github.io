@@ -2433,7 +2433,12 @@ function carregarDoGitHub(){
   .then(function(res){
     if(!res||!res.content)return;
     try{
-      var raw=atob(res.content.replace(/\n/g,''));
+      // Decodificar base64 com suporte a UTF-8
+      var b64=res.content.replace(/\n/g,'');
+      var bin=atob(b64);
+      var bytes=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+      var raw=new TextDecoder('utf-8').decode(bytes);
       var remoto=JSON.parse(raw);
       // Mesclar remoto com local — remoto tem prioridade
       var local=dbLer();
