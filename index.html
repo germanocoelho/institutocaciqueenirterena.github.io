@@ -1153,6 +1153,121 @@ body.adm-on .comenda-adm{display:flex}
   font-size:2rem;box-shadow:0 0 24px rgba(242,196,90,.25);
 }
 
+
+/* ══ EFEITOS MODERNOS 2025 ══ */
+
+/* 1. Hover Reveal — cards diretoria */
+.dir-card{perspective:1000px}
+.dir-card-inner{
+  position:relative;width:100%;
+  transition:transform .6s cubic-bezier(.4,0,.2,1);
+  transform-style:preserve-3d;
+}
+.dir-card:hover .dir-card-inner{transform:rotateY(8deg) scale(1.02)}
+
+/* Hover reveal bio no card de diretoria */
+.dir-card .dir-bio-reveal{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 30%,rgba(10,6,3,.97) 70%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:1.2rem;opacity:0;transition:opacity .35s ease;
+  pointer-events:none;
+}
+.dir-card:hover .dir-bio-reveal{opacity:1}
+.dir-bio-reveal-txt{
+  font-size:.78rem;line-height:1.6;color:var(--cr);
+  transform:translateY(8px);transition:transform .35s ease;
+}
+.dir-card:hover .dir-bio-reveal-txt{transform:translateY(0)}
+
+/* 2. Lightbox já existe — melhorar com animação */
+#lightbox{transition:opacity .3s ease}
+#lightbox img{
+  transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .3s ease;
+  border-radius:2px;
+  box-shadow:0 32px 80px rgba(0,0,0,.8);
+}
+#lightbox.open img{transform:scale(1);opacity:1}
+
+/* 3. Scroll animations — classes adicionadas via JS */
+.aos-fade{opacity:0;transition:opacity .8s ease,transform .8s ease}
+.aos-slide-left{opacity:0;transform:translateX(-30px);transition:opacity .7s ease,transform .7s ease}
+.aos-slide-right{opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease}
+.aos-zoom{opacity:0;transform:scale(.92);transition:opacity .7s ease,transform .7s ease}
+.aos-fade.aos-in,.aos-slide-left.aos-in,.aos-slide-right.aos-in,.aos-zoom.aos-in{
+  opacity:1;transform:none;
+}
+
+/* 4. Cards diretoria interativos — flip no hover */
+.dir-card{overflow:visible}
+.dir-foto-wrap{position:relative;overflow:hidden}
+.dir-foto-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 55%,rgba(10,6,3,.85) 100%);
+  opacity:0;transition:opacity .35s;
+}
+.dir-card:hover .dir-foto-wrap::after{opacity:1}
+
+/* 5. Cards produtos — efeito de elevação e brilho */
+.prod-card{
+  transition:transform .35s cubic-bezier(.4,0,.2,1),box-shadow .35s ease,border-color .35s ease!important;
+}
+.prod-card:hover{
+  transform:translateY(-8px) scale(1.02)!important;
+  box-shadow:0 20px 60px rgba(139,58,15,.4),0 0 0 1px rgba(242,196,90,.2)!important;
+}
+
+/* 6. Galeria mosaico — tamanhos variados */
+.gal-grid{
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  grid-auto-rows:200px;
+  align-items:stretch;
+}
+.gal-item:nth-child(4n+1){grid-row:span 2}
+.gal-item:nth-child(4n+3){grid-column:span 1;grid-row:span 1}
+@media(max-width:600px){
+  .gal-item:nth-child(4n+1){grid-row:span 1}
+}
+
+/* 7. Filtros galeria — animação de entrada */
+.gal-item{
+  animation:fadeInCard .4s ease both;
+}
+@keyframes fadeInCard{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* Parallax extra nos grafismos de fundo */
+.grafismo-bg{transition:transform .1s linear}
+
+/* Cards povo — slide ao entrar */
+.povo-card{
+  transition:transform .35s ease,border-color .35s ease,
+             background .35s ease,box-shadow .35s ease!important;
+}
+.povo-card:hover{
+  transform:translateX(6px) translateY(-3px)!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.35)!important;
+}
+
+/* Depoimentos — card com brilho sutil na borda */
+.dep-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(242,196,90,.08),transparent 60%);
+  opacity:0;transition:opacity .35s;
+  pointer-events:none;
+}
+.dep-card:hover::before{opacity:1}
+
+/* Marcos históricos — highlight ao hover */
+.marco{border-left:2px solid rgba(242,196,90,.15);transition:.3s}
+.marco:hover{
+  border-left-color:var(--ou);
+  background:rgba(242,196,90,.06);
+  padding-left:1.4rem;
+}
+
 </style>
 </head>
 <body>
@@ -3521,6 +3636,7 @@ document.addEventListener('DOMContentLoaded',function(){
   initParallax();
   // Sincronizar dados do GitHub (funciona em qualquer dispositivo)
   carregarDoGitHub();
+  initAOS();
 });
 </script>
 </body>
