@@ -1,16 +1,117 @@
 {
-  "vasos": {
-    "vaso1": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780772959/nzswdireicnmp8sw1h2z.png"
+  "diretoria": {
+    "dir_1780699664196": {
+      "key": "dir_1780699664196",
+      "nome": "Sâmara marina BEZERRA DE FIGUEIREDOINDÍGENA TERENA",
+      "cargo": "Vice Presidente",
+      "bio": "Neta de Enir e filha de Maria Auxiliadora, Sâmara carrega nas mãos  a arte de seu povo. Na memória, traz  o grafismo branco que atravessa gerações.\nCeramista e guardiã dos saberes tradicionais, transforma argila em história viva , a  cada peça que molda ,  um elo entre o passado e o futuro do povo Terena.\nSua arte expressa a aldeia ancestral, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra. Sâmara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade. Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais,  em cada gesto.\nDetentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena.",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzvh.png"
+    },
+    "dir_1780708225094": {
+      "key": "dir_1780708225094",
+      "nome": "Germano Coelho Ramos Rocha-SilvaINDIGENA TERENA",
+      "cargo": "Secretário Geral",
+      "bio": "Germano Coelho Ramos Rocha-Silva nasceu em Campo Grande, com ruas raízes na Aldeia Passarinho (Miranda/MS) , trazendo em sua trajetória a força de quem constrói pontes entre tradição e inovação. Filho  de uma terra marcada pela diversidade cultural e pela luta de seus povos, carrega consigo o compromisso de transformar conhecimento em ação e de projetar valores que unem raízes locais a horizontes globais. Desde cedo, aprendeu que liderança não é apenas ocupar espaços, mas criar caminhos para que outros também possam caminhar. Sua formação e atuação refletem essa visão: seja no campo da consultoria, da gestão ou da representação institucional. Com determinação, assumiu o papel de articulador de ideias e práticas que unem ética, estratégia e impacto social. Sua jornada é marcada pela busca constante de excelência e pelo compromisso de deixar um legado que ultrapasse fronteiras — um legado que inspira e abre portas para novas gerações.",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708226/u32jaw9ndysskfqvfr1b.png"
     }
   },
-  "diretoria": {
-    "dir_1780773419407": {
-      "key": "dir_1780773419407",
-      "nome": "Sâmara Marina Bezerra de Figueiredo",
-      "cargo": "Vice Presidente",
-      "bio": "Sâmara é neta de Enir Terena e Filha de Maria Auxilidadora Bezerra. De pequena, traz as memórias de sua mãe produzindo peças que carregam milênios da cultura indígena. Da sua vó, traz imagens das lutas e da coragem com que enfrentava os desafios de valorização da cultura indígena. Hoje é instrutora de cerâmica indígena e filtro dos sonhos, e com suas mãos cria peças únicas com a iconografia terena, com conhecimentos tradicionais preciosos. Na Vice Presidência do ICET, busca aumentar o número de mulheres jovens que tenham contato com a Cultura e produzam com a qualidade que suas ancestrais traziam para suas criações.",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780773422/c99ycdmrigf6mst4hwrn.png"
+  "produtos": {
+    "p_1780708171934": {
+      "key": "p_1780708171934",
+      "nome": "Teste - Vaso Terena",
+      "artesa": "Maria Auxiliadora",
+      "cat": "Cerâmica · Vasos",
+      "desc": "teste teste teste vaso terena",
+      "preco": 300,
+      "prazo": "20 dias",
+      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg"
+    },
+    "p_1780722818589": {
+      "key": "p_1780722818589",
+      "nome": "Teste 2",
+      "artesa": "Sâmara",
+      "cat": "Bijuteria",
+      "desc": "teste de produto",
+      "preco": 100,
+      "prazo": "20",
+      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png"
+    }
+  },
+  "vasos": {
+    "vaso1": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780772015/bw6iykkqdtazdkvgxqnd.png"
+    },
+    "vaso5": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713762/doixoubbjekno8nbyt67.png"
+    },
+    "vaso6": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713776/egyz3ietohy6aq8g6il5.png"
+    },
+    "vaso4": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713784/piltjrypzs8qgajwrapc.png"
+    },
+    "vaso2": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780773808/zp7f4oenvv1vhpgwwwxx.png"
+    },
+    "vaso3": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713810/ejti6s3u6hgxpl290yos.png"
+    }
+  },
+  "galeria": {
+    "g_1780713725676": {
+      "key": "g_1780713725676",
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713724/o5mw7qviwles5mkmjt2s.png",
+      "leg": "teste",
+      "cat": "eventos"
+    },
+    "g_1780722739191": {
+      "key": "g_1780722739191",
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722739/sfnozftempeonr4zqhh3.jpg",
+      "leg": "Teste logomarca",
+      "cat": "eventos"
+    }
+  },
+  "maria": {
+    "bio": "Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, a Cacique Enir Terena, herdou da mãe não apenas o sangue e a memória do povo Terena, mas também a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo.\nCresceu entre dois mundos — a cidade e a aldeia —, aprendendo desde cedo que identidade e pertencimento são forças que nenhuma fronteira apaga. Com a ancestralização de sua mãe em 2016, continuou a luta e fundou o Instituto Cacique Enir Terena, dando continuidade ao legado que Enir construiu com décadas de luta: a primeira aldeia urbana indígena do Brasil, a marca coletiva OREKA e o reconhecimento internacional da cerâmica Terena como patrimônio cultural vivo.\nÀ frente do Instituto, Maria Auxiliadora conduz com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano. Sua liderança é a prova de que o legado de Enir Terena não terminou — ele continua, com força renovada, nas mãos de sua filha.",
+    "nome": "Maria Auxiliadora BezerraIndígena Terena"
+  },
+  "videos": {
+    "v_1780724140957": {
+      "key": "v_1780724140957",
+      "tipo": "ig",
+      "titulo": "O nascimento do ICET",
+      "url": "https://www.instagram.com/reel/DKc1EaUvSbu/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "desc": "Maria Auxiliadora Bezerra, Presidente do Instituto Cacique Enir Terena, traz lembranças importantes sobre o nascimento do Instituto."
+    },
+    "v_1780724557031": {
+      "key": "v_1780724557031",
+      "tipo": "ig",
+      "titulo": "Depoimento de associada",
+      "url": "https://www.instagram.com/reel/DLn1nbYPuIN/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "desc": "Sebastiana Batista é indígena artesã da etnia Terena da região de Aquidauana Aldeia Limão Verde.  Sebastiana é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história."
+    },
+    "v_1780724626018": {
+      "key": "v_1780724626018",
+      "tipo": "ig",
+      "titulo": "Depoimento de artesã 2",
+      "url": "https://www.instagram.com/reel/DLqKRI9Pqt1/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "desc": "Vamos conhecer hoje um pouco da história da Marili Jorge artesã indígena da etnia Terena da região de Dourados.  Marili é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história."
+    },
+    "v_1780724736883": {
+      "key": "v_1780724736883",
+      "tipo": "ig",
+      "titulo": "Depoimento artesã 3",
+      "url": "https://www.instagram.com/reel/DL5ebZJvLpK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "desc": "Sâmara Figueiredo é indígena artesã da etnia Terena carrega em seu DNA o sangue de sua avó Enir Terena.  Sâmara Figueiredo é uma das artesãs do instituto Cacique Enir Terena.  #artesã #indigena #terena #ms #brasil #campogrande #artesanatoindígena"
+    },
+    "v_1780724903357": {
+      "key": "v_1780724903357",
+      "tipo": "ig",
+      "titulo": "1a Oficina de Modelagem e Pintura em Argila",
+      "url": "https://www.instagram.com/reel/DM1GtnHPhtt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "desc": "O Instinto Cacique Enir Terena realiza:  A 1ª Oficina de Modelagem e Pintura em Argila.  - Nível II - Carga horária de 40 horas: - Data: 18 a 22 de agosto de 2025. - Local: Memorial da Cultura Indígena - Aldeia Urbana Marçal de Souza.  A oficina tem como objetivo promover a valorização das expressões artísticas indígenas, fortalecer o protagonismo cultural dos povos originários e incentivar a formação técnica e criativa dos participantes.  ➡️Informações de como participar via whatsapp: 67 99305 – 2534  APROVEITE ESSA OPORTUNIDADE!  #artesanato #indigena #ceramica #argila #oficina #ICET"
     }
   }
 }
