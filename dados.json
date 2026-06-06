@@ -54,7 +54,8 @@
   },
   "vasos": {
     "vaso1": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780771037/a4pepx9l2f4ve0t7jrdl.png"
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780771037/a4pepx9l2f4ve0t7jrdl.png",
+      "leg": "Pela de artesanato terena"
     }
   }
 }
