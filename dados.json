@@ -2,80 +2,18 @@
   "diretoria": {
     "dir_1780699664196": {
       "key": "dir_1780699664196",
-      "nome": "Sâmara marina BEZERRA DE FIGUEIREDOINDÍGENA TERENA",
+      "nome": "Sâmara Marina Bezerra de Figueiredo",
       "cargo": "Vice Presidente",
       "bio": "Neta de Enir e filha de Maria Auxiliadora, Sâmara carrega nas mãos  a arte de seu povo. Na memória, traz  o grafismo branco que atravessa gerações.\nCeramista e guardiã dos saberes tradicionais, transforma argila em história viva , a  cada peça que molda ,  um elo entre o passado e o futuro do povo Terena.\nSua arte expressa a aldeia ancestral, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra. Sâmara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade. Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais,  em cada gesto.\nDetentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena.",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzvh.png"
     },
     "dir_1780708225094": {
       "key": "dir_1780708225094",
-      "nome": "Germano Coelho Ramos Rocha-SilvaINDIGENA TERENA",
-      "cargo": "Programador / Autor da Lógica do Site",
-      "bio": "Germano Coelho Ramos Rocha da Silva é um indígena terena urbano. Mestre, consultor e uma voz que procura integrar entre Inovação, Propriedade Intelectual e os Direitos dos Povos Originários em Mato Grosso do Sul. Sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS. Essa herança de articulação e defesa social moldou o propósito de Germano: transformar o direito técnico em ferramenta de proteção para a identidade e a autonomia de seu povo.\n\nNo campo institucional e de mercado, Germano consolidou uma carreira de destaque no ecossistema de inovação. É Mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação (PROFNIT) pelo IFMS, mais de 30 anos como Agente da Propriedade Industrial credenciado junto ao INPI. Atuou como Consultor Sênior, Gerente do Setor de Protocolo do INPI (Mato Grosso do Sul) em cooperação com o SEBRAE/MS, finalizando sua carreira naquela Instituição como membro da alta Direção, como Secretário Geral, após quase uma década. Hoje continua liderando a VERTTI Consultoria, desenvolvendo estratégias nacionais e internacionais para o registro de marcas, patentes e ativos de inovação.\n\nSua atuação ganha seu significado mais profundo junto ao movimento indígena sul-mato-grossense. Germano atua no apoio técnico e estratégico a comunidades tradicionais, destacando-se na estruturação do Instituto Cacique Enir Terena para a idealizadora Maria Auxiliadora Bezerra, Presidente, e na defesa da marca coletiva como uma tecnologia social. Por meio de sua pesquisa e prática junto ao IFMS e UFMS (Doutorando em Recursos Naturais), trabalha para que saberes ancestrais — como a milenar cerâmica Terena — recebam a salvaguarda jurídica necessária contra a apropriação indevida, garantindo que o protagonismo econômico, cultural e intelectual permaneça nas mãos de quem os criou.\n\nUnindo a precisão da consultoria de negócios à sensibilidade de quem conhece o valor da terra e da ancestralidade, busca atuar na vanguarda da justiça epistêmica, provando que o futuro da inovação depende, fundamentalmente, do respeito às nossas raízes.",
+      "nome": "Germano Coelho Ramos Rocha da Silva",
+      "cargo": "Autor do Site",
+      "bio": "Germano Coelho Ramos Rocha da Silva é um indígena terena urbano. Mestre, consultor e uma voz que procura integrar Inovação, Propriedade Intelectual e os Direitos dos Povos Originários em Mato Grosso do Sul. Sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS. Essa herança de articulação e defesa social moldou o propósito de Germano: transformar o direito técnico em ferramenta de proteção para a identidade e a autonomia de seu povo.\n\nNo campo institucional e de mercado, Germano consolidou uma carreira de destaque no ecossistema de inovação. É Mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação (PROFNIT) pelo IFMS e faz 33 anos como Agente da Propriedade Industrial credenciado junto ao INPI. Atuou como Gerente do Setor de Protocolo do INPI/MS em cooperação com o SEBRAE/MS, finalizando sua carreira naquela Instituição como Secretário Geral. Hoje lidera a VERTTI Consultoria, onde desenvolve estratégias nacionais e internacionais para o registro de marcas, patentes e ativos de inovação.\n\nSua atuação ganha seu significado mais profundo junto ao movimento indígena sul-mato-grossense. Germano atua no apoio técnico e estratégico a comunidades tradicionais, destacando-se na estruturação do Instituto Cacique Enir Terena para a idealizadora Maria Auxiliadora Bezerra e na defesa da marca coletiva como uma tecnologia social. Por meio de sua pesquisa e prática junto ao IFMS e UFMS (Doutorando em Recursos Naturais), trabalha para que saberes ancestrais — como a milenar cerâmica Terena — recebam a salvaguarda jurídica necessária contra a apropriação indevida, garantindo que o protagonismo econômico, cultural e intelectual permaneça nas mãos de quem os criou.\n\nUnindo a precisão da consultoria de negócios à sensibilidade de quem conhece o valor da terra e da ancestralidade, busca atuar na vanguarda da justiça epistêmica, provando que o futuro da inovação depende, fundamentalmente, do respeito às nossas raízes.",
       "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708226/u32jaw9ndysskfqvfr1b.png"
     }
-  },
-  "produtos": {
-    "p_1780708171934": {
-      "key": "p_1780708171934",
-      "nome": "Teste - Vaso Terena",
-      "artesa": "Maria Auxiliadora",
-      "cat": "Cerâmica · Vasos",
-      "desc": "teste teste teste vaso terena",
-      "preco": 300,
-      "prazo": "20 dias",
-      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg"
-    },
-    "p_1780722818589": {
-      "key": "p_1780722818589",
-      "nome": "Teste 2",
-      "artesa": "Sâmara",
-      "cat": "Bijuteria",
-      "desc": "teste de produto",
-      "preco": 100,
-      "prazo": "20",
-      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png"
-    }
-  },
-  "vasos": {
-    "vaso1": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708273/b7fgiro1oavswgct6v77.png"
-    },
-    "vaso5": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713762/doixoubbjekno8nbyt67.png"
-    },
-    "vaso6": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713776/egyz3ietohy6aq8g6il5.png"
-    },
-    "vaso4": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713784/piltjrypzs8qgajwrapc.png"
-    },
-    "vaso2": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713801/bfybnqxnonakpgq37pzw.png"
-    },
-    "vaso3": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713810/ejti6s3u6hgxpl290yos.png"
-    }
-  },
-  "galeria": {
-    "g_1780713725676": {
-      "key": "g_1780713725676",
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780713724/o5mw7qviwles5mkmjt2s.png",
-      "leg": "teste",
-      "cat": "eventos"
-    },
-    "g_1780722739191": {
-      "key": "g_1780722739191",
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722739/sfnozftempeonr4zqhh3.jpg",
-      "leg": "Teste logomarca",
-      "cat": "eventos"
-    }
-  },
-  "maria": {
-    "bio": "Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, a Cacique Enir Terena, herdou da mãe não apenas o sangue e a memória do povo Terena, mas também a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo.\nCresceu entre dois mundos — a cidade e a aldeia —, aprendendo desde cedo que identidade e pertencimento são forças que nenhuma fronteira apaga. Com a ancestralização de sua mãe em 2016, continuou a luta e fundou o Instituto Cacique Enir Terena, dando continuidade ao legado que Enir construiu com décadas de luta: a primeira aldeia urbana indígena do Brasil, a marca coletiva OREKA e o reconhecimento internacional da cerâmica Terena como patrimônio cultural vivo.\nÀ frente do Instituto, Maria Auxiliadora conduz com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano. Sua liderança é a prova de que o legado de Enir Terena não terminou — ele continua, com força renovada, nas mãos de sua filha.",
-    "nome": "Maria Auxiliadora BezerraIndígena Terena"
   },
   "videos": {
     "v_1780724140957": {
@@ -112,6 +50,11 @@
       "titulo": "1a Oficina de Modelagem e Pintura em Argila",
       "url": "https://www.instagram.com/reel/DM1GtnHPhtt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "desc": "O Instinto Cacique Enir Terena realiza:  A 1ª Oficina de Modelagem e Pintura em Argila.  - Nível II - Carga horária de 40 horas: - Data: 18 a 22 de agosto de 2025. - Local: Memorial da Cultura Indígena - Aldeia Urbana Marçal de Souza.  A oficina tem como objetivo promover a valorização das expressões artísticas indígenas, fortalecer o protagonismo cultural dos povos originários e incentivar a formação técnica e criativa dos participantes.  ➡️Informações de como participar via whatsapp: 67 99305 – 2534  APROVEITE ESSA OPORTUNIDADE!  #artesanato #indigena #ceramica #argila #oficina #ICET"
+    }
+  },
+  "vasos": {
+    "vaso1": {
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780771037/a4pepx9l2f4ve0t7jrdl.png"
     }
   }
 }
