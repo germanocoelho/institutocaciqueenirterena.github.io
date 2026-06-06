@@ -54,7 +54,19 @@
     }
   },
   "galeria": {},
-  "produtos": {},
+  "produtos": {
+    "p_1780776305308": {
+      "key": "p_1780776305308",
+      "nome": "teste 04",
+      "artesa": "maria auxiliadora bezerra",
+      "cat": "Cerâmica · Decoração",
+      "desc": "teste para cerâmica decoração",
+      "preco": 80,
+      "prazo": "20",
+      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780776306/zp3ecddseawj7njhbyrs.jpg"
+    }
+  },
   "vasos": {
     "vaso4": {
       "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780773995/btkvdqcynipkbedbvnfr.png"
