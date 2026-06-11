@@ -1268,6 +1268,45 @@ body.adm-on .comenda-adm{display:flex}
   padding-left:1.4rem;
 }
 
+
+/* ═══ AJUSTES DE FOTOS E LEGENDAS ═══ */
+/* Legendas da cerâmica: SEMPRE visíveis, justificadas, estilo indígena, alto contraste */
+.slot-vaso-leg{
+  opacity:1 !important;
+  background:linear-gradient(transparent, rgba(10,6,3,.5) 25%, rgba(10,6,3,.94)) !important;
+  font-family:'Lora',serif !important;
+  font-size:.8rem !important;
+  font-weight:500;
+  color:#F5EBD8 !important;
+  text-align:justify !important;
+  text-shadow:0 1px 4px rgba(0,0,0,.95), 0 0 12px rgba(0,0,0,.6);
+  padding:1.1rem .75rem .6rem !important;
+  border-top:2px solid rgba(242,196,90,.45);
+  line-height:1.5 !important;
+}
+/* Legendas da galeria: sempre visíveis, mesmo padrão */
+.gal-over{
+  opacity:1 !important;
+  transform:none !important;
+  background:linear-gradient(transparent, rgba(10,6,3,.5) 30%, rgba(10,6,3,.92)) !important;
+}
+.gal-leg{
+  font-family:'Lora',serif !important;
+  font-size:.8rem !important;
+  color:#F5EBD8 !important;
+  text-align:justify !important;
+  text-shadow:0 1px 4px rgba(0,0,0,.95);
+  line-height:1.5 !important;
+}
+/* Fotos em tamanho e enquadramento naturais — sem corte, sem zoom */
+.slot-vaso img{object-fit:contain !important; background:#150e07;}
+.gal-item img{object-fit:contain !important; background:#150e07;}
+.dir-foto{object-fit:contain !important; background:#150e07; transform:none !important; filter:none !important;}
+/* Respiro entre as fotos em todas as seções */
+.grid-vasos{gap:1.8rem !important;}
+.gal-grid{gap:1.8rem !important;}
+#dir-grid{gap:2rem !important;}
+
 </style>
 </head>
 <body>
@@ -2636,21 +2675,28 @@ function uploadCloudinary(file, statusEl, callback){
   var fd=new FormData();
   fd.append('file',file);
   fd.append('upload_preset',CLOUD.preset);
-  fetch('https://api.cloudinary.com/v1_1/'+CLOUD.name+'/image/upload',{method:'POST',body:fd})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.secure_url){
-      if(statusEl){statusEl.className='cloud-status ok';statusEl.textContent='✅ Foto enviada!';}
-      callback(d.secure_url);
-    } else {
-      if(statusEl){statusEl.className='cloud-status err';statusEl.textContent='❌ '+(d.error&&d.error.message||'Erro Cloudinary');}
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST','https://api.cloudinary.com/v1_1/'+CLOUD.name+'/image/upload',true);
+  xhr.onload=function(){
+    try{
+      var d=JSON.parse(xhr.responseText);
+      if(d.secure_url){
+        if(statusEl){statusEl.className='cloud-status ok';statusEl.textContent='✅ Foto enviada!';}
+        callback(d.secure_url);
+      } else {
+        if(statusEl){statusEl.className='cloud-status err';statusEl.textContent='❌ '+(d.error&&d.error.message||'Erro Cloudinary');}
+        notif('❌ Erro no upload','err');
+      }
+    }catch(e){
+      if(statusEl){statusEl.className='cloud-status err';statusEl.textContent='❌ Erro ao processar';}
       notif('❌ Erro no upload','err');
     }
-  })
-  .catch(function(){
+  };
+  xhr.onerror=function(){
     if(statusEl){statusEl.className='cloud-status err';statusEl.textContent='❌ Erro de conexão';}
     notif('❌ Erro de conexão','err');
-  });
+  };
+  xhr.send(fd);
 }
 
 // ══ GITHUB SAVE ══
@@ -3013,6 +3059,33 @@ function filtrarGal(cat,btn){
   document.querySelectorAll('.gal-btn').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');renderGaleria();
 }
+
+// ══ REORDENAR FOTOS (ordem gravada permanentemente) ══
+function moverFotoGalIcet(key, dir){
+  var db=dbLer();
+  if(!db.galeria||!db.galeria[key])return;
+  var exib=Object.keys(db.galeria).reverse();
+  var i=exib.indexOf(key), j=i+dir;
+  if(j<0||j>=exib.length){notif('⚠️ A foto já está na ponta','err');return;}
+  var t=exib[i];exib[i]=exib[j];exib[j]=t;
+  var nova={};
+  exib.slice().reverse().forEach(function(k){nova[k]=db.galeria[k];});
+  db.galeria=nova; dbSalvar(db); salvarGitHub();
+  renderGaleria();
+  notif('↕️ Ordem das fotos atualizada e salva!','ok');
+}
+
+function moverVaso(key, dir){
+  var i=SLOTS_VASOS.indexOf(key), j=i+dir;
+  if(i<0||j<0||j>=SLOTS_VASOS.length){notif('⚠️ Já está na ponta','err');return;}
+  var outro=SLOTS_VASOS[j];
+  var db=dbLer(); if(!db.vasos)db.vasos={};
+  var t=db.vasos[key]; db.vasos[key]=db.vasos[outro]; db.vasos[outro]=t;
+  dbSalvar(db); salvarGitHub();
+  renderGridVasos();
+  notif('↕️ Ordem das peças atualizada e salva!','ok');
+}
+
 function renderGaleria(){
   var grid=document.getElementById('gal-grid');
   if(!grid)return;
@@ -3031,6 +3104,8 @@ function renderGaleria(){
       +'<div class="gal-over"><div class="gal-leg">'+(item.leg||'')+'</div></div>'
       +'<div class="gal-adm-btns">'
       +'<button class="gal-adm-btn" title="Editar legenda" data-gal-edit="'+key+'">✏️</button>'
+      +'<button class="gal-adm-btn" title="Mover para trás" onclick="event.stopPropagation();moverFotoGalIcet(\''+key+'\',-1)">◀</button>'
+      +'<button class="gal-adm-btn" title="Mover para frente" onclick="event.stopPropagation();moverFotoGalIcet(\''+key+'\',1)">▶</button>'
       +'<button class="gal-adm-btn" title="Excluir" data-gal-del="'+key+'">✕</button>'
       +'</div>';
     div.addEventListener('click',function(){abrirLB(item.src);});
@@ -3244,6 +3319,8 @@ function renderGridVasos(){
         +'<div class="slot-vaso-adm">'
         +'<button class="slot-vaso-btn" data-vaso-foto="'+key+'">📷</button>'
         +'<button class="slot-vaso-btn" data-vaso-leg="'+key+'">✏️</button>'
+        +'<button class="slot-vaso-btn" onclick="event.stopPropagation();moverVaso(\''+key+'\',-1)" title="Mover para trás">⬅</button>'
+        +'<button class="slot-vaso-btn" onclick="event.stopPropagation();moverVaso(\''+key+'\',1)" title="Mover para frente">➡</button>'
         +'<button class="slot-vaso-btn" style="color:#fca5a5" data-vaso-del="'+key+'">🗑</button>'
         +'</div>';
     } else {
