@@ -1307,6 +1307,30 @@ body.adm-on .comenda-adm{display:flex}
 .gal-grid{gap:1.8rem !important;}
 #dir-grid{gap:2rem !important;}
 
+
+/* ═══ ÍNDICE DA GALERIA ═══ */
+.gal-indice{margin:1.2rem 0 1.6rem;display:none}
+.gal-ind-head{font-family:'Lora',serif;font-size:.82rem;color:rgba(245,235,216,.75);margin-bottom:.6rem;text-align:justify}
+.gal-ind-head strong{color:#F2C45A}
+.gal-ind-lista{max-height:280px;overflow-y:auto;border:1px solid rgba(242,196,90,.25);border-radius:8px;background:rgba(10,6,3,.35);padding:.4rem;scrollbar-width:thin}
+.gal-ind-row{display:grid;grid-template-columns:56px 1fr auto;gap:.7rem;align-items:center;padding:.5rem .6rem;border-radius:6px;cursor:pointer;transition:.2s}
+.gal-ind-row:hover{background:rgba(242,196,90,.1)}
+.gal-ind-row + .gal-ind-row{border-top:1px solid rgba(242,196,90,.1)}
+.gal-ind-row img{width:56px;height:42px;object-fit:contain;background:#150e07;border-radius:4px;display:block}
+.gal-ind-leg{font-family:'Lora',serif;font-size:.78rem;color:#F5EBD8;line-height:1.4;text-align:justify}
+.gal-ind-cat{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#F2C45A;margin-top:.15rem}
+.gal-ind-ir{font-size:.7rem;font-weight:700;color:#F2C45A;white-space:nowrap}
+.gal-count{display:inline-block;margin-left:.45rem;background:rgba(242,196,90,.2);color:#F2C45A;font-size:.62rem;font-weight:800;padding:.1rem .45rem;border-radius:10px;border:1px solid rgba(242,196,90,.35)}
+
+/* ═══ BOTÃO CAPA DOS VÍDEOS (ADM) ═══ */
+.vid-capa-btn{display:none;position:absolute;top:.5rem;left:.5rem;z-index:4;background:rgba(27,58,92,.9);border:none;color:#fff;font-size:.62rem;font-weight:700;padding:.3rem .6rem;border-radius:4px;cursor:pointer}
+body.adm-on .vid-capa-btn{display:inline-block}
+.vid-card{position:relative}
+
+/* ═══ BOTÕES DE EDITAR TÍTULO/TEXTO (ADM) ═══ */
+.sec-edit-btn{display:none;margin-left:.6rem;vertical-align:middle;background:rgba(42,74,28,.85);border:1px solid rgba(242,196,90,.3);color:#F5EBD8;font-size:.6rem;font-weight:700;padding:.25rem .55rem;border-radius:4px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.03em}
+body.adm-on .sec-edit-btn{display:inline-block}
+
 </style>
 </head>
 <body>
@@ -2043,6 +2067,7 @@ body.adm-on .comenda-adm{display:flex}
       <button class="gal-btn" onclick="filtrarGal('ceramica',this)"><span class="gal-btn-icon"></span>Cerâmica</button>
       <button class="gal-btn" onclick="filtrarGal('oreka',this)"><span class="gal-btn-icon"></span>OREKA</button>
     </div>
+    <div class="gal-indice" id="gal-indice"></div>
     <div class="gal-grid" id="gal-grid">
       <div class="vazio">Nenhuma foto ainda. Entre no ADM para adicionar.</div>
     </div>
@@ -2740,6 +2765,59 @@ function carregarDoGitHub(){
   .catch(function(){});
 }
 
+
+// ══ EDITAR TÍTULOS E TEXTOS DAS SEÇÕES (ADM) ══
+function aplicarSecEdits(){
+  var db=dbLer();
+  if(!db.secEdits)return;
+  Object.keys(db.secEdits).forEach(function(id){
+    var sec=document.getElementById(id);
+    if(!sec)return;
+    var e=db.secEdits[id];
+    var t=sec.querySelector('.sec-title');
+    var l=sec.querySelector('.sec-lead');
+    if(e.t&&t){ if(t.childNodes[0]&&t.childNodes[0].nodeType===3){t.childNodes[0].nodeValue=e.t;} else {t.insertBefore(document.createTextNode(e.t),t.firstChild);} }
+    if(e.l&&l){ if(l.childNodes[0]&&l.childNodes[0].nodeType===3){l.childNodes[0].nodeValue=e.l;} else {l.insertBefore(document.createTextNode(e.l),l.firstChild);} }
+  });
+}
+
+function editarSecTexto(id,campo){
+  var sec=document.getElementById(id);
+  if(!sec)return;
+  var el=campo==='t'?sec.querySelector('.sec-title'):sec.querySelector('.sec-lead');
+  if(!el){notif('⚠️ Esta seção não tem esse texto','err');return;}
+  var atual=(el.childNodes[0]&&el.childNodes[0].nodeType===3)?el.childNodes[0].nodeValue:el.textContent;
+  var novo=prompt(campo==='t'?'Novo título da seção:':'Novo texto-guia da seção:',(atual||'').trim());
+  if(novo===null||!novo.trim())return;
+  var db=dbLer();
+  if(!db.secEdits)db.secEdits={};
+  if(!db.secEdits[id])db.secEdits[id]={};
+  db.secEdits[id][campo]=novo.trim();
+  dbSalvar(db);salvarGitHub();
+  aplicarSecEdits();
+  notif('✅ Texto da seção atualizado e salvo!','ok');
+}
+
+function initSecEditBtns(){
+  document.querySelectorAll('section[id]').forEach(function(sec){
+    var t=sec.querySelector('.sec-title');
+    if(!t||t.querySelector('.sec-edit-btn'))return;
+    var b=document.createElement('button');
+    b.className='sec-edit-btn';
+    b.textContent='✏️ Título';
+    b.onclick=function(ev){ev.stopPropagation();editarSecTexto(sec.id,'t');};
+    t.appendChild(b);
+    var l=sec.querySelector('.sec-lead');
+    if(l&&!l.querySelector('.sec-edit-btn')){
+      var b2=document.createElement('button');
+      b2.className='sec-edit-btn';
+      b2.textContent='✏️ Texto';
+      b2.onclick=function(ev){ev.stopPropagation();editarSecTexto(sec.id,'l');};
+      l.appendChild(b2);
+    }
+  });
+}
+
 function aplicarDadosNaTela(db){
   // Fotos fixas
   if(db.fotos){
@@ -2775,6 +2853,7 @@ function aplicarDadosNaTela(db){
   renderDepoimentos();
   renderComenda();
   renderAcervoDinamico();
+  aplicarSecEdits();
 }
 
 // ══ HELPER: trocar foto genérica ══
@@ -3112,6 +3191,53 @@ function renderGaleria(){
     grid.appendChild(div);
   });
   if(!found)grid.innerHTML='<div class="vazio">Sem fotos nesta categoria.</div>';
+  renderGalIndice();
+}
+
+function _galTs(key){ var p=String(key).split('_'); return parseInt(p[1])||0; }
+
+function renderGalIndice(){
+  var box=document.getElementById('gal-indice');
+  if(!box)return;
+  var db=dbLer();
+  var nomes={todos:'Todas',eventos:'Eventos',cultura:'Cultura',ceramica:'Cerâmica',oreka:'OREKA'};
+  // contadores nos botões
+  var cont={todos:0,eventos:0,cultura:0,ceramica:0,oreka:0};
+  if(db.galeria)Object.keys(db.galeria).forEach(function(k){
+    var it=db.galeria[k]; if(!it||!it.src)return;
+    cont.todos++; if(cont[it.cat]!==undefined)cont[it.cat]++;
+  });
+  document.querySelectorAll('.gal-btn').forEach(function(b){
+    var antigo=b.querySelector('.gal-count'); if(antigo)antigo.remove();
+    var m=(b.getAttribute('onclick')||'').match(/filtrarGal\('(\w+)'/);
+    if(m&&cont[m[1]]!==undefined){
+      var s=document.createElement('span'); s.className='gal-count'; s.textContent=cont[m[1]];
+      b.appendChild(s);
+    }
+  });
+  // lista da categoria ativa, mais recente primeiro
+  var itens=[];
+  if(db.galeria)Object.keys(db.galeria).forEach(function(k){
+    var it=db.galeria[k];
+    if(!it||!it.src)return;
+    if(_galFiltro!=='todos'&&it.cat!==_galFiltro)return;
+    itens.push({key:k,item:it});
+  });
+  itens.sort(function(a,b){return _galTs(b.key)-_galTs(a.key);});
+  if(!itens.length){box.innerHTML='';box.style.display='none';return;}
+  box.style.display='block';
+  var html='<div class="gal-ind-head">📋 '+itens.length+' registro(s) em <strong>'+(nomes[_galFiltro]||_galFiltro)+'</strong> — do mais recente ao mais antigo. Role a lista e clique para abrir.</div><div class="gal-ind-lista">';
+  itens.forEach(function(x){
+    var leg=(x.item.leg||'Sem legenda');
+    var resumo=leg.length>90?leg.substring(0,90)+'…':leg;
+    html+='<div class="gal-ind-row" onclick="abrirLB(\''+x.item.src+'\')">'
+      +'<img src="'+x.item.src+'" alt="" loading="lazy">'
+      +'<div class="gal-ind-info"><div class="gal-ind-leg">'+resumo+'</div>'
+      +'<div class="gal-ind-cat">'+(nomes[x.item.cat]||x.item.cat||'')+'</div></div>'
+      +'<span class="gal-ind-ir">Abrir ›</span></div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
 }
 function abrirLB(src){document.getElementById('lb-img').src=src;document.getElementById('lightbox').classList.add('open');}
 function fecharLB(){document.getElementById('lightbox').classList.remove('open');}
@@ -3155,21 +3281,40 @@ function renderVideos(){
   vids.forEach(function(v){
     var card=document.createElement('div');card.className='vid-card';card.dataset.key=v.key;
     var thumb='',linkUrl=v.url;
-    if(v.tipo==='yt'){
+    if(v.capa){
+      thumb='<img src="'+v.capa+'" alt="'+v.titulo+'">';
+      if(v.tipo==='yt'){var _ic=ytId(v.url);if(_ic)linkUrl='https://youtube.com/watch?v='+_ic;}
+    } else if(v.tipo==='yt'){
       var id=ytId(v.url);
       thumb=id?'<img src="https://img.youtube.com/vi/'+id+'/hqdefault.jpg" alt="'+v.titulo+'">':'';
       linkUrl=id?'https://youtube.com/watch?v='+id:v.url;
     } else {
-      thumb='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:rgba(139,58,15,.1)">📱</div>';
+      thumb='<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(135deg,rgba(139,58,15,.35),rgba(242,196,90,.18))"><span style="font-size:2.6rem">🎬</span><span style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,235,216,.85)">Assista ao vídeo</span></div>';
     }
     card.innerHTML='<a href="'+linkUrl+'" target="_blank" class="vid-thumb">'+thumb
       +'<div class="vid-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a>'
       +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+v.desc+'</div>':'')+'</div>'
-      +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>';
+      +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>'
+      +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>';
     grid.appendChild(card);
   });
 }
 document.addEventListener('click',function(e){
+  var capaKey=e.target.getAttribute('data-vid-capa');
+  if(capaKey){
+    e.preventDefault();e.stopPropagation();
+    var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+    inp.onchange=function(){
+      if(!inp.files||!inp.files[0])return;
+      notif('⏳ Enviando capa...','ok');
+      uploadCloudinary(inp.files[0],null,function(url){
+        var db=dbLer();
+        if(db.videos&&db.videos[capaKey]){db.videos[capaKey].capa=url;dbSalvar(db);salvarGitHub();renderVideos();notif('🖼 Capa do vídeo salva!','ok');}
+      });
+    };
+    inp.click();
+    return;
+  }
   var del=e.target.getAttribute('data-vid-del');
   if(del){
     if(!confirm('Excluir vídeo?'))return;
@@ -3894,6 +4039,8 @@ document.addEventListener('DOMContentLoaded',function(){
   initParallax();
   // Sincronizar dados do GitHub (funciona em qualquer dispositivo)
   carregarDoGitHub();
+  initSecEditBtns();
+  aplicarSecEdits();
   initAOS();
   renderDepoimentos();
   renderComenda();
