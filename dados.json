@@ -5,7 +5,7 @@
       "nome": "Sâmara Marina Bezerra de Figueiredo",
       "cargo": "Vice Presidente",
       "bio": "Neta de Enir e filha de Maria Auxiliadora, Sâmara carrega nas mãos  a arte de seu povo. Na memória, traz  o grafismo branco que atravessa gerações.\nCeramista e guardiã dos saberes tradicionais, transforma argila em história viva , a  cada peça que molda ,  um elo entre o passado e o futuro do povo Terena.\nSua arte expressa a aldeia ancestral, a força feminina e o compromisso com a continuidade cultural que o Instituto Cacique Enir Terena protege e celebra. Sâmara molda o barro e ensina a cerâmica indígena e o filtro da prosperidade. Apresentadora de vídeos voltados para a cultura indígena, compartilha saberes ancestrais,  em cada gesto.\nDetentora de conhecimentos em pintura, transforma tradição em futuro, unindo arte, memória e resistência do povo Terena.",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1781190014/bmbeetbcumd6wre2cqtu.jpg"
+      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780699666/jvokjlldxmoo8vtpkzvh.png"
     },
     "dir_1780708225094": {
       "key": "dir_1780708225094",
@@ -41,7 +41,8 @@
   },
   "vasos": {
     "vaso1": {
-      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1781120720/neinrgeqtwkzr14kzoje.jpg"
+      "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1781120720/neinrgeqtwkzr14kzoje.jpg",
+      "leg": "Vasos com iconografia indígena terena"
     },
     "vaso5": {
       "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780778207/kmqv5ro62yjnbygctkd6.png"
