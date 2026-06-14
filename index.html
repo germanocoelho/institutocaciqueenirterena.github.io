@@ -1356,6 +1356,34 @@ body.adm-on .sec-edit-btn{display:inline-block}
 .vidmodal-x{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;border:none;background:var(--ou,#f2c45a);color:#1a120a;font-size:1.1rem;cursor:pointer;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)}
 .vidmodal-ti{margin-top:.7rem;font-size:.95rem;color:var(--tx,#f5ebd8);text-align:center;font-weight:600}
 .vidmodal video::cue{font-size:.95rem;background:rgba(0,0,0,.7);color:#fff;line-height:1.4}
+
+/* ── Lightbox de produto com ornamentos Terena ── */
+.prodlb{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:1.2rem}
+.prodlb-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(40,22,10,.92),rgba(10,6,3,.97));backdrop-filter:blur(6px)}
+.prodlb-box{position:relative;display:flex;flex-wrap:wrap;gap:1.6rem;max-width:880px;width:100%;align-items:center;animation:prodlbIn .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes prodlbIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:none}}
+.prodlb-x{position:absolute;top:-8px;right:-8px;z-index:5;width:42px;height:42px;border-radius:50%;border:1px solid rgba(242,196,90,.4);background:rgba(20,12,6,.9);color:var(--ou,#f2c45a);font-size:1.5rem;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s}
+.prodlb-x:hover{transform:rotate(90deg) scale(1.08);background:var(--ou,#f2c45a);color:#1a120a}
+.prodlb-frame{position:relative;flex:1 1 340px;min-width:300px;padding:26px;display:flex;align-items:center;justify-content:center}
+.prodlb-imgwrap{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 1px rgba(242,196,90,.25),0 0 60px rgba(242,196,90,.12)}
+.prodlb-imgwrap::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(242,196,90,.14),transparent 40%,transparent 60%,rgba(139,58,15,.16));pointer-events:none}
+.prodlb-imgwrap img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#15100a}
+.prodlb-orn{position:absolute;width:74px;height:74px;color:var(--ou,#f2c45a);opacity:.85;filter:drop-shadow(0 0 6px rgba(242,196,90,.35));animation:ornPulse 4s ease-in-out infinite}
+.prodlb-orn-tl{top:0;left:0}
+.prodlb-orn-tr{top:0;right:0;transform:rotate(90deg)}
+.prodlb-orn-br{bottom:0;right:0;transform:rotate(180deg)}
+.prodlb-orn-bl{bottom:0;left:0;transform:rotate(270deg)}
+@keyframes ornPulse{0%,100%{opacity:.55;filter:drop-shadow(0 0 4px rgba(242,196,90,.25))}50%{opacity:.95;filter:drop-shadow(0 0 10px rgba(242,196,90,.5))}}
+.prodlb-info{flex:1 1 280px;min-width:260px;color:var(--tx,#f5ebd8)}
+.prodlb-nome{font-family:'Playfair Display',serif;font-size:1.7rem;line-height:1.2;color:var(--ou,#f2c45a);margin-bottom:.3rem}
+.prodlb-artesa{font-size:.85rem;letter-spacing:.05em;color:var(--tx2,rgba(245,235,216,.7));margin-bottom:.9rem}
+.prodlb-artesa::before{content:'\1f9f5  ';opacity:.7}
+.prodlb-desc{font-size:.95rem;line-height:1.7;color:var(--tx2,rgba(245,235,216,.85));margin-bottom:1.1rem}
+.prodlb-preco{font-size:2rem;font-weight:700;color:var(--tx,#f5ebd8);letter-spacing:.01em;margin-bottom:.2rem}
+.prodlb-cambio{font-size:.72rem;color:var(--tx2,rgba(245,235,216,.55));margin-bottom:1.2rem;font-style:italic}
+.prodlb-btn{display:inline-block;background:linear-gradient(135deg,#25d366,#128c4a);color:#fff;padding:.8rem 1.5rem;border-radius:40px;font-weight:600;text-decoration:none;font-size:.92rem;box-shadow:0 8px 22px rgba(18,140,74,.35);transition:transform .2s,box-shadow .2s}
+.prodlb-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(18,140,74,.5)}
+@media(max-width:640px){.prodlb-box{flex-direction:column;gap:.5rem}.prodlb-nome{font-size:1.4rem}.prodlb-preco{font-size:1.6rem}.prodlb-orn{width:54px;height:54px}}
 </style>
 </head>
 <body>
@@ -2666,6 +2694,52 @@ window.ICET_pick = function(item, campo){
   return item[campo] != null ? item[campo] : '';
 };
 
+// ── Conversão de moeda (câmbio do dia, fonte: Frankfurter/BCE) ──
+window.ICET_RATES = { BRL:1, USD:null, EUR:null, _data:null, _loaded:false };
+window.ICET_moedaDoIdioma = function(lang){
+  // PT→Real, EN→Dólar, FR/ES→Euro
+  if(lang==='en') return 'USD';
+  if(lang==='fr'||lang==='es') return 'EUR';
+  return 'BRL';
+};
+window.ICET_simbolo = function(moeda){
+  return ({BRL:'R$', USD:'US$', EUR:'\u20ac'})[moeda] || moeda+' ';
+};
+window.ICET_carregarCambio = function(cb){
+  if(window.ICET_RATES._loaded){ if(cb)cb(); return; }
+  // Frankfurter: base BRL, alvos USD e EUR. Sem chave, HTTPS, fonte BCE.
+  try{
+    fetch('https://api.frankfurter.dev/v1/latest?base=BRL&symbols=USD,EUR')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d&&d.rates){
+          window.ICET_RATES.USD = d.rates.USD || null;
+          window.ICET_RATES.EUR = d.rates.EUR || null;
+          window.ICET_RATES._data = d.date || null;
+          window.ICET_RATES._loaded = true;
+        }
+        if(cb)cb();
+      })
+      .catch(function(){ if(cb)cb(); });
+  }catch(e){ if(cb)cb(); }
+};
+window.ICET_precoConvertido = function(precoBRL, lang){
+  var moeda = window.ICET_moedaDoIdioma(lang||(window.ICET_getLang?window.ICET_getLang():'pt'));
+  var sim = window.ICET_simbolo(moeda);
+  if(moeda==='BRL'){
+    return sim+' '+precoBRL.toFixed(2).replace('.',',');
+  }
+  var taxa = window.ICET_RATES[moeda];
+  if(!taxa){
+    // fallback: ainda mostra em Real se o câmbio não carregou
+    return 'R$ '+precoBRL.toFixed(2).replace('.',',');
+  }
+  var conv = precoBRL * taxa;
+  // formatação: USD/EUR com ponto decimal, vírgula de milhar
+  var txt = conv.toFixed(2);
+  return sim+' '+txt;
+};
+
 // ── Tradução de conteúdo dinâmico pelo ADM ──
 // Abre prompts EN/FR/ES para os campos textuais de um item e salva no banco
 window.ICET_traduzirItem = function(secao, key, campos){
@@ -3525,7 +3599,7 @@ function renderProdutos(){
     var wamsg=encodeURIComponent('Olá! Tenho interesse: '+p.nome+' (R$ '+p.preco.toFixed(2)+')');
     var card=document.createElement('div');card.className='prod-card';card.dataset.key=key;
     card.innerHTML='<div class="prod-foto foto-wrap" style="background:'+bg+'">'
-      +(p.foto?'<img src="'+p.foto+'" alt="'+p.nome+'">':'<span>🏺</span>')
+      +(p.foto?'<img src="'+p.foto+'" alt="'+p.nome+'" style="cursor:zoom-in" onclick="abrirProdLightbox(\''+key+'\')">':'<span>🏺</span>')
       +'<div class="foto-overlay">'
       +'<button class="foto-btn" data-prod-trocar="'+key+'" data-i18n="btn_trocarfoto">📷 Trocar foto</button>'
       +'<button class="foto-btn" data-prod-editar="'+key+'">'+(window.ICET_L?window.ICET_L('btn_editar'):'✏️ Editar')+'</button>'
@@ -3537,13 +3611,59 @@ function renderProdutos(){
       +'<div class="prod-artesa">'+p.artesa+'</div>'
       +'<div class="prod-nome">'+(window.ICET_pick?window.ICET_pick(p,'nome'):p.nome)+'</div>'
       +'<div class="prod-desc">'+window.ICET_pick(p,'desc').slice(0,90)+(p.desc.length>90?'…':'')+'</div>'
-      +'<div class="prod-preco">R$ '+p.preco.toFixed(2).replace('.',',')+'</div>'
+      +'<div class="prod-preco" data-preco-brl="'+p.preco+'">'+(window.ICET_precoConvertido?window.ICET_precoConvertido(p.preco):'R$ '+p.preco.toFixed(2).replace('.',','))+'</div>'
       +'<div class="prod-prazo">📦 '+p.prazo+'</div>'
       +'<a href="https://wa.me/5567993052534?text='+wamsg+'" target="_blank" class="prod-btn" data-i18n="btn_comprar">Comprar via WhatsApp</a>'
       +'</div>';
     grid.appendChild(card);
   });
 }
+
+// ── Lightbox de produto: foto em destaque + preço convertido ──
+function abrirProdLightbox(key){
+  var db=dbLer(); var p=db.produtos&&db.produtos[key]; if(!p)return;
+  var lb=document.getElementById('prodLightbox'); if(!lb)return;
+  var lang=(window.ICET_getLang?window.ICET_getLang():'pt');
+  var img=document.getElementById('prodlbImg');
+  img.src=p.foto||''; img.alt=(window.ICET_pick?window.ICET_pick(p,'nome'):p.nome)||'';
+  document.getElementById('prodlbNome').textContent=(window.ICET_pick?window.ICET_pick(p,'nome'):p.nome)||'';
+  document.getElementById('prodlbArtesa').textContent=p.artesa||'';
+  document.getElementById('prodlbDesc').textContent=(window.ICET_pick?window.ICET_pick(p,'desc'):p.desc)||'';
+  // preço — atualiza após carregar câmbio
+  var precoEl=document.getElementById('prodlbPreco');
+  var cambioEl=document.getElementById('prodlbCambio');
+  function pintarPreco(){
+    precoEl.textContent=window.ICET_precoConvertido(p.preco,lang);
+    var moeda=window.ICET_moedaDoIdioma(lang);
+    if(moeda==='BRL'){ cambioEl.textContent=''; }
+    else if(window.ICET_RATES._data){
+      var orig='R$ '+p.preco.toFixed(2).replace('.',',');
+      var rotulo={en:'Approx. conversion from '+orig+' \u00b7 ECB rate '+window.ICET_RATES._data,
+                  fr:'Conversion approximative de '+orig+' \u00b7 taux BCE '+window.ICET_RATES._data,
+                  es:'Conversión aproximada de '+orig+' \u00b7 tasa BCE '+window.ICET_RATES._data}[lang]||'';
+      cambioEl.textContent=rotulo;
+    } else {
+      cambioEl.textContent='';
+    }
+  }
+  pintarPreco();
+  if(!window.ICET_RATES._loaded){ window.ICET_carregarCambio(pintarPreco); }
+  // botão WhatsApp
+  var wamsg=encodeURIComponent('Olá! Tenho interesse: '+p.nome+' (R$ '+p.preco.toFixed(2)+')');
+  document.getElementById('prodlbWa').href='https://wa.me/5567993052534?text='+wamsg;
+  // traduzir botão comprar
+  var waBtn=document.getElementById('prodlbWa');
+  if(window.ICET_L)waBtn.textContent=window.ICET_L('btn_comprar');
+  lb.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function fecharProdLightbox(){
+  var lb=document.getElementById('prodLightbox');
+  if(lb)lb.style.display='none';
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape')fecharProdLightbox(); });
+
 function trocarFotoProd(key){
   var input=document.createElement('input');input.type='file';input.accept='image/*';
   input.onchange=function(){
@@ -4572,6 +4692,7 @@ document.addEventListener('DOMContentLoaded',function(){
     function setLang(l){
       try{ localStorage.setItem('icet_lang', l); }catch(e){}
       aplicarIdioma(l);
+      try{ if((l==='en'||l==='fr'||l==='es') && window.ICET_carregarCambio){ window.ICET_carregarCambio(function(){ if(typeof renderProdutos==='function')renderProdutos(); }); } }catch(e){}
     }
     window.ICET_setLang = setLang;
     window.ICET_getLang = getLang;
@@ -4669,5 +4790,38 @@ document.addEventListener('DOMContentLoaded',function(){
     <div id="vidModalTitulo" class="vidmodal-ti"></div>
   </div>
 </div>
+
+<div id="prodLightbox" class="prodlb" style="display:none" onclick="if(event.target===this||event.target.classList.contains('prodlb-bg'))fecharProdLightbox()">
+  <div class="prodlb-bg"></div>
+  <div class="prodlb-box">
+    <button class="prodlb-x" onclick="fecharProdLightbox()" aria-label="Fechar">&times;</button>
+    <div class="prodlb-frame">
+      <svg class="prodlb-orn prodlb-orn-tl" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+      <svg class="prodlb-orn prodlb-orn-tr" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+      <svg class="prodlb-orn prodlb-orn-bl" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+      <svg class="prodlb-orn prodlb-orn-br" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+      <div class="prodlb-imgwrap"><img id="prodlbImg" src="" alt=""></div>
+    </div>
+    <div class="prodlb-info">
+      <div id="prodlbNome" class="prodlb-nome"></div>
+      <div id="prodlbArtesa" class="prodlb-artesa"></div>
+      <div id="prodlbDesc" class="prodlb-desc"></div>
+      <div id="prodlbPreco" class="prodlb-preco"></div>
+      <div id="prodlbCambio" class="prodlb-cambio"></div>
+      <a id="prodlbWa" href="#" target="_blank" class="prodlb-btn" data-i18n="btn_comprar">Comprar via WhatsApp</a>
+    </div>
+  </div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="terena-grafismo" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M10 60 L60 10 L110 60 L60 110 Z"/>
+      <path d="M30 60 L60 30 L90 60 L60 90 Z"/>
+      <path d="M48 60 L60 48 L72 60 L60 72 Z"/>
+      <path d="M10 60 L30 60 M90 60 L110 60 M60 10 L60 30 M60 90 L60 110"/>
+      <path d="M18 42 L42 18 M78 18 L102 42 M102 78 L78 102 M42 102 L18 78" stroke-width="1.6"/>
+    </g>
+  </symbol>
+</defs></svg>
 </body>
 </html>
