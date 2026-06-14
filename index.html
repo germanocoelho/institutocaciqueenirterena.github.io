@@ -1490,9 +1490,9 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div class="marcos">
           <div class="marco"><span class="marco-ano">8 mar. 1955</span><span class="marco-txt" data-i18n="tl_1">Nascimento na Aldeia Limão Verde, Aquidauana, MS</span></div>
           <div class="marco"><span class="marco-ano">1985</span><span class="marco-txt" data-i18n="tl_2">Ingresso na Associação Indígena Kaguateca</span></div>
-          <div class="marco"><span class="marco-ano">9 jun. 1995</span><span class="marco-txt"><strong data-i18n="tl_3">Fundação da Aldeia Urbana Marçal de Souza</strong> — 1ª aldeia indígena urbana do Brasil</span></div>
+          <div class="marco"><span class="marco-ano">9 jun. 1995</span><span class="marco-txt" data-i18n-html="tl_3_full"><strong>Fundação da Aldeia Urbana Marçal de Souza</strong> — 1ª aldeia indígena urbana do Brasil</span></div>
           <div class="marco"><span class="marco-ano">ago. 1999</span><span class="marco-txt" data-i18n="tl_4">Criação do Memorial da Cultura Indígena</span></div>
-          <div class="marco"><span class="marco-ano">2008</span><span class="marco-txt">Eleita cacique — <strong>1ª cacique mulher do MS</strong> — com 134/277 votos</span></div>
+          <div class="marco"><span class="marco-ano">2008</span><span class="marco-txt" data-i18n-html="tl_5_full">Eleita cacique — <strong>1ª cacique mulher do MS</strong> — com 134/277 votos</span></div>
           <div class="marco"><span class="marco-ano">2012</span><span class="marco-txt" data-i18n="tl_6">Reeleita cacique pela comunidade</span></div>
           <div class="marco"><span class="marco-ano">2015</span><span class="marco-txt" data-i18n="tl_7">Correios lançam Selo Comemorativo com sua fotografia</span></div>
           <div class="marco"><span class="marco-ano">21 jun. 2016</span><span class="marco-txt" data-i18n="tl_8">A Cacique Enir Terena ancestralizou, deixando conosco seu legado inesquecível de luta pelos povos originários e pela Cultura do Brasil</span></div>
@@ -1824,7 +1824,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
 
     <!-- Grade de fotos de vasos/artesanato — editável no ADM -->
     <div style="margin-top:3rem">
-      <p class="eyebrow" style="margin-bottom:1rem">Fotos da Cerâmica — clique no ADM para adicionar</p>
+      <p class="eyebrow" style="margin-bottom:1rem" data-i18n="cer_fotos_hint">Fotos da Cerâmica — clique no ADM para adicionar</p>
       <div class="grid-vasos" id="grid-vasos">
         <!-- Slots carregados via JS -->
       </div>
@@ -2374,7 +2374,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
     <div style="text-align:center;max-width:700px;margin:0 auto 3rem">
       <div style="width:72px;height:72px;margin:0 auto 1.5rem;background:linear-gradient(135deg,var(--r),var(--ou));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 0 24px rgba(242,196,90,.25)">🏅</div>
       <span class="eyebrow reveal" data-i18n="com_eyb">Reconhecimento e gratidão</span>
-      <h2 class="sec-title reveal">Comenda Cacique Enir Terena</h2>
+      <h2 class="sec-title reveal" data-i18n="sec_comenda_t">Comenda Cacique Enir Terena</h2>
       <div class="divider" style="margin:1rem auto"></div>
       <p class="sec-lead" style="margin:0 auto" data-i18n="sec_comenda_l">A mais alta distinção concedida pelo Instituto Cacique Enir Terena. Instituída em homenagem à primeira mulher eleita Cacique no Mato Grosso do Sul, a comenda reconhece pessoas físicas e jurídicas que contribuíram de forma relevante para a defesa, promoção e valorização dos direitos, da cultura e da dignidade dos povos indígenas do Mato Grosso do Sul e do Brasil.</p>
     </div>
@@ -4370,6 +4370,10 @@ document.addEventListener('DOMContentLoaded',function(){
       enir_caption:  {pt:'Enir da Silva Bezerra (Enir Terena), cacique e fundadora da Aldeia Urbana Marçal de Souza. Fonte: Instituto Cacique Enir Terena', es:'Enir da Silva Bezerra (Enir Terena), cacique y fundadora de la Aldea Urbana Marçal de Souza. Fuente: Instituto Cacique Enir Terena', en:'Enir da Silva Bezerra (Enir Terena), cacique and founder of the Marçal de Souza Urban Village. Source: Cacique Enir Terena Institute', fr:'Enir da Silva Bezerra (Enir Terena), cacique et fondatrice du Village Urbain Marçal de Souza. Source : Institut Cacique Enir Terena'},
       footer_dev:    {pt:'Site desenvolvido por', es:'Sitio desarrollado por', en:'Website developed by', fr:'Site développé par'},
       maria_cargo:   {pt:'Presidente', es:'Presidenta', en:'President', fr:'Présidente'},
+      tl_3_full: {pt:'<strong>Fundação da Aldeia Urbana Marçal de Souza</strong> — 1ª aldeia indígena urbana do Brasil', es:'<strong>Fundación de la Aldea Urbana Marçal de Souza</strong> — 1ª aldea indígena urbana de Brasil', en:'<strong>Founding of the Marçal de Souza Urban Village</strong> — 1st Indigenous urban village in Brazil', fr:'<strong>Fondation du Village Urbain Marçal de Souza</strong> — 1er village autochtone urbain du Brésil'},
+      tl_5_full: {pt:'Eleita cacique — <strong>1ª cacique mulher do MS</strong> — com 134/277 votos', es:'Elegida cacique — <strong>1ª cacique mujer de MS</strong> — con 134/277 votos', en:'Elected cacique — <strong>1st woman cacique of MS</strong> — with 134/277 votes', fr:'Élue cacique — <strong>1re femme cacique du MS</strong> — avec 134/277 voix'},
+      sec_comenda_t: {pt:'Comenda Cacique Enir Terena', es:'Distinción Cacique Enir Terena', en:'Cacique Enir Terena Honour', fr:'Distinction Cacique Enir Terena'},
+      cer_fotos_hint: {pt:'Fotos da Cerâmica — clique no ADM para adicionar', es:'Fotos de la Cerámica — haga clic en el ADM para añadir', en:'Pottery photos — click ADMIN to add', fr:'Photos de la Céramique — cliquez sur l\'ADMIN pour ajouter'},
 
       // ── Etapa 8: textos gerados pelo JavaScript ──
       js_vazio_foto:    {pt:'Nenhuma foto ainda. Entre no ADM para adicionar.', es:'Aún no hay fotos. Entre al ADM para añadir.', en:'No photos yet. Log into ADMIN to add.', fr:'Aucune photo pour l\'instant. Connectez-vous à l\'ADMIN pour ajouter.'},
