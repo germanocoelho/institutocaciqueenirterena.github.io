@@ -2653,6 +2653,37 @@ window.ICET_pick = function(item, campo){
   return item[campo] != null ? item[campo] : '';
 };
 
+// ── Tradução de conteúdo dinâmico pelo ADM ──
+// Abre prompts EN/FR/ES para os campos textuais de um item e salva no banco
+window.ICET_traduzirItem = function(secao, key, campos){
+  var db = dbLer();
+  if(!db[secao] || !db[secao][key]){ notif('Item não encontrado','err'); return; }
+  var item = db[secao][key];
+  var nomesCampos = {leg:'Legenda', desc:'Descrição', titulo:'Título', bio:'Biografia', cargo:'Cargo', nome:'Nome', texto:'Texto', autor:'Autor', cat:'Categoria'};
+  var idiomas = [['en','English'],['fr','Français'],['es','Español']];
+  var algumPreenchido = false;
+  campos.forEach(function(campo){
+    var label = nomesCampos[campo] || campo;
+    var ptVal = item[campo] || '';
+    if(!ptVal) return;
+    idiomas.forEach(function(idi){
+      var lcode = idi[0], lnome = idi[1];
+      var atual = item[campo+'_'+lcode] || '';
+      var nv = prompt(label+' ('+lnome+')\n\nOriginal (PT): '+ptVal+'\n\nDeixe em branco para usar o português:', atual);
+      if(nv===null) return; // cancelou este campo
+      if(nv.trim()!==''){ item[campo+'_'+lcode]=nv; algumPreenchido=true; }
+      else { delete item[campo+'_'+lcode]; }
+    });
+  });
+  dbSalvar(db); salvarGitHub();
+  notif('✅ Traduções salvas','ok');
+  // re-renderizar a seção
+  var renders={produtos:'renderProdutos',videos:'renderVideos',diretoria:null,galeria:'renderGaleria',vasos:'renderGridVasos',comenda:'renderComenda'};
+  var fn=renders[secao];
+  if(fn&&typeof window[fn]==='function')window[fn]();
+};
+window.ICET_pick = window.ICET_pick;
+
 // ══ CONFIG ══
 var CLOUD = {name:'dn1ubybc0', preset:'cmddi_galeria'};
 var GH = {
@@ -3057,6 +3088,7 @@ function renderMembro(item){
     +'<button class="btn-sm" data-dir-edit-nome="'+item.key+'">✏️ Nome</button>'
     +'<button class="btn-sm" data-dir-edit-cargo="'+item.key+'">✏️ Cargo</button>'
     +'<button class="btn-sm" data-dir-edit-bio="'+item.key+'">✏️ Bio</button>'
+    +'<button class="btn-sm" data-dir-trad="'+item.key+'" title="Traduzir cargo e bio">🌐</button>'
     +'<button class="btn-sm" data-dir-up="'+item.key+'" title="Mover para cima">↑</button>'
     +'<button class="btn-sm" data-dir-down="'+item.key+'" title="Mover para baixo">↓</button>'
     +'<button class="btn-sm del" data-dir-del="'+item.key+'">🗑</button>'
@@ -3104,7 +3136,7 @@ function renderNoticias(){
       +'<div class="nc-ti">'+(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo)+'</div>'
       +(n.desc?'<div class="nc-de">'+(window.ICET_pick?window.ICET_pick(n,'desc'):n.desc)+'</div>':'')
       +(n.link?'<a href="'+n.link+'" target="_blank" class="nc-link">'+(window.ICET_L?window.ICET_L('btn_lernot'):'Ler notícia ↗')+'</a>':'')
-      +(isCustom?'<button class="nc-del btn-sm del" data-nc-del="'+n.id+'">✕</button>':'');
+      +(isCustom?'<button class="nc-del btn-sm" data-nc-trad="'+n.id+'" title="Traduzir">🌐</button><button class="nc-del btn-sm del" data-nc-del="'+n.id+'">✕</button>':'');
     grid.appendChild(card);
     setTimeout(function(){card.classList.add('visible');},50);
   });
@@ -3120,6 +3152,8 @@ function pubNoticia(){
   notif('✅ Notícia publicada!','ok');
 }
 document.addEventListener('click',function(e){
+  var dirTrad=e.target.getAttribute('data-dir-trad');
+  if(dirTrad){window.ICET_traduzirItem('diretoria',dirTrad,['cargo','bio']); if(typeof renderTodosDoStorage==='function')renderTodosDoStorage(); return;}
   var dirTrocar=e.target.getAttribute('data-dir-trocar');
   if(dirTrocar){trocarFotoMembroDir(dirTrocar);return;}
   var dirDel=e.target.getAttribute('data-dir-del');
@@ -3130,10 +3164,14 @@ document.addEventListener('click',function(e){
   if(galDel){e.stopPropagation();excluirFotoGal(galDel);return;}
   var prodTrocar=e.target.getAttribute('data-prod-trocar');
   if(prodTrocar){trocarFotoProd(prodTrocar);return;}
+  var prodTrad=e.target.getAttribute('data-prod-trad');
+  if(prodTrad){window.ICET_traduzirItem('produtos',prodTrad,['nome','desc','cat','aldeia']);return;}
   var prodEditar=e.target.getAttribute('data-prod-editar');
   if(prodEditar){editarProd(prodEditar);return;}
   var prodDel=e.target.getAttribute('data-prod-del');
   if(prodDel){excluirProd(prodDel);return;}
+  var ncTrad=e.target.getAttribute('data-nc-trad');
+  if(ncTrad){window.ICET_traduzirItem('noticias',ncTrad,['cat','titulo','desc']);return;}
   var del=e.target.getAttribute('data-nc-del');
   if(del){
     if(!confirm('Excluir notícia?'))return;
@@ -3204,8 +3242,8 @@ function renderGaleria(){
     if(_galFiltro!=='todos'&&item.cat!==_galFiltro)return;
     found=true;
     var div=document.createElement('div');div.className='gal-item';div.dataset.key=key;
-    div.innerHTML='<img src="'+item.src+'" alt="'+(item.leg||'')+'" loading="lazy">'
-      +'<div class="gal-over"><div class="gal-leg">'+(item.leg||'')+'</div></div>'
+    div.innerHTML='<img src="'+item.src+'" alt="'+((window.ICET_pick?window.ICET_pick(item,'leg'):item.leg)||'')+'" loading="lazy">'
+      +'<div class="gal-over"><div class="gal-leg">'+((window.ICET_pick?window.ICET_pick(item,'leg'):item.leg)||'')+'</div></div>'
       +'<div class="gal-adm-btns">'
       +'<button class="gal-adm-btn" title="Editar legenda" data-gal-edit="'+key+'">✏️</button>'
       +'<button class="gal-adm-btn" title="Mover para trás" onclick="event.stopPropagation();moverFotoGalIcet(\''+key+'\',-1)">◀</button>'
@@ -3268,9 +3306,18 @@ function abrirLB(src){document.getElementById('lb-img').src=src;document.getElem
 function fecharLB(){document.getElementById('lightbox').classList.remove('open');}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharLB();});
 function editarLegendaGal(key){
-  var nova=prompt('Nova legenda:');
+  var db=dbLer();if(!db.galeria||!db.galeria[key]){return;}
+  var atual=db.galeria[key]||{};
+  var nova=prompt('Legenda (Português):', atual.leg||'');
   if(nova===null)return;
-  var db=dbLer();if(db.galeria&&db.galeria[key]){db.galeria[key].leg=nova;dbSalvar(db);salvarGitHub();}
+  var nEn=prompt('Legenda (English) — deixe em branco para usar o português:', atual.leg_en||'');
+  var nFr=prompt('Legenda (Français) — deixe em branco para usar o português:', atual.leg_fr||'');
+  var nEs=prompt('Legenda (Español) — deixe em branco para usar o português:', atual.leg_es||'');
+  db.galeria[key].leg=nova;
+  if(nEn!==null&&nEn.trim()!=='')db.galeria[key].leg_en=nEn; else delete db.galeria[key].leg_en;
+  if(nFr!==null&&nFr.trim()!=='')db.galeria[key].leg_fr=nFr; else delete db.galeria[key].leg_fr;
+  if(nEs!==null&&nEs.trim()!=='')db.galeria[key].leg_es=nEs; else delete db.galeria[key].leg_es;
+  dbSalvar(db);salvarGitHub();
   renderGaleria();notif('✅ Legenda atualizada','ok');
 }
 function excluirFotoGal(key){
@@ -3320,7 +3367,8 @@ function renderVideos(){
       +'<div class="vid-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a>'
       +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+'</div>'
       +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>'
-      +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>';
+      +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>'
+      +'<button class="vid-capa-btn" data-vid-trad="'+v.key+'" title="Traduzir">🌐</button>';
     grid.appendChild(card);
   });
 }
@@ -3340,6 +3388,8 @@ document.addEventListener('click',function(e){
     inp.click();
     return;
   }
+  var vTrad=e.target.getAttribute('data-vid-trad');
+  if(vTrad){window.ICET_traduzirItem('videos',vTrad,['titulo','desc']);return;}
   var del=e.target.getAttribute('data-vid-del');
   if(del){
     if(!confirm('Excluir vídeo?'))return;
@@ -3396,6 +3446,7 @@ function renderProdutos(){
       +'<div class="foto-overlay">'
       +'<button class="foto-btn" data-prod-trocar="'+key+'" data-i18n="btn_trocarfoto">📷 Trocar foto</button>'
       +'<button class="foto-btn" data-prod-editar="'+key+'">'+(window.ICET_L?window.ICET_L('btn_editar'):'✏️ Editar')+'</button>'
+      +'<button class="foto-btn" data-prod-trad="'+key+'" title="Traduzir">🌐</button>'
       +'<button class="foto-btn danger" data-prod-del="'+key+'">'+(window.ICET_L?window.ICET_L('btn_excluir'):'🗑 Excluir')+'</button>'
       +'</div></div>'
       +'<div class="prod-info">'
@@ -3484,7 +3535,7 @@ function renderGridVasos(){
     var div=document.createElement('div');
     div.className='slot-vaso '+(item?'vaso-anim':'');
     if(item&&item.src){
-      div.innerHTML='<img src="'+item.src+'" alt="'+(item.leg||'Cerâmica Terena')+'" loading="lazy">'
+      div.innerHTML='<img src="'+item.src+'" alt="'+((window.ICET_pick?window.ICET_pick(item,'leg'):item.leg)||'Cerâmica Terena')+'" loading="lazy">'
         +'<div class="slot-vaso-leg">'+(item.leg||'')+'</div>'
         +'<div class="slot-vaso-adm">'
         +'<button class="slot-vaso-btn" data-vaso-foto="'+key+'">📷</button>'
@@ -3522,10 +3573,18 @@ document.addEventListener('click',function(e){
   }
   var vLeg=e.target.getAttribute('data-vaso-leg');
   if(vLeg){
-    var nova=prompt('Legenda:');if(nova===null)return;
     var db=dbLer();if(!db.vasos)db.vasos={};
     if(!db.vasos[vLeg])db.vasos[vLeg]={};
-    db.vasos[vLeg].leg=nova;dbSalvar(db);salvarGitHub();
+    var atual=db.vasos[vLeg]||{};
+    var nova=prompt('Legenda (Português):', atual.leg||'');if(nova===null)return;
+    var nEn=prompt('Legenda (English) — deixe em branco para usar o português:', atual.leg_en||'');
+    var nFr=prompt('Legenda (Français) — deixe em branco para usar o português:', atual.leg_fr||'');
+    var nEs=prompt('Legenda (Español) — deixe em branco para usar o português:', atual.leg_es||'');
+    db.vasos[vLeg].leg=nova;
+    if(nEn!==null&&nEn.trim()!=='')db.vasos[vLeg].leg_en=nEn; else delete db.vasos[vLeg].leg_en;
+    if(nFr!==null&&nFr.trim()!=='')db.vasos[vLeg].leg_fr=nFr; else delete db.vasos[vLeg].leg_fr;
+    if(nEs!==null&&nEs.trim()!=='')db.vasos[vLeg].leg_es=nEs; else delete db.vasos[vLeg].leg_es;
+    dbSalvar(db);salvarGitHub();
     renderGridVasos();notif('✅ Legenda atualizada','ok');return;
   }
   var vDel=e.target.getAttribute('data-vaso-del');
@@ -4005,11 +4064,13 @@ function renderComenda(){
       +'<div class="comenda-nome">'+c.nome+'</div>'
       +(c.cargo?'<div class="comenda-cargo">'+c.cargo+'</div>':'')
       +'<div class="comenda-bio">'+c.bio+'</div>'
-      +'<div class="comenda-adm"><button class="btn-sm del" data-cm-del="'+k+'">🗑</button></div>';
+      +'<div class="comenda-adm"><button class="btn-sm" data-cm-trad="'+k+'" title="Traduzir">🌐</button> <button class="btn-sm del" data-cm-del="'+k+'">🗑</button></div>';
     grid.appendChild(card);
   });
 }
 document.addEventListener('click',function(e){
+  var cmTrad=e.target.getAttribute('data-cm-trad');
+  if(cmTrad){window.ICET_traduzirItem('comenda',cmTrad,['nome','cargo','bio']);return;}
   var dc=e.target.getAttribute('data-cm-del');
   if(dc){if(!confirm('Excluir?'))return;var db=dbLer();if(db.comenda&&db.comenda[dc])delete db.comenda[dc];dbSalvar(db);salvarGitHub();renderComenda();}
 });
