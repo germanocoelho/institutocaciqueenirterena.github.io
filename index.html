@@ -2081,7 +2081,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
     </div>
     <div class="gal-indice" id="gal-indice"></div>
     <div class="gal-grid" id="gal-grid">
-      <div class="vazio">Nenhuma foto ainda. Entre no ADM para adicionar.</div>
+      <div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_foto'):'Nenhuma foto ainda. Entre no ADM para adicionar.')+'</div>
     </div>
     <div id="lightbox" onclick="fecharLB()">
       <button class="lb-close">✕</button>
@@ -2160,7 +2160,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
       <button class="vid-tab on" onclick="trocarAbaVid('ig',this)" data-i18n="vid_tab_ig">📱 Instagram</button>
     </div>
     <div class="vid-grid" id="vid-grid">
-      <div class="vazio">Nenhum vídeo ainda. Entre no ADM para adicionar.</div>
+      <div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_video'):'Nenhum vídeo ainda. Entre no ADM para adicionar.')+'</div>
     </div>
     <div class="adm-panel">
       <h4>⚙ Adicionar vídeo</h4>
@@ -2221,7 +2221,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
 <section id="depoimentos" style="background:var(--k2)">
   <div class="grafismo-bg"></div>
   <div class="container">
-    <span class="eyebrow reveal">Por trás de cada peça existe alguém</span>
+    <span class="eyebrow reveal" data-i18n="dep_eyb">Por trás de cada peça existe alguém</span>
     <h2 class="sec-title reveal" data-i18n="sec_depoimentos_t">O que dizem sobre a OREKA</h2>
     <div class="divider"></div>
     <div class="dep-grid" id="dep-grid"></div>
@@ -2260,7 +2260,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
       </div>
     </div>
     <div class="prods-grid" id="prods-grid">
-      <div class="vazio">Nenhum produto ainda. Entre no ADM para adicionar.</div>
+      <div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_produto'):'Nenhum produto ainda. Entre no ADM para adicionar.')+'</div>
     </div>
     <div class="adm-panel">
       <h4>⚙ Adicionar produto</h4>
@@ -2272,8 +2272,8 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div><label class="fl" data-i18n="f_cat">Categoria *</label>
           <select class="fi" id="p-cat">
             <option value="" data-i18n="f_selecione">-- Selecione --</option>
-            <option>Cerâmica · Vasos</option><option>Cerâmica · Bichos</option>
-            <option>Cerâmica · Utensílios</option><option>Cerâmica · Decoração</option>
+            <option data-i18n="opt_cat_vasos">Cerâmica · Vasos</option><option data-i18n="opt_cat_bichos">Cerâmica · Bichos</option>
+            <option data-i18n="opt_cat_utensilios">Cerâmica · Utensílios</option><option data-i18n="opt_cat_decoracao">Cerâmica · Decoração</option>
             <option data-i18n="loja_cat_madeira">Madeira entalhada</option><option data-i18n="loja_cat_biju">Bijuteria</option><option data-i18n="loja_cat_fibra">Fibra e Palha</option>
           </select>
         </div>
@@ -2284,10 +2284,10 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div><label class="fl">Aldeia</label>
           <select class="fi" id="p-aldeia">
             <option>Aldeia Marçal de Souza — Campo Grande</option>
-            <option>Aldeia Cachoeirinha — Miranda</option>
-            <option>Aldeia Limão Verde — Aquidauana</option>
-            <option>Aldeia Lalima — Miranda</option>
-            <option>Aldeia Ipegue — Aquidauana</option>
+            <option data-i18n="opt_ald_cachoeirinha">Aldeia Cachoeirinha — Miranda</option>
+            <option data-i18n="opt_ald_limaoverde">Aldeia Limão Verde — Aquidauana</option>
+            <option data-i18n="opt_ald_lalima">Aldeia Lalima — Miranda</option>
+            <option data-i18n="opt_ald_ipegue">Aldeia Ipegue — Aquidauana</option>
           </select>
         </div>
       </div>
@@ -2382,7 +2382,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
       <div class="cal-vazio">Nenhuma comenda concedida ainda. Entre no ADM para registrar.</div>
     </div>
     <div class="adm-panel">
-      <h4>Registrar agraciado com a Comenda</h4>
+      <h4 data-i18n="adm_reg_comenda">Registrar agraciado com a Comenda</h4>
       <div class="form-row">
         <div><label class="fl">Nome *</label><input class="fi" type="text" id="cm-nome" placeholder="Nome completo"></div>
         <div><label class="fl">Título / Cargo</label><input class="fi" type="text" id="cm-cargo" placeholder="Ex: Pesquisador..."></div>
@@ -2499,7 +2499,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
           <div class="acervo-item">
             <div class="acervo-item-linha"></div>
             <div class="acervo-item-body">
-              <div class="acervo-item-ti">Convenção 169 OIT — Texto completo em português</div>
+              <div class="acervo-item-ti">Convenção 169 OIT <span data-i18n="conv169_nota">— Texto completo em português</span></div>
               <div class="acervo-item-sub" data-i18n="acervo_s8">OIT · 1989 · 44 artigos</div>
               <a class="acervo-link" href="https://www.ilo.org/pt-pt/media/309781/download" target="_blank">Acessar PDF</a>
             </div>
@@ -2547,21 +2547,21 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div class="acervo-grupo-ti" data-i18n="acervo_g_icet">Instituto Cacique Enir Terena — ICET</div>
         <div class="acervo-bio-box" style="margin-bottom:1.5rem">
           <div class="acervo-bio-nome">Instituto Cacique Enir Terena — ICET</div>
-          Fundado em 12 de julho de 2025 e registrado em 22 de agosto de 2025, o ICET é uma associação privada sem fins lucrativos (CNPJ: 62.359.850/0001-38) com sede na Rua da Serra, nº 217, Aldeia Marçal de Souza, Campo Grande — MS, CEP 79041-011. Criado em homenagem à primeira mulher cacique do Mato Grosso do Sul, o Instituto tem missão educacional, cultural, científica, esportiva e social, voltada à defesa dos direitos dos povos originários e à valorização dos conhecimentos tradicionais Terena.
+          <span data-i18n-html="sobre_icet_1">Fundado em 12 de julho de 2025 e registrado em 22 de agosto de 2025, o ICET é uma associação privada sem fins lucrativos (CNPJ: 62.359.850/0001-38) com sede na Rua da Serra, nº 217, Aldeia Marçal de Souza, Campo Grande — MS, CEP 79041-011. Criado em homenagem à primeira mulher cacique do Mato Grosso do Sul, o Instituto tem missão educacional, cultural, científica, esportiva e social, voltada à defesa dos direitos dos povos originários e à valorização dos conhecimentos tradicionais Terena.
           <br><br>
           Selecionado entre 123 propostas no Edital Nacional conjunto do MPI e do Ministério das Mulheres, o ICET é titular da marca coletiva OREKA — a primeira marca coletiva indígena do Brasil — registrada junto ao INPI sob o processo nº 941549186, depositado em 12 de outubro de 2025.
-          <br><br>
+          <br><br></span>
           <a href="https://docs.google.com/viewer?url=https://institutocaciqueenirterena.github.io/docs/oreka.html" target="_blank" class="acervo-link" style="font-style:normal">Documentação completa do registro OREKA no INPI</a>
         </div>
         <div class="acervo-bio-box">
           <div class="acervo-bio-nome">Germano Coelho Ramos Rocha da Silva · Autor/Programador do Site do ICET</div>
-          Germano Coelho Ramos Rocha da Silva é Consultor Empresarial e Organizacional e uma das vozes fundamentais na intersecção entre inovação, Propriedade Intelectual e os direitos dos povos originários em Mato Grosso do Sul. Indígena do povo Terena, sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS. Essa herança de articulação e defesa social moldou o propósito de Germano: transformar o direito técnico em ferramenta de proteção para a identidade e a autonomia de seu povo.
+          <span data-i18n-html="sobre_icet_2">Germano Coelho Ramos Rocha da Silva é Consultor Empresarial e Organizacional e uma das vozes fundamentais na intersecção entre inovação, Propriedade Intelectual e os direitos dos povos originários em Mato Grosso do Sul. Indígena do povo Terena, sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS. Essa herança de articulação e defesa social moldou o propósito de Germano: transformar o direito técnico em ferramenta de proteção para a identidade e a autonomia de seu povo.
           <br><br>
           No campo institucional e de mercado, Germano consolidou uma carreira de destaque no ecossistema de inovação. É Mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação (PROFNIT) pelo IFMS e Agente da Propriedade Industrial credenciado no INPI. Atuou estrategicamente como Gerente do Setor de Protocolo do INPI (Mato Grosso do Sul) em cooperação com o SEBRAE/MS, foi Consultor Sênior e Secretário Geral do SEBRAE/MS e hoje lidera a VERTTI Consultoria, onde desenvolve estratégias nacionais e internacionais para o registro de marcas, patentes e ativos de inovação.
           <br><br>
           Sua atuação ganha seu significado mais profundo junto ao movimento indígena sul-mato-grossense. Germano atua no apoio técnico e estratégico a comunidades tradicionais, destacando-se na estruturação do Instituto Cacique Enir Terena a pedido da Presidente do ICET, Maria Auxiliadora Bezerra, e na defesa da marca coletiva como uma tecnologia social. Por meio de sua pesquisa e prática junto ao IFMS e UFMS, ele trabalha para que saberes ancestrais — como a milenar cerâmica Terena — recebam a salvaguarda jurídica necessária contra a apropriação indevida, garantindo que o protagonismo econômico, cultural e intelectual permaneça nas mãos de quem os criou.
           <br><br>
-          Unindo a precisão do consultor de negócios à sensibilidade de quem conhece o valor da terra e da ancestralidade, Germano atua na vanguarda da justiça epistêmica, provando que o futuro da inovação depende, fundamentalmente, do respeito às nossas raízes.
+          Unindo a precisão do consultor de negócios à sensibilidade de quem conhece o valor da terra e da ancestralidade, Germano atua na vanguarda da justiça epistêmica, provando que o futuro da inovação depende, fundamentalmente, do respeito às nossas raízes.</span>
         </div>
         <!-- Painel ADM: adicionar documentos/links -->
         <div class="adm-panel" style="margin-top:1.5rem">
@@ -2573,7 +2573,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
                 <option value="saude">Saúde Indígena</option>
                 <option value="internacional">Internacional</option>
                 <option value="pi">Propriedade Intelectual</option>
-                <option value="sobre">Sobre o ICET</option>
+                <option value="sobre" data-i18n="acervo_tab_icet">Sobre o ICET</option>
               </select>
             </div>
             <div><label class="fl">Título *</label><input class="fi" type="text" id="doc-ti" placeholder="Título do documento"></div>
@@ -3195,7 +3195,7 @@ function renderGaleria(){
   if(!grid)return;
   var db=dbLer();
   if(!db.galeria||!Object.keys(db.galeria).length){
-    grid.innerHTML='<div class="vazio">Nenhuma foto ainda. Entre no ADM para adicionar.</div>';return;
+    grid.innerHTML='<div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_foto'):'Nenhuma foto ainda. Entre no ADM para adicionar.')+'</div>';return;
   }
   grid.innerHTML='';
   var found=false;
@@ -3301,7 +3301,7 @@ function renderVideos(){
   var db=dbLer();
   var vids=db.videos?Object.keys(db.videos).map(function(k){return db.videos[k];})
     .filter(function(v){return v.tipo===_vidAba;}).reverse():[];
-  if(!vids.length){grid.innerHTML='<div class="vazio">Nenhum vídeo ainda. Entre no ADM para adicionar.</div>';return;}
+  if(!vids.length){grid.innerHTML='<div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_video'):'Nenhum vídeo ainda. Entre no ADM para adicionar.')+'</div>';return;}
   grid.innerHTML='';
   vids.forEach(function(v){
     var card=document.createElement('div');card.className='vid-card';card.dataset.key=v.key;
@@ -3381,7 +3381,7 @@ function renderProdutos(){
   var grid=document.getElementById('prods-grid');if(!grid)return;
   var db=dbLer();
   if(!db.produtos||!Object.keys(db.produtos).length){
-    grid.innerHTML='<div class="vazio">Nenhum produto ainda. Entre no ADM para adicionar.</div>';return;
+    grid.innerHTML='<div class="vazio">'+(window.ICET_L?window.ICET_L('js_vazio_produto'):'Nenhum produto ainda. Entre no ADM para adicionar.')+'</div>';return;
   }
   grid.innerHTML='';
   var cores={'Cerâmica':'linear-gradient(135deg,#8B3A0F,#C4621A)','Madeira':'linear-gradient(135deg,#5C4033,#8B6350)','Bijuteria':'linear-gradient(135deg,#8B3A6B,#C87AA0)','Fibra':'linear-gradient(135deg,#5C6B2E,#8BA050)'};
@@ -3886,7 +3886,7 @@ function renderListaEventos(){
   var fut=Object.keys(evs).map(function(k){return evs[k];})
     .filter(function(ev){return new Date(ev.data+'T00:00:00')>=hoje;})
     .sort(function(a,b){return a.data<b.data?-1:1;});
-  if(!fut.length){lista.innerHTML='<div class="cal-vazio">Nenhum evento. Entre no ADM para adicionar.</div>';return;}
+  if(!fut.length){lista.innerHTML='<div class="cal-vazio">'+(window.ICET_L?window.ICET_L('js_vazio_evento'):'Nenhum evento. Entre no ADM para adicionar.')+'</div>';return;}
   var h='<p style="font-family:Cinzel,serif;font-size:.82rem;color:var(--ou);margin-bottom:1rem;letter-spacing:.1em;text-transform:uppercase">Proximos eventos</p>';
   fut.forEach(function(ev){
     var d=new Date(ev.data+'T00:00:00');
@@ -4380,6 +4380,19 @@ document.addEventListener('DOMContentLoaded',function(){
       gal_f_cultura:  {pt:'Cultura', es:'Cultura', en:'Culture', fr:'Culture'},
       gal_f_ceramica: {pt:'Cerâmica', es:'Cerámica', en:'Pottery', fr:'Céramique'},
       gal_f_oreka:    {pt:'OREKA', es:'OREKA', en:'OREKA', fr:'OREKA'},
+      dep_eyb:      {pt:'Por trás de cada peça existe alguém', es:'Detrás de cada pieza hay alguien', en:'Behind every piece there is someone', fr:'Derrière chaque pièce, il y a quelqu\'un'},
+      sobre_icet_1: {pt:'Fundado em 12 de julho de 2025 e registrado em 22 de agosto de 2025, o ICET é uma associação privada sem fins lucrativos (CNPJ: 62.359.850/0001-38) com sede na Rua da Serra, nº 217, Aldeia Marçal de Souza, Campo Grande — MS, CEP 79041-011. Criado em homenagem à primeira mulher cacique do Mato Grosso do Sul, o Instituto tem missão educacional, cultural, científica, esportiva e social, voltada à defesa dos direitos dos povos originários e à valorização dos conhecimentos tradicionais Terena.\n          <br><br>\n          Selecionado entre 123 propostas no Edital Nacional conjunto do MPI e do Ministério das Mulheres, o ICET é titular da marca coletiva OREKA — a primeira marca coletiva indígena do Brasil — registrada junto ao INPI sob o processo nº 941549186, depositado em 12 de outubro de 2025.\n          <br><br>', es:'Fundado el 12 de julio de 2025 y registrado el 22 de agosto de 2025, el ICET es una asociación privada sin fines de lucro (CNPJ: 62.359.850/0001-38) con sede en la Rua da Serra, nº 217, Aldea Marçal de Souza, Campo Grande — MS, CEP 79041-011. Creado en homenaje a la primera mujer cacique de Mato Grosso do Sul, el Instituto tiene una misión educativa, cultural, científica, deportiva y social, orientada a la defensa de los derechos de los pueblos originarios y a la valorización de los conocimientos tradicionales Terena.\n          <br><br>\n          Seleccionado entre 123 propuestas en la Convocatoria Nacional conjunta del MPI y del Ministerio de las Mujeres, el ICET es titular de la marca colectiva OREKA — la primera marca colectiva indígena de Brasil — registrada ante el INPI bajo el proceso nº 941549186, depositado el 12 de octubre de 2025.\n          <br><br>', en:'Founded on 12 July 2025 and registered on 22 August 2025, ICET is a private non-profit association (CNPJ: 62.359.850/0001-38) headquartered at Rua da Serra, nº 217, Marçal de Souza Village, Campo Grande — MS, CEP 79041-011. Created in honour of the first woman cacique (Indigenous chief) of Mato Grosso do Sul, the Institute has an educational, cultural, scientific, sporting and social mission, devoted to defending the rights of Indigenous peoples and valuing traditional Terena knowledge.\n          <br><br>\n          Selected among 123 proposals in the joint National Call of the MPI and the Ministry of Women, ICET holds the OREKA collective trademark — the first Indigenous collective trademark in Brazil — registered with INPI under process nº 941549186, filed on 12 October 2025.\n          <br><br>', fr:'Fondé le 12 juillet 2025 et enregistré le 22 août 2025, l\'ICET est une association privée à but non lucratif (CNPJ : 62.359.850/0001-38) dont le siège se trouve Rua da Serra, nº 217, Village Marçal de Souza, Campo Grande — MS, CEP 79041-011. Créé en hommage à la première femme cacique (cheffe autochtone) du Mato Grosso do Sul, l\'Institut a une mission éducative, culturelle, scientifique, sportive et sociale, vouée à la défense des droits des peuples originaires et à la valorisation des savoirs traditionnels Terena.\n          <br><br>\n          Sélectionné parmi 123 propositions à l\'Appel National conjoint du MPI et du Ministère des Femmes, l\'ICET est titulaire de la marque collective OREKA — la première marque collective autochtone du Brésil — enregistrée auprès de l\'INPI sous le procédé nº 941549186, déposé le 12 octobre 2025.\n          <br><br>'},
+      opt_cat_vasos:      {pt:'Cerâmica · Vasos', es:'Cerámica · Vasijas', en:'Pottery · Vases', fr:'Céramique · Vases'},
+      opt_cat_bichos:     {pt:'Cerâmica · Bichos', es:'Cerámica · Animales', en:'Pottery · Animals', fr:'Céramique · Animaux'},
+      opt_cat_utensilios: {pt:'Cerâmica · Utensílios', es:'Cerámica · Utensilios', en:'Pottery · Utensils', fr:'Céramique · Ustensiles'},
+      opt_cat_decoracao:  {pt:'Cerâmica · Decoração', es:'Cerámica · Decoración', en:'Pottery · Decoration', fr:'Céramique · Décoration'},
+      opt_ald_cachoeirinha: {pt:'Aldeia Cachoeirinha — Miranda', es:'Aldea Cachoeirinha — Miranda', en:'Cachoeirinha Village — Miranda', fr:'Village Cachoeirinha — Miranda'},
+      opt_ald_limaoverde: {pt:'Aldeia Limão Verde — Aquidauana', es:'Aldea Limão Verde — Aquidauana', en:'Limão Verde Village — Aquidauana', fr:'Village Limão Verde — Aquidauana'},
+      opt_ald_lalima:     {pt:'Aldeia Lalima — Miranda', es:'Aldea Lalima — Miranda', en:'Lalima Village — Miranda', fr:'Village Lalima — Miranda'},
+      opt_ald_ipegue:     {pt:'Aldeia Ipegue — Aquidauana', es:'Aldea Ipegue — Aquidauana', en:'Ipegue Village — Aquidauana', fr:'Village Ipegue — Aquidauana'},
+      conv169_nota:   {pt:'— Texto completo em português', es:'— Texto completo en portugués', en:'— Full text in Portuguese', fr:'— Texte intégral en portugais'},
+      adm_reg_comenda: {pt:'Registrar agraciado com a Comenda', es:'Registrar galardonado con la Distinción', en:'Register honour recipient', fr:'Enregistrer un récipiendaire de la distinction'},
+      sobre_icet_2: {pt:'Germano Coelho Ramos Rocha da Silva é Consultor Empresarial e Organizacional e uma das vozes fundamentais na intersecção entre inovação, Propriedade Intelectual e os direitos dos povos originários em Mato Grosso do Sul. Indígena do povo Terena, sua trajetória carrega a força e a memória da Aldeia Passarinho (MS), terra natal de seu pai, Carmo da Silva — liderança histórica que migrou para Campo Grande para semear direitos ao fundar o Sindicato dos Garçons do MS. Essa herança de articulação e defesa social moldou o propósito de Germano: transformar o direito técnico em ferramenta de proteção para a identidade e a autonomia de seu povo.\n          <br><br>\n          No campo institucional e de mercado, Germano consolidou uma carreira de destaque no ecossistema de inovação. É Mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação (PROFNIT) pelo IFMS e Agente da Propriedade Industrial credenciado no INPI. Atuou estrategicamente como Gerente do Setor de Protocolo do INPI (Mato Grosso do Sul) em cooperação com o SEBRAE/MS, foi Consultor Sênior e Secretário Geral do SEBRAE/MS e hoje lidera a VERTTI Consultoria, onde desenvolve estratégias nacionais e internacionais para o registro de marcas, patentes e ativos de inovação.\n          <br><br>\n          Sua atuação ganha seu significado mais profundo junto ao movimento indígena sul-mato-grossense. Germano atua no apoio técnico e estratégico a comunidades tradicionais, destacando-se na estruturação do Instituto Cacique Enir Terena a pedido da Presidente do ICET, Maria Auxiliadora Bezerra, e na defesa da marca coletiva como uma tecnologia social. Por meio de sua pesquisa e prática junto ao IFMS e UFMS, ele trabalha para que saberes ancestrais — como a milenar cerâmica Terena — recebam a salvaguarda jurídica necessária contra a apropriação indevida, garantindo que o protagonismo econômico, cultural e intelectual permaneça nas mãos de quem os criou.\n          <br><br>\n          Unindo a precisão do consultor de negócios à sensibilidade de quem conhece o valor da terra e da ancestralidade, Germano atua na vanguarda da justiça epistêmica, provando que o futuro da inovação depende, fundamentalmente, do respeito às nossas raízes.', es:'Germano Coelho Ramos Rocha da Silva es Consultor Empresarial y Organizacional y una de las voces fundamentales en la intersección entre innovación, Propiedad Intelectual y los derechos de los pueblos originarios en Mato Grosso do Sul. Indígena del pueblo Terena, su trayectoria lleva la fuerza y la memoria de la Aldea Passarinho (MS), tierra natal de su padre, Carmo da Silva — líder histórico que migró a Campo Grande para sembrar derechos al fundar el Sindicato de los Camareros de MS. Esa herencia de articulación y defensa social moldeó el propósito de Germano: transformar el derecho técnico en herramienta de protección para la identidad y la autonomía de su pueblo.\n          <br><br>\n          En el ámbito institucional y de mercado, Germano consolidó una carrera destacada en el ecosistema de innovación. Es Magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación (PROFNIT) por el IFMS y Agente de la Propiedad Industrial acreditado ante el INPI. Actuó estratégicamente como Gerente del Sector de Protocolo del INPI (Mato Grosso do Sul) en cooperación con el SEBRAE/MS, fue Consultor Senior y Secretario General del SEBRAE/MS y hoy lidera VERTTI Consultoría, donde desarrolla estrategias nacionales e internacionales para el registro de marcas, patentes y activos de innovación.\n          <br><br>\n          Su actuación adquiere su significado más profundo junto al movimiento indígena sur-matogrossense. Germano actúa en el apoyo técnico y estratégico a comunidades tradicionales, destacándose en la estructuración del Instituto Cacique Enir Terena a pedido de la Presidenta del ICET, Maria Auxiliadora Bezerra, y en la defensa de la marca colectiva como una tecnología social. A través de su investigación y práctica junto al IFMS y la UFMS, trabaja para que saberes ancestrales — como la milenaria cerámica Terena — reciban la salvaguarda jurídica necesaria contra la apropiación indebida, garantizando que el protagonismo económico, cultural e intelectual permanezca en manos de quienes los crearon.\n          <br><br>\n          Uniendo la precisión del consultor de negocios a la sensibilidad de quien conoce el valor de la tierra y de la ancestralidad, Germano actúa a la vanguardia de la justicia epistémica, demostrando que el futuro de la innovación depende, fundamentalmente, del respeto a nuestras raíces.', en:'Germano Coelho Ramos Rocha da Silva is a Business and Organisational Consultant and one of the essential voices at the intersection of innovation, Intellectual Property and the rights of Indigenous peoples in Mato Grosso do Sul. An Indigenous member of the Terena people, his path carries the strength and memory of the Passarinho Village (MS), birthplace of his father, Carmo da Silva — a historic leader who migrated to Campo Grande to sow rights by founding the Waiters\' Union of MS. This heritage of advocacy and social defence shaped Germano\'s purpose: to turn technical law into a tool of protection for the identity and autonomy of his people.\n          <br><br>\n          In the institutional and market field, Germano built a distinguished career in the innovation ecosystem. He holds a Master\'s in Intellectual Property and Technology Transfer for Innovation (PROFNIT) from IFMS and is an Industrial Property Agent accredited with INPI. He served strategically as Manager of the INPI Protocol Sector (Mato Grosso do Sul) in cooperation with SEBRAE/MS, was Senior Consultant and Secretary-General of SEBRAE/MS and now leads VERTTI Consultancy, where he develops national and international strategies for the registration of trademarks, patents and innovation assets.\n          <br><br>\n          His work takes on its deepest meaning alongside the Indigenous movement of Mato Grosso do Sul. Germano provides technical and strategic support to traditional communities, notably in structuring the Cacique Enir Terena Institute at the request of ICET\'s President, Maria Auxiliadora Bezerra, and in defending the collective trademark as a social technology. Through his research and practice with IFMS and UFMS, he works to ensure that ancestral knowledge — such as the age-old Terena pottery — receives the legal safeguarding needed against misappropriation, ensuring that economic, cultural and intellectual leadership remains in the hands of those who created it.\n          <br><br>\n          Uniting the precision of the business consultant with the sensitivity of one who knows the value of the land and of ancestry, Germano works at the forefront of epistemic justice, proving that the future of innovation fundamentally depends on respect for our roots.', fr:'Germano Coelho Ramos Rocha da Silva est Consultant en Entreprise et Organisation et l\'une des voix essentielles à l\'intersection de l\'innovation, de la Propriété Intellectuelle et des droits des peuples originaires au Mato Grosso do Sul. Autochtone du peuple Terena, son parcours porte la force et la mémoire du Village Passarinho (MS), terre natale de son père, Carmo da Silva — figure historique qui a migré vers Campo Grande pour semer des droits en fondant le Syndicat des Serveurs du MS. Cet héritage de mobilisation et de défense sociale a façonné le dessein de Germano : transformer le droit technique en outil de protection de l\'identité et de l\'autonomie de son peuple.\n          <br><br>\n          Dans le domaine institutionnel et du marché, Germano a consolidé une carrière remarquable dans l\'écosystème de l\'innovation. Il est titulaire d\'un master en Propriété Intellectuelle et Transfert de Technologie pour l\'Innovation (PROFNIT) de l\'IFMS et Agent de la Propriété Industrielle accrédité auprès de l\'INPI. Il a agi stratégiquement comme Gérant du Secteur de Protocole de l\'INPI (Mato Grosso do Sul) en coopération avec le SEBRAE/MS, a été Consultant Senior et Secrétaire Général du SEBRAE/MS et dirige aujourd\'hui VERTTI Consultoria, où il élabore des stratégies nationales et internationales pour l\'enregistrement de marques, de brevets et d\'actifs d\'innovation.\n          <br><br>\n          Son action prend tout son sens auprès du mouvement autochtone du Mato Grosso do Sul. Germano apporte un soutien technique et stratégique aux communautés traditionnelles, se distinguant dans la structuration de l\'Institut Cacique Enir Terena à la demande de la Présidente de l\'ICET, Maria Auxiliadora Bezerra, et dans la défense de la marque collective comme technologie sociale. Par sa recherche et sa pratique auprès de l\'IFMS et de l\'UFMS, il œuvre pour que les savoirs ancestraux — comme la céramique Terena millénaire — bénéficient de la sauvegarde juridique nécessaire contre l\'appropriation abusive, garantissant que le protagonisme économique, culturel et intellectuel demeure entre les mains de ceux qui les ont créés.\n          <br><br>\n          Alliant la précision du consultant d\'affaires à la sensibilité de celui qui connaît la valeur de la terre et de l\'ancestralité, Germano agit à l\'avant-garde de la justice épistémique, prouvant que l\'avenir de l\'innovation dépend fondamentalement du respect de nos racines.'},
 
       // ── Etapa 8: textos gerados pelo JavaScript ──
       js_vazio_foto:    {pt:'Nenhuma foto ainda. Entre no ADM para adicionar.', es:'Aún no hay fotos. Entre al ADM para añadir.', en:'No photos yet. Log into ADMIN to add.', fr:'Aucune photo pour l\'instant. Connectez-vous à l\'ADMIN pour ajouter.'},
