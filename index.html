@@ -1471,7 +1471,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
           </div>
           <div class="cloud-status" id="st-enir-foto"></div>
         </div>
-        <p class="enir-caption">Enir da Silva Bezerra (Enir Terena), cacique e fundadora da Aldeia Urbana Marçal de Souza. Fonte: Instituto Cacique Enir Terena</p>
+        <p class="enir-caption" data-i18n="enir_caption">Enir da Silva Bezerra (Enir Terena), cacique e fundadora da Aldeia Urbana Marçal de Souza. Fonte: Instituto Cacique Enir Terena</p>
       </div>
       <div class="reveal">
         <span class="eyebrow" data-i18n="enir_eyb">Quem foi</span>
@@ -1895,7 +1895,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
         </div>
         <div class="dir-info">
           <div class="dir-nome" id="dir-maria-nome">Maria Auxiliadora Bezerra</div>
-          <div class="dir-cargo" id="dir-maria-cargo">Presidente</div>
+          <div class="dir-cargo" id="dir-maria-cargo" data-i18n="maria_cargo">Presidente</div>
           <div class="dir-bio" id="dir-maria-bio" data-i18n-html="maria_bio_full">Maria Auxiliadora Bezerra nasceu em Campo Grande, Mato Grosso do Sul, com raízes profundas na Aldeia Limão Verde, em Aquidauana — terra ancestral do povo Terena. Filha de Enir da Silva Bezerra, a Cacique Enir Terena, herdou da mãe não apenas o sangue e a memória do povo Terena, mas também a missão de proteger, valorizar e projetar a cultura indígena para o Brasil e o mundo.<br>Cresceu entre dois mundos — a cidade e a aldeia —, aprendendo desde cedo que identidade e pertencimento são forças que nenhuma fronteira apaga. Com a ancestralização de sua mãe em 2016, continuou a luta e fundou o Instituto Cacique Enir Terena, dando continuidade ao legado que Enir construiu com décadas de luta: a primeira aldeia urbana indígena do Brasil, a marca coletiva OREKA e o reconhecimento internacional da cerâmica Terena como patrimônio cultural vivo.<br>À frente do Instituto, Maria Auxiliadora conduz com determinação a gestão da propriedade intelectual coletiva do povo Terena, a comercialização justa do artesanato das artesãs da Aldeia Marçal de Souza e o fortalecimento dos direitos indígenas no espaço urbano. Sua liderança é a prova de que o legado de Enir Terena não terminou — ele continua, com força renovada, nas mãos de sua filha.</div>
           <div class="dir-adm" style="margin-top:.8rem">
             <button class="btn-sm" onclick="editarInline('dir-maria-nome','nome')">✏️ Nome</button>
@@ -2604,7 +2604,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
     <a href="#noticias">Notícias</a><a href="#galeria">Galeria</a>
     <a href="#videos">Vídeos</a><a href="#loja">Loja</a><a href="#acervo">Acervo</a><a href="#contato">Contato</a>
   </div>
-  <p class="footer-txt">© 2025 Instituto Cacique Enir Terena (ICET) · Campo Grande, MS · OREKA™ · INPI<br>Site desenvolvido por <strong style="color:var(--tx2)">Germano Coelho Ramos Rocha-Silva</strong> — Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</p>
+  <p class="footer-txt">© 2025 Instituto Cacique Enir Terena (ICET) · Campo Grande, MS · OREKA™ · INPI<br><span data-i18n="footer_dev">Site desenvolvido por</span> <strong style="color:var(--tx2)">Germano Coelho Ramos Rocha-Silva</strong> — Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</p>
 </footer>
 
 <!-- MODAL IBGE -->
@@ -3051,8 +3051,8 @@ function renderMembro(item){
     +'</div></div>'
     +'<div class="dir-info">'
     +'<div class="dir-nome" id="dn-'+item.key+'">'+item.nome+'</div>'
-    +'<div class="dir-cargo" id="dc2-'+item.key+'">'+item.cargo+'</div>'
-    +(item.bio?'<div class="dir-bio" id="db-'+item.key+'">'+item.bio+'</div>':'<div class="dir-bio" id="db-'+item.key+'"></div>')
+    +'<div class="dir-cargo" id="dc2-'+item.key+'">'+(window.ICET_pick?window.ICET_pick(item,'cargo'):item.cargo)+'</div>'
+    +(item.bio?'<div class="dir-bio" id="db-'+item.key+'">'+(window.ICET_pick?window.ICET_pick(item,'bio'):item.bio)+'</div>':'<div class="dir-bio" id="db-'+item.key+'"></div>')
     +'<div class="dir-adm" style="margin-top:.8rem;flex-wrap:wrap;gap:.4rem">'
     +'<button class="btn-sm" data-dir-edit-nome="'+item.key+'">✏️ Nome</button>'
     +'<button class="btn-sm" data-dir-edit-cargo="'+item.key+'">✏️ Cargo</button>'
@@ -3103,7 +3103,7 @@ function renderNoticias(){
       +'<div class="nc-fonte">'+n.fonte+'</div>'
       +'<div class="nc-ti">'+(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo)+'</div>'
       +(n.desc?'<div class="nc-de">'+(window.ICET_pick?window.ICET_pick(n,'desc'):n.desc)+'</div>':'')
-      +(n.link?'<a href="'+n.link+'" target="_blank" class="nc-link" data-i18n="btn_lernot">Ler notícia ↗</a>':'')
+      +(n.link?'<a href="'+n.link+'" target="_blank" class="nc-link">'+(window.ICET_L?window.ICET_L('btn_lernot'):'Ler notícia ↗')+'</a>':'')
       +(isCustom?'<button class="nc-del btn-sm del" data-nc-del="'+n.id+'">✕</button>':'');
     grid.appendChild(card);
     setTimeout(function(){card.classList.add('visible');},50);
@@ -3395,8 +3395,8 @@ function renderProdutos(){
       +(p.foto?'<img src="'+p.foto+'" alt="'+p.nome+'">':'<span>🏺</span>')
       +'<div class="foto-overlay">'
       +'<button class="foto-btn" data-prod-trocar="'+key+'" data-i18n="btn_trocarfoto">📷 Trocar foto</button>'
-      +'<button class="foto-btn" data-prod-editar="'+key+'">✏️ Editar</button>'
-      +'<button class="foto-btn danger" data-prod-del="'+key+'">🗑 Excluir</button>'
+      +'<button class="foto-btn" data-prod-editar="'+key+'">'+(window.ICET_L?window.ICET_L('btn_editar'):'✏️ Editar')+'</button>'
+      +'<button class="foto-btn danger" data-prod-del="'+key+'">'+(window.ICET_L?window.ICET_L('btn_excluir'):'🗑 Excluir')+'</button>'
       +'</div></div>'
       +'<div class="prod-info">'
       +'<div class="prod-origem">📍 '+p.aldeia+'</div>'
@@ -3995,7 +3995,7 @@ function pubComenda(){
 function renderComenda(){
   var grid=document.getElementById('comenda-grid');if(!grid)return;
   var db=dbLer();
-  if(!db.comenda||!Object.keys(db.comenda).length){grid.innerHTML='<div class="cal-vazio">Nenhuma comenda concedida ainda.</div>';return;}
+  if(!db.comenda||!Object.keys(db.comenda).length){grid.innerHTML='<div class="cal-vazio">'+(window.ICET_L?window.ICET_L('js_vazio_comenda'):'Nenhuma comenda concedida ainda.')+'</div>';return;}
   grid.innerHTML='';
   Object.keys(db.comenda).forEach(function(k){
     var c=db.comenda[k];
@@ -4365,6 +4365,11 @@ document.addEventListener('DOMContentLoaded',function(){
       notcat_legado:   {pt:'Legado', es:'Legado', en:'Legacy', fr:'Héritage'},
       vid_tab_yt:      {pt:'▶ YouTube', es:'▶ YouTube', en:'▶ YouTube', fr:'▶ YouTube'},
       vid_tab_ig:      {pt:'📱 Instagram', es:'📱 Instagram', en:'📱 Instagram', fr:'📱 Instagram'},
+      btn_editar:    {pt:'✏️ Editar', es:'✏️ Editar', en:'✏️ Edit', fr:'✏️ Modifier'},
+      btn_excluir:   {pt:'🗑 Excluir', es:'🗑 Eliminar', en:'🗑 Delete', fr:'🗑 Supprimer'},
+      enir_caption:  {pt:'Enir da Silva Bezerra (Enir Terena), cacique e fundadora da Aldeia Urbana Marçal de Souza. Fonte: Instituto Cacique Enir Terena', es:'Enir da Silva Bezerra (Enir Terena), cacique y fundadora de la Aldea Urbana Marçal de Souza. Fuente: Instituto Cacique Enir Terena', en:'Enir da Silva Bezerra (Enir Terena), cacique and founder of the Marçal de Souza Urban Village. Source: Cacique Enir Terena Institute', fr:'Enir da Silva Bezerra (Enir Terena), cacique et fondatrice du Village Urbain Marçal de Souza. Source : Institut Cacique Enir Terena'},
+      footer_dev:    {pt:'Site desenvolvido por', es:'Sitio desarrollado por', en:'Website developed by', fr:'Site développé par'},
+      maria_cargo:   {pt:'Presidente', es:'Presidenta', en:'President', fr:'Présidente'},
 
       // ── Etapa 8: textos gerados pelo JavaScript ──
       js_vazio_foto:    {pt:'Nenhuma foto ainda. Entre no ADM para adicionar.', es:'Aún no hay fotos. Entre al ADM para añadir.', en:'No photos yet. Log into ADMIN to add.', fr:'Aucune photo pour l\'instant. Connectez-vous à l\'ADMIN pour ajouter.'},
@@ -4442,6 +4447,8 @@ document.addEventListener('DOMContentLoaded',function(){
                 var it=db.diretoria[k];
                 var bel=document.getElementById('db-'+it.key);
                 if(bel&&it.bio)bel.textContent=window.ICET_pick(it,'bio');
+                var cel=document.getElementById('dc2-'+it.key);
+                if(cel&&it.cargo)cel.textContent=window.ICET_pick(it,'cargo');
               });
             }
           }
