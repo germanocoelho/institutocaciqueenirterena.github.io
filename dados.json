@@ -40,7 +40,10 @@
    "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg",
    "desc_en": "teste teste teste vaso terena",
    "desc_fr": "teste teste teste vaso terena",
-   "desc_es": "teste teste teste vaso terena"
+   "desc_es": "teste teste teste vaso terena",
+   "aldeia_en": "Marçal de Souza Village — Campo Grande",
+   "aldeia_fr": "Village Marçal de Souza — Campo Grande",
+   "aldeia_es": "Aldea Marçal de Souza — Campo Grande"
   },
   "p_1780722818589": {
    "key": "p_1780722818589",
@@ -54,7 +57,10 @@
    "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png",
    "desc_en": "teste de produto",
    "desc_fr": "teste de produto",
-   "desc_es": "teste de produto"
+   "desc_es": "teste de produto",
+   "aldeia_en": "Marçal de Souza Village — Campo Grande",
+   "aldeia_fr": "Village Marçal de Souza — Campo Grande",
+   "aldeia_es": "Aldea Marçal de Souza — Campo Grande"
   }
  },
  "vasos": {
@@ -119,7 +125,10 @@
    "desc": "Maria Auxiliadora Bezerra, Presidente do Instituto Cacique Enir Terena, traz lembranças importantes sobre o nascimento do Instituto.",
    "desc_en": "Maria Auxiliadora Bezerra, President of the Cacique Enir Terena Institute, shares important memories about the birth of the Institute.",
    "desc_fr": "Maria Auxiliadora Bezerra, Présidente de l'Institut Cacique Enir Terena, partage des souvenirs importants sur la naissance de l'Institut.",
-   "desc_es": "Maria Auxiliadora Bezerra, Presidenta del Instituto Cacique Enir Terena, comparte recuerdos importantes sobre el nacimiento del Instituto."
+   "desc_es": "Maria Auxiliadora Bezerra, Presidenta del Instituto Cacique Enir Terena, comparte recuerdos importantes sobre el nacimiento del Instituto.",
+   "titulo_en": "The birth of ICET",
+   "titulo_fr": "La naissance de l'ICET",
+   "titulo_es": "El nacimiento del ICET"
   },
   "v_1780724557031": {
    "key": "v_1780724557031",
@@ -129,7 +138,10 @@
    "desc": "Sebastiana Batista é indígena artesã da etnia Terena da região de Aquidauana Aldeia Limão Verde.  Sebastiana é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história.",
    "desc_en": "Sebastiana Batista is an Indigenous artisan of the Terena people from the Aquidauana region, Limão Verde village. Sebastiana is one of the artisans of the Cacique Enir Terena Institute. Discover a little of her story.",
    "desc_fr": "Sebastiana Batista est une artisane autochtone du peuple Terena de la région d'Aquidauana, village de Limão Verde. Sebastiana est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire.",
-   "desc_es": "Sebastiana Batista es artesana indígena del pueblo Terena de la región de Aquidauana, Aldea Limão Verde. Sebastiana es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia."
+   "desc_es": "Sebastiana Batista es artesana indígena del pueblo Terena de la región de Aquidauana, Aldea Limão Verde. Sebastiana es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia.",
+   "titulo_en": "Member testimonial",
+   "titulo_fr": "Témoignage d'une membre",
+   "titulo_es": "Testimonio de asociada"
   },
   "v_1780724626018": {
    "key": "v_1780724626018",
@@ -139,7 +151,10 @@
    "desc": "Vamos conhecer hoje um pouco da história da Marili Jorge artesã indígena da etnia Terena da região de Dourados.  Marili é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história.",
    "desc_en": "Today we get to know a little of the story of Marili Jorge, an Indigenous Terena artisan from the Dourados region. Marili is one of the artisans of the Cacique Enir Terena Institute. Discover a little of her story.",
    "desc_fr": "Aujourd'hui, nous découvrons un peu l'histoire de Marili Jorge, artisane autochtone Terena de la région de Dourados. Marili est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire.",
-   "desc_es": "Hoy conocemos un poco de la historia de Marili Jorge, artesana indígena Terena de la región de Dourados. Marili es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia."
+   "desc_es": "Hoy conocemos un poco de la historia de Marili Jorge, artesana indígena Terena de la región de Dourados. Marili es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia.",
+   "titulo_en": "Artisan testimonial 2",
+   "titulo_fr": "Témoignage d'artisane 2",
+   "titulo_es": "Testimonio de artesana 2"
   },
   "v_1780724736883": {
    "key": "v_1780724736883",
@@ -149,7 +164,10 @@
    "desc": "Sâmara Figueiredo é indígena artesã da etnia Terena carrega em seu DNA o sangue de sua avó Enir Terena.  Sâmara Figueiredo é uma das artesãs do instituto Cacique Enir Terena.  #artesã #indigena #terena #ms #brasil #campogrande #artesanatoindígena",
    "desc_en": "Sâmara Figueiredo is an Indigenous Terena artisan who carries in her DNA the blood of her grandmother Enir Terena. Sâmara Figueiredo is one of the artisans of the Cacique Enir Terena Institute. #artisan #indigenous #terena #ms #brazil #campogrande #indigenoushandicraft",
    "desc_fr": "Sâmara Figueiredo est une artisane autochtone Terena qui porte dans son ADN le sang de sa grand-mère Enir Terena. Sâmara Figueiredo est l'une des artisanes de l'Institut Cacique Enir Terena. #artisane #autochtone #terena #ms #brésil #campogrande #artisanatautochtone",
-   "desc_es": "Sâmara Figueiredo es artesana indígena Terena que lleva en su ADN la sangre de su abuela Enir Terena. Sâmara Figueiredo es una de las artesanas del Instituto Cacique Enir Terena. #artesana #indigena #terena #ms #brasil #campogrande #artesaniaindigena"
+   "desc_es": "Sâmara Figueiredo es artesana indígena Terena que lleva en su ADN la sangre de su abuela Enir Terena. Sâmara Figueiredo es una de las artesanas del Instituto Cacique Enir Terena. #artesana #indigena #terena #ms #brasil #campogrande #artesaniaindigena",
+   "titulo_en": "Artisan testimonial 3",
+   "titulo_fr": "Témoignage d'artisane 3",
+   "titulo_es": "Testimonio de artesana 3"
   },
   "v_1780724903357": {
    "key": "v_1780724903357",
@@ -159,7 +177,10 @@
    "desc": "O Instinto Cacique Enir Terena realiza:  A 1ª Oficina de Modelagem e Pintura em Argila.  - Nível II - Carga horária de 40 horas: - Data: 18 a 22 de agosto de 2025. - Local: Memorial da Cultura Indígena - Aldeia Urbana Marçal de Souza.  A oficina tem como objetivo promover a valorização das expressões artísticas indígenas, fortalecer o protagonismo cultural dos povos originários e incentivar a formação técnica e criativa dos participantes.  ➡️Informações de como participar via whatsapp: 67 99305 – 2534  APROVEITE ESSA OPORTUNIDADE!  #artesanato #indigena #ceramica #argila #oficina #ICET",
    "desc_en": "The Cacique Enir Terena Institute presents: The 1st Clay Modelling and Painting Workshop. - Level II - 40 hours: - Date: 18 to 22 August 2025. - Venue: Memorial of Indigenous Culture - Marçal de Souza Urban Village. The workshop aims to promote the appreciation of Indigenous artistic expressions, strengthen the cultural leadership of Indigenous peoples and encourage the technical and creative training of participants. ➡️ Information on how to take part via WhatsApp: 67 99305-2534. SEIZE THIS OPPORTUNITY! #handicraft #indigenous #pottery #clay #workshop #ICET",
    "desc_fr": "L'Institut Cacique Enir Terena présente : Le 1er Atelier de Modelage et Peinture sur Argile. - Niveau II - 40 heures : - Date : du 18 au 22 août 2025. - Lieu : Mémorial de la Culture Autochtone - Village Urbain Marçal de Souza. L'atelier vise à promouvoir la valorisation des expressions artistiques autochtones, à renforcer le protagonisme culturel des peuples originaires et à encourager la formation technique et créative des participants. ➡️ Informations pour participer via WhatsApp : 67 99305-2534. PROFITEZ DE CETTE OPPORTUNITÉ ! #artisanat #autochtone #céramique #argile #atelier #ICET",
-   "desc_es": "El Instituto Cacique Enir Terena presenta: El 1º Taller de Modelado y Pintura en Arcilla. - Nivel II - 40 horas: - Fecha: del 18 al 22 de agosto de 2025. - Lugar: Memorial de la Cultura Indígena - Aldea Urbana Marçal de Souza. El taller busca promover la valorización de las expresiones artísticas indígenas, fortalecer el protagonismo cultural de los pueblos originarios e incentivar la formación técnica y creativa de los participantes. ➡️ Información sobre cómo participar vía WhatsApp: 67 99305-2534. ¡APROVECHE ESTA OPORTUNIDAD! #artesania #indigena #ceramica #arcilla #taller #ICET"
+   "desc_es": "El Instituto Cacique Enir Terena presenta: El 1º Taller de Modelado y Pintura en Arcilla. - Nivel II - 40 horas: - Fecha: del 18 al 22 de agosto de 2025. - Lugar: Memorial de la Cultura Indígena - Aldea Urbana Marçal de Souza. El taller busca promover la valorización de las expresiones artísticas indígenas, fortalecer el protagonismo cultural de los pueblos originarios e incentivar la formación técnica y creativa de los participantes. ➡️ Información sobre cómo participar vía WhatsApp: 67 99305-2534. ¡APROVECHE ESTA OPORTUNIDAD! #artesania #indigena #ceramica #arcilla #taller #ICET",
+   "titulo_en": "1st Clay Modelling and Painting Workshop",
+   "titulo_fr": "1er Atelier de Modelage et Peinture sur Argile",
+   "titulo_es": "1er Taller de Modelado y Pintura en Arcilla"
   }
  },
  "secEdits": {
