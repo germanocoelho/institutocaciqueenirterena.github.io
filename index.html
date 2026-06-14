@@ -3379,7 +3379,7 @@ function renderVideos(){
     var _abre=(v.tipo==='mp4')?('href="javascript:void(0)" onclick="abrirVidModal(\''+v.key+'\')"'):('href="'+linkUrl+'" target="_blank"');
     card.innerHTML='<a '+_abre+' class="vid-thumb">'+thumb
       +'<div class="vid-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a>'
-      +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+((window.ICET_pick&&window.ICET_pick(v,'resumo'))?'<details class="vid-resumo"><summary>'+(window.ICET_L?window.ICET_L('vid_legenda_btn'):'\ud83d\udcdd Legenda / O que é dito')+'</summary><div class="vid-resumo-tx">'+window.ICET_pick(v,'resumo')+'</div></details>':'')+'</div>'
+      +'<div class="vid-info"><div class="vid-ti">'+(window.ICET_pick?window.ICET_pick(v,'titulo'):v.titulo)+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+((window.ICET_pick&&window.ICET_pick(v,'resumo'))?'<details class="vid-resumo"><summary>'+(window.ICET_L?window.ICET_L('vid_legenda_btn'):'\ud83d\udcdd Legenda / O que é dito')+'</summary><div class="vid-resumo-tx">'+window.ICET_pick(v,'resumo')+'</div></details>':'')+'</div>'
       +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>'
       +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>'
       +'<button class="vid-capa-btn" data-vid-resumo="'+v.key+'" title="Escrever resumo/legenda em português">📝</button>'
@@ -3533,9 +3533,9 @@ function renderProdutos(){
       +'<button class="foto-btn danger" data-prod-del="'+key+'">'+(window.ICET_L?window.ICET_L('btn_excluir'):'🗑 Excluir')+'</button>'
       +'</div></div>'
       +'<div class="prod-info">'
-      +'<div class="prod-origem">📍 '+p.aldeia+'</div>'
+      +'<div class="prod-origem">📍 '+(window.ICET_pick?window.ICET_pick(p,'aldeia'):p.aldeia)+'</div>'
       +'<div class="prod-artesa">'+p.artesa+'</div>'
-      +'<div class="prod-nome">'+p.nome+'</div>'
+      +'<div class="prod-nome">'+(window.ICET_pick?window.ICET_pick(p,'nome'):p.nome)+'</div>'
       +'<div class="prod-desc">'+window.ICET_pick(p,'desc').slice(0,90)+(p.desc.length>90?'…':'')+'</div>'
       +'<div class="prod-preco">R$ '+p.preco.toFixed(2).replace('.',',')+'</div>'
       +'<div class="prod-prazo">📦 '+p.prazo+'</div>'
