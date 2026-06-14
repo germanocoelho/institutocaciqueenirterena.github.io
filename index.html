@@ -1483,7 +1483,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
           <p data-i18n-html="enir_p4">Em 9 de junho de 1995 chegou com 20 famílias ao Desbarrancado — que se tornaria a <strong style="color:var(--ou)">Aldeia Urbana Marçal de Souza</strong>, a primeira aldeia indígena em contexto urbano do Brasil. Em agosto de 1999 foi criado o Memorial da Cultura Indígena — conquista direta de sua luta.</p>
           <p data-i18n-html="enir_p5">Em 2008 foi eleita cacique com 134 dos 277 votos — <strong style="color:var(--ou)">primeira cacique mulher do MS</strong>. Reeleita em 2012. Em 2018 a Lei Municipal 6006/18 renomeou o Memorial com seu nome. Em 22 de agosto de 2025, foi fundado oficialmente o Instituto Cacique Enir Terena.</p>
         </div>
-        <div class="enir-quote">
+        <div class="enir-quote" data-i18n-html="enir_quote">
           "A minha participação como cacique fez as mulheres se sentirem mais fortes."
           <cite>— Enir da Silva Bezerra</cite>
         </div>
@@ -1579,11 +1579,11 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div class="parceiros-wrap">
           <p class="parceiros-ti" data-i18n="inst_apoio_t">Apoiadores e parceiros</p>
           <div class="parceiros-lista">
-            <span class="ptag">Edital MPI / Min. Mulheres</span>
+            <span class="ptag" data-i18n="apoio1">Edital MPI / Min. Mulheres</span>
             <span class="ptag">IFMS · Campus CG</span>
             <span class="ptag">PROFNIT / NEABI-CG</span>
             
-            <span class="ptag">Comunidade Terena do MS</span>
+            <span class="ptag" data-i18n="apoio4">Comunidade Terena do MS</span>
             
             
           </div>
@@ -1670,9 +1670,9 @@ body.adm-on .sec-edit-btn{display:inline-block}
     </div>
 
     <div class="ibge-btns reveal">
-      <button class="ibge-btn" onclick="abrirIbge('ms-etnia')"><span class="ibge-btn-ico"></span data-i18n="ms_tab_etnias">Etnias no MS</button>
-      <button class="ibge-btn" onclick="abrirIbge('ms-municipio')"><span class="ibge-btn-ico"></span data-i18n="ms_tab_munic">Por Município</button>
-      <button class="ibge-btn" onclick="abrirIbge('brasil')"><span class="ibge-btn-ico"></span data-i18n="ms_tab_brasil">Panorama Brasil</button>
+      <button class="ibge-btn" onclick="abrirIbge('ms-etnia')"><span class="ibge-btn-ico"></span><span data-i18n="ms_tab_etnias">Etnias no MS</span></button>
+      <button class="ibge-btn" onclick="abrirIbge('ms-municipio')"><span class="ibge-btn-ico"></span><span data-i18n="ms_tab_munic">Por Município</span></button>
+      <button class="ibge-btn" onclick="abrirIbge('brasil')"><span class="ibge-btn-ico"></span><span data-i18n="ms_tab_brasil">Panorama Brasil</span></button>
     </div>
     <p class="ibge-fonte reveal" data-i18n="ms_fonte">Fonte: IBGE · Censo Demográfico 2022 · Tabela complementar 25</p>
   </div>
@@ -1831,7 +1831,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
     </div>
 
     <div class="ref-box reveal">
-      <strong>📚 Referências Acadêmicas</strong>
+      <strong data-i18n="cer_ref_t">📚 Referências Acadêmicas</strong>
       VILARIM, P.R.; MARTINS, D.R.; RODRIGUES, S.P.J. "Etnoconhecimento Terena na literatura científica." Revista ODEERE, v.6, n.2, 2021. DOI: 10.22481/odeere.v6i2.9768<br>
       INSTITUTO CACIQUE ENIR TERENA — ICET. "Em homenagem à liderança feminina que lutou pela fundação da primeira aldeia urbana do Brasil." Campo Grande, MS: ICET, 2016–2025.
     </div>
@@ -1879,7 +1879,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
 </div>
 <section id="diretoria">
   <div class="container">
-    <span class="eyebrow">Gestão</span>
+    <span class="eyebrow" data-i18n="dir_eyb">Gestão</span>
     <h2 class="sec-title" data-i18n="sec_diretoria_t">Diretoria do Instituto</h2>
     <div class="divider"></div>
     <p class="sec-lead" data-i18n="sec_diretoria_l">Conheça os membros que conduzem as ações do Instituto Cacique Enir Terena.</p>
@@ -1981,9 +1981,9 @@ body.adm-on .sec-edit-btn{display:inline-block}
         <div><label class="fl">Data</label><input class="fi" type="text" id="nc-da" placeholder="Ex: 8 fev. 2025"></div>
         <div><label class="fl">Categoria</label>
           <select class="fi" id="nc-ca">
-            <option>Criação do Instituto</option><option>OREKA</option><option>Parceria Institucional</option>
-            <option>Evento</option><option>Premiação</option><option>Cultura Terena</option>
-            <option>Repasse Federal</option><option>Patrimônio Cultural</option><option>Legado</option>
+            <option>Criação do Instituto</option><option>OREKA</option><option data-i18n="notcat_parceria">Parceria Institucional</option>
+            <option>Evento</option><option data-i18n="notcat_premio">Premiação</option><option data-i18n="notcat_cultura">Cultura Terena</option>
+            <option data-i18n="notcat_repasse">Repasse Federal</option><option data-i18n="notcat_patrim">Patrimônio Cultural</option><option data-i18n="notcat_legado">Legado</option>
           </select>
         </div>
       </div>
@@ -2156,8 +2156,8 @@ body.adm-on .sec-edit-btn{display:inline-block}
     <h2 class="sec-title" data-i18n="sec_videos_t">Vídeos</h2>
     <div class="divider"></div>
     <div class="vid-tabs">
-      <button class="vid-tab" onclick="trocarAbaVid('yt',this)">▶ YouTube</button>
-      <button class="vid-tab on" onclick="trocarAbaVid('ig',this)">📱 Instagram</button>
+      <button class="vid-tab" onclick="trocarAbaVid('yt',this)" data-i18n="vid_tab_yt">▶ YouTube</button>
+      <button class="vid-tab on" onclick="trocarAbaVid('ig',this)" data-i18n="vid_tab_ig">📱 Instagram</button>
     </div>
     <div class="vid-grid" id="vid-grid">
       <div class="vazio">Nenhum vídeo ainda. Entre no ADM para adicionar.</div>
@@ -2403,7 +2403,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
 
 <section id="acervo">
   <div class="container">
-    <span class="eyebrow reveal">Referências institucionais</span>
+    <span class="eyebrow reveal" data-i18n="acervo_eyb">Referências institucionais</span>
     <h2 class="sec-title reveal" data-i18n="sec_acervo_t">Acervo Documental</h2>
     <div class="divider"></div>
     <p class="sec-lead reveal" data-i18n="acervo_lead">Legislação indigenista, atos do Instituto e documentos institucionais que fundamentam a atuação do ICET.</p>
@@ -4347,6 +4347,22 @@ document.addEventListener('DOMContentLoaded',function(){
       loja_cat_fibra:   {pt:'Fibra e Palha', en:'Fibre and Straw', fr:'Fibre et Paille'},
       btn_trocarfoto:   {pt:'📷 Trocar foto', en:'📷 Change photo', fr:'📷 Changer la photo'},
       btn_trocarlogo:   {pt:'📷 Trocar logo', en:'📷 Change logo', fr:'📷 Changer le logo'},
+
+      // ── Etapa 10: lacunas finais ──
+      enir_quote: {pt:'"A minha participação como cacique fez as mulheres se sentirem mais fortes."\n          <cite>— Enir da Silva Bezerra</cite>', en:'"My role as cacique made women feel stronger."\n          <cite>— Enir da Silva Bezerra</cite>', fr:'« Ma participation en tant que cacique a fait que les femmes se sentent plus fortes. »\n          <cite>— Enir da Silva Bezerra</cite>'},
+      dir_eyb:    {pt:'Gestão', en:'Management', fr:'Gestion'},
+      acervo_eyb: {pt:'Referências institucionais', en:'Institutional references', fr:'Références institutionnelles'},
+      cer_ref_t:  {pt:'📚 Referências Acadêmicas', en:'📚 Academic References', fr:'📚 Références Académiques'},
+      apoio1:     {pt:'Edital MPI / Min. Mulheres', en:'MPI / Ministry of Women Call', fr:'Appel MPI / Min. des Femmes'},
+      apoio4:     {pt:'Comunidade Terena do MS', en:'Terena Community of MS', fr:'Communauté Terena du MS'},
+      notcat_parceria: {pt:'Parceria Institucional', en:'Institutional Partnership', fr:'Partenariat Institutionnel'},
+      notcat_premio:   {pt:'Premiação', en:'Award', fr:'Distinction'},
+      notcat_cultura:  {pt:'Cultura Terena', en:'Terena Culture', fr:'Culture Terena'},
+      notcat_repasse:  {pt:'Repasse Federal', en:'Federal Transfer', fr:'Transfert Fédéral'},
+      notcat_patrim:   {pt:'Patrimônio Cultural', en:'Cultural Heritage', fr:'Patrimoine Culturel'},
+      notcat_legado:   {pt:'Legado', en:'Legacy', fr:'Héritage'},
+      vid_tab_yt:      {pt:'▶ YouTube', en:'▶ YouTube', fr:'▶ YouTube'},
+      vid_tab_ig:      {pt:'📱 Instagram', en:'📱 Instagram', fr:'📱 Instagram'},
 
       // ── Etapa 8: textos gerados pelo JavaScript ──
       js_vazio_foto:    {pt:'Nenhuma foto ainda. Entre no ADM para adicionar.', en:'No photos yet. Log into ADMIN to add.', fr:'Aucune photo pour l\'instant. Connectez-vous à l\'ADMIN pour ajouter.'},
