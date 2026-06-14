@@ -3739,7 +3739,7 @@ function renderGridVasos(){
     div.className='slot-vaso '+(item?'vaso-anim':'');
     if(item&&item.src){
       div.innerHTML='<img src="'+item.src+'" alt="'+((window.ICET_pick?window.ICET_pick(item,'leg'):item.leg)||'Cerâmica Terena')+'" loading="lazy">'
-        +'<div class="slot-vaso-leg">'+(item.leg||'')+'</div>'
+        +'<div class="slot-vaso-leg">'+((window.ICET_pick?window.ICET_pick(item,'leg'):item.leg)||'')+'</div>'
         +'<div class="slot-vaso-adm">'
         +'<button class="slot-vaso-btn" data-vaso-foto="'+key+'">📷</button>'
         +'<button class="slot-vaso-btn" data-vaso-leg="'+key+'">✏️</button>'
@@ -4720,7 +4720,7 @@ document.addEventListener('DOMContentLoaded',function(){
       document.documentElement.setAttribute('lang', l);
       // Re-renderiza seções dinâmicas para aplicar o idioma (cada uma protegida)
       if(window._i18nReady){
-        ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos','renderNoticias','renderDepoimentos','renderComenda'].forEach(function(fn){
+        ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos','renderNoticias','renderDepoimentos','renderComenda','renderGridVasos'].forEach(function(fn){
           try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
         });
         // Atualiza bios/cargos da diretoria por idioma (sem duplicar cards)
