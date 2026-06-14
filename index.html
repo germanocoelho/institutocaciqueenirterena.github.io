@@ -1331,6 +1331,18 @@ body.adm-on .vid-capa-btn{display:inline-block}
 .sec-edit-btn{display:none;margin-left:.6rem;vertical-align:middle;background:rgba(42,74,28,.85);border:1px solid rgba(242,196,90,.3);color:#F5EBD8;font-size:.6rem;font-weight:700;padding:.25rem .55rem;border-radius:4px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.03em}
 body.adm-on .sec-edit-btn{display:inline-block}
 
+
+/* ═══ Seletor de idioma trilíngue ═══ */
+#lang-switch{position:fixed;bottom:18px;left:18px;z-index:9990;display:flex;gap:.3rem;
+  background:rgba(20,14,7,.78);backdrop-filter:blur(6px);padding:.35rem;border-radius:30px;
+  border:1px solid rgba(242,196,90,.35);box-shadow:0 6px 22px rgba(0,0,0,.4)}
+.lang-opt{background:transparent;border:none;color:rgba(245,235,216,.6);font-family:'Inter',sans-serif;
+  font-size:.72rem;font-weight:700;letter-spacing:.03em;padding:.4rem .7rem;border-radius:20px;cursor:pointer;
+  transition:.25s;white-space:nowrap}
+.lang-opt:hover{color:#F2C45A}
+.lang-opt.lang-on{background:linear-gradient(135deg,#C45A28,#E8A853);color:#1a120a}
+@media (max-width:560px){#lang-switch{bottom:12px;left:12px;padding:.25rem}.lang-opt{font-size:.66rem;padding:.35rem .55rem}}
+
 </style>
 </head>
 <body>
@@ -1343,22 +1355,22 @@ body.adm-on .sec-edit-btn{display:inline-block}
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links" id="nav-links">
-    <li><a href="#enir" onclick="closeMenu()">Enir Terena</a></li>
-    <li><a href="#instituto" onclick="closeMenu()">Instituto</a></li>
-    <li><a href="#ms" onclick="closeMenu()">MS Indígena</a></li>
-    <li><a href="#oreka" onclick="closeMenu()">OREKA</a></li>
-    <li><a href="#ceramica" onclick="closeMenu()">Cerâmica</a></li>
-    <li><a href="#diretoria" onclick="closeMenu()">Diretoria</a></li>
-    <li><a href="#noticias" onclick="closeMenu()">Notícias</a></li>
-    <li><a href="#calendario" onclick="closeMenu()">Agenda</a></li>
-    <li><a href="#galeria" onclick="closeMenu()">Galeria</a></li>
-    <li><a href="#videos" onclick="closeMenu()">Vídeos</a></li>
-    <li><a href="#loja" onclick="closeMenu()">Loja</a></li>
-    <li><a href="#acervo" onclick="closeMenu()">Acervo</a>
-    <li><a href="#depoimentos" onclick="closeMenu()">Depoimentos</a></li>
-    <li><a href="#comenda" onclick="closeMenu()">Comenda</a></li>
-    <li><a href="#contato" onclick="closeMenu()">Contato</a></li>
-    <li><a href="#" class="nav-adm" onclick="closeMenu();abrirAdm();return false;">⚙ ADM</a></li>
+    <li><a href="#enir" onclick="closeMenu()" data-i18n="nav_enir">Enir Terena</a></li>
+    <li><a href="#instituto" onclick="closeMenu()" data-i18n="nav_instituto">Instituto</a></li>
+    <li><a href="#ms" onclick="closeMenu()" data-i18n="nav_ms">MS Indígena</a></li>
+    <li><a href="#oreka" onclick="closeMenu()" data-i18n="nav_oreka">OREKA</a></li>
+    <li><a href="#ceramica" onclick="closeMenu()" data-i18n="nav_ceramica">Cerâmica</a></li>
+    <li><a href="#diretoria" onclick="closeMenu()" data-i18n="nav_diretoria">Diretoria</a></li>
+    <li><a href="#noticias" onclick="closeMenu()" data-i18n="nav_noticias">Notícias</a></li>
+    <li><a href="#calendario" onclick="closeMenu()" data-i18n="nav_calendario">Agenda</a></li>
+    <li><a href="#galeria" onclick="closeMenu()" data-i18n="nav_galeria">Galeria</a></li>
+    <li><a href="#videos" onclick="closeMenu()" data-i18n="nav_videos">Vídeos</a></li>
+    <li><a href="#loja" onclick="closeMenu()" data-i18n="nav_loja">Loja</a></li>
+    <li><a href="#acervo" onclick="closeMenu()" data-i18n="nav_acervo">Acervo</a>
+    <li><a href="#depoimentos" onclick="closeMenu()" data-i18n="nav_depoimentos">Depoimentos</a></li>
+    <li><a href="#comenda" onclick="closeMenu()" data-i18n="nav_comenda">Comenda</a></li>
+    <li><a href="#contato" onclick="closeMenu()" data-i18n="nav_contato">Contato</a></li>
+    <li><a href="#" class="nav-adm" onclick="closeMenu();abrirAdm();return false;" data-i18n="nav_adm">⚙ ADM</a></li>
   </ul>
 </nav>
 
@@ -4045,6 +4057,89 @@ document.addEventListener('DOMContentLoaded',function(){
   renderDepoimentos();
   renderComenda();
 });
+</script>
+
+<script>
+/* ═══════════ SISTEMA TRILÍNGUE ICET (PT/EN/FR) — camada aditiva isolada ═══════════ */
+(function(){
+  try{
+    // ░░ DICIONÁRIO CENTRAL ░░ — toda frase fixa, as 3 versões juntas.
+    // Regra de segurança: se faltar EN/FR, cai no PT. Nada fica em branco.
+    var I18N = {
+      // ── Menu de navegação ──
+      nav_enir:        {pt:'Enir Terena',     en:'Enir Terena',        fr:'Enir Terena'},
+      nav_instituto:   {pt:'Instituto',       en:'Institute',          fr:'Institut'},
+      nav_ms:          {pt:'MS Indígena',     en:'Indigenous MS',      fr:'MS Autochtone'},
+      nav_oreka:       {pt:'OREKA',           en:'OREKA',              fr:'OREKA'},
+      nav_ceramica:    {pt:'Cerâmica',        en:'Pottery',            fr:'Céramique'},
+      nav_diretoria:   {pt:'Diretoria',       en:'Board',              fr:'Direction'},
+      nav_noticias:    {pt:'Notícias',        en:'News',               fr:'Actualités'},
+      nav_calendario:  {pt:'Agenda',          en:'Calendar',           fr:'Agenda'},
+      nav_galeria:     {pt:'Galeria',         en:'Gallery',            fr:'Galerie'},
+      nav_videos:      {pt:'Vídeos',          en:'Videos',             fr:'Vidéos'},
+      nav_loja:        {pt:'Loja',            en:'Store',              fr:'Boutique'},
+      nav_acervo:      {pt:'Acervo',          en:'Archive',            fr:'Archives'},
+      nav_depoimentos: {pt:'Depoimentos',     en:'Testimonials',       fr:'Témoignages'},
+      nav_comenda:     {pt:'Comenda',         en:'Honour',             fr:'Distinction'},
+      nav_contato:     {pt:'Contato',         en:'Contact',            fr:'Contact'},
+      nav_adm:         {pt:'⚙ ADM',           en:'⚙ ADMIN',            fr:'⚙ ADMIN'}
+    };
+    window.ICET_I18N = I18N; // exposto para as próximas etapas
+
+    // ░░ MOTOR ░░
+    function getLang(){
+      try{ return localStorage.getItem('icet_lang') || 'pt'; }catch(e){ return 'pt'; }
+    }
+    function setLang(l){
+      try{ localStorage.setItem('icet_lang', l); }catch(e){}
+      aplicarIdioma(l);
+    }
+    window.ICET_setLang = setLang;
+    window.ICET_getLang = getLang;
+
+    function aplicarIdioma(l){
+      // Traduz tudo que tem data-i18n; PT é a rede de segurança.
+      document.querySelectorAll('[data-i18n]').forEach(function(el){
+        var chave = el.getAttribute('data-i18n');
+        var entrada = I18N[chave];
+        if(!entrada) return;
+        var txt = entrada[l] || entrada.pt;
+        if(txt != null) el.textContent = txt;
+      });
+      // marca visual no seletor
+      document.querySelectorAll('.lang-opt').forEach(function(b){
+        b.classList.toggle('lang-on', b.getAttribute('data-lang') === l);
+      });
+      document.documentElement.setAttribute('lang', l);
+    }
+    window.ICET_aplicarIdioma = aplicarIdioma;
+
+    // ░░ SELETOR FLUTUANTE 🇧🇷 🇬🇧 🇫🇷 ░░
+    function montarSeletor(){
+      if(document.getElementById('lang-switch')) return;
+      var box=document.createElement('div');
+      box.id='lang-switch';
+      box.innerHTML=
+        '<button class="lang-opt" data-lang="pt" title="Português">🇧🇷 PT</button>'+
+        '<button class="lang-opt" data-lang="en" title="English">🇬🇧 EN</button>'+
+        '<button class="lang-opt" data-lang="fr" title="Français">🇫🇷 FR</button>';
+      document.body.appendChild(box);
+      box.querySelectorAll('.lang-opt').forEach(function(b){
+        b.addEventListener('click',function(){ setLang(b.getAttribute('data-lang')); });
+      });
+    }
+
+    function iniciar(){
+      montarSeletor();
+      aplicarIdioma(getLang());
+    }
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded',iniciar);
+    }else{
+      iniciar();
+    }
+  }catch(e){ /* idioma nunca pode quebrar o site */ }
+})();
 </script>
 </body>
 </html>
