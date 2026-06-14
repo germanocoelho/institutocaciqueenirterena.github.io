@@ -9,7 +9,9 @@
    "bio_en": "Granddaughter of Enir and daughter of Maria Auxiliadora, Sâmara carries in her hands the art of her people. In her memory she bears the white graphic patterns that cross generations.\nA ceramist and guardian of traditional knowledge, she transforms clay into living history; with each piece she shapes, a link between the past and the future of the Terena people.\nHer art expresses the ancestral village, feminine strength and the commitment to cultural continuity that the Cacique Enir Terena Institute protects and celebrates. Sâmara shapes the clay and teaches Indigenous pottery and the \"prosperity filter\" — a ceramic vessel meant to attract prosperity. A presenter of videos devoted to Indigenous culture, she shares ancestral knowledge in every gesture.\nSkilled in painting, she transforms tradition into the future, uniting art, memory and the resistance of the Terena people.",
    "bio_fr": "Petite-fille d'Enir et fille de Maria Auxiliadora, Sâmara porte entre ses mains l'art de son peuple. Dans sa mémoire, elle porte le graphisme blanc qui traverse les générations.\nCéramiste et gardienne des savoirs traditionnels, elle transforme l'argile en histoire vivante ; à chaque pièce qu'elle façonne, un lien entre le passé et l'avenir du peuple Terena.\nSon art exprime le village ancestral, la force féminine et l'engagement envers la continuité culturelle que l'Institut Cacique Enir Terena protège et célèbre. Sâmara façonne l'argile et enseigne la céramique autochtone et le « filtre de la prospérité » — un vase en céramique destiné à attirer la prospérité. Présentatrice de vidéos consacrées à la culture autochtone, elle partage les savoirs ancestraux dans chaque geste.\nDétentrice de connaissances en peinture, elle transforme la tradition en avenir, unissant art, mémoire et résistance du peuple Terena.",
    "cargo_en": "Vice-President",
-   "cargo_fr": "Vice-Présidente"
+   "cargo_fr": "Vice-Présidente",
+   "bio_es": "Nieta de Enir e hija de Maria Auxiliadora, Sâmara lleva en sus manos el arte de su pueblo. En la memoria, trae el grafismo blanco que atraviesa generaciones.\nCeramista y guardiana de los saberes tradicionales, transforma la arcilla en historia viva; con cada pieza que moldea, un eslabón entre el pasado y el futuro del pueblo Terena.\nSu arte expresa la aldea ancestral, la fuerza femenina y el compromiso con la continuidad cultural que el Instituto Cacique Enir Terena protege y celebra. Sâmara moldea el barro y enseña la cerámica indígena y el \"filtro de la prosperidad\" — una vasija de cerámica destinada a atraer la prosperidad. Presentadora de videos dedicados a la cultura indígena, comparte saberes ancestrales en cada gesto.\nConocedora de la pintura, transforma tradición en futuro, uniendo arte, memoria y resistencia del pueblo Terena.",
+   "cargo_es": "Vicepresidenta"
   },
   "dir_1780708225094": {
    "key": "dir_1780708225094",
@@ -20,7 +22,9 @@
    "bio_en": "Germano Coelho Ramos Rocha da Silva is an urban Terena Indigenous man. A Master's graduate, consultant and a voice seeking the integration of Innovation, Intellectual Property and the Rights of Indigenous Peoples in Mato Grosso do Sul. His path carries the strength and memory of the Passarinho village (MS), birthplace of his father, Carmo da Silva — a historic leader who migrated to Campo Grande to sow rights by founding the Waiters' Union of MS.\nIn the institutional and market field, Germano built a distinguished career in the innovation and research ecosystem, advising the Board of ICET and the CMDDI in the legal area and projects.",
    "bio_fr": "Germano Coelho Ramos Rocha da Silva est un Autochtone Terena urbain. Titulaire d'un master, consultant et une voix qui recherche l'intégration entre l'Innovation, la Propriété Intellectuelle et les Droits des Peuples Autochtones au Mato Grosso do Sul. Son parcours porte la force et la mémoire du village Passarinho (MS), terre natale de son père, Carmo da Silva — figure historique qui a migré vers Campo Grande pour semer des droits en fondant le Syndicat des Serveurs du MS.\nDans le domaine institutionnel et du marché, Germano a consolidé une carrière remarquable dans l'écosystème de l'innovation et de la recherche, conseillant la Direction de l'ICET et le CMDDI dans le domaine juridique et les projets.",
    "cargo_en": "Secretary-General",
-   "cargo_fr": "Secrétaire Général"
+   "cargo_fr": "Secrétaire Général",
+   "bio_es": "Germano Coelho Ramos Rocha da Silva es un indígena terena urbano. Magíster, consultor y una voz que busca la integración entre Innovación, Propiedad Intelectual y los Derechos de los Pueblos Originarios en Mato Grosso do Sul. Su trayectoria lleva la fuerza y la memoria de la Aldea Passarinho (MS), tierra natal de su padre, Carmo da Silva — líder histórico que migró a Campo Grande para sembrar derechos al fundar el Sindicato de los Camareros de MS.\nEn el ámbito institucional y de mercado, Germano consolidó una carrera destacada en el ecosistema de innovación e investigación, asesorando a la Directiva del ICET y al CMDDI en el área jurídica y de proyectos.",
+   "cargo_es": "Secretario General"
   }
  },
  "produtos": {
@@ -35,7 +39,8 @@
    "aldeia": "Aldeia Marçal de Souza — Campo Grande",
    "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780708171/rs4fu8lmyuudwipy4nrs.jpg",
    "desc_en": "teste teste teste vaso terena",
-   "desc_fr": "teste teste teste vaso terena"
+   "desc_fr": "teste teste teste vaso terena",
+   "desc_es": "teste teste teste vaso terena"
   },
   "p_1780722818589": {
    "key": "p_1780722818589",
@@ -48,7 +53,8 @@
    "aldeia": "Aldeia Marçal de Souza — Campo Grande",
    "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png",
    "desc_en": "teste de produto",
-   "desc_fr": "teste de produto"
+   "desc_fr": "teste de produto",
+   "desc_es": "teste de produto"
   }
  },
  "vasos": {
@@ -93,7 +99,9 @@
   "bio_en": "Maria Auxiliadora Bezerra was born in Campo Grande, Mato Grosso do Sul, with deep roots in the Limão Verde village, in Aquidauana — the ancestral land of the Terena people. Daughter of Enir da Silva Bezerra, Cacique Enir Terena, she inherited from her mother not only the blood and memory of the Terena people, but also the mission to protect, value and project Indigenous culture for Brazil and the world.\nShe grew up between two worlds — the city and the village — learning early on that identity and belonging are forces that no border can erase. When her mother passed into ancestry in 2016, she carried on the struggle and founded the Cacique Enir Terena Institute, continuing the legacy Enir built over decades of struggle: the first Indigenous urban village in Brazil, the OREKA collective trademark and the international recognition of Terena pottery as living cultural heritage.\nAt the head of the Institute, Maria Auxiliadora leads with determination the management of the collective intellectual property of the Terena people, the fair commercialisation of the handicraft of the artisans of the Marçal de Souza village and the strengthening of Indigenous rights in the urban space. Her leadership is proof that the legacy of Enir Terena has not ended — it continues, with renewed strength, in the hands of her daughter.",
   "bio_fr": "Maria Auxiliadora Bezerra est née à Campo Grande, Mato Grosso do Sul, avec des racines profondes au village de Limão Verde, à Aquidauana — terre ancestrale du peuple Terena. Fille d'Enir da Silva Bezerra, la Cacique Enir Terena, elle a hérité de sa mère non seulement le sang et la mémoire du peuple Terena, mais aussi la mission de protéger, valoriser et projeter la culture autochtone pour le Brésil et le monde.\nElle a grandi entre deux mondes — la ville et le village — apprenant très tôt que l'identité et l'appartenance sont des forces qu'aucune frontière n'efface. Avec le passage de sa mère vers les ancêtres en 2016, elle a poursuivi le combat et fondé l'Institut Cacique Enir Terena, donnant suite à l'héritage qu'Enir a construit au fil de décennies de lutte : le premier village urbain autochtone du Brésil, la marque collective OREKA et la reconnaissance internationale de la céramique Terena comme patrimoine culturel vivant.\nÀ la tête de l'Institut, Maria Auxiliadora dirige avec détermination la gestion de la propriété intellectuelle collective du peuple Terena, la commercialisation équitable de l'artisanat des artisanes du village Marçal de Souza et le renforcement des droits autochtones dans l'espace urbain. Son leadership est la preuve que l'héritage d'Enir Terena n'a pas pris fin — il continue, avec une force renouvelée, entre les mains de sa fille.",
   "cargo_en": "President",
-  "cargo_fr": "Présidente"
+  "cargo_fr": "Présidente",
+  "bio_es": "Maria Auxiliadora Bezerra nació en Campo Grande, Mato Grosso do Sul, con raíces profundas en la Aldea Limão Verde, en Aquidauana — tierra ancestral del pueblo Terena. Hija de Enir da Silva Bezerra, la Cacique Enir Terena, heredó de su madre no solo la sangre y la memoria del pueblo Terena, sino también la misión de proteger, valorar y proyectar la cultura indígena para Brasil y el mundo.\nCreció entre dos mundos — la ciudad y la aldea — aprendiendo desde temprano que la identidad y la pertenencia son fuerzas que ninguna frontera borra. Con el paso de su madre a la ancestralidad en 2016, continuó la lucha y fundó el Instituto Cacique Enir Terena, dando continuidad al legado que Enir construyó con décadas de lucha: la primera aldea urbana indígena de Brasil, la marca colectiva OREKA y el reconocimiento internacional de la cerámica Terena como patrimonio cultural vivo.\nAl frente del Instituto, Maria Auxiliadora conduce con determinación la gestión de la propiedad intelectual colectiva del pueblo Terena, la comercialización justa de la artesanía de las artesanas de la Aldea Marçal de Souza y el fortalecimiento de los derechos indígenas en el espacio urbano. Su liderazgo es la prueba de que el legado de Enir Terena no terminó — continúa, con fuerza renovada, en las manos de su hija.",
+  "cargo_es": "Presidenta"
  },
  "videos": {
   "v_1780724140957": {
@@ -103,7 +111,8 @@
    "url": "https://www.instagram.com/reel/DKc1EaUvSbu/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
    "desc": "Maria Auxiliadora Bezerra, Presidente do Instituto Cacique Enir Terena, traz lembranças importantes sobre o nascimento do Instituto.",
    "desc_en": "Maria Auxiliadora Bezerra, President of the Cacique Enir Terena Institute, shares important memories about the birth of the Institute.",
-   "desc_fr": "Maria Auxiliadora Bezerra, Présidente de l'Institut Cacique Enir Terena, partage des souvenirs importants sur la naissance de l'Institut."
+   "desc_fr": "Maria Auxiliadora Bezerra, Présidente de l'Institut Cacique Enir Terena, partage des souvenirs importants sur la naissance de l'Institut.",
+   "desc_es": "Maria Auxiliadora Bezerra, Presidenta del Instituto Cacique Enir Terena, comparte recuerdos importantes sobre el nacimiento del Instituto."
   },
   "v_1780724557031": {
    "key": "v_1780724557031",
@@ -112,7 +121,8 @@
    "url": "https://www.instagram.com/reel/DLn1nbYPuIN/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
    "desc": "Sebastiana Batista é indígena artesã da etnia Terena da região de Aquidauana Aldeia Limão Verde.  Sebastiana é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história.",
    "desc_en": "Sebastiana Batista is an Indigenous artisan of the Terena people from the Aquidauana region, Limão Verde village. Sebastiana is one of the artisans of the Cacique Enir Terena Institute. Discover a little of her story.",
-   "desc_fr": "Sebastiana Batista est une artisane autochtone du peuple Terena de la région d'Aquidauana, village de Limão Verde. Sebastiana est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire."
+   "desc_fr": "Sebastiana Batista est une artisane autochtone du peuple Terena de la région d'Aquidauana, village de Limão Verde. Sebastiana est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire.",
+   "desc_es": "Sebastiana Batista es artesana indígena del pueblo Terena de la región de Aquidauana, Aldea Limão Verde. Sebastiana es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia."
   },
   "v_1780724626018": {
    "key": "v_1780724626018",
@@ -121,7 +131,8 @@
    "url": "https://www.instagram.com/reel/DLqKRI9Pqt1/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
    "desc": "Vamos conhecer hoje um pouco da história da Marili Jorge artesã indígena da etnia Terena da região de Dourados.  Marili é uma das artesãs do instituto Cacique Enir Terena. Conheça um pouco da sua história.",
    "desc_en": "Today we get to know a little of the story of Marili Jorge, an Indigenous Terena artisan from the Dourados region. Marili is one of the artisans of the Cacique Enir Terena Institute. Discover a little of her story.",
-   "desc_fr": "Aujourd'hui, nous découvrons un peu l'histoire de Marili Jorge, artisane autochtone Terena de la région de Dourados. Marili est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire."
+   "desc_fr": "Aujourd'hui, nous découvrons un peu l'histoire de Marili Jorge, artisane autochtone Terena de la région de Dourados. Marili est l'une des artisanes de l'Institut Cacique Enir Terena. Découvrez un peu de son histoire.",
+   "desc_es": "Hoy conocemos un poco de la historia de Marili Jorge, artesana indígena Terena de la región de Dourados. Marili es una de las artesanas del Instituto Cacique Enir Terena. Conozca un poco de su historia."
   },
   "v_1780724736883": {
    "key": "v_1780724736883",
@@ -130,7 +141,8 @@
    "url": "https://www.instagram.com/reel/DL5ebZJvLpK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
    "desc": "Sâmara Figueiredo é indígena artesã da etnia Terena carrega em seu DNA o sangue de sua avó Enir Terena.  Sâmara Figueiredo é uma das artesãs do instituto Cacique Enir Terena.  #artesã #indigena #terena #ms #brasil #campogrande #artesanatoindígena",
    "desc_en": "Sâmara Figueiredo is an Indigenous Terena artisan who carries in her DNA the blood of her grandmother Enir Terena. Sâmara Figueiredo is one of the artisans of the Cacique Enir Terena Institute. #artisan #indigenous #terena #ms #brazil #campogrande #indigenoushandicraft",
-   "desc_fr": "Sâmara Figueiredo est une artisane autochtone Terena qui porte dans son ADN le sang de sa grand-mère Enir Terena. Sâmara Figueiredo est l'une des artisanes de l'Institut Cacique Enir Terena. #artisane #autochtone #terena #ms #brésil #campogrande #artisanatautochtone"
+   "desc_fr": "Sâmara Figueiredo est une artisane autochtone Terena qui porte dans son ADN le sang de sa grand-mère Enir Terena. Sâmara Figueiredo est l'une des artisanes de l'Institut Cacique Enir Terena. #artisane #autochtone #terena #ms #brésil #campogrande #artisanatautochtone",
+   "desc_es": "Sâmara Figueiredo es artesana indígena Terena que lleva en su ADN la sangre de su abuela Enir Terena. Sâmara Figueiredo es una de las artesanas del Instituto Cacique Enir Terena. #artesana #indigena #terena #ms #brasil #campogrande #artesaniaindigena"
   },
   "v_1780724903357": {
    "key": "v_1780724903357",
@@ -139,7 +151,8 @@
    "url": "https://www.instagram.com/reel/DM1GtnHPhtt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
    "desc": "O Instinto Cacique Enir Terena realiza:  A 1ª Oficina de Modelagem e Pintura em Argila.  - Nível II - Carga horária de 40 horas: - Data: 18 a 22 de agosto de 2025. - Local: Memorial da Cultura Indígena - Aldeia Urbana Marçal de Souza.  A oficina tem como objetivo promover a valorização das expressões artísticas indígenas, fortalecer o protagonismo cultural dos povos originários e incentivar a formação técnica e criativa dos participantes.  ➡️Informações de como participar via whatsapp: 67 99305 – 2534  APROVEITE ESSA OPORTUNIDADE!  #artesanato #indigena #ceramica #argila #oficina #ICET",
    "desc_en": "The Cacique Enir Terena Institute presents: The 1st Clay Modelling and Painting Workshop. - Level II - 40 hours: - Date: 18 to 22 August 2025. - Venue: Memorial of Indigenous Culture - Marçal de Souza Urban Village. The workshop aims to promote the appreciation of Indigenous artistic expressions, strengthen the cultural leadership of Indigenous peoples and encourage the technical and creative training of participants. ➡️ Information on how to take part via WhatsApp: 67 99305-2534. SEIZE THIS OPPORTUNITY! #handicraft #indigenous #pottery #clay #workshop #ICET",
-   "desc_fr": "L'Institut Cacique Enir Terena présente : Le 1er Atelier de Modelage et Peinture sur Argile. - Niveau II - 40 heures : - Date : du 18 au 22 août 2025. - Lieu : Mémorial de la Culture Autochtone - Village Urbain Marçal de Souza. L'atelier vise à promouvoir la valorisation des expressions artistiques autochtones, à renforcer le protagonisme culturel des peuples originaires et à encourager la formation technique et créative des participants. ➡️ Informations pour participer via WhatsApp : 67 99305-2534. PROFITEZ DE CETTE OPPORTUNITÉ ! #artisanat #autochtone #céramique #argile #atelier #ICET"
+   "desc_fr": "L'Institut Cacique Enir Terena présente : Le 1er Atelier de Modelage et Peinture sur Argile. - Niveau II - 40 heures : - Date : du 18 au 22 août 2025. - Lieu : Mémorial de la Culture Autochtone - Village Urbain Marçal de Souza. L'atelier vise à promouvoir la valorisation des expressions artistiques autochtones, à renforcer le protagonisme culturel des peuples originaires et à encourager la formation technique et créative des participants. ➡️ Informations pour participer via WhatsApp : 67 99305-2534. PROFITEZ DE CETTE OPPORTUNITÉ ! #artisanat #autochtone #céramique #argile #atelier #ICET",
+   "desc_es": "El Instituto Cacique Enir Terena presenta: El 1º Taller de Modelado y Pintura en Arcilla. - Nivel II - 40 horas: - Fecha: del 18 al 22 de agosto de 2025. - Lugar: Memorial de la Cultura Indígena - Aldea Urbana Marçal de Souza. El taller busca promover la valorización de las expresiones artísticas indígenas, fortalecer el protagonismo cultural de los pueblos originarios e incentivar la formación técnica y creativa de los participantes. ➡️ Información sobre cómo participar vía WhatsApp: 67 99305-2534. ¡APROVECHE ESTA OPORTUNIDAD! #artesania #indigena #ceramica #arcilla #taller #ICET"
   }
  },
  "secEdits": {
