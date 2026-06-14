@@ -1343,6 +1343,19 @@ body.adm-on .sec-edit-btn{display:inline-block}
 .lang-opt.lang-on{background:linear-gradient(135deg,#C45A28,#E8A853);color:#1a120a}
 @media (max-width:560px){#lang-switch{bottom:12px;left:12px;padding:.25rem}.lang-opt{font-size:.66rem;padding:.35rem .55rem}}
 
+
+.vid-resumo{margin-top:.6rem;border-top:1px solid var(--brd2,rgba(245,235,216,.12));padding-top:.5rem}
+.vid-resumo summary{cursor:pointer;font-size:.72rem;letter-spacing:.04em;color:var(--ou,#f2c45a);font-weight:600;list-style:none;user-select:none;padding:.2rem 0}
+.vid-resumo summary::-webkit-details-marker{display:none}
+.vid-resumo summary::before{content:'\25b8';display:inline-block;margin-right:.4rem;transition:transform .2s}
+.vid-resumo[open] summary::before{transform:rotate(90deg)}
+.vid-resumo-tx{font-size:.8rem;line-height:1.6;color:var(--tx2,rgba(245,235,216,.78));margin-top:.4rem;padding:.2rem 0;white-space:pre-line}
+
+.vidmodal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:1.2rem;backdrop-filter:blur(4px)}
+.vidmodal-box{position:relative;width:100%;max-width:820px;background:var(--bg2,#1a120a);border:1px solid var(--brd2,rgba(245,235,216,.15));border-radius:14px;padding:1rem}
+.vidmodal-x{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;border:none;background:var(--ou,#f2c45a);color:#1a120a;font-size:1.1rem;cursor:pointer;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.vidmodal-ti{margin-top:.7rem;font-size:.95rem;color:var(--tx,#f5ebd8);text-align:center;font-weight:600}
+.vidmodal video::cue{font-size:.95rem;background:rgba(0,0,0,.7);color:#fff;line-height:1.4}
 </style>
 </head>
 <body>
@@ -2166,7 +2179,7 @@ body.adm-on .sec-edit-btn{display:inline-block}
       <h4>⚙ Adicionar vídeo</h4>
       <div class="form-row">
         <div><label class="fl">Plataforma</label>
-          <select class="fi" id="vid-tipo"><option value="yt">YouTube</option><option value="ig">Instagram</option></select>
+          <select class="fi" id="vid-tipo"><option value="yt">YouTube</option><option value="ig">Instagram</option><option value="mp4">Vídeo hospedado (com legenda)</option></select>
         </div>
         <div><label class="fl">Título *</label><input class="fi" type="text" id="vid-ti" placeholder="Título do vídeo"></div>
       </div>
@@ -3363,14 +3376,65 @@ function renderVideos(){
     } else {
       thumb='<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(135deg,rgba(139,58,15,.35),rgba(242,196,90,.18))"><span style="font-size:2.6rem">🎬</span><span style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,235,216,.85)">'+(window.ICET_L?window.ICET_L('js_assista'):'Assista ao vídeo')+'</span></div>';
     }
-    card.innerHTML='<a href="'+linkUrl+'" target="_blank" class="vid-thumb">'+thumb
+    var _abre=(v.tipo==='mp4')?('href="javascript:void(0)" onclick="abrirVidModal(\''+v.key+'\')"'):('href="'+linkUrl+'" target="_blank"');
+    card.innerHTML='<a '+_abre+' class="vid-thumb">'+thumb
       +'<div class="vid-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a>'
-      +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+'</div>'
+      +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+((window.ICET_pick&&window.ICET_pick(v,'resumo'))?'<details class="vid-resumo"><summary>'+(window.ICET_L?window.ICET_L('vid_legenda_btn'):'\ud83d\udcdd Legenda / O que é dito')+'</summary><div class="vid-resumo-tx">'+window.ICET_pick(v,'resumo')+'</div></details>':'')+'</div>'
       +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>'
       +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>'
+      +'<button class="vid-capa-btn" data-vid-resumo="'+v.key+'" title="Escrever resumo/legenda em português">📝</button>'
+      +((v.tipo==='mp4')?'<button class="vid-capa-btn" data-vid-vtt="'+v.key+'" title="Anexar legendas sincronizadas (.vtt)">💬</button>':'')
       +'<button class="vid-capa-btn" data-vid-trad="'+v.key+'" title="Traduzir">🌐</button>';
     grid.appendChild(card);
   });
+}
+
+// ── Modal de vídeo hospedado com legendas .vtt ──
+function abrirVidModal(key){
+  var db=dbLer(); var v=db.videos&&db.videos[key]; if(!v)return;
+  var player=document.getElementById('vidModalPlayer');
+  var modal=document.getElementById('vidModal');
+  var tituloEl=document.getElementById('vidModalTitulo');
+  if(!player||!modal)return;
+  // limpar faixas anteriores
+  while(player.firstChild)player.removeChild(player.firstChild);
+  player.src=v.url||'';
+  // adicionar faixas de legenda por idioma, se existirem
+  var langs=[['pt','Português'],['en','English'],['fr','Français'],['es','Español']];
+  var atual=(window.ICET_getLang?window.ICET_getLang():'pt');
+  v.legendas=v.legendas||{};
+  langs.forEach(function(L){
+    var code=L[0], nome=L[1];
+    var conteudo=v.legendas[code];
+    if(conteudo){
+      var src=conteudo;
+      // se for texto VTT (não URL), gerar Blob URL
+      if(conteudo.indexOf('WEBVTT')===0||conteudo.indexOf('\n')>=0&&conteudo.indexOf('http')!==0){
+        var vtt=conteudo.indexOf('WEBVTT')===0?conteudo:('WEBVTT\n\n'+conteudo);
+        try{src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));}catch(e){src=conteudo;}
+      }
+      var tr=document.createElement('track');
+      tr.kind='subtitles'; tr.label=nome; tr.srclang=code; tr.src=src;
+      if(code===atual)tr.default=true;
+      player.appendChild(tr);
+    }
+  });
+  tituloEl.textContent=(window.ICET_pick?window.ICET_pick(v,'titulo'):v.titulo)||'';
+  modal.style.display='flex';
+  // ativar a faixa do idioma atual
+  setTimeout(function(){
+    if(player.textTracks){
+      for(var i=0;i<player.textTracks.length;i++){
+        player.textTracks[i].mode=(player.textTracks[i].language===atual)?'showing':'hidden';
+      }
+    }
+  },200);
+}
+function fecharVidModal(){
+  var modal=document.getElementById('vidModal');
+  var player=document.getElementById('vidModalPlayer');
+  if(player){player.pause();player.src='';}
+  if(modal)modal.style.display='none';
 }
 document.addEventListener('click',function(e){
   var capaKey=e.target.getAttribute('data-vid-capa');
@@ -3389,7 +3453,26 @@ document.addEventListener('click',function(e){
     return;
   }
   var vTrad=e.target.getAttribute('data-vid-trad');
-  if(vTrad){window.ICET_traduzirItem('videos',vTrad,['titulo','desc']);return;}
+  if(vTrad){window.ICET_traduzirItem('videos',vTrad,['titulo','desc','resumo']);return;}
+  var vVtt=e.target.getAttribute('data-vid-vtt');
+  if(vVtt){
+    var db=dbLer();var it=db.videos&&db.videos[vVtt];
+    if(it){
+      it.legendas=it.legendas||{};
+      var langs=[['pt','Português'],['en','English'],['fr','Français'],['es','Español']];
+      var mudou=false;
+      for(var li=0;li<langs.length;li++){
+        var code=langs[li][0],nome=langs[li][1];
+        var atual=it.legendas[code]||'';
+        var nova=prompt('Legenda em '+nome+' (formato VTT ou texto com tempos).\n\nCole o conteúdo .vtt aqui. Deixe em branco para remover.\n\nDica: gere no YouTube Studio (download .srt) ou peça ao Germano para converter.',atual);
+        if(nova!==null){ if(nova.trim()!==''){it.legendas[code]=nova;}else{delete it.legendas[code];} mudou=true; }
+      }
+      if(mudou){dbSalvar(db);salvarGitHub();notif('✅ Legendas salvas','ok');}
+    }
+    return;
+  }
+  var vResumo=e.target.getAttribute('data-vid-resumo');
+  if(vResumo){var db=dbLer();var it=db.videos&&db.videos[vResumo];if(it){var txt=prompt('Resumo / legenda do que é falado no vídeo (Português).\n\nEscreva o que a pessoa diz, em texto corrido. Depois use o botão 🌐 para traduzir.',it.resumo||'');if(txt!==null){it.resumo=txt;dbSalvar(db);salvarGitHub();renderVideos();notif('✅ Resumo salvo. Use 🌐 para traduzir.','ok');}}return;}
   var del=e.target.getAttribute('data-vid-del');
   if(del){
     if(!confirm('Excluir vídeo?'))return;
@@ -4442,6 +4525,7 @@ document.addEventListener('DOMContentLoaded',function(){
       gal_f_ceramica: {pt:'Cerâmica', es:'Cerámica', en:'Pottery', fr:'Céramique'},
       gal_f_oreka:    {pt:'OREKA', es:'OREKA', en:'OREKA', fr:'OREKA'},
       dep_eyb:      {pt:'Por trás de cada peça existe alguém', es:'Detrás de cada pieza hay alguien', en:'Behind every piece there is someone', fr:'Derrière chaque pièce, il y a quelqu\'un'},
+      vid_legenda_btn: {pt:'📝 Legenda / O que é dito', es:'📝 Subtítulos / Lo que se dice', en:'📝 Captions / What is said', fr:'📝 Sous-titres / Ce qui est dit'},
       sobre_icet_1: {pt:'Fundado em 12 de julho de 2025 e registrado em 22 de agosto de 2025, o ICET é uma associação privada sem fins lucrativos (CNPJ: 62.359.850/0001-38) com sede na Rua da Serra, nº 217, Aldeia Marçal de Souza, Campo Grande — MS, CEP 79041-011. Criado em homenagem à primeira mulher cacique do Mato Grosso do Sul, o Instituto tem missão educacional, cultural, científica, esportiva e social, voltada à defesa dos direitos dos povos originários e à valorização dos conhecimentos tradicionais Terena.\n          <br><br>\n          Selecionado entre 123 propostas no Edital Nacional conjunto do MPI e do Ministério das Mulheres, o ICET é titular da marca coletiva OREKA — a primeira marca coletiva indígena do Brasil — registrada junto ao INPI sob o processo nº 941549186, depositado em 12 de outubro de 2025.\n          <br><br>', es:'Fundado el 12 de julio de 2025 y registrado el 22 de agosto de 2025, el ICET es una asociación privada sin fines de lucro (CNPJ: 62.359.850/0001-38) con sede en la Rua da Serra, nº 217, Aldea Marçal de Souza, Campo Grande — MS, CEP 79041-011. Creado en homenaje a la primera mujer cacique de Mato Grosso do Sul, el Instituto tiene una misión educativa, cultural, científica, deportiva y social, orientada a la defensa de los derechos de los pueblos originarios y a la valorización de los conocimientos tradicionales Terena.\n          <br><br>\n          Seleccionado entre 123 propuestas en la Convocatoria Nacional conjunta del MPI y del Ministerio de las Mujeres, el ICET es titular de la marca colectiva OREKA — la primera marca colectiva indígena de Brasil — registrada ante el INPI bajo el proceso nº 941549186, depositado el 12 de octubre de 2025.\n          <br><br>', en:'Founded on 12 July 2025 and registered on 22 August 2025, ICET is a private non-profit association (CNPJ: 62.359.850/0001-38) headquartered at Rua da Serra, nº 217, Marçal de Souza Village, Campo Grande — MS, CEP 79041-011. Created in honour of the first woman cacique (Indigenous chief) of Mato Grosso do Sul, the Institute has an educational, cultural, scientific, sporting and social mission, devoted to defending the rights of Indigenous peoples and valuing traditional Terena knowledge.\n          <br><br>\n          Selected among 123 proposals in the joint National Call of the MPI and the Ministry of Women, ICET holds the OREKA collective trademark — the first Indigenous collective trademark in Brazil — registered with INPI under process nº 941549186, filed on 12 October 2025.\n          <br><br>', fr:'Fondé le 12 juillet 2025 et enregistré le 22 août 2025, l\'ICET est une association privée à but non lucratif (CNPJ : 62.359.850/0001-38) dont le siège se trouve Rua da Serra, nº 217, Village Marçal de Souza, Campo Grande — MS, CEP 79041-011. Créé en hommage à la première femme cacique (cheffe autochtone) du Mato Grosso do Sul, l\'Institut a une mission éducative, culturelle, scientifique, sportive et sociale, vouée à la défense des droits des peuples originaires et à la valorisation des savoirs traditionnels Terena.\n          <br><br>\n          Sélectionné parmi 123 propositions à l\'Appel National conjoint du MPI et du Ministère des Femmes, l\'ICET est titulaire de la marque collective OREKA — la première marque collective autochtone du Brésil — enregistrée auprès de l\'INPI sous le procédé nº 941549186, déposé le 12 octobre 2025.\n          <br><br>'},
       opt_cat_vasos:      {pt:'Cerâmica · Vasos', es:'Cerámica · Vasijas', en:'Pottery · Vases', fr:'Céramique · Vases'},
       opt_cat_bichos:     {pt:'Cerâmica · Bichos', es:'Cerámica · Animales', en:'Pottery · Animals', fr:'Céramique · Animaux'},
@@ -4577,5 +4661,13 @@ document.addEventListener('DOMContentLoaded',function(){
   }catch(e){ /* idioma nunca pode quebrar o site */ }
 })();
 </script>
+
+<div id="vidModal" class="vidmodal" style="display:none" onclick="if(event.target===this)fecharVidModal()">
+  <div class="vidmodal-box">
+    <button class="vidmodal-x" onclick="fecharVidModal()">✕</button>
+    <video id="vidModalPlayer" controls crossorigin="anonymous" playsinline style="width:100%;border-radius:10px;background:#000"></video>
+    <div id="vidModalTitulo" class="vidmodal-ti"></div>
+  </div>
+</div>
 </body>
 </html>
