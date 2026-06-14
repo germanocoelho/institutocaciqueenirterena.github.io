@@ -2640,6 +2640,19 @@ body.adm-on .sec-edit-btn{display:inline-block}
 <div id="notif"></div>
 
 <script>
+// ── Seletor de campo por idioma para conteúdo dinâmico ──
+window.ICET_pick = function(item, campo){
+  if(!item) return '';
+  try{
+    var l = (window.ICET_getLang ? window.ICET_getLang() : (localStorage.getItem('icet_lang')||'pt'));
+    if(l && l !== 'pt'){
+      var v = item[campo + '_' + l];
+      if(v != null && v !== '') return v;
+    }
+  }catch(e){}
+  return item[campo] != null ? item[campo] : '';
+};
+
 // ══ CONFIG ══
 var CLOUD = {name:'dn1ubybc0', preset:'cmddi_galeria'};
 var GH = {
@@ -3305,7 +3318,7 @@ function renderVideos(){
     }
     card.innerHTML='<a href="'+linkUrl+'" target="_blank" class="vid-thumb">'+thumb
       +'<div class="vid-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a>'
-      +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+v.desc+'</div>':'')+'</div>'
+      +'<div class="vid-info"><div class="vid-ti">'+v.titulo+'</div>'+(v.desc?'<div class="vid-de">'+window.ICET_pick(v,'desc')+'</div>':'')+'</div>'
       +'<button class="vid-del btn-sm del" data-vid-del="'+v.key+'">✕</button>'
       +'<button class="vid-capa-btn" data-vid-capa="'+v.key+'">🖼 Capa</button>';
     grid.appendChild(card);
@@ -3389,7 +3402,7 @@ function renderProdutos(){
       +'<div class="prod-origem">📍 '+p.aldeia+'</div>'
       +'<div class="prod-artesa">'+p.artesa+'</div>'
       +'<div class="prod-nome">'+p.nome+'</div>'
-      +'<div class="prod-desc">'+p.desc.slice(0,90)+(p.desc.length>90?'…':'')+'</div>'
+      +'<div class="prod-desc">'+window.ICET_pick(p,'desc').slice(0,90)+(p.desc.length>90?'…':'')+'</div>'
       +'<div class="prod-preco">R$ '+p.preco.toFixed(2).replace('.',',')+'</div>'
       +'<div class="prod-prazo">📦 '+p.prazo+'</div>'
       +'<a href="https://wa.me/5567993052534?text='+wamsg+'" target="_blank" class="prod-btn" data-i18n="btn_comprar">Comprar via WhatsApp</a>'
@@ -4398,6 +4411,23 @@ document.addEventListener('DOMContentLoaded',function(){
         ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos'].forEach(function(fn){
           try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
         });
+        // Atualiza bios/cargos da diretoria por idioma (sem duplicar cards)
+        try{
+          var db = (typeof dbLer==='function') ? dbLer() : null;
+          if(db){
+            if(db.maria){
+              var mb=document.getElementById('dir-maria-bio'); if(mb&&db.maria.bio)mb.textContent=window.ICET_pick(db.maria,'bio');
+              var mc=document.getElementById('dir-maria-cargo'); if(mc&&db.maria.cargo)mc.textContent=window.ICET_pick(db.maria,'cargo');
+            }
+            if(db.diretoria){
+              Object.keys(db.diretoria).forEach(function(k){
+                var it=db.diretoria[k];
+                var bel=document.getElementById('db-'+it.key);
+                if(bel&&it.bio)bel.textContent=window.ICET_pick(it,'bio');
+              });
+            }
+          }
+        }catch(e){}
         // re-traduz rótulos que as funções acima possam ter reintroduzido
         try{
           document.querySelectorAll('[data-i18n]').forEach(function(el){
