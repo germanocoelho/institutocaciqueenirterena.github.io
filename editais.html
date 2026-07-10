@@ -259,11 +259,51 @@ function digestWhats(){
   var abertos=DB.editais.filter(function(e){var d=diasRestantes(e.prazo_final);return e.status!=='arquivado'&&e.status!=='aprovado'&&(d===null||d>=0);})
     .sort(function(a,b){var da=diasRestantes(a.prazo_final),db_=diasRestantes(b.prazo_final);if(da===null)return 1;if(db_===null)return -1;return da-db_;}).slice(0,8);
   if(!abertos.length){notif('Nenhum edital em aberto');return;}
-  var msg='🪶 *Radar de Editais ICET/CMDDI*\n\n'+abertos.map(function(e){
+  var fasesProx=[];
+  DB.editais.forEach(function(e){(e.fases||[]).forEach(function(f){
+    var d=diasRestantes(f.data);
+    if(!f.concluida&&f.data&&d!==null&&d>=0&&d<=15)fasesProx.push('• '+e.titulo.slice(0,60)+' — '+f.nome+' em '+d+' dia(s)');
+  });});
+  var msg='🪶 *Radar de Editais ICET/CMDDI*\n\n'+(fasesProx.length?'*FASES PRÓXIMAS (15 dias):*\n'+fasesProx.join('\n')+'\n\n':'')+abertos.map(function(e){
     var d=diasRestantes(e.prazo_final);
     return '• '+e.titulo+(d!==null?' — ⏳ '+(d===0?'ENCERRA HOJE':'faltam '+d+' dias'):' — prazo a confirmar')+'\n'+e.url;
   }).join('\n\n');
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+var FASES_PADRAO=['Habilitação documental','Resultado preliminar','Prazo de recursos','Resultado definitivo','Celebração do termo / contratação','Início da execução','Prestação de contas parcial','Prestação de contas final'];
+function renderPosProtocolo(e,idx){
+  var depois=['enviado','aprovado'].indexOf(e.status)>=0;
+  if(!depois && !(e.fases&&e.fases.length) && !e.protocolo) return '';
+  var p=e.protocolo||{};
+  var fases=(e.fases||[]).map(function(f,fi){
+    var d=diasRestantes(f.data);
+    var badge = f.concluida ? '<span class="badge b-prazo-ok">✓ concluída</span>'
+      : (f.data ? (d<0?'<span class="badge b-prazo-vencido">passou há '+(-d)+'d — confirmar</span>'
+        : d<=7?'<span class="badge b-prazo-urgente">⚠ em '+d+' dia(s)</span>'
+        : '<span class="badge b-prazo-perto">em '+d+' dias</span>')
+      : '<span class="badge b-prazo-sem">sem data</span>');
+    return '<div class="doc-item'+(f.concluida?' feito':'')+'"><input type="checkbox" '+(f.concluida?'checked':'')+' onchange="faseToggle('+idx+','+fi+')"><span style="flex:1">'+esc(f.nome)+'</span> '+badge
+      +' <input type="date" value="'+esc(f.data||'')+'" onchange="faseData('+idx+','+fi+',this.value)">'
+      +' <b onclick="faseDel('+idx+','+fi+')" style="cursor:pointer;color:#ffb3a3">✕</b></div>';
+  }).join('');
+  return '<div style="margin-top:8px;border-top:1px dashed var(--linha);padding-top:8px">'
+    +'<b style="font-family:Arial,sans-serif;font-size:.78rem;color:var(--ouro)">PÓS-PROTOCOLO — ACOMPANHAMENTO DAS FASES</b>'
+    +'<div class="linha-form"><input type="text" placeholder="Nº do protocolo/inscrição" value="'+esc(p.numero||'')+'" onchange="setProto('+idx+',\'numero\',this.value)" style="width:190px">'
+    +'<label style="font-family:Arial,sans-serif;font-size:.74rem">Protocolado em: <input type="date" value="'+esc(p.data||'')+'" onchange="setProto('+idx+',\'data\',this.value)"></label></div>'
+    +(fases||'<div style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhuma fase cadastrada — use o cronograma do edital.</div>')
+    +'<div class="linha-form"><input type="text" id="fase-'+idx+'" placeholder="ex.: Resultado preliminar" style="flex:1"><input type="date" id="faseD-'+idx+'"><button class="btn-mini" onclick="faseAdd('+idx+')">＋ fase</button>'
+    +'<button class="btn-mini btn-g" onclick="fasesPadrao('+idx+')">Carregar fases padrão</button></div></div>';
+}
+function setProto(i,c,v){DB.editais[i].protocolo=DB.editais[i].protocolo||{};DB.editais[i].protocolo[c]=v;}
+function faseAdd(i){var n=document.getElementById('fase-'+i).value.trim();if(!n)return;(DB.editais[i].fases=DB.editais[i].fases||[]).push({nome:n,data:document.getElementById('faseD-'+i).value||'',concluida:false});render();notif('Lembre do 💾 Salvar');}
+function faseToggle(i,fi){DB.editais[i].fases[fi].concluida=!DB.editais[i].fases[fi].concluida;render();}
+function faseData(i,fi,v){DB.editais[i].fases[fi].data=v;render();}
+function faseDel(i,fi){DB.editais[i].fases.splice(fi,1);render();}
+function fasesPadrao(i){
+  DB.editais[i].fases=DB.editais[i].fases||[];
+  var tem=DB.editais[i].fases.map(function(f){return f.nome;});
+  FASES_PADRAO.forEach(function(n){if(tem.indexOf(n)<0)DB.editais[i].fases.push({nome:n,data:'',concluida:false});});
+  render();notif('Fases padrão carregadas — preencha as datas do cronograma do edital e 💾 Salve');
 }
 function badgeValidade(iso){
   if(!iso)return '<span class="badge b-prazo-sem">sem validade cadastrada</span>';
