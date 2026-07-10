@@ -4,182 +4,345 @@
     {
       "nome": "FUNAI — Notícias e Editais",
       "url": "https://www.gov.br/funai/pt-br/assuntos/noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Museu Nacional dos Povos Indígenas",
       "url": "https://www.gov.br/museudoindio/pt-br/assuntos/noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Ministério dos Povos Indígenas",
       "url": "https://www.gov.br/povosindigenas/pt-br/assuntos/noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Ministério da Cultura",
       "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "IPHAN",
       "url": "https://www.gov.br/iphan/pt-br/assuntos/noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundect MS",
       "url": "https://www.fundect.ms.gov.br/chamadas-abertas/",
-      "tipo": "publico_estadual"
+      "tipo": "publico_estadual",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundação de Cultura de MS",
       "url": "https://www.fundacaodecultura.ms.gov.br/editais-da-fundacao-de-cultura/",
-      "tipo": "publico_estadual"
+      "tipo": "publico_estadual",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Prefeitura de Campo Grande",
       "url": "https://www.campogrande.ms.gov.br/",
-      "tipo": "publico_municipal"
+      "tipo": "publico_municipal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Capta (ISPN) — agregador de oportunidades",
       "url": "https://capta.org.br/oportunidades/",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Prosas — editais sociais",
       "url": "https://prosas.com.br/editais",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundo Brasil de Direitos Humanos",
       "url": "https://www.fundobrasil.org.br/editais/",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundo Casa Socioambiental",
       "url": "https://casa.org.br/editais/",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundação Banco do Brasil",
       "url": "https://www.fbb.org.br/",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "CESE — Coordenadoria Ecumênica de Serviço",
       "url": "https://www.cese.org.br/",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundo Podáali (Fundo Indígena da Amazônia Brasileira)",
       "url": "https://fundopodaali.org.br/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Pawanka Fund (fundo indígena global)",
       "url": "https://pawankafund.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Cultural Survival — Keepers of the Earth Fund",
       "url": "https://www.culturalsurvival.org/keepers-earth-fund",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "International Funders for Indigenous Peoples (IFIP)",
       "url": "https://internationalfunders.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Global Greengrants Fund",
       "url": "https://www.greengrants.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Nia Tero",
       "url": "https://www.niatero.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Tenure Facility",
       "url": "https://thetenurefacility.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "FIMI — Fundo AYNI (mulheres indígenas)",
       "url": "https://fimi-iiwf.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "IWGIA",
       "url": "https://www.iwgia.org/en/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "GEF Small Grants Programme (PNUD)",
       "url": "https://sgp.undp.org/",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "ONU — Fundo Voluntário para Povos Indígenas",
       "url": "https://www.ohchr.org/en/indigenous-peoples/un-voluntary-fund-indigenous-peoples",
-      "tipo": "internacional"
+      "tipo": "internacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "+Cultura na Rede (plataforma nacional de oportunidades)",
       "url": "https://mais.cultura.gov.br/oportunidades",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "FUNARTE — Editais e Prêmios",
       "url": "https://www.gov.br/funarte/pt-br/editais-e-selecoes",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "PNAB / Lei Paulo Gustavo — Ministério da Cultura",
       "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias/lei-paulo-gustavo",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "IPHAN — Prêmio Culturas Indígenas e Patrimônio Vivo",
       "url": "https://www.gov.br/iphan/pt-br/assuntos/noticias/todas-as-noticias",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Secretaria Especial da Cultura — Salic (Lei Rouanet, PRONAC)",
       "url": "https://culturaviva.gov.br/salicnet/",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Fundação Municipal de Cultura de Campo Grande",
       "url": "https://www.campogrande.ms.gov.br/fundac/",
-      "tipo": "publico_municipal"
+      "tipo": "publico_municipal",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "SESC Mato Grosso do Sul — Editais Culturais",
       "url": "https://www.sescms.com.br/editais",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Itaú Cultural — Editais e Ocupações",
       "url": "https://www.itaucultural.org.br/editais",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Instituto Cultural Vale",
       "url": "https://www.institutocultural.vale.com/editais",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Natura Instituto — Editais Sociais e Culturais",
       "url": "https://www.institutonatura.org/editais",
-      "tipo": "privado_nacional"
+      "tipo": "privado_nacional",
+      "categoria": "geral",
+      "idioma": "pt"
     },
     {
       "nome": "Rede Aldir Blanc / Assessoria Cultural (agregador)",
       "url": "https://plataformaculturaviva.gov.br",
-      "tipo": "publico_federal"
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
+    },
+    {
+      "nome": "ANCINE — Editais Abertos",
+      "url": "https://www.gov.br/ancine/pt-br/assuntos/editais",
+      "tipo": "publico_federal",
+      "categoria": "audiovisual",
+      "idioma": "pt"
+    },
+    {
+      "nome": "Rede das Artes — Oportunidades (audiovisual, publicação, pesquisa)",
+      "url": "https://hmg2-rededasartes.cultura.gov.br/oportunidades/",
+      "tipo": "publico_federal",
+      "categoria": "geral",
+      "idioma": "pt"
+    },
+    {
+      "nome": "Fundação Biblioteca Nacional — Editais e Prêmios Literários",
+      "url": "https://www.gov.br/bn/pt-br/acesso-a-informacao-2/editais",
+      "tipo": "publico_federal",
+      "categoria": "publicacao_livro",
+      "idioma": "pt"
+    },
+    {
+      "nome": "Editais Culturais (agregador nacional de livro/literatura)",
+      "url": "https://www.editaisculturais.com.br/categoria/literatura/",
+      "tipo": "privado_nacional",
+      "categoria": "publicacao_livro",
+      "idioma": "pt"
+    },
+    {
+      "nome": "CNPq — Chamadas Públicas",
+      "url": "http://memoria2.cnpq.br/web/guest/chamadas-publicas",
+      "tipo": "publico_federal",
+      "categoria": "artigo_cientifico",
+      "idioma": "pt"
+    },
+    {
+      "nome": "SciELO Brasil — Chamadas de artigos (busca)",
+      "url": "https://search.scielo.org/?q=povos+ind%C3%ADgenas+chamada&lang=pt",
+      "tipo": "privado_nacional",
+      "categoria": "artigo_cientifico",
+      "idioma": "pt"
+    },
+    {
+      "nome": "DOCTV / Programa de Fomento ao Audiovisual — MinC",
+      "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias/categorias/audiovisual",
+      "tipo": "publico_federal",
+      "categoria": "audiovisual",
+      "idioma": "pt"
+    },
+    {
+      "nome": "Cultural Survival Quarterly — Guidelines for Indigenous Writers (EN/ES)",
+      "url": "https://www.culturalsurvival.org/publications/cultural-survival-quarterly/guidelines",
+      "tipo": "internacional",
+      "categoria": "publicacao_livro",
+      "idioma": "en/es"
+    },
+    {
+      "nome": "RED INK: International Journal of Indigenous Literature, Art & Humanities (submissões contínuas, aceita não-inglês com tradução)",
+      "url": "https://redink.submittable.com/submit",
+      "tipo": "internacional",
+      "categoria": "publicacao_livro",
+      "idioma": "en"
+    },
+    {
+      "nome": "Crushing Colonialism / The Magazine — paga autores indígenas por texto/foto/vídeo",
+      "url": "https://crushingcolonialism.org/call-for-submissions/",
+      "tipo": "internacional",
+      "categoria": "publicacao_livro",
+      "idioma": "en"
+    },
+    {
+      "nome": "RED INK — categoria Critical Work (ensaio acadêmico, mesma revista)",
+      "url": "https://redink.submittable.com/submit",
+      "tipo": "internacional",
+      "categoria": "artigo_cientifico",
+      "idioma": "en"
+    },
+    {
+      "nome": "imagineNATIVE Film + Media Arts Festival — maior festival de cinema indígena do mundo (Toronto)",
+      "url": "https://imaginenative.org/festival/submissions/",
+      "tipo": "internacional",
+      "categoria": "audiovisual",
+      "idioma": "en"
+    },
+    {
+      "nome": "Sundance Institute — Indigenous Program (fellowships para cineastas indígenas globais)",
+      "url": "https://www.sundance.org/programs/indigenous-program/",
+      "tipo": "internacional",
+      "categoria": "audiovisual",
+      "idioma": "en"
     }
   ]
 }

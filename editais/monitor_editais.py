@@ -190,6 +190,8 @@ def main():
                 "url": url,
                 "fonte": fonte["nome"],
                 "tipo": fonte["tipo"],
+                "categoria": fonte.get("categoria", "geral"),
+                "idioma_fonte": fonte.get("idioma", "pt"),
                 "relevancia": score,
                 "palavras": sorted(set(termos)),
                 "encontrado_em": agora(),

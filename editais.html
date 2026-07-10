@@ -176,6 +176,13 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
         <option value="publico_municipal">Público municipal</option><option value="privado_nacional">Privado nacional</option>
         <option value="internacional">Internacional</option>
       </select>
+      <select id="f-categoria" onchange="render()">
+        <option value="">Todas as categorias</option>
+        <option value="geral">Geral</option>
+        <option value="publicacao_livro">📖 Publicação / Livro</option>
+        <option value="artigo_cientifico">🔬 Artigo científico / Pesquisa</option>
+        <option value="audiovisual">🎬 Audiovisual</option>
+      </select>
       <label style="font-family:Arial,sans-serif;font-size:.78rem;display:flex;align-items:center;gap:5px;background:#3a2a15;padding:6px 10px;border-radius:8px">
         <input type="checkbox" id="f-multiplas" onchange="render()"> só ✱ várias propostas</label>
       <input type="text" id="f-busca" placeholder="Buscar no título..." oninput="render()" style="flex:1;min-width:160px">
@@ -282,6 +289,7 @@ function render(){
     var idx=DB.editais.indexOf(e);
     if(fs&&e.status!==fs)return;
     if(ft&&e.tipo!==ft)return;
+    if(document.getElementById('f-categoria').value&&e.categoria!==document.getElementById('f-categoria').value)return;
     if(fb&&e.titulo.toLowerCase().indexOf(fb)<0)return;
     if(document.getElementById('f-multiplas').checked&&!e.multiplas_propostas)return;
     var docs=(e.documentos||[]).map(function(d,di){
@@ -294,7 +302,10 @@ function render(){
       +'<h3>'+esc(e.titulo)+'</h3>'
       +'<div class="meta">'+esc(e.fonte)+(e.orgao?' · '+esc(e.orgao):'')+' · pertinência '+(e.relevancia||'—')+(e.palavras&&e.palavras.length?' ('+esc(e.palavras.join(', '))+')':'')+'</div>'
       +'<div><span class="badge b-tipo">'+(TIPO_NOME[e.tipo]||esc(e.tipo))+'</span>'+badgePrazo(e)
-      +(e.valor?'<span class="badge b-tipo">💰 '+esc(e.valor)+'</span>':'')+'</div>'
+      +(e.valor?'<span class="badge b-tipo">💰 '+esc(e.valor)+'</span>':'')
+      +(e.multiplas_propostas?'<span class="badge b-prazo-ok">✱ várias propostas possíveis</span>':'')
+      +(e.categoria&&e.categoria!=='geral'?'<span class="badge b-tipo">'+({publicacao_livro:'📖 Publicação',artigo_cientifico:'🔬 Artigo científico',audiovisual:'🎬 Audiovisual'}[e.categoria]||e.categoria)+'</span>':'')
+      +(e.idioma_fonte&&e.idioma_fonte!=='pt'?'<span class="badge b-tipo">🌐 '+esc(e.idioma_fonte)+'</span>':'')+'</div>'
       +'<div class="linha-form">'
       +'<a href="'+esc(e.url)+'" target="_blank" class="btn btn-g btn-mini" style="text-decoration:none">🔗 Abrir edital</a>'
       +'<select onchange="setCampo('+idx+',\'status\',this.value)">'+STATUS_OPTS.map(function(o){return '<option value="'+o[0]+'"'+(e.status===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'
