@@ -13,6 +13,7 @@ edital (prazo exato, documentos exigidos, elegibilidade) é feita no ADM
 (editais.html) — sites de terceiros mudam de layout o tempo todo e extrair
 esses campos automaticamente de qualquer página seria frágil e enganoso.
 """
+import html as _html
 import json
 import os
 import re
@@ -77,6 +78,7 @@ def extrair_links(html, base_url):
                          re.IGNORECASE | re.DOTALL):
         href, texto = m.group(1), m.group(2)
         texto = re.sub(r"<[^>]+>", " ", texto)
+        texto = _html.unescape(texto)          # &#8211; -> –, &amp; -> &
         texto = re.sub(r"\s+", " ", texto).strip()
         if len(texto) < 18 or len(texto) > 300:
             continue
@@ -146,6 +148,7 @@ def main():
                                   "editais": [], "vistos": []})
     vistos = set(dados.get("vistos", []))
     existentes = {e["url"] for e in dados["editais"]}
+    titulos_norm = {re.sub(r"\W+", "", e["titulo"].lower()) for e in dados["editais"]}
     score_min = dados.get("config", {}).get("score_minimo", 3)
     novos, fontes_ok, fontes_erro = [], 0, 0
 
@@ -166,6 +169,10 @@ def main():
             score, termos = pontuar(texto)
             if score < score_min or url in existentes:
                 continue
+            titulo_norm = re.sub(r"\W+", "", texto.lower())
+            if titulo_norm in titulos_norm:
+                continue
+            titulos_norm.add(titulo_norm)
             item = {
                 "id": f"ed{abs(hash(url)) % 10**10}",
                 "titulo": texto,
