@@ -5,58 +5,151 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Radar de Editais — ICET / CMDDI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ter:#8B3A2A;--ouro:#C9A24A;--k:#1e1208;--k2:#2a1a0e;--claro:#EDE5CF;--linha:#4a3520}
+:root{
+  --barro:#1C0F08; --barro2:#291709; --barro3:#33200F;
+  --engobe:#EDE0C8; --engobe-2:#C9B694;
+  --ter:#C4572F; --ter-vivo:#E06A3C;
+  --ouro:#D9A94E; --ouro-claro:#EDCB85;
+  --urucum:#E4694A; --verde:#7FBF8E;
+  --linha:#4A2E1B; --linha-2:#5E3B22;
+  --r:16px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,'Times New Roman',serif;background:var(--k);color:var(--claro);min-height:100vh}
-header{background:linear-gradient(135deg,var(--ter),#6b2c1f);padding:1.4rem 1rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.mark{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--ouro),#E3C77E);display:grid;place-items:center;font-weight:700;font-size:1.3rem;color:var(--k)}
-header h1{font-size:1.15rem;color:#fff}
-header small{display:block;color:var(--ouro);font-family:Arial,sans-serif;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase}
-main{max-width:1060px;margin:0 auto;padding:1.2rem 1rem 4rem}
-.gate{max-width:380px;margin:14vh auto;text-align:center}
-.gate input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--linha);background:var(--k2);color:var(--claro);font-size:1rem;margin:12px 0}
-button,.btn{font-family:Arial,sans-serif;font-size:.82rem;padding:9px 15px;border-radius:9px;border:none;background:var(--ouro);color:var(--k);font-weight:700;cursor:pointer}
-.btn-g{background:transparent;border:1px solid var(--ouro);color:var(--ouro)}
-.btn-mini{padding:5px 10px;font-size:.72rem}
-.card{background:var(--k2);border:1px solid var(--linha);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.card h3{color:var(--ouro);font-size:1rem;margin-bottom:4px}
-.meta{font-family:Arial,sans-serif;font-size:.72rem;color:#b9a988;margin-bottom:8px}
-.badge{display:inline-block;font-family:Arial,sans-serif;font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:20px;margin-right:6px}
-.b-tipo{background:#3a2a15;color:var(--ouro)}
-.b-prazo-ok{background:#1f4a2c;color:#9fe0b3}
-.b-prazo-perto{background:#5a4a12;color:#f0d878}
-.b-prazo-urgente{background:#5a1f16;color:#ffb3a3;animation:pulsa 1.2s infinite}
-.b-prazo-vencido{background:#333;color:#999}
-.b-prazo-sem{background:#2a2a3a;color:#a9a9d0}
-@keyframes pulsa{50%{opacity:.55}}
-select,input[type=date],input[type=text],input[type=email],textarea{font-family:Arial,sans-serif;font-size:.8rem;padding:7px 10px;border-radius:8px;border:1px solid var(--linha);background:var(--k);color:var(--claro)}
-textarea{width:100%;min-height:52px}
-.linha-form{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
-.doc-item{display:flex;gap:8px;align-items:center;font-family:Arial,sans-serif;font-size:.8rem;padding:3px 0}
-.doc-item.feito span{text-decoration:line-through;color:#8a7a5a}
-.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
-.resumo{font-family:Arial,sans-serif;font-size:.75rem;color:#b9a988;margin-bottom:1rem}
-a{color:var(--ouro)}
-.topo-acoes{display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0}
-#notif{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ouro);color:var(--k);font-family:Arial,sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;border-radius:10px;display:none;z-index:50}
-.sec-cfg{border-top:2px solid var(--linha);margin-top:2rem;padding-top:1.2rem}
-.chip{display:inline-flex;align-items:center;gap:6px;background:#3a2a15;border-radius:16px;padding:4px 10px;font-family:Arial,sans-serif;font-size:.74rem;margin:3px}
-.chip b{cursor:pointer;color:#ffb3a3}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:
+  radial-gradient(1200px 500px at 80% -10%, #2E1A0C 0%, transparent 60%),
+  var(--barro);
+  color:var(--engobe);min-height:100vh;font-size:15px;line-height:1.55}
+::selection{background:var(--ter);color:#fff}
+
+/* ── FRISO CERÂMICO (assinatura) ─────────────────────────── */
+.friso{height:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='14' viewBox='0 0 56 14'%3E%3Cpath d='M0 14 L7 4 L14 14 Z' fill='%23D9A94E'/%3E%3Cpath d='M14 14 L21 4 L28 14 Z' fill='%23C4572F'/%3E%3Crect x='30' y='6' width='8' height='8' fill='%23D9A94E' opacity='.85'/%3E%3Cpath d='M42 14 L49 4 L56 14 Z' fill='%23C4572F'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-size:56px 14px;opacity:.9}
+
+/* ── CABEÇALHO / HERO ─────────────────────────────────────── */
+header{background:linear-gradient(160deg,#31190B 0%, #241206 70%);border-bottom:1px solid var(--linha)}
+.head-in{max-width:1080px;margin:0 auto;padding:1.6rem 1.2rem 1.3rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mark{width:52px;height:52px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:1.5rem;
+  background:radial-gradient(circle at 30% 25%, var(--ter-vivo), var(--ter) 60%, #93401F);
+  box-shadow:0 8px 24px -8px rgba(196,87,47,.55), inset 0 1px 0 rgba(255,255,255,.25)}
+header h1{font-family:'Fraunces',serif;font-weight:650;font-size:1.55rem;color:var(--engobe);letter-spacing:.01em;line-height:1.1}
+header small{display:block;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro);margin-top:5px;font-weight:600}
+.hero-prazo{margin-left:auto;text-align:right;min-width:220px}
+.hero-prazo .hp-rotulo{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--engobe-2);font-weight:600}
+.hero-prazo .hp-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:2rem;line-height:1.05;color:var(--ouro-claro)}
+.hero-prazo .hp-num.urgente{color:var(--urucum)}
+.hero-prazo .hp-qual{font-size:.72rem;color:var(--engobe-2);max-width:320px;margin-left:auto}
+
+main{max-width:1080px;margin:0 auto;padding:1.6rem 1.2rem 5rem}
+
+/* ── PORTÃO DE ENTRADA ────────────────────────────────────── */
+.gate{max-width:400px;margin:12vh auto;text-align:center;background:var(--barro2);border:1px solid var(--linha);border-radius:22px;padding:2.4rem 2rem;box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
+.gate h2{font-family:'Fraunces',serif;font-weight:650;color:var(--ouro-claro);font-size:1.4rem}
+.gate p{font-size:.8rem;color:var(--engobe-2);margin-top:8px}
+.gate input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--linha-2);background:var(--barro);color:var(--engobe);font-size:1rem;margin:18px 0 12px;font-family:'IBM Plex Mono',monospace;text-align:center;letter-spacing:.1em;transition:border-color .2s}
+.gate input:focus{outline:none;border-color:var(--ouro)}
+
+/* ── BOTÕES ───────────────────────────────────────────────── */
+button,.btn{font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;padding:10px 18px;border-radius:11px;border:none;cursor:pointer;
+  background:linear-gradient(160deg,var(--ter-vivo),var(--ter));color:#FFF4E8;
+  box-shadow:0 6px 18px -8px rgba(196,87,47,.6), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .15s, box-shadow .15s}
+button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(196,87,47,.7), inset 0 1px 0 rgba(255,255,255,.2)}
+button:active{transform:translateY(0)}
+.btn-g{background:transparent;border:1px solid var(--linha-2);color:var(--ouro);box-shadow:none}
+.btn-g:hover{border-color:var(--ouro);box-shadow:none;background:rgba(217,169,78,.07)}
+.btn-mini{padding:6px 12px;font-size:.72rem;border-radius:9px}
+:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+
+/* ── BARRA DE AÇÕES E FILTROS ─────────────────────────────── */
+.topo-acoes{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 1rem}
+.filtros{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:1.4rem;position:sticky;top:0;z-index:10;
+  background:linear-gradient(var(--barro) 82%, transparent);padding:10px 0 14px}
+.resumo{font-size:.74rem;color:var(--engobe-2);margin-bottom:1.1rem}
+.resumo b{color:var(--engobe)}
+
+/* ── CAMPOS ───────────────────────────────────────────────── */
+select,input[type=date],input[type=text],input[type=email],textarea{
+  font-family:'Sora',sans-serif;font-size:.8rem;padding:9px 12px;border-radius:10px;
+  border:1px solid var(--linha);background:var(--barro2);color:var(--engobe);transition:border-color .2s}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--ter-vivo)}
+input[type=date]{font-family:'IBM Plex Mono',monospace;font-size:.74rem}
+textarea{width:100%;min-height:56px;resize:vertical}
+input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
+
+/* ── CARTÕES DE EDITAL ────────────────────────────────────── */
+.card{position:relative;background:linear-gradient(180deg,var(--barro2),#241307);
+  border:1px solid var(--linha);border-left:4px solid var(--ter);
+  border-radius:var(--r);padding:1.25rem 1.25rem 1.1rem;margin-bottom:1.15rem;
+  box-shadow:0 14px 40px -22px rgba(0,0,0,.75);
+  transition:transform .18s, border-color .18s, box-shadow .18s}
+.card:hover{transform:translateY(-2px);border-left-color:var(--ouro);box-shadow:0 20px 48px -22px rgba(0,0,0,.85)}
+.card h3{font-family:'Fraunces',serif;font-weight:650;color:var(--engobe);font-size:1.08rem;line-height:1.3;margin-bottom:5px}
+.meta{font-size:.7rem;color:var(--engobe-2);margin-bottom:10px;letter-spacing:.02em}
+.card a{color:var(--ouro)}
+.card a:hover{color:var(--ouro-claro)}
+
+/* ── FICHAS DE BARRO (badges) ─────────────────────────────── */
+.badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.05em;padding:5px 12px;border-radius:999px;margin:0 6px 6px 0;border:1px solid transparent}
+.b-tipo{background:var(--barro3);color:var(--ouro);border-color:var(--linha-2)}
+.b-prazo-ok{background:rgba(127,191,142,.12);color:var(--verde);border-color:rgba(127,191,142,.3);font-family:'IBM Plex Mono',monospace}
+.b-prazo-perto{background:rgba(217,169,78,.14);color:var(--ouro-claro);border-color:rgba(217,169,78,.35);font-family:'IBM Plex Mono',monospace}
+.b-prazo-urgente{background:rgba(228,105,74,.16);color:var(--urucum);border-color:rgba(228,105,74,.45);font-family:'IBM Plex Mono',monospace;animation:pulsa 1.3s infinite}
+.b-prazo-vencido{background:#241A12;color:#8A7A66;border-color:var(--linha);font-family:'IBM Plex Mono',monospace}
+.b-prazo-sem{background:rgba(120,120,170,.1);color:#A9A9D0;border-color:rgba(120,120,170,.25)}
+@keyframes pulsa{50%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.b-prazo-urgente{animation:none}.card,button,.btn{transition:none}}
+
+/* ── LISTAS INTERNAS ──────────────────────────────────────── */
+.linha-form{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.linha-form label{font-size:.72rem;color:var(--engobe-2)}
+.doc-item{display:flex;gap:10px;align-items:center;font-size:.8rem;padding:5px 0;border-bottom:1px dashed rgba(74,46,27,.5)}
+.doc-item:last-of-type{border-bottom:none}
+.doc-item.feito span{text-decoration:line-through;color:#8A7A66}
+.doc-item b{cursor:pointer;color:var(--urucum);font-weight:700}
+
+/* ── SEÇÕES DE CONFIGURAÇÃO ───────────────────────────────── */
+.sec-cfg{border-top:1px solid var(--linha);margin-top:2.4rem;padding-top:1.5rem}
+.sec-cfg h3{font-family:'Fraunces',serif;font-weight:650;color:var(--ouro-claro);font-size:1.1rem}
+.sec-cfg > p{font-size:.76rem;color:var(--engobe-2);margin:7px 0 12px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--barro3);border:1px solid var(--linha-2);border-radius:999px;padding:5px 12px;font-size:.74rem;margin:3px}
+.chip b{cursor:pointer;color:var(--urucum)}
+
+#notif{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(160deg,var(--ouro-claro),var(--ouro));color:#2A1708;
+  font-weight:700;font-size:.82rem;padding:12px 24px;border-radius:12px;display:none;z-index:60;
+  box-shadow:0 16px 40px -12px rgba(0,0,0,.7)}
+
+@media (max-width:640px){
+  .hero-prazo{margin-left:0;text-align:left;width:100%}
+  .hero-prazo .hp-qual{margin-left:0}
+  header h1{font-size:1.3rem}
+}
 </style>
 </head>
 <body>
 <header>
-  <div class="mark">🪶</div>
-  <div>
-    <h1>Radar de Editais</h1>
-    <small>ICET · Instituto Cacique Enir Terena — CMDDI Campo Grande</small>
+  <div class="head-in">
+    <div class="mark">🪶</div>
+    <div>
+      <h1>Radar de Editais</h1>
+      <small>ICET · Instituto Cacique Enir Terena — CMDDI Campo Grande</small>
+    </div>
+    <div class="hero-prazo" id="hero-prazo" style="display:none">
+      <div class="hp-rotulo">Próximo prazo</div>
+      <div class="hp-num" id="hp-num">—</div>
+      <div class="hp-qual" id="hp-qual"></div>
+    </div>
   </div>
+  <div class="friso"></div>
 </header>
 
 <main>
   <div class="gate" id="gate">
-    <h2 style="color:var(--ouro)">Acesso restrito</h2>
+    <h2>Radar de Editais</h2>
     <p style="font-family:Arial,sans-serif;font-size:.8rem;color:#b9a988;margin-top:6px">Painel administrativo de editais e chamamentos.</p>
     <input type="password" id="senha" placeholder="Senha do ADM" onkeydown="if(event.key==='Enter')entrar()">
     <button onclick="entrar()">Entrar</button>
@@ -217,10 +310,32 @@ function render(){
   });
   document.getElementById('lista').innerHTML=html||'<div class="card">Nenhum edital corresponde ao filtro. A varredura automática roda em dias úteis de manhã — ou cadastre um manualmente.</div>';
   renderCofre();
+  atualizarHero();
   var cfgEmails=(DB.config&&DB.config.avisos_emails)||[];
   document.getElementById('emails').innerHTML=cfgEmails.map(function(em,i){
     return '<span class="chip">'+esc(em)+' <b onclick="delEmail('+i+')">✕</b></span>';
   }).join('')||'<span style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhum e-mail cadastrado ainda.</span>';
+}
+function atualizarHero(){
+  var alvo=null; // {dias, texto}
+  DB.editais.forEach(function(e){
+    if(e.status==='arquivado'||e.status==='aprovado')return;
+    var d=diasRestantes(e.prazo_final);
+    if(d!==null&&d>=0&&(!alvo||d<alvo.dias))alvo={dias:d,texto:e.titulo};
+    (e.fases||[]).forEach(function(f){
+      if(f.concluida)return;
+      var df=diasRestantes(f.data);
+      if(df!==null&&df>=0&&(!alvo||df<alvo.dias))alvo={dias:df,texto:f.nome+' — '+e.titulo};
+    });
+  });
+  var box=document.getElementById('hero-prazo');
+  if(!box)return;
+  if(!alvo){box.style.display='none';return;}
+  box.style.display='block';
+  var n=document.getElementById('hp-num');
+  n.textContent=alvo.dias===0?'HOJE':alvo.dias+(alvo.dias===1?' dia':' dias');
+  n.className='hp-num'+(alvo.dias<=7?' urgente':'');
+  document.getElementById('hp-qual').textContent=alvo.texto.slice(0,90);
 }
 function setCampo(i,c,v){DB.editais[i][c]=v;render();}
 function docAdd(i){var el=document.getElementById('doc-'+i);var v=el.value.trim();if(!v)return;(DB.editais[i].documentos=DB.editais[i].documentos||[]).push({nome:v,ok:false});el.value='';render();}
