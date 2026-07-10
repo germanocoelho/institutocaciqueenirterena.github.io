@@ -3,7 +3,49 @@
   "avisos_emails": [],
   "remetente_email": "contato@vertticonsultoria.com.br",
   "remetente_nome": "Radar de Editais ICET/CMDDI",
-  "score_minimo": 3
+  "score_minimo": 3,
+  "docs_institucionais": [
+   {
+    "inst": "ICET",
+    "nome": "Estatuto social registrado (Cartório Pantaneiro, reg. 22/08/2025) — sem vencimento",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "Ata de fundação e eleição — MANDATO DA DIRETORIA VIGENTE ATÉ 11/07/2029",
+    "validade": "2029-07-11"
+   },
+   {
+    "inst": "ICET",
+    "nome": "Cartão CNPJ 62.359.850/0001-38 (aberto 22/08/2025) — reemitir atualizado a cada edital",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "Comprovante do pedido de marca coletiva OREKA (INPI 941549186) — anexo de credencial institucional",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "Certidão Negativa Federal (RFB/PGFN) — emitir",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "CRF/FGTS — emitir",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "CNDT trabalhista — emitir",
+    "validade": ""
+   },
+   {
+    "inst": "ICET",
+    "nome": "Certidões estadual (MS) e municipal (Campo Grande) — emitir",
+    "validade": ""
+   }
+  ]
  },
  "editais": [
   {
