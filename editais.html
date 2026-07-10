@@ -176,6 +176,8 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
         <option value="publico_municipal">Público municipal</option><option value="privado_nacional">Privado nacional</option>
         <option value="internacional">Internacional</option>
       </select>
+      <label style="font-family:Arial,sans-serif;font-size:.78rem;display:flex;align-items:center;gap:5px;background:#3a2a15;padding:6px 10px;border-radius:8px">
+        <input type="checkbox" id="f-multiplas" onchange="render()"> só ✱ várias propostas</label>
       <input type="text" id="f-busca" placeholder="Buscar no título..." oninput="render()" style="flex:1;min-width:160px">
     </div>
     <div id="lista"></div>
@@ -281,6 +283,7 @@ function render(){
     if(fs&&e.status!==fs)return;
     if(ft&&e.tipo!==ft)return;
     if(fb&&e.titulo.toLowerCase().indexOf(fb)<0)return;
+    if(document.getElementById('f-multiplas').checked&&!e.multiplas_propostas)return;
     var docs=(e.documentos||[]).map(function(d,di){
       return '<div class="doc-item'+(d.ok?' feito':'')+'"><input type="checkbox" '+(d.ok?'checked':'')+' onchange="docToggle('+idx+','+di+')"><span>'+esc(d.nome)+'</span> <b onclick="docDel('+idx+','+di+')" title="remover">✕</b></div>';
     }).join('')||'<div style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhum documento cadastrado — leia o edital e liste aqui o que é obrigatório.</div>';
@@ -472,6 +475,7 @@ function kitProposta(i,inst){
    +'<h2>2. Perfil institucional</h2><p>'+esc(o.perfil)+'</p>'
    +(o.alerta?'<p class="dica" style="border-left-color:#8B3A2A"><b>⚠ '+esc(o.alerta)+'</b></p>':'')
    +'<h2>3. Alinhamento com o edital</h2><p>[Explicar aqui, em 2–3 parágrafos, como o objeto do edital "'+esc(e.titulo)+'"'+(e.orgao?' ('+esc(e.orgao)+')':'')+' dialoga com a missão da instituição: cite os eixos do edital e conecte um a um com as atividades reais já desenvolvidas.]</p>'
+   +(e.multiplas_propostas?'<p class="dica"><b>Edital de cultura geral, sem recorte étnico exigido:</b> considere submeter mais de uma proposta da comunidade em paralelo (ex.: cerâmica/artesanato, dança e música, transmissão da língua Terena, documentação audiovisual) — cada frente com sua própria justificativa e orçamento, aumentando as chances de aprovação sem depender de uma única aposta.</p>':'')
    +'<h2>4. Justificativa</h2><p>[Contexto e problema que o projeto enfrenta; dados do território; por que esta instituição é a certa para executar.]</p>'
    +'<h2>5. Objetivos (geral e específicos)</h2><p>[1 objetivo geral + 3 a 5 específicos, mensuráveis.]</p>'
    +'<h2>6. Metodologia e atividades</h2><p>[Como será feito, com quem, onde; protagonismo indígena na execução e na decisão.]</p>'

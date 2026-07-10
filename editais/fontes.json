@@ -1,30 +1,185 @@
 {
   "_comentario": "Fontes monitoradas pelo Radar de Editais ICET/CMDDI. Adicione novas fontes aqui — o monitor lê este arquivo a cada execução. 'tipo': publico_federal | publico_estadual | publico_municipal | privado_nacional | internacional",
   "fontes": [
-    { "nome": "FUNAI — Notícias e Editais", "url": "https://www.gov.br/funai/pt-br/assuntos/noticias", "tipo": "publico_federal" },
-    { "nome": "Museu Nacional dos Povos Indígenas", "url": "https://www.gov.br/museudoindio/pt-br/assuntos/noticias", "tipo": "publico_federal" },
-    { "nome": "Ministério dos Povos Indígenas", "url": "https://www.gov.br/povosindigenas/pt-br/assuntos/noticias", "tipo": "publico_federal" },
-    { "nome": "Ministério da Cultura", "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias", "tipo": "publico_federal" },
-    { "nome": "IPHAN", "url": "https://www.gov.br/iphan/pt-br/assuntos/noticias", "tipo": "publico_federal" },
-    { "nome": "Fundect MS", "url": "https://www.fundect.ms.gov.br/chamadas-abertas/", "tipo": "publico_estadual" },
-    { "nome": "Fundação de Cultura de MS", "url": "https://www.fundacaodecultura.ms.gov.br/", "tipo": "publico_estadual" },
-    { "nome": "Prefeitura de Campo Grande", "url": "https://www.campogrande.ms.gov.br/", "tipo": "publico_municipal" },
-    { "nome": "Capta (ISPN) — agregador de oportunidades", "url": "https://capta.org.br/oportunidades/", "tipo": "privado_nacional" },
-    { "nome": "Prosas — editais sociais", "url": "https://prosas.com.br/editais", "tipo": "privado_nacional" },
-    { "nome": "Fundo Brasil de Direitos Humanos", "url": "https://www.fundobrasil.org.br/editais/", "tipo": "privado_nacional" },
-    { "nome": "Fundo Casa Socioambiental", "url": "https://casa.org.br/editais/", "tipo": "privado_nacional" },
-    { "nome": "Fundação Banco do Brasil", "url": "https://www.fbb.org.br/", "tipo": "privado_nacional" },
-    { "nome": "CESE — Coordenadoria Ecumênica de Serviço", "url": "https://www.cese.org.br/", "tipo": "privado_nacional" },
-    { "nome": "Fundo Podáali (Fundo Indígena da Amazônia Brasileira)", "url": "https://fundopodaali.org.br/", "tipo": "internacional" },
-    { "nome": "Pawanka Fund (fundo indígena global)", "url": "https://pawankafund.org/", "tipo": "internacional" },
-    { "nome": "Cultural Survival — Keepers of the Earth Fund", "url": "https://www.culturalsurvival.org/keepers-earth-fund", "tipo": "internacional" },
-    { "nome": "International Funders for Indigenous Peoples (IFIP)", "url": "https://internationalfunders.org/", "tipo": "internacional" },
-    { "nome": "Global Greengrants Fund", "url": "https://www.greengrants.org/", "tipo": "internacional" },
-    { "nome": "Nia Tero", "url": "https://www.niatero.org/", "tipo": "internacional" },
-    { "nome": "Tenure Facility", "url": "https://thetenurefacility.org/", "tipo": "internacional" },
-    { "nome": "FIMI — Fundo AYNI (mulheres indígenas)", "url": "https://fimi-iiwf.org/", "tipo": "internacional" },
-    { "nome": "IWGIA", "url": "https://www.iwgia.org/en/", "tipo": "internacional" },
-    { "nome": "GEF Small Grants Programme (PNUD)", "url": "https://sgp.undp.org/", "tipo": "internacional" },
-    { "nome": "ONU — Fundo Voluntário para Povos Indígenas", "url": "https://www.ohchr.org/en/indigenous-peoples/un-voluntary-fund-indigenous-peoples", "tipo": "internacional" }
+    {
+      "nome": "FUNAI — Notícias e Editais",
+      "url": "https://www.gov.br/funai/pt-br/assuntos/noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Museu Nacional dos Povos Indígenas",
+      "url": "https://www.gov.br/museudoindio/pt-br/assuntos/noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Ministério dos Povos Indígenas",
+      "url": "https://www.gov.br/povosindigenas/pt-br/assuntos/noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Ministério da Cultura",
+      "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "IPHAN",
+      "url": "https://www.gov.br/iphan/pt-br/assuntos/noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Fundect MS",
+      "url": "https://www.fundect.ms.gov.br/chamadas-abertas/",
+      "tipo": "publico_estadual"
+    },
+    {
+      "nome": "Fundação de Cultura de MS",
+      "url": "https://www.fundacaodecultura.ms.gov.br/",
+      "tipo": "publico_estadual"
+    },
+    {
+      "nome": "Prefeitura de Campo Grande",
+      "url": "https://www.campogrande.ms.gov.br/",
+      "tipo": "publico_municipal"
+    },
+    {
+      "nome": "Capta (ISPN) — agregador de oportunidades",
+      "url": "https://capta.org.br/oportunidades/",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Prosas — editais sociais",
+      "url": "https://prosas.com.br/editais",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Fundo Brasil de Direitos Humanos",
+      "url": "https://www.fundobrasil.org.br/editais/",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Fundo Casa Socioambiental",
+      "url": "https://casa.org.br/editais/",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Fundação Banco do Brasil",
+      "url": "https://www.fbb.org.br/",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "CESE — Coordenadoria Ecumênica de Serviço",
+      "url": "https://www.cese.org.br/",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Fundo Podáali (Fundo Indígena da Amazônia Brasileira)",
+      "url": "https://fundopodaali.org.br/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "Pawanka Fund (fundo indígena global)",
+      "url": "https://pawankafund.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "Cultural Survival — Keepers of the Earth Fund",
+      "url": "https://www.culturalsurvival.org/keepers-earth-fund",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "International Funders for Indigenous Peoples (IFIP)",
+      "url": "https://internationalfunders.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "Global Greengrants Fund",
+      "url": "https://www.greengrants.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "Nia Tero",
+      "url": "https://www.niatero.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "Tenure Facility",
+      "url": "https://thetenurefacility.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "FIMI — Fundo AYNI (mulheres indígenas)",
+      "url": "https://fimi-iiwf.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "IWGIA",
+      "url": "https://www.iwgia.org/en/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "GEF Small Grants Programme (PNUD)",
+      "url": "https://sgp.undp.org/",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "ONU — Fundo Voluntário para Povos Indígenas",
+      "url": "https://www.ohchr.org/en/indigenous-peoples/un-voluntary-fund-indigenous-peoples",
+      "tipo": "internacional"
+    },
+    {
+      "nome": "+Cultura na Rede (plataforma nacional de oportunidades)",
+      "url": "https://mais.cultura.gov.br/oportunidades",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "FUNARTE — Editais e Prêmios",
+      "url": "https://www.gov.br/funarte/pt-br/editais-e-selecoes",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "PNAB / Lei Paulo Gustavo — Ministério da Cultura",
+      "url": "https://www.gov.br/cultura/pt-br/assuntos/noticias/lei-paulo-gustavo",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "IPHAN — Prêmio Culturas Indígenas e Patrimônio Vivo",
+      "url": "https://www.gov.br/iphan/pt-br/assuntos/noticias/todas-as-noticias",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Secretaria Especial da Cultura — Salic (Lei Rouanet, PRONAC)",
+      "url": "https://culturaviva.gov.br/salicnet/",
+      "tipo": "publico_federal"
+    },
+    {
+      "nome": "Fundação Municipal de Cultura de Campo Grande",
+      "url": "https://www.campogrande.ms.gov.br/fundac/",
+      "tipo": "publico_municipal"
+    },
+    {
+      "nome": "SESC Mato Grosso do Sul — Editais Culturais",
+      "url": "https://www.sescms.com.br/editais",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Itaú Cultural — Editais e Ocupações",
+      "url": "https://www.itaucultural.org.br/editais",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Instituto Cultural Vale",
+      "url": "https://www.institutocultural.vale.com/editais",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Natura Instituto — Editais Sociais e Culturais",
+      "url": "https://www.institutonatura.org/editais",
+      "tipo": "privado_nacional"
+    },
+    {
+      "nome": "Rede Aldir Blanc / Assessoria Cultural (agregador)",
+      "url": "https://plataformaculturaviva.gov.br",
+      "tipo": "publico_federal"
+    }
   ]
 }
