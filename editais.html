@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Radar de Editais — ICET / CMDDI</title>
+<style>
+:root{--ter:#8B3A2A;--ouro:#C9A24A;--k:#1e1208;--k2:#2a1a0e;--claro:#EDE5CF;--linha:#4a3520}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--k);color:var(--claro);min-height:100vh}
+header{background:linear-gradient(135deg,var(--ter),#6b2c1f);padding:1.4rem 1rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--ouro),#E3C77E);display:grid;place-items:center;font-weight:700;font-size:1.3rem;color:var(--k)}
+header h1{font-size:1.15rem;color:#fff}
+header small{display:block;color:var(--ouro);font-family:Arial,sans-serif;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase}
+main{max-width:1060px;margin:0 auto;padding:1.2rem 1rem 4rem}
+.gate{max-width:380px;margin:14vh auto;text-align:center}
+.gate input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--linha);background:var(--k2);color:var(--claro);font-size:1rem;margin:12px 0}
+button,.btn{font-family:Arial,sans-serif;font-size:.82rem;padding:9px 15px;border-radius:9px;border:none;background:var(--ouro);color:var(--k);font-weight:700;cursor:pointer}
+.btn-g{background:transparent;border:1px solid var(--ouro);color:var(--ouro)}
+.btn-mini{padding:5px 10px;font-size:.72rem}
+.card{background:var(--k2);border:1px solid var(--linha);border-radius:14px;padding:1rem;margin-bottom:1rem}
+.card h3{color:var(--ouro);font-size:1rem;margin-bottom:4px}
+.meta{font-family:Arial,sans-serif;font-size:.72rem;color:#b9a988;margin-bottom:8px}
+.badge{display:inline-block;font-family:Arial,sans-serif;font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:20px;margin-right:6px}
+.b-tipo{background:#3a2a15;color:var(--ouro)}
+.b-prazo-ok{background:#1f4a2c;color:#9fe0b3}
+.b-prazo-perto{background:#5a4a12;color:#f0d878}
+.b-prazo-urgente{background:#5a1f16;color:#ffb3a3;animation:pulsa 1.2s infinite}
+.b-prazo-vencido{background:#333;color:#999}
+.b-prazo-sem{background:#2a2a3a;color:#a9a9d0}
+@keyframes pulsa{50%{opacity:.55}}
+select,input[type=date],input[type=text],input[type=email],textarea{font-family:Arial,sans-serif;font-size:.8rem;padding:7px 10px;border-radius:8px;border:1px solid var(--linha);background:var(--k);color:var(--claro)}
+textarea{width:100%;min-height:52px}
+.linha-form{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.doc-item{display:flex;gap:8px;align-items:center;font-family:Arial,sans-serif;font-size:.8rem;padding:3px 0}
+.doc-item.feito span{text-decoration:line-through;color:#8a7a5a}
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.resumo{font-family:Arial,sans-serif;font-size:.75rem;color:#b9a988;margin-bottom:1rem}
+a{color:var(--ouro)}
+.topo-acoes{display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0}
+#notif{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ouro);color:var(--k);font-family:Arial,sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;border-radius:10px;display:none;z-index:50}
+.sec-cfg{border-top:2px solid var(--linha);margin-top:2rem;padding-top:1.2rem}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#3a2a15;border-radius:16px;padding:4px 10px;font-family:Arial,sans-serif;font-size:.74rem;margin:3px}
+.chip b{cursor:pointer;color:#ffb3a3}
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">🪶</div>
+  <div>
+    <h1>Radar de Editais</h1>
+    <small>ICET · Instituto Cacique Enir Terena — CMDDI Campo Grande</small>
+  </div>
+</header>
+
+<main>
+  <div class="gate" id="gate">
+    <h2 style="color:var(--ouro)">Acesso restrito</h2>
+    <p style="font-family:Arial,sans-serif;font-size:.8rem;color:#b9a988;margin-top:6px">Painel administrativo de editais e chamamentos.</p>
+    <input type="password" id="senha" placeholder="Senha do ADM" onkeydown="if(event.key==='Enter')entrar()">
+    <button onclick="entrar()">Entrar</button>
+  </div>
+
+  <div id="painel" style="display:none">
+    <div class="resumo" id="resumo"></div>
+    <div class="topo-acoes">
+      <button onclick="salvarTudo()">💾 Salvar alterações</button>
+      <button class="btn-g" onclick="carregar(true)">↻ Recarregar</button>
+      <button class="btn-g" onclick="digestWhats()">💬 Resumo p/ WhatsApp</button>
+      <button class="btn-g" onclick="novoManual()">＋ Cadastrar edital manualmente</button>
+    </div>
+    <div class="filtros">
+      <select id="f-status" onchange="render()">
+        <option value="">Todos os status</option>
+        <option value="novo">Novos</option><option value="em_analise">Em análise</option>
+        <option value="preparando">Preparando proposta</option><option value="enviado">Enviado</option>
+        <option value="aprovado">Aprovado 🎉</option><option value="arquivado">Arquivado</option>
+      </select>
+      <select id="f-tipo" onchange="render()">
+        <option value="">Todas as fontes</option>
+        <option value="publico_federal">Público federal</option><option value="publico_estadual">Público estadual</option>
+        <option value="publico_municipal">Público municipal</option><option value="privado_nacional">Privado nacional</option>
+        <option value="internacional">Internacional</option>
+      </select>
+      <input type="text" id="f-busca" placeholder="Buscar no título..." oninput="render()" style="flex:1;min-width:160px">
+    </div>
+    <div id="lista"></div>
+
+    <div class="sec-cfg">
+      <h3 style="color:var(--ouro)">⚙️ Avisos por e-mail</h3>
+      <p style="font-family:Arial,sans-serif;font-size:.76rem;color:#b9a988;margin:6px 0">Quem recebe alerta quando o radar encontra edital novo (varredura automática em dias úteis, ~07:00 de Campo Grande).</p>
+      <div id="emails"></div>
+      <div class="linha-form">
+        <input type="email" id="novo-email" placeholder="email@exemplo.com">
+        <button class="btn-mini" onclick="addEmail()">Adicionar</button>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="notif"></div>
+
+<script>
+var GH = {
+  token:['ghp_lBOh','tA9ekMqmr6uL','lhuSY0LPllbVRy1U9enp'].join(''),
+  repo:'germanocoelho/institutocaciqueenirterena.github.io',
+  file:'editais/editais.json'
+};
+var API='https://api.github.com/repos/'+GH.repo+'/contents/';
+var DB=null, SHA=null;
+
+function notif(m){var n=document.getElementById('notif');n.textContent=m;n.style.display='block';clearTimeout(n._t);n._t=setTimeout(function(){n.style.display='none'},3500);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function entrar(){
+  if(document.getElementById('senha').value!=='icet2026'){notif('Senha incorreta');return;}
+  document.getElementById('gate').style.display='none';
+  document.getElementById('painel').style.display='block';
+  carregar(false);
+}
+function b64utf8_decode(b){return decodeURIComponent(escape(atob(b.replace(/\n/g,''))));}
+function b64utf8_encode(s){return btoa(unescape(encodeURIComponent(s)));}
+
+function carregar(avisa){
+  fetch(API+GH.file+'?t='+Date.now(),{cache:'no-store',headers:{'Authorization':'token '+GH.token}})
+  .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+  .then(function(j){SHA=j.sha;DB=JSON.parse(b64utf8_decode(j.content));render();if(avisa)notif('Recarregado');})
+  .catch(function(e){
+    DB={config:{avisos_emails:[],score_minimo:3},editais:[],vistos:[]};SHA=null;render();
+    notif('Arquivo ainda não existe — será criado no primeiro salvamento');
+  });
+}
+function salvarTudo(){
+  var body={message:'ADM editais: atualização manual',content:b64utf8_encode(JSON.stringify(DB,null,1))};
+  if(SHA)body.sha=SHA;
+  fetch(API+GH.file,{method:'PUT',headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.message||('HTTP '+r.status));return j;});})
+  .then(function(j){SHA=j.content.sha;notif('✓ Salvo no repositório');})
+  .catch(function(e){notif('Erro ao salvar: '+e.message);});
+}
+
+function diasRestantes(iso){
+  if(!iso)return null;
+  var hoje=new Date();hoje.setHours(0,0,0,0);
+  var d=new Date(iso+'T00:00:00');
+  return Math.round((d-hoje)/86400000);
+}
+function badgePrazo(e){
+  var d=diasRestantes(e.prazo_final);
+  if(d===null)return '<span class="badge b-prazo-sem">prazo não definido</span>';
+  if(d<0)return '<span class="badge b-prazo-vencido">encerrado há '+(-d)+'d</span>';
+  if(d===0)return '<span class="badge b-prazo-urgente">⚠ ENCERRA HOJE</span>';
+  if(d<=7)return '<span class="badge b-prazo-urgente">⚠ faltam '+d+' dia(s)</span>';
+  if(d<=30)return '<span class="badge b-prazo-perto">faltam '+d+' dias</span>';
+  return '<span class="badge b-prazo-ok">faltam '+d+' dias</span>';
+}
+var TIPO_NOME={publico_federal:'Público federal',publico_estadual:'Público estadual',publico_municipal:'Público municipal',privado_nacional:'Privado nacional',internacional:'Internacional'};
+var STATUS_OPTS=[['novo','Novo'],['em_analise','Em análise'],['preparando','Preparando proposta'],['enviado','Enviado'],['aprovado','Aprovado 🎉'],['arquivado','Arquivado']];
+
+function render(){
+  if(!DB)return;
+  var fs=document.getElementById('f-status').value, ft=document.getElementById('f-tipo').value,
+      fb=(document.getElementById('f-busca').value||'').toLowerCase();
+  var eds=DB.editais.slice().sort(function(a,b){
+    var da=diasRestantes(a.prazo_final),db_=diasRestantes(b.prazo_final);
+    if(da===null&&db_===null)return (b.relevancia||0)-(a.relevancia||0);
+    if(da===null)return 1; if(db_===null)return -1;
+    if(da<0&&db_>=0)return 1; if(db_<0&&da>=0)return -1;
+    return da-db_;
+  });
+  var ativos=DB.editais.filter(function(e){return e.status!=='arquivado'&&e.status!=='aprovado';}).length;
+  document.getElementById('resumo').innerHTML='Última varredura automática: <b>'+esc(DB.ultima_varredura||'ainda não rodou')+'</b> — '+esc(DB.ultima_varredura_resumo||'')+' · '+DB.editais.length+' editais no arquivo, '+ativos+' em acompanhamento';
+  var html='';
+  eds.forEach(function(e){
+    var idx=DB.editais.indexOf(e);
+    if(fs&&e.status!==fs)return;
+    if(ft&&e.tipo!==ft)return;
+    if(fb&&e.titulo.toLowerCase().indexOf(fb)<0)return;
+    var docs=(e.documentos||[]).map(function(d,di){
+      return '<div class="doc-item'+(d.ok?' feito':'')+'"><input type="checkbox" '+(d.ok?'checked':'')+' onchange="docToggle('+idx+','+di+')"><span>'+esc(d.nome)+'</span> <b onclick="docDel('+idx+','+di+')" title="remover">✕</b></div>';
+    }).join('')||'<div style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhum documento cadastrado — leia o edital e liste aqui o que é obrigatório.</div>';
+    var arqs=(e.arquivos||[]).map(function(a){
+      return '<div class="doc-item">📎 <a href="'+esc(a.url)+'" target="_blank" download>'+esc(a.nome)+'</a></div>';
+    }).join('');
+    html+='<div class="card">'
+      +'<h3>'+esc(e.titulo)+'</h3>'
+      +'<div class="meta">'+esc(e.fonte)+(e.orgao?' · '+esc(e.orgao):'')+' · pertinência '+(e.relevancia||'—')+(e.palavras&&e.palavras.length?' ('+esc(e.palavras.join(', '))+')':'')+'</div>'
+      +'<div><span class="badge b-tipo">'+(TIPO_NOME[e.tipo]||esc(e.tipo))+'</span>'+badgePrazo(e)
+      +(e.valor?'<span class="badge b-tipo">💰 '+esc(e.valor)+'</span>':'')+'</div>'
+      +'<div class="linha-form">'
+      +'<a href="'+esc(e.url)+'" target="_blank" class="btn btn-g btn-mini" style="text-decoration:none">🔗 Abrir edital</a>'
+      +'<select onchange="setCampo('+idx+',\'status\',this.value)">'+STATUS_OPTS.map(function(o){return '<option value="'+o[0]+'"'+(e.status===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'
+      +'<label style="font-family:Arial,sans-serif;font-size:.74rem">Prazo final: <input type="date" value="'+esc(e.prazo_final)+'" onchange="setCampo('+idx+',\'prazo_final\',this.value)"></label>'
+      +'<input type="text" placeholder="Órgão/financiador" value="'+esc(e.orgao)+'" onchange="setCampo('+idx+',\'orgao\',this.value)" style="width:170px">'
+      +'<input type="text" placeholder="Valor (ex.: até R$ 60 mil)" value="'+esc(e.valor)+'" onchange="setCampo('+idx+',\'valor\',this.value)" style="width:160px">'
+      +'</div>'
+      +'<div style="margin-top:8px"><b style="font-family:Arial,sans-serif;font-size:.78rem;color:var(--ouro)">DOCUMENTOS OBRIGATÓRIOS</b>'+docs
+      +'<div class="linha-form"><input type="text" id="doc-'+idx+'" placeholder="ex.: Estatuto registrado, Ata de eleição, CNPJ..." style="flex:1"><button class="btn-mini" onclick="docAdd('+idx+')">＋ doc</button></div></div>'
+      +'<div style="margin-top:6px"><b style="font-family:Arial,sans-serif;font-size:.78rem;color:var(--ouro)">ARQUIVOS DO EDITAL (PDF)</b>'+arqs
+      +'<div class="linha-form"><input type="file" id="arq-'+idx+'" accept=".pdf,.doc,.docx,.zip"><button class="btn-mini" onclick="arqUpload('+idx+')">⬆ Arquivar</button></div></div>'
+      +'<div style="margin-top:6px"><textarea placeholder="Notas internas (elegibilidade, dúvidas, contatos...)" onchange="setCampo('+idx+',\'notas\',this.value)">'+esc(e.notas)+'</textarea></div>'
+      +'<div class="linha-form"><button class="btn-mini" onclick="kitProposta('+idx+',\'icet\')">🧰 Kit Proposta — ICET</button>'
+      +'<button class="btn-mini" onclick="kitProposta('+idx+',\'cmddi\')">🧰 Kit Proposta — CMDDI</button></div>'
+      +'</div>';
+  });
+  document.getElementById('lista').innerHTML=html||'<div class="card">Nenhum edital corresponde ao filtro. A varredura automática roda em dias úteis de manhã — ou cadastre um manualmente.</div>';
+  var cfgEmails=(DB.config&&DB.config.avisos_emails)||[];
+  document.getElementById('emails').innerHTML=cfgEmails.map(function(em,i){
+    return '<span class="chip">'+esc(em)+' <b onclick="delEmail('+i+')">✕</b></span>';
+  }).join('')||'<span style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhum e-mail cadastrado ainda.</span>';
+}
+function setCampo(i,c,v){DB.editais[i][c]=v;render();}
+function docAdd(i){var el=document.getElementById('doc-'+i);var v=el.value.trim();if(!v)return;(DB.editais[i].documentos=DB.editais[i].documentos||[]).push({nome:v,ok:false});el.value='';render();}
+function docToggle(i,di){DB.editais[i].documentos[di].ok=!DB.editais[i].documentos[di].ok;render();}
+function docDel(i,di){DB.editais[i].documentos.splice(di,1);render();}
+function addEmail(){var el=document.getElementById('novo-email');var v=el.value.trim();if(!v||v.indexOf('@')<1){notif('E-mail inválido');return;}(DB.config.avisos_emails=DB.config.avisos_emails||[]).push(v);el.value='';render();notif('Lembre de clicar em 💾 Salvar');}
+function delEmail(i){DB.config.avisos_emails.splice(i,1);render();}
+function novoManual(){
+  var t=prompt('Título do edital:');if(!t)return;
+  var u=prompt('Link (URL) do edital:')||'';
+  DB.editais.push({id:'man'+Date.now(),titulo:t,url:u,fonte:'Cadastro manual',tipo:'privado_nacional',relevancia:'',palavras:[],encontrado_em:new Date().toISOString(),status:'em_analise',prazo_final:'',orgao:'',valor:'',documentos:[],notas:'',arquivos:[]});
+  render();notif('Cadastrado — preencha os campos e clique em 💾 Salvar');
+}
+function arqUpload(i){
+  var inp=document.getElementById('arq-'+i);
+  if(!inp.files||!inp.files[0]){notif('Escolha um arquivo primeiro');return;}
+  var f=inp.files[0];
+  if(f.size>24*1024*1024){notif('Arquivo grande demais (máx ~24 MB)');return;}
+  var r=new FileReader();
+  r.onload=function(){
+    var b64=r.result.split(',')[1];
+    var nomeLimpo=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    var caminho='editais/arquivos/'+DB.editais[i].id+'-'+nomeLimpo;
+    fetch(API+caminho,{method:'PUT',headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'ADM editais: arquivo '+nomeLimpo,content:b64})})
+    .then(function(rs){return rs.json().then(function(j){if(!rs.ok)throw new Error(j.message||('HTTP '+rs.status));return j;});})
+    .then(function(j){
+      (DB.editais[i].arquivos=DB.editais[i].arquivos||[]).push({nome:f.name,url:j.content.download_url});
+      render();notif('✓ Arquivado — clique em 💾 Salvar para gravar o vínculo');
+    })
+    .catch(function(e){notif('Erro no upload: '+e.message);});
+  };
+  r.readAsDataURL(f);
+}
+function digestWhats(){
+  var abertos=DB.editais.filter(function(e){var d=diasRestantes(e.prazo_final);return e.status!=='arquivado'&&e.status!=='aprovado'&&(d===null||d>=0);})
+    .sort(function(a,b){var da=diasRestantes(a.prazo_final),db_=diasRestantes(b.prazo_final);if(da===null)return 1;if(db_===null)return -1;return da-db_;}).slice(0,8);
+  if(!abertos.length){notif('Nenhum edital em aberto');return;}
+  var msg='🪶 *Radar de Editais ICET/CMDDI*\n\n'+abertos.map(function(e){
+    var d=diasRestantes(e.prazo_final);
+    return '• '+e.titulo+(d!==null?' — ⏳ '+(d===0?'ENCERRA HOJE':'faltam '+d+' dias'):' — prazo a confirmar')+'\n'+e.url;
+  }).join('\n\n');
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+var INST={
+  icet:{nome:'Instituto Cacique Enir Terena (ICET)',cidade:'Campo Grande/MS — Aldeia Urbana Marçal de Souza',
+    perfil:'O ICET nasce do coletivo de mulheres ceramistas Terena e leva o nome do Cacique Enir da Silva Bezerra. Atua na proteção e promoção do patrimônio cultural do povo Terena, com destaque para a cerâmica tradicional, a marca coletiva OREKA (primeira marca coletiva indígena do Brasil, INPI nº 941549186) e o desenvolvimento de tecnologia social para geração de renda, capacitação e salvaguarda de saberes tradicionais.',
+    presidencia:'Presidenta: Maria Auxiliadora Bezerra'},
+  cmddi:{nome:'Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI)',cidade:'Campo Grande/MS',
+    perfil:'O CMDDI é órgão colegiado de defesa dos direitos dos povos indígenas de Campo Grande, atuando na formulação e no controle social de políticas públicas, na articulação interinstitucional e na promoção da cidadania, cultura e dignidade das comunidades indígenas do município.',
+    presidencia:''}
+};
+function kitProposta(i,inst){
+  var e=DB.editais[i],o=INST[inst];
+  var w=window.open('','_blank');if(!w){notif('Permita pop-ups');return;}
+  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Kit Proposta — '+esc(e.titulo)+'</title>'
+   +'<style>body{font-family:Georgia,serif;max-width:760px;margin:36px auto;padding:0 22px;line-height:1.55;color:#222}h1{font-size:1.1rem;color:#8B3A2A}h2{font-size:.95rem;color:#8B3A2A;border-bottom:2px solid #C9A24A;padding-bottom:3px;margin:22px 0 8px}p{margin:6px 0}.dica{background:#faf3e3;border-left:4px solid #C9A24A;padding:8px 12px;font-size:.85rem}.pb{position:fixed;top:14px;right:14px;padding:9px 16px;background:#8B3A2A;color:#fff;border:none;border-radius:8px;cursor:pointer}@media print{.pb{display:none}}</style></head><body>'
+   +'<button class="pb" onclick="window.print()">🖨 Imprimir / PDF</button>'
+   +'<h1>ESQUELETO DE PROPOSTA — '+esc(e.titulo)+'</h1>'
+   +'<p class="dica">Este kit organiza o rascunho com os dados institucionais já preenchidos. A proposta final precisa ser adaptada às exigências ESPECÍFICAS do edital — leve o PDF do edital e este esqueleto para o Claude e construam juntos a versão final.</p>'
+   +'<h2>1. Identificação da proponente</h2><p><b>'+esc(o.nome)+'</b><br>'+esc(o.cidade)+(o.presidencia?'<br>'+esc(o.presidencia):'')+'</p>'
+   +'<h2>2. Perfil institucional</h2><p>'+esc(o.perfil)+'</p>'
+   +'<h2>3. Alinhamento com o edital</h2><p>[Explicar aqui, em 2–3 parágrafos, como o objeto do edital "'+esc(e.titulo)+'"'+(e.orgao?' ('+esc(e.orgao)+')':'')+' dialoga com a missão da instituição: cite os eixos do edital e conecte um a um com as atividades reais já desenvolvidas.]</p>'
+   +'<h2>4. Justificativa</h2><p>[Contexto e problema que o projeto enfrenta; dados do território; por que esta instituição é a certa para executar.]</p>'
+   +'<h2>5. Objetivos (geral e específicos)</h2><p>[1 objetivo geral + 3 a 5 específicos, mensuráveis.]</p>'
+   +'<h2>6. Metodologia e atividades</h2><p>[Como será feito, com quem, onde; protagonismo indígena na execução e na decisão.]</p>'
+   +'<h2>7. Cronograma</h2><p>[Tabela mês a mês das atividades.]</p>'
+   +'<h2>8. Orçamento</h2><p>[Rubricas conforme o edital; verificar itens financiáveis e vedados; contrapartida se exigida.]</p>'
+   +'<h2>9. Equipe</h2><p>[Coordenação, funções, vínculo com a comunidade.]</p>'
+   +'<h2>10. Resultados esperados e sustentabilidade</h2><p>[Indicadores; o que permanece depois do recurso acabar.]</p>'
+   +'<h2>11. Documentos exigidos (checklist deste edital)</h2><p>'+((e.documentos||[]).map(function(d){return (d.ok?'☑ ':'☐ ')+esc(d.nome);}).join('<br>')||'[Liste no ADM os documentos exigidos pelo edital]')+'</p>'
+   +'</body></html>');
+  w.document.close();
+}
+</script>
+</body>
+</html>

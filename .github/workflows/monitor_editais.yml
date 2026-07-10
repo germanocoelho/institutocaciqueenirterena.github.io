@@ -1,0 +1,40 @@
+name: Radar de Editais ICET/CMDDI
+
+on:
+  schedule:
+    - cron: '0 11 * * 1-5'   # dias úteis, 11:00 UTC (~07:00 Campo Grande/MS)
+  workflow_dispatch: {}       # botão "Rodar agora"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radar-editais
+  cancel-in-progress: false
+
+jobs:
+  varrer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Varrer fontes e pontuar pertinência
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: python3 editais/monitor_editais.py
+
+      - name: Commitar resultados
+        run: |
+          git config user.name  "Radar de Editais"
+          git config user.email "radar@institutocaciqueenirterena.com.br"
+          git add editais/editais.json || true
+          git diff --cached --quiet || git commit -m "Radar de editais: varredura diária [skip ci]"
+          for tentativa in 1 2 3 4 5; do
+            if git push; then
+              break
+            fi
+            echo "push rejeitado — tentativa $tentativa/5, sincronizando..."
+            git pull --rebase origin main
+            sleep $((tentativa * 5))
+          done
