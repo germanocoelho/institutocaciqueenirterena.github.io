@@ -2165,11 +2165,6 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
           </div>
         </div>
       </div>    </div>
-    <div class="adm-panel" style="border:2px solid #C9A24A;background:linear-gradient(135deg,#2a1a0e,#1e1208)">
-      <h4 style="color:#C9A24A">🪶 Radar de Editais — NOVO</h4>
-      <p style="font-size:.85rem;margin:6px 0">Monitor automático de editais e chamamentos (nacionais e internacionais) com pertinência aos objetivos do ICET, prazos visuais, cofre de certidões, kit proposta e acompanhamento pós-protocolo.</p>
-      <a href="editais.html" style="display:inline-block;padding:10px 18px;background:#C9A24A;color:#1e1208;border-radius:9px;font-weight:700;text-decoration:none">Abrir Radar de Editais →</a>
-    </div>
     <div class="adm-panel">
       <h4>⚙ Adicionar membro da diretoria</h4>
       <div class="form-row">
@@ -6681,7 +6676,8 @@ function relGerar() {
     '</div>'+
   '</div>'+
   '<div style="background:'+MAR+';padding:16px 30px;text-align:center;font-size:10.5px;color:'+CRE+'99;line-height:1.7">Instituto Cacique Enir Terena (ICET) \u00b7 Campo Grande, MS<br>Plataforma implantada por VERTTI Consulting \u00b7 institutocaciqueenirterena.com.br</div>'+
-  '</div></body></html>';
+  '</div>'+
+  '</body></html>';
   window._relHtml = html;
   window._relMesTxt = relMesTexto(ano,mes);
   var pv = document.getElementById('rel-preview');
@@ -6748,5 +6744,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 </script>
+<a id="radar-editais-flutuante" href="editais.html" style="display:none;position:fixed;bottom:22px;right:22px;z-index:9999;
+  background:linear-gradient(135deg,#C9A24A,#E3C77E);color:#1e1208;padding:14px 22px;border-radius:50px;
+  font-family:Arial,sans-serif;font-weight:800;font-size:.88rem;text-decoration:none;
+  box-shadow:0 8px 24px -6px rgba(201,162,75,.7);align-items:center;gap:8px">
+  🪶 Radar de Editais
+</a>
+<style>body.adm-on #radar-editais-flutuante{display:flex!important}</style>
 </body>
 </html>
