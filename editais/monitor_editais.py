@@ -44,6 +44,12 @@ PALAVRAS = {
         "literatura", "audiovisual", "circo", "artesanato", "mestre da cultura",
         "ponto de cultura", "aldir blanc", "paulo gustavo", "pnab", "pronac",
         "lei rouanet", "editais de fomento",
+        # bolsas, intercâmbio e parcerias acadêmicas internacionais
+        "bolsa", "fellowship", "scholarship", "intercâmbio", "intercambio",
+        "exchange program", "visiting scholar", "pesquisador visitante",
+        "parceria acadêmica", "parceria academica", "cooperação internacional",
+        "cooperacao internacional", "convênio internacional", "convenio internacional",
+        "pós-doutorado", "pos-doutorado", "postdoctoral", "call for applications",
         "economia criativa", "meio ambiente", "biodiversidade", "clima",
         "museu", "memória", "memoria", "propriedade intelectual",
         "segurança alimentar", "seguranca alimentar", "agroecologia",

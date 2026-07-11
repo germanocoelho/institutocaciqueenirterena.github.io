@@ -128,6 +128,70 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
   .hero-prazo .hp-qual{margin-left:0}
   header h1{font-size:1.3rem}
 }
+
+/* ── O ACEIRO — leito de brasas dos prazos (assinatura visual) ── */
+.aceiro-wrap{margin-bottom:1.6rem}
+.aceiro-titulo{font-family:'Fraunces',serif;font-weight:650;color:var(--ouro-claro);font-size:.92rem;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.aceiro-sub{font-size:.7rem;color:var(--engobe-2);margin-bottom:12px}
+.aceiro{display:flex;gap:16px;overflow-x:auto;padding:10px 4px 18px;scrollbar-width:thin}
+.aceiro::-webkit-scrollbar{height:6px}
+.aceiro::-webkit-scrollbar-thumb{background:var(--linha-2);border-radius:6px}
+.brasa{flex:none;width:88px;text-align:center;cursor:pointer;transition:transform .15s}
+.brasa:hover{transform:translateY(-3px)}
+.brasa-bola{width:54px;height:54px;border-radius:50%;margin:0 auto 8px;position:relative;
+  display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.78rem}
+.brasa-bola.b-quente{background:radial-gradient(circle at 32% 28%,#FFD9A8,var(--ter-vivo) 55%,#7A2E14);
+  box-shadow:0 0 22px 6px rgba(224,106,60,.65),0 0 4px 1px rgba(255,217,168,.5) inset;color:#2A0F02;animation:brasa-pulsa 1.4s infinite}
+.brasa-bola.b-morna{background:radial-gradient(circle at 32% 28%,var(--ouro-claro),var(--ouro) 60%,#8A6524);
+  box-shadow:0 0 16px 3px rgba(217,169,78,.45);color:#2A1708}
+.brasa-bola.b-fresca{background:radial-gradient(circle at 32% 28%,var(--engobe),var(--engobe-2) 65%,#7A6B52);
+  box-shadow:0 0 8px 1px rgba(237,224,200,.2);color:#2A2010}
+.brasa-bola.b-fria{background:var(--barro3);border:1px solid var(--linha-2);color:#8A7A66;box-shadow:none}
+@keyframes brasa-pulsa{50%{box-shadow:0 0 30px 9px rgba(224,106,60,.8),0 0 4px 1px rgba(255,217,168,.6) inset}}
+.brasa-dias{font-size:.66rem;font-weight:700;color:var(--engobe);letter-spacing:.02em}
+.brasa-nome{font-size:.62rem;color:var(--engobe-2);line-height:1.25;margin-top:2px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (prefers-reduced-motion:reduce){.brasa-bola.b-quente{animation:none}}
+
+/* ── BARRA DO FORNO — estatísticas ─────────────────────────── */
+.forno{display:flex;flex-wrap:wrap;gap:0;margin-bottom:1.2rem;border:1px solid var(--linha);border-radius:var(--r);
+  background:linear-gradient(180deg,var(--barro2),#241307);overflow:hidden}
+.forno-item{flex:1;min-width:120px;padding:12px 16px;border-right:1px solid var(--linha);position:relative}
+.forno-item:last-child{border-right:none}
+.forno-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1.5rem;color:var(--ouro-claro);line-height:1}
+.forno-rot{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--engobe-2);margin-top:4px}
+
+/* ── DISTRIBUIÇÃO POR CATEGORIA ────────────────────────────── */
+.cat-dist{display:flex;flex-direction:column;gap:6px;margin-bottom:1.4rem}
+.cat-linha{display:flex;align-items:center;gap:10px;font-size:.74rem}
+.cat-rot{width:170px;flex:none;color:var(--engobe-2);display:flex;align-items:center;gap:6px}
+.cat-trilho{flex:1;height:8px;border-radius:6px;background:var(--barro3);overflow:hidden}
+.cat-preenche{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ter),var(--ouro))}
+.cat-qtd{width:24px;text-align:right;font-family:'IBM Plex Mono',monospace;color:var(--engobe)}
+
+/* ── ALTERNÂNCIA LISTA / QUADRO ────────────────────────────── */
+.view-toggle{display:flex;gap:4px;background:var(--barro3);border:1px solid var(--linha-2);border-radius:11px;padding:3px}
+.view-toggle button{background:transparent;box-shadow:none;padding:7px 14px;font-size:.76rem;color:var(--engobe-2)}
+.view-toggle button.ativo{background:linear-gradient(160deg,var(--ter-vivo),var(--ter));color:#FFF4E8;box-shadow:0 4px 12px -4px rgba(196,87,47,.6)}
+.view-toggle button:hover{transform:none}
+
+/* ── QUADRO KANBAN ──────────────────────────────────────────── */
+.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;align-items:flex-start}
+.board-col{flex:none;width:250px;background:rgba(0,0,0,.15);border:1px solid var(--linha);border-radius:var(--r);padding:10px}
+.board-col h4{font-family:'Fraunces',serif;font-size:.82rem;color:var(--ouro-claro);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.board-col h4 span{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--engobe-2);background:var(--barro3);border-radius:8px;padding:1px 7px}
+.board-card{background:var(--barro2);border:1px solid var(--linha);border-left:3px solid var(--ter);border-radius:10px;
+  padding:9px 10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,transform .15s}
+.board-card:hover{border-left-color:var(--ouro);transform:translateX(2px)}
+.board-card .bc-titulo{font-size:.76rem;color:var(--engobe);line-height:1.3;margin-bottom:5px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.board-col.vazio{opacity:.5;font-size:.7rem;color:var(--engobe-2);text-align:center;padding:16px 6px}
+
+/* ── PROGRESSO DE DOCUMENTOS ───────────────────────────────── */
+.doc-progresso{display:flex;align-items:center;gap:8px;margin:6px 0 2px}
+.doc-trilho{flex:1;height:6px;border-radius:5px;background:var(--barro3);overflow:hidden}
+.doc-preenche{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ter),var(--verde));transition:width .3s}
+.doc-progresso-txt{font-size:.66rem;color:var(--engobe-2);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -157,11 +221,25 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
 
   <div id="painel" style="display:none">
     <div class="resumo" id="resumo"></div>
+
+    <div class="aceiro-wrap" id="aceiro-wrap" style="display:none">
+      <div class="aceiro-titulo">🔥 O Aceiro — leito de prazos</div>
+      <div class="aceiro-sub">Cada brasa é um prazo em aberto. Quanto mais quente, mais perto do fim — clique para ir direto ao edital.</div>
+      <div class="aceiro" id="aceiro"></div>
+    </div>
+
+    <div class="forno" id="forno"></div>
+    <div class="cat-dist" id="cat-dist"></div>
+
     <div class="topo-acoes">
       <button onclick="salvarTudo()">💾 Salvar alterações</button>
       <button class="btn-g" onclick="carregar(true)">↻ Recarregar</button>
       <button class="btn-g" onclick="digestWhats()">💬 Resumo p/ WhatsApp</button>
       <button class="btn-g" onclick="novoManual()">＋ Cadastrar edital manualmente</button>
+      <div class="view-toggle" style="margin-left:auto">
+        <button id="vt-lista" class="ativo" onclick="mudarVista('lista')">☰ Lista</button>
+        <button id="vt-quadro" onclick="mudarVista('quadro')">▦ Quadro</button>
+      </div>
     </div>
     <div class="filtros">
       <select id="f-status" onchange="render()">
@@ -182,12 +260,14 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
         <option value="publicacao_livro">📖 Publicação / Livro</option>
         <option value="artigo_cientifico">🔬 Artigo científico / Pesquisa</option>
         <option value="audiovisual">🎬 Audiovisual</option>
+        <option value="bolsas_intercambio">🎓 Bolsas / Intercâmbio / Parcerias</option>
       </select>
-      <label style="font-family:Arial,sans-serif;font-size:.78rem;display:flex;align-items:center;gap:5px;background:#3a2a15;padding:6px 10px;border-radius:8px">
+      <label style="font-size:.78rem;display:flex;align-items:center;gap:5px;background:var(--barro3);padding:6px 10px;border-radius:8px;color:var(--engobe-2)">
         <input type="checkbox" id="f-multiplas" onchange="render()"> só ✱ várias propostas</label>
       <input type="text" id="f-busca" placeholder="Buscar no título..." oninput="render()" style="flex:1;min-width:160px">
     </div>
     <div id="lista"></div>
+    <div id="board" class="board" style="display:none"></div>
 
     <div class="sec-cfg">
       <h3 style="color:var(--ouro)">🗄️ Cofre de documentos institucionais (prontidão de edital)</h3>
@@ -298,22 +378,24 @@ function render(){
     var arqs=(e.arquivos||[]).map(function(a){
       return '<div class="doc-item">📎 <a href="'+esc(a.url)+'" target="_blank" download>'+esc(a.nome)+'</a></div>';
     }).join('');
-    html+='<div class="card">'
+    var docsTotal=(e.documentos||[]).length, docsOk=(e.documentos||[]).filter(function(d){return d.ok;}).length;
+    var docsProgresso=docsTotal?'<div class="doc-progresso"><div class="doc-trilho"><div class="doc-preenche" style="width:'+Math.round(docsOk/docsTotal*100)+'%"></div></div><span class="doc-progresso-txt">'+docsOk+'/'+docsTotal+'</span></div>':'';
+    html+='<div class="card" id="card-'+idx+'">'
       +'<h3>'+esc(e.titulo)+'</h3>'
       +'<div class="meta">'+esc(e.fonte)+(e.orgao?' · '+esc(e.orgao):'')+' · pertinência '+(e.relevancia||'—')+(e.palavras&&e.palavras.length?' ('+esc(e.palavras.join(', '))+')':'')+'</div>'
       +'<div><span class="badge b-tipo">'+(TIPO_NOME[e.tipo]||esc(e.tipo))+'</span>'+badgePrazo(e)
       +(e.valor?'<span class="badge b-tipo">💰 '+esc(e.valor)+'</span>':'')
       +(e.multiplas_propostas?'<span class="badge b-prazo-ok">✱ várias propostas possíveis</span>':'')
-      +(e.categoria&&e.categoria!=='geral'?'<span class="badge b-tipo">'+({publicacao_livro:'📖 Publicação',artigo_cientifico:'🔬 Artigo científico',audiovisual:'🎬 Audiovisual'}[e.categoria]||e.categoria)+'</span>':'')
+      +(e.categoria&&e.categoria!=='geral'?'<span class="badge b-tipo">'+({publicacao_livro:'📖 Publicação',artigo_cientifico:'🔬 Artigo científico',audiovisual:'🎬 Audiovisual',bolsas_intercambio:'🎓 Bolsa/Intercâmbio'}[e.categoria]||e.categoria)+'</span>':'')
       +(e.idioma_fonte&&e.idioma_fonte!=='pt'?'<span class="badge b-tipo">🌐 '+esc(e.idioma_fonte)+'</span>':'')+'</div>'
       +'<div class="linha-form">'
       +'<a href="'+esc(e.url)+'" target="_blank" class="btn btn-g btn-mini" style="text-decoration:none">🔗 Abrir edital</a>'
       +'<select onchange="setCampo('+idx+',\'status\',this.value)">'+STATUS_OPTS.map(function(o){return '<option value="'+o[0]+'"'+(e.status===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'
-      +'<label style="font-family:Arial,sans-serif;font-size:.74rem">Prazo final: <input type="date" value="'+esc(e.prazo_final)+'" onchange="setCampo('+idx+',\'prazo_final\',this.value)"></label>'
+      +'<label style="font-size:.74rem;color:var(--engobe-2)">Prazo final: <input type="date" value="'+esc(e.prazo_final)+'" onchange="setCampo('+idx+',\'prazo_final\',this.value)"></label>'
       +'<input type="text" placeholder="Órgão/financiador" value="'+esc(e.orgao)+'" onchange="setCampo('+idx+',\'orgao\',this.value)" style="width:170px">'
       +'<input type="text" placeholder="Valor (ex.: até R$ 60 mil)" value="'+esc(e.valor)+'" onchange="setCampo('+idx+',\'valor\',this.value)" style="width:160px">'
       +'</div>'
-      +'<div style="margin-top:8px"><b style="font-family:Arial,sans-serif;font-size:.78rem;color:var(--ouro)">DOCUMENTOS OBRIGATÓRIOS</b>'+docs
+      +'<div style="margin-top:8px"><b style="font-size:.78rem;color:var(--ouro)">DOCUMENTOS OBRIGATÓRIOS</b>'+docsProgresso+docs
       +'<div class="linha-form"><input type="text" id="doc-'+idx+'" placeholder="ex.: Estatuto registrado, Ata de eleição, CNPJ..." style="flex:1"><button class="btn-mini" onclick="docAdd('+idx+')">＋ doc</button></div></div>'
       +'<div style="margin-top:6px"><b style="font-family:Arial,sans-serif;font-size:.78rem;color:var(--ouro)">ARQUIVOS DO EDITAL (PDF)</b>'+arqs
       +'<div class="linha-form"><input type="file" id="arq-'+idx+'" accept=".pdf,.doc,.docx,.zip"><button class="btn-mini" onclick="arqUpload('+idx+')">⬆ Arquivar</button></div></div>'
@@ -325,10 +407,106 @@ function render(){
   document.getElementById('lista').innerHTML=html||'<div class="card">Nenhum edital corresponde ao filtro. A varredura automática roda em dias úteis de manhã — ou cadastre um manualmente.</div>';
   renderCofre();
   atualizarHero();
+  renderAceiro();
+  renderForno();
+  renderCategorias();
+  renderBoard();
   var cfgEmails=(DB.config&&DB.config.avisos_emails)||[];
   document.getElementById('emails').innerHTML=cfgEmails.map(function(em,i){
     return '<span class="chip">'+esc(em)+' <b onclick="delEmail('+i+')">✕</b></span>';
-  }).join('')||'<span style="font-family:Arial,sans-serif;font-size:.76rem;color:#8a7a5a">Nenhum e-mail cadastrado ainda.</span>';
+  }).join('')||'<span style="font-size:.76rem;color:var(--engobe-2)">Nenhum e-mail cadastrado ainda.</span>';
+}
+
+/* ── O ACEIRO: leito de brasas dos prazos ─────────────────── */
+function scrollParaCard(idx){
+  mudarVista('lista');
+  setTimeout(function(){
+    var el=document.getElementById('card-'+idx);
+    if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.style.borderLeftColor='var(--ouro-claro)';
+    el.animate([{boxShadow:'0 0 0 3px rgba(217,169,78,.55)'},{boxShadow:'0 0 0 0 rgba(217,169,78,0)'}],{duration:1400});
+  },60);
+}
+function renderAceiro(){
+  var wrap=document.getElementById('aceiro-wrap');
+  var pontos=[];
+  DB.editais.forEach(function(e,idx){
+    if(e.status==='arquivado'||e.status==='aprovado')return;
+    var d=diasRestantes(e.prazo_final);
+    if(d!==null&&d>=0)pontos.push({dias:d,titulo:e.titulo,idx:idx});
+  });
+  pontos.sort(function(a,b){return a.dias-b.dias;});
+  if(!pontos.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('aceiro').innerHTML=pontos.slice(0,24).map(function(p){
+    var classe=p.dias<=7?'b-quente':p.dias<=30?'b-morna':p.dias<=90?'b-fresca':'b-fria';
+    return '<div class="brasa" onclick="scrollParaCard('+p.idx+')">'
+      +'<div class="brasa-bola '+classe+'">'+(p.dias===0?'HOJE':p.dias)+'</div>'
+      +'<div class="brasa-dias">'+(p.dias===0?'encerra hoje':p.dias+'d restantes')+'</div>'
+      +'<div class="brasa-nome">'+esc(p.titulo)+'</div></div>';
+  }).join('');
+}
+
+/* ── BARRA DO FORNO: estatísticas ──────────────────────────── */
+function renderForno(){
+  var ativos=DB.editais.filter(function(e){return e.status!=='arquivado'&&e.status!=='aprovado';});
+  var aprovados=DB.editais.filter(function(e){return e.status==='aprovado';}).length;
+  var estaSemana=ativos.filter(function(e){var d=diasRestantes(e.prazo_final);return d!==null&&d>=0&&d<=7;}).length;
+  var comValor=ativos.filter(function(e){return e.valor;}).length;
+  var itens=[
+    [DB.editais.length,'no radar'],
+    [ativos.length,'em acompanhamento'],
+    [estaSemana,'prazos essa semana'],
+    [aprovados,'aprovados 🎉'],
+    [comValor,'com valor mapeado'],
+  ];
+  document.getElementById('forno').innerHTML=itens.map(function(it){
+    return '<div class="forno-item"><div class="forno-num">'+it[0]+'</div><div class="forno-rot">'+it[1]+'</div></div>';
+  }).join('');
+}
+
+/* ── DISTRIBUIÇÃO POR CATEGORIA ────────────────────────────── */
+function renderCategorias(){
+  var ativos=DB.editais.filter(function(e){return e.status!=='arquivado';});
+  var cats=[
+    ['geral','🪶 Geral / indígena'],['publicacao_livro','📖 Publicação / Livro'],
+    ['artigo_cientifico','🔬 Artigo científico'],['audiovisual','🎬 Audiovisual'],
+    ['bolsas_intercambio','🎓 Bolsas / Intercâmbio'],
+  ];
+  var max=1;
+  var contagens=cats.map(function(c){
+    var n=ativos.filter(function(e){return (e.categoria||'geral')===c[0];}).length;
+    if(n>max)max=n;
+    return n;
+  });
+  document.getElementById('cat-dist').innerHTML=cats.map(function(c,i){
+    var n=contagens[i];
+    return '<div class="cat-linha"><div class="cat-rot">'+c[1]+'</div>'
+      +'<div class="cat-trilho"><div class="cat-preenche" style="width:'+(n?Math.max(6,n/max*100):0)+'%"></div></div>'
+      +'<div class="cat-qtd">'+n+'</div></div>';
+  }).join('');
+}
+
+/* ── ALTERNÂNCIA LISTA / QUADRO ────────────────────────────── */
+var VISTA='lista';
+function mudarVista(v){
+  VISTA=v;
+  document.getElementById('vt-lista').classList.toggle('ativo',v==='lista');
+  document.getElementById('vt-quadro').classList.toggle('ativo',v==='quadro');
+  document.getElementById('lista').style.display=v==='lista'?'block':'none';
+  document.getElementById('board').style.display=v==='quadro'?'flex':'none';
+}
+function renderBoard(){
+  var cols=[['novo','Novo'],['em_analise','Em análise'],['preparando','Preparando'],['enviado','Enviado'],['aprovado','Aprovado 🎉']];
+  document.getElementById('board').innerHTML=cols.map(function(c){
+    var itens=DB.editais.map(function(e,idx){return {e:e,idx:idx};}).filter(function(x){return x.e.status===c[0];});
+    var corpo=itens.map(function(x){
+      return '<div class="board-card" onclick="mudarVista(&apos;lista&apos;);scrollParaCard('+x.idx+')">'
+        +'<div class="bc-titulo">'+esc(x.e.titulo)+'</div>'+badgePrazo(x.e)+'</div>';
+    }).join('')||'<div class="board-col vazio">vazio</div>';
+    return '<div class="board-col"><h4>'+c[1]+'<span>'+itens.length+'</span></h4>'+corpo+'</div>';
+  }).join('');
 }
 function atualizarHero(){
   var alvo=null; // {dias, texto}

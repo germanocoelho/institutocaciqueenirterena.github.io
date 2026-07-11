@@ -343,6 +343,27 @@
       "tipo": "internacional",
       "categoria": "audiovisual",
       "idioma": "en"
+    },
+    {
+      "nome": "ONU/OHCHR — Programa de Bolsas Indígenas (Genebra, trilha em português, indicação pela organização)",
+      "url": "https://www.ohchr.org/en/about-us/fellowship-programmes/indigenous-fellowship-programme",
+      "tipo": "internacional",
+      "categoria": "bolsas_intercambio",
+      "idioma": "pt/en/es/fr"
+    },
+    {
+      "nome": "Fulbright Visiting Scholar Program (pesquisa avançada em universidades dos EUA)",
+      "url": "https://fulbrightscholars.org/non-us-scholars/fulbright-visiting-scholar-program",
+      "tipo": "internacional",
+      "categoria": "bolsas_intercambio",
+      "idioma": "en"
+    },
+    {
+      "nome": "Dartmouth — Tribal Scholar Fellowship Program (pesquisa de curta duração, não exige ser aluno matriculado)",
+      "url": "https://native-american.dartmouth.edu/research/tribal-scholar-fellowship-program",
+      "tipo": "internacional",
+      "categoria": "bolsas_intercambio",
+      "idioma": "en"
     }
   ]
 }
