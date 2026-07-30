@@ -3157,7 +3157,7 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
     <a href="#noticias" data-i18n="nav_noticias">Notícias</a><a href="#galeria" data-i18n="nav_galeria">Galeria</a>
     <a href="#videos" data-i18n="nav_videos">Vídeos</a><a href="#loja" data-i18n="nav_loja">Loja</a><a href="#acervo" data-i18n="nav_acervo">Acervo</a><a href="#contato" data-i18n="nav_contato">Contato</a>
   </div>
-  <p class="footer-txt">© 2025 Instituto Cacique Enir Terena (ICET) · Campo Grande, MS · OREKA™ · INPI<br><span data-i18n="footer_dev">Site desenvolvido por</span> <strong style="color:var(--tx2)">Germano Coelho Ramos Rocha-Silva</strong> — Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</p>
+  <p class="footer-txt">© 2025 Instituto Cacique Enir Terena (ICET) · Campo Grande, MS · OREKA™ · INPI<br><span data-i18n="footer_dev">Site desenvolvido por</span> <strong style="color:var(--tx2)">Germano Coelho Ramos Rocha-Silva</strong> — <span data-i18n="footer_credencial">Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.</span></p>
 </footer>
 
 <!-- MODAL IBGE -->
@@ -5007,13 +5007,16 @@ function abrirIbge(aba){
   _ibgeAba=aba;
   document.getElementById('ibge-modal').classList.add('open');
   document.getElementById('ibge-search').value='';
+  var L=window.ICET_L;
+  document.getElementById('ibge-search').setAttribute('placeholder', L?L('ibge_search_ph'):'Filtrar por nome...');
   renderIbgeTabs();renderIbgeConteudo('');
-  var t={'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Município - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
-  document.getElementById('ibge-modal-titulo').textContent=t[aba]||'Dados IBGE 2022';
+  var t=L?{'ms-etnia':L('ibge_titulo_etnia'),'ms-municipio':L('ibge_titulo_municipio'),'brasil':L('ibge_titulo_brasil')}:{'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Município - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
+  document.getElementById('ibge-modal-titulo').textContent=t[aba]||(L?L('ibge_titulo_padrao'):'Dados IBGE 2022');
 }
 function fecharIbge(){document.getElementById('ibge-modal').classList.remove('open');}
 function renderIbgeTabs(){
-  var abas=[{id:'ms-etnia',label:'Etnias MS'},{id:'ms-municipio',label:'Municipios MS'},{id:'brasil',label:'Brasil'}];
+  var L=window.ICET_L;
+  var abas=[{id:'ms-etnia',label:L?L('ibge_tab_etnia'):'Etnias MS'},{id:'ms-municipio',label:L?L('ibge_tab_municipio'):'Municipios MS'},{id:'brasil',label:L?L('ibge_tab_brasil'):'Brasil'}];
   var h='';
   abas.forEach(function(a){
     h+='<button class="icet-modal-tab'+(_ibgeAba===a.id?' on':'')+'" data-ibge-tab="'+a.id+'">'+a.label+'</button>';
@@ -5023,19 +5026,21 @@ function renderIbgeTabs(){
 function trocarIbgeAba(aba){
   _ibgeAba=aba;renderIbgeTabs();
   document.getElementById('ibge-search').value='';renderIbgeConteudo('');
-  var t={'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Municipio - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
+  var L=window.ICET_L;
+  var t=L?{'ms-etnia':L('ibge_titulo_etnia'),'ms-municipio':L('ibge_titulo_municipio'),'brasil':L('ibge_titulo_brasil')}:{'ms-etnia':'Etnias no MS - IBGE 2022','ms-municipio':'Por Municipio - IBGE 2022','brasil':'Panorama Brasil - IBGE 2022'};
   document.getElementById('ibge-modal-titulo').textContent=t[aba]||'';
 }
 function filtrarIbge(q){renderIbgeConteudo(q.toLowerCase().trim());}
 function fmtN(n){return n.toLocaleString('pt-BR');}
 function renderIbgeConteudo(q){
+  var L=window.ICET_L;
   var cont=document.getElementById('ibge-conteudo');
   var dados=[],totalGeral=1;
   if(_ibgeAba==='ms-etnia'){dados=IBGE_MS_ETNIA;totalGeral=105975;}
   if(_ibgeAba==='ms-municipio'){dados=IBGE_MS_MUN;totalGeral=117261;}
   if(_ibgeAba==='brasil'){dados=IBGE_BRASIL;totalGeral=1719003;}
   var fil=q?dados.filter(function(d){return d[0].toLowerCase().indexOf(q)>=0;}):dados;
-  if(!fil.length){cont.innerHTML='<p style="color:var(--tx3);padding:1rem">Nenhum resultado.</p>';return;}
+  if(!fil.length){cont.innerHTML='<p style="color:var(--tx3);padding:1rem">'+(L?L('ibge_nenhum'):'Nenhum resultado.')+'</p>';return;}
   var maxVal=fil[0]?fil[0][1]:1;
   var rows='';
   fil.forEach(function(d,i){
@@ -5059,18 +5064,18 @@ function renderIbgeConteudo(q){
       +'</div></td>'
       +'</tr>'+sub;
   });
-  var labelColuna=_ibgeAba==='ms-etnia'?'Etnia / Povo MS':_ibgeAba==='ms-municipio'?'Município (MS)':'Etnia / Povo (Brasil)';
-  var labelPct=_ibgeAba==='ms-municipio'?'% do MS':'% do total';
+  var labelColuna=_ibgeAba==='ms-etnia'?(L?L('ibge_col_etnia_ms'):'Etnia / Povo MS'):_ibgeAba==='ms-municipio'?(L?L('ibge_col_municipio'):'Município (MS)'):(L?L('ibge_col_etnia_br'):'Etnia / Povo (Brasil)');
+  var labelPct=_ibgeAba==='ms-municipio'?(L?L('ibge_pct_ms'):'% do MS'):(L?L('ibge_pct_total'):'% do total');
   cont.innerHTML='<table class="d-table">'
     +'<thead><tr>'
     +'<th>#</th>'
     +'<th>'+labelColuna+'</th>'
-    +'<th style="text-align:right">Pessoas</th>'
+    +'<th style="text-align:right">'+(L?L('ibge_col_pessoas'):'Pessoas')+'</th>'
     +'<th>'+labelPct+'</th>'
     +'</tr></thead>'
     +'<tbody>'+rows+'</tbody>'
     +'</table>'
-    +'<p style="font-size:.63rem;color:var(--tx3);margin-top:.7rem;font-style:italic">IBGE · Censo Demográfico 2022 · Tabela complementar 25</p>';
+    +'<p style="font-size:.63rem;color:var(--tx3);margin-top:.7rem;font-style:italic">'+(L?L('ibge_fonte'):'IBGE · Censo Demográfico 2022 · Tabela complementar 25')+'</p>';
 }
 
 document.addEventListener('click',function(e){
@@ -5499,6 +5504,7 @@ document.addEventListener('DOMContentLoaded',function(){
       // ── MS Indígena ──
       ms_lbl_pop:    {pt:'Pessoas indígenas no MS', es:'Personas indígenas en MS', en:'Indigenous people in MS', fr:'Personnes autochtones au MS'},
       ms_lbl_estado: {pt:'Estado com maior pop. indígena entre os 27 estados', es:'Estado con mayor pob. indígena entre los 27 estados', en:'State with the largest Indigenous population among the 27 states', fr:'État ayant la plus grande population autochtone parmi les 27 États'},
+      src_ibge: {pt:'IBGE 2022', es:'IBGE 2022', en:'IBGE 2022', fr:'IBGE 2022'},
       ms_lbl_pct:    {pt:'Da pop. indígena do Brasil', es:'De la pob. indígena de Brasil', en:'Of Brazil\'s Indigenous population', fr:'De la population autochtone du Brésil'},
       ms_lbl_total:  {pt:'Total Brasil: 1.719.003', es:'Total Brasil: 1.719.003', en:'Brazil total: 1,719,003', fr:'Total Brésil : 1 719 003'},
       ms_lbl_cg:     {pt:'Indígenas em Campo Grande — 1º município do MS', es:'Indígenas en Campo Grande — 1º municipio de MS', en:'Indigenous people in Campo Grande — 1st municipality of MS', fr:'Autochtones à Campo Grande — 1re municipalité du MS'},
@@ -5645,6 +5651,7 @@ document.addEventListener('DOMContentLoaded',function(){
       btn_excluir:   {pt:'🗑 Excluir', es:'🗑 Eliminar', en:'🗑 Delete', fr:'🗑 Supprimer'},
       enir_caption:  {pt:'Enir da Silva Bezerra (Enir Terena), cacique e fundadora da Aldeia Urbana Marçal de Souza. Fonte: Instituto Cacique Enir Terena', es:'Enir da Silva Bezerra (Enir Terena), cacique y fundadora de la Aldea Urbana Marçal de Souza. Fuente: Instituto Cacique Enir Terena', en:'Enir da Silva Bezerra (Enir Terena), cacique (Indigenous chief) and founder of the Marçal de Souza Urban Village. Source: Cacique Enir Terena Institute', fr:'Enir da Silva Bezerra (Enir Terena), cacique (cheffe autochtone) et fondatrice du Village Urbain Marçal de Souza. Source : Institut Cacique Enir Terena'},
       footer_dev:    {pt:'Site desenvolvido por', es:'Sitio desarrollado por', en:'Website developed by', fr:'Site développé par'},
+      footer_credencial: {pt:'Mestre em Propriedade Intelectual e Transferência de Tecnologia para Inovação · VERTTI Consultoria Ltda.', es:'Máster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación · VERTTI Consultoria Ltda.', en:"Master's in Intellectual Property and Technology Transfer for Innovation · VERTTI Consultoria Ltda.", fr:'Master en Propriété Intellectuelle et Transfert de Technologie pour l\'Innovation · VERTTI Consultoria Ltda.'},
       maria_cargo:   {pt:'Presidente', es:'Presidenta', en:'President', fr:'Présidente'},
       tl_3_full: {pt:'<strong>Fundação da Aldeia Urbana Marçal de Souza</strong> — 1ª aldeia indígena urbana do Brasil', es:'<strong>Fundación de la Aldea Urbana Marçal de Souza</strong> — 1ª aldea indígena urbana de Brasil', en:'<strong>Founding of the Marçal de Souza Urban Village</strong> — 1st Indigenous urban village in Brazil', fr:'<strong>Fondation du Village Urbain Marçal de Souza</strong> — 1er village autochtone urbain du Brésil'},
       tl_5_full: {pt:'Eleita cacique — <strong>1ª cacique mulher do MS</strong> — com 134/277 votos', es:'Elegida cacique — <strong>1ª cacique mujer de MS</strong> — con 134/277 votos', en:'Elected cacique — <strong>1st woman cacique of MS</strong> — with 134/277 votes', fr:'Élue cacique — <strong>1re femme cacique du MS</strong> — avec 134/277 voix'},
@@ -5686,6 +5693,22 @@ document.addEventListener('DOMContentLoaded',function(){
       js_recente:       {pt:'do mais recente ao mais antigo. Role a lista e clique para abrir.', es:'del más reciente al más antiguo. Desplace la lista y haga clic para abrir.', en:'from newest to oldest. Scroll the list and click to open.', fr:'du plus récent au plus ancien. Faites défiler la liste et cliquez pour ouvrir.'},
       js_assista:       {pt:'Assista ao vídeo', es:'Ver el video', en:'Watch the video', fr:'Regarder la vidéo'},
       js_meses:         {pt:'Janeiro,Fevereiro,Março,Abril,Maio,Junho,Julho,Agosto,Setembro,Outubro,Novembro,Dezembro', es:'Enero,Febrero,Marzo,Abril,Mayo,Junio,Julio,Agosto,Septiembre,Octubre,Noviembre,Diciembre', en:'January,February,March,April,May,June,July,August,September,October,November,December', fr:'Janvier,Février,Mars,Avril,Mai,Juin,Juillet,Août,Septembre,Octobre,Novembre,Décembre'},
+      ibge_titulo_etnia:      {pt:'Etnias no MS - IBGE 2022', es:'Etnias en MS - IBGE 2022', en:'Ethnicities in MS - IBGE 2022', fr:'Ethnies au MS - IBGE 2022'},
+      ibge_titulo_municipio:  {pt:'Por Município - IBGE 2022', es:'Por Municipio - IBGE 2022', en:'By Municipality - IBGE 2022', fr:'Par Municipalité - IBGE 2022'},
+      ibge_titulo_brasil:     {pt:'Panorama Brasil - IBGE 2022', es:'Panorama Brasil - IBGE 2022', en:'Brazil Overview - IBGE 2022', fr:"Panorama Brésil - IBGE 2022"},
+      ibge_titulo_padrao:     {pt:'Dados IBGE 2022', es:'Datos IBGE 2022', en:'IBGE 2022 Data', fr:'Données IBGE 2022'},
+      ibge_tab_etnia:         {pt:'Etnias MS', es:'Etnias MS', en:'Ethnicities MS', fr:'Ethnies MS'},
+      ibge_tab_municipio:     {pt:'Municipios MS', es:'Municipios MS', en:'Municipalities MS', fr:'Municipalités MS'},
+      ibge_tab_brasil:        {pt:'Brasil', es:'Brasil', en:'Brazil', fr:'Brésil'},
+      ibge_nenhum:            {pt:'Nenhum resultado.', es:'Ningún resultado.', en:'No results.', fr:'Aucun résultat.'},
+      ibge_col_etnia_ms:      {pt:'Etnia / Povo MS', es:'Etnia / Pueblo MS', en:'Ethnicity / People MS', fr:'Ethnie / Peuple MS'},
+      ibge_col_municipio:     {pt:'Município (MS)', es:'Municipio (MS)', en:'Municipality (MS)', fr:'Municipalité (MS)'},
+      ibge_col_etnia_br:      {pt:'Etnia / Povo (Brasil)', es:'Etnia / Pueblo (Brasil)', en:'Ethnicity / People (Brazil)', fr:'Ethnie / Peuple (Brésil)'},
+      ibge_col_pessoas:       {pt:'Pessoas', es:'Personas', en:'People', fr:'Personnes'},
+      ibge_pct_ms:            {pt:'% do MS', es:'% del MS', en:'% of MS', fr:'% du MS'},
+      ibge_pct_total:         {pt:'% do total', es:'% del total', en:'% of total', fr:'% du total'},
+      ibge_fonte:             {pt:'IBGE · Censo Demográfico 2022 · Tabela complementar 25', es:'IBGE · Censo Demográfico 2022 · Tabla complementaria 25', en:'IBGE · 2022 Demographic Census · Supplementary Table 25', fr:'IBGE · Recensement Démographique 2022 · Tableau complémentaire 25'},
+      ibge_search_ph:         {pt:'Filtrar por nome...', es:'Filtrar por nombre...', en:'Filter by name...', fr:'Filtrer par nom...'},
       js_dias:          {pt:'Dom,Seg,Ter,Qua,Qui,Sex,Sab', es:'Dom,Lun,Mar,Mié,Jue,Vie,Sáb', en:'Sun,Mon,Tue,Wed,Thu,Fri,Sat', fr:'Dim,Lun,Mar,Mer,Jeu,Ven,Sam'}
     };
 
