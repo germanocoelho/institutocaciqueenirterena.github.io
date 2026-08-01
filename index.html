@@ -1619,23 +1619,23 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 @keyframes ts-float-b{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,-24px) scale(1.08)} }
 
 .ts-marca-dagua{
-  position:absolute; z-index:0; top:50%; left:50%; width:900px; height:900px;
-  transform:translate(-50%,-50%); color:var(--ou); opacity:.05; pointer-events:none;
+  position:absolute; z-index:0; top:50%; left:50%; width:1000px; height:1000px;
+  transform:translate(-50%,-50%); color:var(--ou); opacity:.1; pointer-events:none;
   animation:ts-girar 90s linear infinite;
 }
 @keyframes ts-girar{ from{transform:translate(-50%,-50%) rotate(0)} to{transform:translate(-50%,-50%) rotate(360deg)} }
 
 /* Ornamentos de grafismo Terena nos quatro cantos da secao */
 .ts-orn{
-  position:absolute; z-index:0; width:64px; height:64px; color:var(--ou); opacity:.5; pointer-events:none;
-  filter:drop-shadow(0 0 5px rgba(242,196,90,.3));
+  position:absolute; z-index:0; width:88px; height:88px; color:var(--ou); opacity:.8; pointer-events:none;
+  filter:drop-shadow(0 0 8px rgba(242,196,90,.5));
   animation:ornPulse 5s ease-in-out infinite;
 }
+@media (max-width:640px){ .ts-orn{width:50px; height:50px} }
 .ts-orn-tl{top:14px; left:14px;}
 .ts-orn-tr{top:14px; right:14px; transform:rotate(90deg);}
 .ts-orn-br{bottom:14px; right:14px; transform:rotate(180deg);}
 .ts-orn-bl{bottom:14px; left:14px; transform:rotate(270deg);}
-@media (max-width:640px){ .ts-orn{width:38px; height:38px} }
 
 /* Onda dourada ao clicar em qualquer cartao (feedback tatil) */
 .ts-onda{
