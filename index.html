@@ -1604,10 +1604,10 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 .nsel{opacity:.4}
 .fixa-del{display:none}
 
-/* ===== EFEITOS: tecnologia social e apoios institucionais (pacote ampliado de animacoes) ===== */
+/* ===== EFEITOS: tecnologia social e apoios institucionais (v2 — grafismo indigena + glow + 3D) ===== */
 
-/* Fundo ambiente: orbes douradas flutuantes atras do conteudo */
-#tecnologia-social-icet{ position:relative; isolation:isolate; overflow:hidden; }
+/* Fundo ambiente: orbes douradas flutuantes + grafismo Terena gigante em marca d'agua girando */
+#tecnologia-social-icet{ position:relative; isolation:isolate; overflow:hidden; perspective:1400px; }
 #tecnologia-social-icet::before, #tecnologia-social-icet::after{
   content:""; position:absolute; z-index:0; border-radius:50%; pointer-events:none;
   filter:blur(60px); opacity:.16;
@@ -1615,57 +1615,77 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 }
 #tecnologia-social-icet::before{ width:420px; height:420px; top:-120px; left:-140px; animation:ts-float-a 22s ease-in-out infinite; }
 #tecnologia-social-icet::after{ width:340px; height:340px; bottom:-100px; right:-120px; animation:ts-float-b 26s ease-in-out infinite; }
-@keyframes ts-float-a{
-  0%,100%{ transform:translate(0,0) scale(1); }
-  50%{ transform:translate(40px,30px) scale(1.12); }
+@keyframes ts-float-a{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,30px) scale(1.12)} }
+@keyframes ts-float-b{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,-24px) scale(1.08)} }
+
+.ts-marca-dagua{
+  position:absolute; z-index:0; top:50%; left:50%; width:900px; height:900px;
+  transform:translate(-50%,-50%); color:var(--ou); opacity:.05; pointer-events:none;
+  animation:ts-girar 90s linear infinite;
 }
-@keyframes ts-float-b{
-  0%,100%{ transform:translate(0,0) scale(1); }
-  50%{ transform:translate(-30px,-24px) scale(1.08); }
-}
+@keyframes ts-girar{ from{transform:translate(-50%,-50%) rotate(0)} to{transform:translate(-50%,-50%) rotate(360deg)} }
+
 /* Halo suave seguindo o cursor dentro da secao */
 #tecnologia-social-icet .wrap{ position:relative; z-index:1; }
 #tecnologia-social-icet.ts-glow-on .wrap::before{
   content:""; position:absolute; z-index:-1; pointer-events:none; inset:-40px;
-  background:radial-gradient(circle 320px at var(--mx,50%) var(--my,50%), rgba(242,196,90,.06), transparent 65%);
+  background:radial-gradient(circle 320px at var(--mx,50%) var(--my,50%), rgba(242,196,90,.07), transparent 65%);
   transition:opacity .4s ease;
 }
 
-/* Eyebrow: sublinhado dourado que se desenha ao entrar em cena */
+/* Eyebrow: sublinhado dourado que se desenha ao entrar em cena, com brilho pulsante */
 #tecnologia-social-icet .ts-reveal[data-i18n="ts_eyb"]{ position:relative; padding-bottom:.35rem; }
 #tecnologia-social-icet .ts-reveal[data-i18n="ts_eyb"]::after{
   content:""; position:absolute; left:0; bottom:0; height:2px; width:0; background:linear-gradient(90deg,var(--ou),transparent);
   transition:width 1s cubic-bezier(.2,.7,.2,1) .3s;
+  box-shadow:0 0 8px rgba(242,196,90,.6);
 }
 #tecnologia-social-icet .ts-reveal.on[data-i18n="ts_eyb"]::after{ width:64px; }
 
-/* Titulo principal: brilho dourado varrendo o texto */
-#tecnologia-social-icet h2[data-i18n="ts_titulo"], #tecnologia-social-icet h3.ts-reveal{
-  background-image:linear-gradient(100deg, var(--cr) 40%, var(--ou) 50%, var(--cr) 60%);
-  background-size:260% 100%; background-position:100% 0; -webkit-background-clip:text; background-clip:text;
-  transition:background-position 1.4s ease;
+/* Titulos: mesmo brilho dourado pulsante usado no resto do site (text-shadow), + varredura de luz */
+#tecnologia-social-icet h2[data-i18n="ts_titulo"],
+#tecnologia-social-icet h3.ts-reveal,
+#apoios-institucionais-icet h2.ts-reveal{
+  position:relative;
+  background-image:linear-gradient(100deg, var(--cr) 35%, #fff8e8 47%, var(--ou) 50%, var(--cr) 65%);
+  background-size:280% 100%; background-position:120% 0; -webkit-background-clip:text; background-clip:text;
+  transition:background-position 1.5s ease;
+  text-shadow:0 0 14px rgba(242,196,90,.35);
 }
-#tecnologia-social-icet h2.on[data-i18n="ts_titulo"], #tecnologia-social-icet h3.ts-reveal.on{
+#tecnologia-social-icet h2.on[data-i18n="ts_titulo"],
+#tecnologia-social-icet h3.ts-reveal.on,
+#apoios-institucionais-icet h2.ts-reveal.on{
   background-position:0 0;
+  animation:ts-titulo-pulse 4s ease infinite 1.6s;
+}
+@keyframes ts-titulo-pulse{
+  0%,100%{ text-shadow:0 0 14px rgba(242,196,90,.35); }
+  50%{ text-shadow:0 0 30px rgba(242,196,90,.7), 0 0 60px rgba(242,196,90,.25); }
 }
 
-/* Entrada em cena: fade + subida + leve escala e rotacao (paragrafos, cartoes, listas) */
+/* Entrada em cena: fade + subida + leve escala (paragrafos e listas) */
 #tecnologia-social-icet .ts-reveal, #apoios-institucionais-icet .ts-reveal{
   opacity:0; transform:translateY(26px) scale(.97); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1);
 }
 #tecnologia-social-icet .ts-reveal.on, #apoios-institucionais-icet .ts-reveal.on{opacity:1; transform:none}
 
-/* Cartoes: elevacao, brilho de borda e inclinacao 3D acompanhando o cursor */
+/* Cartoes: entrada em giro 3D (flip), elevacao com profundidade real e inclinacao acompanhando o cursor */
 #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]{
-  transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease, background .35s ease !important;
-  position:relative; overflow:hidden;
-  transform:perspective(700px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateY(0);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s ease, border-color .35s ease, background .35s ease, opacity .7s ease !important;
+  position:relative; overflow:hidden; transform-style:preserve-3d;
+  transform:perspective(900px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateZ(0);
+}
+#tecnologia-social-icet .ts-reveal[style*="rgba(255,255,255,.04)"]{
+  opacity:0; transform:perspective(900px) rotateY(-75deg) translateZ(-40px) scale(.9);
+}
+#tecnologia-social-icet .ts-reveal.on[style*="rgba(255,255,255,.04)"]{
+  opacity:1; transform:perspective(900px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateZ(0) scale(1);
 }
 #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]:hover{
-  transform:perspective(700px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateY(-6px);
-  box-shadow:0 18px 38px rgba(0,0,0,.4), 0 0 0 1px rgba(242,196,90,.3);
+  transform:perspective(900px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateZ(26px) translateY(-6px);
+  box-shadow:0 24px 48px rgba(0,0,0,.45), 0 0 0 1px rgba(242,196,90,.35), 0 0 34px rgba(242,196,90,.18);
   border-color:var(--ou) !important;
-  background:rgba(242,196,90,.08) !important;
+  background:rgba(242,196,90,.09) !important;
 }
 /* Borda com gradiente animado ao passar o mouse */
 #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]::after{
@@ -1678,21 +1698,35 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 }
 #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]:hover::after{ opacity:1; background-position:100% 100%; }
 
-/* Icones (emoji) dos cartoes: entram saltando e reagem ao hover */
-#tecnologia-social-icet [style*="rgba(255,255,255,.04)"] > div:first-child{
-  display:inline-block; transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+/* ═══ Icones em grafismo geometrico indigena (SVG) ═══ */
+.ts-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:3rem; height:3rem; margin-bottom:.5rem; perspective:400px;
 }
-#tecnologia-social-icet [style*="rgba(255,255,255,.04)"]:hover > div:first-child{
-  transform:scale(1.28) rotate(-6deg);
+.ts-icon-svg{
+  width:100%; height:100%; color:var(--ou);
+  filter:drop-shadow(0 0 6px rgba(242,196,90,.45));
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), filter .4s ease, color .4s ease;
+  transform-style:preserve-3d;
+  animation:ts-icon-pulso 4.5s ease-in-out infinite;
 }
-#tecnologia-social-icet .ts-reveal.on [style*="rgba(255,255,255,.04)"] > div:first-child,
-#tecnologia-social-icet [style*="rgba(255,255,255,.04)"].on > div:first-child{
-  animation:ts-icon-pop .6s cubic-bezier(.34,1.56,.64,1) both;
+@keyframes ts-icon-pulso{
+  0%,100%{ filter:drop-shadow(0 0 5px rgba(242,196,90,.35)); }
+  50%{ filter:drop-shadow(0 0 13px rgba(242,196,90,.7)); }
 }
-@keyframes ts-icon-pop{
-  0%{ transform:scale(.4) rotate(-16deg); opacity:0; }
-  60%{ transform:scale(1.15) rotate(4deg); opacity:1; }
-  100%{ transform:scale(1) rotate(0); }
+#tecnologia-social-icet .ts-reveal.on .ts-icon-svg,
+#tecnologia-social-icet [style*="rgba(255,255,255,.04)"].on .ts-icon-svg{
+  animation:ts-icon-giro-entrada .9s cubic-bezier(.2,.8,.2,1) both, ts-icon-pulso 4.5s ease-in-out infinite .9s;
+}
+@keyframes ts-icon-giro-entrada{
+  0%{ transform:rotate3d(0,1,0,270deg) scale(.3); opacity:0; }
+  60%{ transform:rotate3d(0,1,0,-18deg) scale(1.12); opacity:1; }
+  100%{ transform:rotate3d(0,1,0,0deg) scale(1); }
+}
+#tecnologia-social-icet [style*="rgba(255,255,255,.04)"]:hover .ts-icon-svg{
+  transform:rotate3d(.4,1,0,22deg) scale(1.22);
+  color:#fff6e0;
+  filter:drop-shadow(0 0 18px rgba(242,196,90,.85));
 }
 
 #apoios-institucionais-icet a[href^="https://www"]{
@@ -1702,28 +1736,25 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
   transform:translateY(-3px) scale(1.04); box-shadow:0 10px 22px rgba(0,0,0,.35);
 }
 
-/* Divisorias horizontais: linha que se desenha da esquerda para a direita */
+/* Divisorias horizontais: linha que se desenha da esquerda para a direita, com brilho */
 #tecnologia-social-icet div[style*="border-top:1px solid rgba(242,196,90,.25)"]{
   position:relative; border-top-color:transparent !important;
 }
 #tecnologia-social-icet div[style*="border-top:1px solid rgba(242,196,90,.25)"]::before{
   content:""; position:absolute; top:0; left:0; height:1px; width:0;
   background:linear-gradient(90deg, transparent, var(--ou), transparent);
+  box-shadow:0 0 10px rgba(242,196,90,.7);
   transition:width 1.1s cubic-bezier(.2,.7,.2,1);
 }
 #tecnologia-social-icet div[style*="border-top:1px solid rgba(242,196,90,.25)"].ts-line-on::before{ width:100%; }
 
 /* Logos de parceiros (CMDDI/COOPIMS/UNIPBRAS): leve flutuacao continua */
-#tecnologia-social-icet a[href^="https://www"] img{
-  transition:transform .3s ease;
-}
-#tecnologia-social-icet a[href^="https://www"]:hover img{
-  transform:scale(1.06);
-}
+#tecnologia-social-icet a[href^="https://www"] img{ transition:transform .3s ease; }
+#tecnologia-social-icet a[href^="https://www"]:hover img{ transform:scale(1.06); }
 
 .ts-holofote::before{
   content:""; position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
-  background:radial-gradient(circle 140px at var(--hx,50%) var(--hy,50%), rgba(242,196,90,.22), transparent 70%);
+  background:radial-gradient(circle 150px at var(--hx,50%) var(--hy,50%), rgba(242,196,90,.24), transparent 70%);
   transition:opacity .3s ease;
 }
 .ts-holofote:hover::before{opacity:1}
@@ -1732,13 +1763,15 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 @media (hover:none){
   .ts-holofote::before{display:none}
   #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]{ transform:none !important; }
+  #tecnologia-social-icet .ts-reveal.on[style*="rgba(255,255,255,.04)"]{ transform:none !important; }
   #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]::after{ display:none; }
 }
 @media (prefers-reduced-motion: reduce){
   #tecnologia-social-icet .ts-reveal, #apoios-institucionais-icet .ts-reveal{opacity:1 !important; transform:none !important; transition:none !important}
-  #tecnologia-social-icet::before, #tecnologia-social-icet::after{ animation:none !important; opacity:.08; }
-  #tecnologia-social-icet h2[data-i18n="ts_titulo"], #tecnologia-social-icet h3.ts-reveal{ background-position:0 0 !important; }
-  #tecnologia-social-icet [style*="rgba(255,255,255,.04)"] > div:first-child{ animation:none !important; transition:none !important; }
+  #tecnologia-social-icet .ts-reveal[style*="rgba(255,255,255,.04)"], #tecnologia-social-icet .ts-reveal.on[style*="rgba(255,255,255,.04)"]{ transform:none !important; opacity:1 !important; }
+  #tecnologia-social-icet::before, #tecnologia-social-icet::after, .ts-marca-dagua{ animation:none !important; opacity:.06; }
+  #tecnologia-social-icet h2[data-i18n="ts_titulo"], #tecnologia-social-icet h3.ts-reveal{ background-position:0 0 !important; animation:none !important; }
+  .ts-icon-svg{ animation:none !important; transition:none !important; }
   #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]{ transition:none !important; }
 }
 
@@ -3006,6 +3039,7 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
 <!-- TECNOLOGIA SOCIAL PARA ONGs E INSTITUIÇÕES INDÍGENAS -->
 <section id="tecnologia-social-icet" class="sec" style="background:var(--k2);padding:3rem 0">
+  <svg class="ts-marca-dagua" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
   <div class="wrap" style="max-width:1000px;margin:0 auto;padding:0 1.2rem">
     <div class="ts-reveal" style="font-family:Arial,sans-serif;color:var(--ou);font-size:.65rem;letter-spacing:.26em;text-transform:uppercase;margin-bottom:.6rem" data-i18n="ts_eyb">Tecnologia Social</div>
     <h2 class="ts-reveal" style="font-family:'Cinzel',serif;color:var(--cr);font-size:1.55rem;margin:0 0 1.2rem" data-i18n="ts_titulo">Tecnologia Social para ONGs e Instituições Indígenas</h2>
@@ -3018,27 +3052,27 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1.8rem">
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">🛡</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-escudo"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_c1t">Direitos Humanos dos Povos Originários</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">®</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-selo"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_c2t">Propriedade Intelectual &amp; Marca Coletiva</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">🗺</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-territorio"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_c3t">Indicação Geográfica e de Procedência</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">⚖</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-balanca"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_c4t">Governança &amp; Compliance</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">💡</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-centelha"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_c5t">Gestão Inovadora do Terceiro Setor</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">🌐</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-rede"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem;margin-bottom:.3rem" data-i18n="ts_c6t">Plataforma Digital Inteligente</div>
         <div style="font-size:.78rem;color:rgba(247,242,232,.7);line-height:1.55" data-i18n="ts_c6d">Site traduzido de forma permanente em quatro idiomas — Português, Inglês, Espanhol e Francês —, inclusive para todo conteúdo novo publicado, com identidade visual e logomarca desenvolvidas sob medida, central de mídia interativa exclusiva que funciona como agência de notícias, central de documentos oficiais e central de registros audiovisuais.</div>
       </div>
@@ -3133,27 +3167,27 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1.6rem">
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#9878;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-balanca"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c1t">Governanca Juridica e Estatutaria</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#127912;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-identidade"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c2t">Identidade Visual e Logomarca</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#127760;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-rede"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c3t">Site Institucional de Servicos</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#128506;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-territorio"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c4t">Mapa Geografico de Cooperados</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#128101;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-comunidade"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c5t">Gestao de Cooperados Fundadores</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#128196;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-documento"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_coopims_c6t">Central de Documentos e Conformidade</div>
       </div>
     </div>
@@ -3211,19 +3245,19 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1.6rem">
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#127912;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-identidade"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_unip_c1t">Identidade Visual e Logomarca</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#10024;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-emblema"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_unip_c2t">Emblema Animado em Iconografia Indigena</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#127760;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-narrativa"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_unip_c3t">Site com Narrativa Visual (Scrollytelling)</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
-        <div style="font-size:1.4rem;margin-bottom:.4rem">&#128506;</div>
+        <div style="font-size:1.4rem;margin-bottom:.4rem"><span class="ts-icon"><svg class="ts-icon-svg" viewBox="0 0 120 120" aria-hidden="true"><use href="#icone-territorio"/></svg></span></div>
         <div style="font-family:Arial,sans-serif;font-weight:bold;color:var(--cr);font-size:.9rem" data-i18n="ts_unip_c4t">Mapa Nacional Interativo</div>
       </div>
       <div class="ts-reveal ts-holofote" style="background:rgba(255,255,255,.04);border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:1rem 1.1rem">
@@ -6168,6 +6202,97 @@ document.addEventListener('DOMContentLoaded',function(){
       <path d="M18 42 L42 18 M78 18 L102 42 M102 78 L78 102 M42 102 L18 78" stroke-width="1.6"/>
     </g>
   </symbol>
+
+  <!-- ═══ Ícones em grafismo geométrico indígena (linha Terena) para a seção Tecnologia Social ═══ -->
+  <symbol id="icone-escudo" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M60 8 L104 24 L104 58 Q104 96 60 114 Q16 96 16 58 L16 24 Z"/>
+      <path d="M60 26 L88 37 L88 58 Q88 82 60 96 Q32 82 32 58 L32 37 Z" stroke-width="1.8"/>
+      <path d="M40 58 L60 40 L80 58 L60 76 Z" stroke-width="1.8"/>
+    </g>
+  </symbol>
+  <symbol id="icone-selo" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="46"/>
+      <circle cx="60" cy="60" r="30" stroke-width="1.8"/>
+      <path d="M60 30 L69 51 L92 51 L73 65 L81 88 L60 74 L39 88 L47 65 L28 51 L51 51 Z" stroke-width="1.8"/>
+      <path d="M60 8 L60 16 M60 104 L60 112 M8 60 L16 60 M104 60 L112 60" stroke-width="2.2"/>
+    </g>
+  </symbol>
+  <symbol id="icone-territorio" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="48"/>
+      <path d="M60 12 L60 108 M12 60 L108 60" stroke-width="1.4"/>
+      <path d="M60 24 L72 60 L60 96 L48 60 Z" stroke-width="1.8"/>
+      <circle cx="60" cy="60" r="7" stroke-width="2.2"/>
+      <path d="M60 4 L64 14 L60 24 L56 14 Z M60 96 L64 106 L60 116 L56 106 Z M4 60 L14 56 L24 60 L14 64 Z M96 60 L106 56 L116 60 L106 64 Z" stroke-width="1.6"/>
+    </g>
+  </symbol>
+  <symbol id="icone-balanca" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M60 12 L60 100 M30 100 L90 100"/>
+      <path d="M60 24 L20 40 M60 24 L100 40" stroke-width="2.4"/>
+      <path d="M8 40 L20 40 L32 40 L20 62 Z" stroke-width="1.8"/>
+      <path d="M88 40 L100 40 L112 40 L100 62 Z" stroke-width="1.8"/>
+      <path d="M60 12 L52 6 L68 6 Z" stroke-width="1.8"/>
+    </g>
+  </symbol>
+  <symbol id="icone-centelha" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M62 8 L34 62 L56 62 L48 112 L92 50 L66 50 Z"/>
+      <path d="M14 30 L24 30 M14 90 L24 90 M96 20 L104 14 M96 100 L104 106" stroke-width="1.8"/>
+    </g>
+  </symbol>
+  <symbol id="icone-rede" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round">
+      <path d="M60 16 L100 40 L100 80 L60 104 L20 80 L20 40 Z" stroke-width="1.6"/>
+      <path d="M60 16 L60 60 M100 40 L60 60 M100 80 L60 60 M60 104 L60 60 M20 80 L60 60 M20 40 L60 60"/>
+      <circle cx="60" cy="16" r="6"/><circle cx="100" cy="40" r="6"/><circle cx="100" cy="80" r="6"/>
+      <circle cx="60" cy="104" r="6"/><circle cx="20" cy="80" r="6"/><circle cx="20" cy="40" r="6"/>
+      <circle cx="60" cy="60" r="8" stroke-width="2.2"/>
+    </g>
+  </symbol>
+  <symbol id="icone-identidade" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M60 10 L110 60 L60 110 L10 60 Z"/>
+      <path d="M60 30 L90 60 L60 90 L30 60 Z" stroke-width="1.8"/>
+      <path d="M22 22 L38 38 M98 22 L82 38 M22 98 L38 82 M98 98 L82 82" stroke-width="1.6"/>
+      <circle cx="60" cy="60" r="9" stroke-width="2.2"/>
+    </g>
+  </symbol>
+  <symbol id="icone-comunidade" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round">
+      <path d="M60 14 L82 36 L60 58 L38 36 Z"/>
+      <path d="M22 66 L44 88 L22 110 L0 88 Z" transform="translate(6,0)"/>
+      <path d="M60 66 L82 88 L60 110 L38 88 Z"/>
+      <path d="M98 66 L120 88 L98 110 L76 88 Z" transform="translate(-6,0)"/>
+      <path d="M60 58 L60 66 M50 78 L44 84 M70 78 L76 84" stroke-width="1.6"/>
+    </g>
+  </symbol>
+  <symbol id="icone-documento" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M28 10 L74 10 L96 32 L96 110 L28 110 Z"/>
+      <path d="M74 10 L74 32 L96 32" stroke-width="2"/>
+      <path d="M40 52 L84 52 M40 66 L84 66 M40 80 L68 80" stroke-width="1.8"/>
+      <path d="M40 96 L52 96 L46 90 Z M46 96 L46 102" stroke-width="1.4"/>
+    </g>
+  </symbol>
+  <symbol id="icone-emblema" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round">
+      <circle cx="60" cy="60" r="50"/>
+      <path d="M60 14 L102 60 L60 106 L18 60 Z" stroke-width="1.8"/>
+      <path d="M60 34 L86 60 L60 86 L34 60 Z" stroke-width="1.8"/>
+      <path d="M60 50 L70 60 L60 70 L50 60 Z" stroke-width="2.2"/>
+      <path d="M60 4 L60 14 M60 106 L60 116 M4 60 L14 60 M106 60 L116 60" stroke-width="2"/>
+    </g>
+  </symbol>
+  <symbol id="icone-narrativa" viewBox="0 0 120 120">
+    <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M10 96 L10 24 Q10 14 20 14 L100 14 Q110 14 110 24 L110 96" stroke-width="1.8"/>
+      <path d="M8 100 L20 88 L34 100 L48 88 L62 100 L76 88 L90 100 L104 88 L112 100"/>
+      <path d="M28 34 L92 34 M28 48 L92 48 M28 62 L64 62" stroke-width="1.6"/>
+    </g>
+  </symbol>
 </defs></svg>
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -7295,8 +7420,8 @@ document.addEventListener('DOMContentLoaded', function(){
           card.style.setProperty('--hx', px + 'px');
           card.style.setProperty('--hy', py + 'px');
           var cx = (px / r.width) - .5, cy = (py / r.height) - .5;
-          card.style.setProperty('--ry', (cx * 10) + 'deg');
-          card.style.setProperty('--rx', (cy * -10) + 'deg');
+          card.style.setProperty('--ry', (cx * 18) + 'deg');
+          card.style.setProperty('--rx', (cy * -18) + 'deg');
         });
         card.addEventListener('pointerleave', function(){
           card.style.setProperty('--ry', '0deg');
