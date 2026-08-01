@@ -1625,6 +1625,30 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 }
 @keyframes ts-girar{ from{transform:translate(-50%,-50%) rotate(0)} to{transform:translate(-50%,-50%) rotate(360deg)} }
 
+/* Ornamentos de grafismo Terena nos quatro cantos da secao */
+.ts-orn{
+  position:absolute; z-index:0; width:64px; height:64px; color:var(--ou); opacity:.5; pointer-events:none;
+  filter:drop-shadow(0 0 5px rgba(242,196,90,.3));
+  animation:ornPulse 5s ease-in-out infinite;
+}
+.ts-orn-tl{top:14px; left:14px;}
+.ts-orn-tr{top:14px; right:14px; transform:rotate(90deg);}
+.ts-orn-br{bottom:14px; right:14px; transform:rotate(180deg);}
+.ts-orn-bl{bottom:14px; left:14px; transform:rotate(270deg);}
+@media (max-width:640px){ .ts-orn{width:38px; height:38px} }
+
+/* Onda dourada ao clicar em qualquer cartao (feedback tatil) */
+.ts-onda{
+  position:absolute; border-radius:50%; pointer-events:none; z-index:5;
+  background:radial-gradient(circle, rgba(242,196,90,.55), rgba(242,196,90,0) 70%);
+  transform:translate(-50%,-50%) scale(0); opacity:1;
+  animation:ts-onda-anim .75s cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes ts-onda-anim{
+  0%{ transform:translate(-50%,-50%) scale(0); opacity:.9; }
+  100%{ transform:translate(-50%,-50%) scale(1); opacity:0; }
+}
+
 /* Halo suave seguindo o cursor dentro da secao */
 #tecnologia-social-icet .wrap{ position:relative; z-index:1; }
 #tecnologia-social-icet.ts-glow-on .wrap::before{
@@ -3040,6 +3064,10 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 <!-- TECNOLOGIA SOCIAL PARA ONGs E INSTITUIÇÕES INDÍGENAS -->
 <section id="tecnologia-social-icet" class="sec" style="background:var(--k2);padding:3rem 0">
   <svg class="ts-marca-dagua" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+  <svg class="ts-orn ts-orn-tl" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+  <svg class="ts-orn ts-orn-tr" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+  <svg class="ts-orn ts-orn-bl" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
+  <svg class="ts-orn ts-orn-br" viewBox="0 0 120 120" aria-hidden="true"><use href="#terena-grafismo"/></svg>
   <div class="wrap" style="max-width:1000px;margin:0 auto;padding:0 1.2rem">
     <div class="ts-reveal" style="font-family:Arial,sans-serif;color:var(--ou);font-size:.65rem;letter-spacing:.26em;text-transform:uppercase;margin-bottom:.6rem" data-i18n="ts_eyb">Tecnologia Social</div>
     <h2 class="ts-reveal" style="font-family:'Cinzel',serif;color:var(--cr);font-size:1.55rem;margin:0 0 1.2rem" data-i18n="ts_titulo">Tecnologia Social para ONGs e Instituições Indígenas</h2>
@@ -7438,6 +7466,24 @@ document.addEventListener('DOMContentLoaded', function(){
           secaoTS.style.setProperty('--my', (e.clientY - r.top) + 'px');
         });
       }
+    }
+
+    // 4) Onda dourada ao tocar/clicar nos cartoes (feedback tatil, funciona em touch tambem)
+    if (!reduzMovimento){
+      document.querySelectorAll('.ts-holofote').forEach(function(card){
+        card.addEventListener('pointerdown', function(e){
+          var r = card.getBoundingClientRect();
+          var tam = Math.max(r.width, r.height) * 1.6;
+          var onda = document.createElement('span');
+          onda.className = 'ts-onda';
+          onda.style.width = tam + 'px';
+          onda.style.height = tam + 'px';
+          onda.style.left = (e.clientX - r.left) + 'px';
+          onda.style.top = (e.clientY - r.top) + 'px';
+          card.appendChild(onda);
+          onda.addEventListener('animationend', function(){ onda.remove(); });
+        });
+      });
     }
   } catch(e){ }
 })();
