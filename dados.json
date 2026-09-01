@@ -27,25 +27,7 @@
       "cargo_es": "Secretario General"
     }
   },
-  "produtos": {
-    "p_1780722818589": {
-      "key": "p_1780722818589",
-      "nome": "Teste 2",
-      "artesa": "Sâmara",
-      "cat": "Bijuteria",
-      "desc": "teste de produto",
-      "preco": 100,
-      "prazo": "20",
-      "aldeia": "Aldeia Marçal de Souza — Campo Grande",
-      "foto": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1780722818/is7gg530hpmwqbfduxp9.png",
-      "desc_en": "teste de produto",
-      "desc_fr": "teste de produto",
-      "desc_es": "teste de produto",
-      "aldeia_en": "Marçal de Souza Village — Campo Grande",
-      "aldeia_fr": "Village Marçal de Souza — Campo Grande",
-      "aldeia_es": "Aldea Marçal de Souza — Campo Grande"
-    }
-  },
+  "produtos": {},
   "vasos": {
     "vaso1": {
       "src": "https://res.cloudinary.com/dn1ubybc0/image/upload/v1781120720/neinrgeqtwkzr14kzoje.jpg",
