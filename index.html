@@ -1820,36 +1820,108 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
 </style>
 <style id="icet-gal-ajuste">.gal-item:nth-child(4n+1){aspect-ratio:auto}</style>
-<style id="rl-estilo">
-/* RELEASE: notícia do convênio (rl-) */
-#noticia-convenio{background:var(--k2);color:var(--cr);padding:clamp(3rem,6vw,5.5rem) 1.25rem;scroll-margin-top:84px;font-family:'Lora',serif}
-#noticia-convenio *{box-sizing:border-box}
-#noticia-convenio .rl-wrap{max-width:860px;margin:0 auto}
-#noticia-convenio .rl-sel{display:inline-block;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--oc);border-bottom:2px solid var(--oc);padding-bottom:.25rem}
-#noticia-convenio .rl-h{font-family:'Cinzel',serif;font-size:clamp(1.65rem,4.2vw,2.55rem);line-height:1.16;color:var(--ou);margin:.9rem 0 1rem;font-weight:700;letter-spacing:-.005em}
-#noticia-convenio .rl-fina{font-size:1.12rem;line-height:1.55;color:var(--tx2);margin:0 0 1.1rem}
-#noticia-convenio .rl-meta{font-size:.86rem;color:var(--tx2);padding:.7rem 0;border-top:1px solid rgba(242,196,90,.25);border-bottom:1px solid rgba(242,196,90,.25);display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;align-items:center}
-#noticia-convenio .rl-meta strong{color:var(--cr)}
-#noticia-convenio .rl-capa{margin:1.6rem 0 0}
-#noticia-convenio .rl-capa img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;border-radius:6px;cursor:zoom-in;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-#noticia-convenio figcaption{font-size:.84rem;color:var(--tx2);font-style:italic;line-height:1.45;margin-top:.55rem}
-#noticia-convenio .rl-corpo{margin-top:1.6rem}
-#noticia-convenio .rl-corpo p{font-size:1.06rem;line-height:1.78;margin:0 0 1.15rem;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
-#noticia-convenio .rl-corpo p:first-child::first-letter{font-family:'Cinzel',serif;float:left;font-size:3.5rem;line-height:.9;padding:.2rem .5rem 0 0;color:var(--ou);font-weight:700}
-#noticia-convenio .rl-fotos-h{font-family:'Cinzel',serif;font-size:1.15rem;color:var(--ou);margin:2.2rem 0 .9rem;font-weight:700}
-#noticia-convenio .rl-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
-#noticia-convenio .rl-fotos figure{margin:0}
-#noticia-convenio .rl-fotos img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;border-radius:6px;cursor:zoom-in;transition:transform .25s}
-#noticia-convenio .rl-fotos img:hover{transform:translateY(-3px)}
-#noticia-convenio .rl-assina{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:2.2rem;padding:.85rem 1.2rem;background:#120d09;border-radius:6px;border-left:4px solid var(--oc)}
-#noticia-convenio .rl-assina img{height:44px;width:auto;display:block}
-#noticia-convenio .rl-assina span{color:#F3E7CC;font-size:.82rem;letter-spacing:.06em}
-@media (max-width:680px){#noticia-convenio .rl-fotos{grid-template-columns:1fr}#noticia-convenio .rl-corpo p{text-align:left}}
-.rl-lb{position:fixed;inset:0;z-index:99999;background:rgba(8,6,4,.93);display:none;align-items:center;justify-content:center;flex-direction:column;padding:1rem}
-.rl-lb.rl-on{display:flex}
-.rl-lb img{max-width:96vw;max-height:80vh;border-radius:6px;display:block}
-.rl-lb p{color:#F3E7CC;font:.9rem/1.5 system-ui,sans-serif;max-width:760px;text-align:center;margin:.9rem 0 0}
-.rl-lb button{position:absolute;top:14px;right:18px;background:none;border:0;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+<style id="nt-estilo">
+/* janela de leitura das notícias: cores e fontes do ICET */
+#nt-modal,#nt-lb{--marfim:#F7F2E8;--carvao:#1E0E02;--carvao-suave:#5C4636;--mata:#5C2207;--barro:#8B3A0F;--areia:#EDE4C8;--agua:#1B4965;--disp:'Cinzel',serif;--corpo:'Inter',sans-serif;--dado:'Inter',sans-serif;--raio:14px;--anel:1px solid rgba(30,14,2,.14)}
+.nc-selo{display:inline-block;font-size:.6rem;font-family:'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--k);background:var(--ou);padding:.28rem .65rem;border-radius:999px;margin-bottom:.65rem;line-height:1.3}
+.nc-card.nc-release{border-color:rgba(242,196,90,.45);background:rgba(242,196,90,.06)}
+.nc-ler{display:inline-flex;align-items:center;gap:.4rem;margin-top:.9rem;font:600 .72rem 'Inter',sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--k);background:var(--ou);border:0;padding:.6rem 1rem;border-radius:3px;cursor:pointer;transition:.25s}
+.nc-ler:hover{background:var(--oc);transform:translateY(-1px)}
+/* ===== Notícias (releases do site e matérias na mídia) ===== */
+.nt-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 26px}
+.nt-tab{font:inherit;font-family:var(--corpo);font-size:.88rem;font-weight:700;cursor:pointer;color:var(--carvao);background:#fff;border:1px solid rgba(33,24,18,.16);padding:9px 16px;border-radius:999px;display:inline-flex;gap:9px;align-items:center;transition:background .25s,color .25s,border-color .25s,transform .25s}
+.nt-tab:hover{border-color:var(--barro);transform:translateY(-1px)}
+.nt-tab.on{background:var(--barro);color:#fff;border-color:var(--barro)}
+.nt-cont{font-size:.72rem;min-width:22px;text-align:center;padding:1px 7px;border-radius:999px;background:rgba(0,0,0,.09)}
+.nt-tab.on .nt-cont{background:rgba(255,255,255,.25)}
+.nt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:980px){.nt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.nt-grid{grid-template-columns:minmax(0,1fr)}}
+.nt-card{display:flex;flex-direction:column;background:#fff;border:var(--anel);border-radius:var(--raio);overflow:hidden;box-shadow:0 8px 24px rgba(33,24,18,.07);transition:transform .3s,box-shadow .3s}
+.nt-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(33,24,18,.13)}
+.nt-card.nt-destaque{grid-column:span 2;flex-direction:row}
+.nt-card.nt-destaque .nt-capa{width:52%;aspect-ratio:auto;min-height:300px}
+.nt-card.nt-destaque .nt-corpo{width:48%;padding:28px 30px}
+.nt-card.nt-destaque .nt-t{font-size:1.45rem}
+@media (max-width:620px){.nt-card.nt-destaque{grid-column:auto;flex-direction:column}.nt-card.nt-destaque .nt-capa,.nt-card.nt-destaque .nt-corpo{width:auto}.nt-card.nt-destaque .nt-capa{min-height:0;aspect-ratio:16/10}}
+.nt-capa{display:block;width:100%;aspect-ratio:16/10;border:0;padding:0;margin:0;cursor:pointer;background:var(--areia);overflow:hidden;position:relative}
+.nt-capa img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.nt-card:hover .nt-capa img{transform:scale(1.04)}
+.nt-capa-vazia{display:grid;place-items:center;width:100%;height:100%;font-size:2.4rem;color:var(--barro)}
+.nt-corpo{padding:20px 22px 22px;display:flex;flex-direction:column;gap:9px;flex:1}
+.nt-selo{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-family:var(--dado);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:999px;line-height:1.3}
+.nt-selo-release{background:rgba(181,96,42,.12);color:var(--barro);border:1px solid rgba(181,96,42,.3)}
+.nt-selo-midia{background:rgba(29,122,147,.1);color:var(--agua);border:1px solid rgba(29,122,147,.28)}
+.nt-t{font-family:var(--disp);font-size:1.12rem;line-height:1.3;color:var(--mata);margin:0;font-weight:600}
+.nt-resumo{font-size:.92rem;line-height:1.6;color:var(--carvao-suave);margin:0}
+.nt-meta{font-size:.8rem;color:var(--carvao-suave);margin-top:auto;padding-top:4px}
+.nt-acoes{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.nt-btn{font:inherit;font-family:var(--corpo);font-size:.84rem;font-weight:700;cursor:pointer;color:#fff;background:var(--mata);border:0;padding:10px 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;transition:background .25s,transform .25s;text-decoration:none}
+.nt-btn:hover{background:var(--barro);transform:translateY(-1px)}
+.nt-btn-ghost{background:transparent;color:var(--carvao);border:1px solid rgba(33,24,18,.2)}
+.nt-btn-ghost:hover{background:var(--areia);color:var(--carvao)}
+.nt-btn-perigo{background:transparent;color:#a3271b;border:1px solid rgba(163,39,27,.35)}
+.nt-btn-perigo:hover{background:rgba(163,39,27,.08);color:#a3271b}
+.nt-btn-mini{font-size:.74rem;padding:6px 12px}
+.nt-vazio{color:var(--carvao-suave);font-size:.95rem;padding:10px 0}
+.nt-so-adm{display:none !important}
+.nt-adm .nt-so-adm{display:inline-flex !important}
+.nt-adm .nt-painel.nt-so-adm{display:block !important}
+.nt-adm-rodape{margin-top:26px;text-align:right}
+.nt-adm-link{font:inherit;font-family:var(--corpo);font-size:.8rem;background:none;border:0;color:var(--carvao-suave);text-decoration:underline;cursor:pointer;opacity:.75}
+.nt-adm-link:hover{opacity:1;color:var(--barro)}
+/* janela da matéria */
+.nt-modal{position:fixed;inset:0;z-index:9000;background:rgba(17,12,8,.72);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:4vh 16px}
+.nt-modal[hidden]{display:none}
+.nt-art{position:relative;background:var(--marfim);color:var(--carvao);width:100%;max-width:820px;border-radius:var(--raio);padding:clamp(24px,5vw,48px);box-shadow:0 30px 80px rgba(0,0,0,.35);font-family:var(--corpo)}
+.nt-fechar{position:absolute;top:14px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(33,24,18,.18);background:#fff;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--carvao)}
+.nt-fechar:hover{border-color:var(--barro);color:var(--barro)}
+.nt-art h3{font-family:var(--disp);font-size:clamp(1.5rem,3.8vw,2.3rem);line-height:1.16;color:var(--mata);margin:14px 0 12px;padding-right:36px}
+.nt-art-fina{font-size:1.1rem;line-height:1.55;color:var(--carvao-suave);margin:0 0 14px}
+.nt-art-meta{font-size:.86rem;color:var(--carvao-suave);padding:10px 0;border-top:1px solid rgba(33,24,18,.14);border-bottom:1px solid rgba(33,24,18,.14);display:flex;flex-wrap:wrap;gap:6px 18px}
+.nt-art-meta strong{color:var(--carvao)}
+.nt-art-capa{margin:22px 0 0}
+.nt-art-capa img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;border-radius:16px;cursor:zoom-in}
+.nt-art figcaption{font-size:.84rem;color:var(--carvao-suave);font-style:italic;line-height:1.45;margin-top:8px}
+.nt-art-texto{margin-top:22px}
+.nt-art-texto p{font-size:1.04rem;line-height:1.78;margin:0 0 1.1rem;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.nt-art-fotos-h{font-family:var(--disp);font-size:1.12rem;color:var(--mata);margin:26px 0 12px}
+.nt-art-fotos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.nt-art-fotos figure{margin:0}
+.nt-art-fotos img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:zoom-in}
+@media (max-width:620px){.nt-art-fotos{grid-template-columns:minmax(0,1fr)}.nt-art-texto p{text-align:left}}
+.nt-art-assina{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px;padding:12px 18px;background:#120d09;border-radius:16px;border-left:4px solid var(--barro)}
+.nt-art-assina img{height:42px;width:auto;display:block}
+.nt-art-assina span{color:#F3E7CC;font-size:.84rem;letter-spacing:.04em}
+.nt-art-aviso{margin-top:16px;font-size:.82rem;color:var(--carvao-suave);background:rgba(181,96,42,.08);border:1px dashed rgba(181,96,42,.35);border-radius:12px;padding:10px 14px}
+.nt-art-link{margin-top:22px}
+.nt-lb{position:fixed;inset:0;z-index:9500;background:rgba(8,6,4,.94);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:16px}
+.nt-lb[hidden]{display:none}
+.nt-lb img{max-width:96vw;max-height:80vh;border-radius:6px;display:block}
+.nt-lb p{color:#F3E7CC;font:.9rem/1.5 var(--corpo);max-width:760px;text-align:center;margin:14px 0 0}
+.nt-lb button{position:absolute;top:14px;right:18px;background:none;border:0;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+/* painel do administrador */
+.nt-painel{margin-top:28px;background:#fff;border:1px solid rgba(181,96,42,.35);border-radius:var(--raio);padding:24px}
+.nt-painel h3{font-size:1.2rem;margin:0 0 4px}
+.nt-painel-dica{font-size:.86rem;color:var(--carvao-suave);margin:0 0 16px}
+.nt-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+.nt-form .nt-inteiro{grid-column:1/-1}
+@media (max-width:620px){.nt-form{grid-template-columns:minmax(0,1fr)}}
+.nt-form label{display:block;font-size:.78rem;font-weight:700;color:var(--carvao);margin-bottom:5px}
+.nt-in{width:100%;box-sizing:border-box;font:inherit;font-family:var(--corpo);font-size:.92rem;padding:10px 12px;border:1px solid rgba(33,24,18,.2);border-radius:10px;background:var(--marfim);color:var(--carvao)}
+.nt-in:focus{outline:2px solid rgba(181,96,42,.45);border-color:var(--barro)}
+textarea.nt-in{resize:vertical;line-height:1.55}
+.nt-form-acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.nt-status{font-size:.86rem;margin-top:12px;padding:8px 12px;border-radius:10px}
+.nt-status[hidden]{display:none}
+.nt-status.ok{background:rgba(47,125,66,.1);color:#1f5a2f}
+.nt-status.erro{background:rgba(163,39,27,.08);color:#a3271b}
+.nt-status.espera{background:rgba(201,151,63,.12);color:#7a5a1d}
+.nt-capa-previa{margin-top:8px;max-width:220px;border-radius:10px;display:block}
+.nt-capa-previa[hidden]{display:none}
+.nt-so-release,.nt-so-midia{}
+.nt-form[data-tipo="midia"] .nt-so-release{display:none}
+.nt-form[data-tipo="release"] .nt-so-midia{display:none}
 </style>
 </head>
 <body>
@@ -1882,7 +1954,7 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
     <li><a href="#oreka" onclick="closeMenu()" data-i18n="nav_oreka">OREKA</a></li>
     <li><a href="#ceramica" onclick="closeMenu()" data-i18n="nav_ceramica">Cerâmica</a></li>
     <li><a href="#diretoria" onclick="closeMenu()" data-i18n="nav_diretoria">Diretoria</a></li>
-    <li><a href="#noticia-convenio" onclick="closeMenu()" data-rl="nav">Notícia</a></li>
+    <li></li>
     <li><a href="#noticias" onclick="closeMenu()" data-i18n="nav_noticias">Notícias</a></li>
     <li><a href="#calendario" onclick="closeMenu()" data-i18n="nav_calendario">Agenda</a></li>
     <li><a href="#galeria" onclick="closeMenu()" data-i18n="nav_galeria">Galeria</a></li>
@@ -2496,35 +2568,10 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
   <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
 </div>
-<section id="noticia-convenio" aria-labelledby="rl-titulo">
-  <article class="rl-wrap">
-    <span class="rl-sel" data-rl="sel"></span>
-    <h2 class="rl-h" id="rl-titulo" data-rl="tit"></h2>
-    <p class="rl-fina" data-rl="fina"></p>
-    <div class="rl-meta"><span data-rl="data"></span><span><strong>Aldeia XP Comunicação</strong></span></div>
-    <figure class="rl-capa">
-      <img src="imgs/galeria/convenio-ifms-02-reuniao.jpg" alt="" data-rl="cap" data-rl-alt="1" loading="lazy">
-      <figcaption data-rl="cap"></figcaption>
-    </figure>
-    <div class="rl-corpo">
-      <p data-rl="p1"></p>
-      <p data-rl="p2"></p>
-      <p data-rl="p3"></p>
-      <p data-rl="p4"></p>
-      <p data-rl="p5"></p>
-      <p data-rl="p6"></p>
-      <p data-rl="p7"></p>
-    </div>
-    <h3 class="rl-fotos-h" data-rl="fotos_h"></h3>
-    <div class="rl-fotos">
-      <figure><img src="imgs/galeria/convenio-ifms-01-grupo.jpg" alt="" data-rl="l1" data-rl-alt="1" loading="lazy"><figcaption data-rl="l1"></figcaption></figure>
-      <figure><img src="imgs/galeria/convenio-ifms-02-reuniao.jpg" alt="" data-rl="l2" data-rl-alt="1" loading="lazy"><figcaption data-rl="l2"></figcaption></figure>
-      <figure><img src="imgs/galeria/convenio-ifms-03-documento.jpg" alt="" data-rl="l3" data-rl-alt="1" loading="lazy"><figcaption data-rl="l3"></figcaption></figure>
-    </div>
-    <div class="rl-assina"><img src="imgs/aldeiaxp-logo-escura.png" alt="Aldeia XP"><span><span data-rl="assina"></span>: Aldeia XP Comunicação</span></div>
-  </article>
-</section>
-<div class="rl-lb" id="rl-lb" role="dialog" aria-modal="true" hidden><button type="button" id="rl-lb-x" aria-label="Fechar">&times;</button><img id="rl-lb-img" alt=""><p id="rl-lb-leg"></p></div>
+<div class="nt-modal" id="nt-modal" role="dialog" aria-modal="true" hidden>
+  <article class="nt-art" id="nt-art"></article>
+</div>
+<div class="nt-lb" id="nt-lb" role="dialog" aria-modal="true" hidden><button type="button" id="nt-lb-x" aria-label="Fechar">&times;</button><img id="nt-lb-img" alt=""><p id="nt-lb-leg"></p></div>
 <section id="noticias">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -4603,6 +4650,7 @@ function renderNoticias(){
   var db=dbLer();
   var custom=db.noticias?Object.keys(db.noticias).map(function(k){return db.noticias[k];}).reverse():[];
   var todas=custom.concat(NOTICIAS_FIXAS);
+  if(window.NT_cartoesRelease)window.NT_cartoesRelease().forEach(function(card){grid.appendChild(card);setTimeout(function(){card.classList.add('visible');},50);});
   todas.forEach(function(n){
     var isCustom=!!(db.noticias&&db.noticias[n.id]);
     var card=document.createElement('div');
@@ -4612,7 +4660,7 @@ function renderNoticias(){
       +'<div class="nc-fonte">'+n.fonte+'</div>'
       +'<div class="nc-ti">'+(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo)+'</div>'
       +(n.desc?'<div class="nc-de">'+(window.ICET_pick?window.ICET_pick(n,'desc'):n.desc)+'</div>':'')
-      +(n.link?'<a href="'+n.link+'" target="_blank" class="nc-link">'+(window.ICET_L?window.ICET_L('btn_lernot'):'Ler notícia ↗')+'</a>':'')
+      +(window.NT_botaoMidia?window.NT_botaoMidia(n):(n.link?'<a href="'+n.link+'" target="_blank" rel="noopener" class="nc-link">'+(window.ICET_L?window.ICET_L('btn_lernot'):'Ler notícia ↗')+'</a>':''))
       +(isCustom?'<button class="nc-del btn-sm" data-nc-trad="'+n.id+'" title="Traduzir">🌐</button><button class="nc-del btn-sm del" data-nc-del="'+n.id+'">✕</button>':'');
     grid.appendChild(card);
     setTimeout(function(){card.classList.add('visible');},50);
@@ -7607,41 +7655,123 @@ document.addEventListener('DOMContentLoaded', function(){
   } catch(e){ }
 })();
 </script>
+<script type="application/json" id="nt-dados-iniciais">{"versao": 1, "itens": {"rel_convenio_ifms_20261011": {"tipo": "release", "data": "2026-10-11", "titulo": {"pt": "ICET, CMDDI, FOCAMS e UNIPBRAS iniciam tratativas com o IFMS para firmar convênio", "en": "ICET, CMDDI, FOCAMS and UNIPBRAS open talks with IFMS toward a cooperation agreement", "es": "ICET, CMDDI, FOCAMS y UNIPBRAS inician conversaciones con el IFMS para firmar un convenio", "fr": "L’ICET, le CMDDI, le FOCAMS et l’UNIPBRAS ouvrent des discussions avec l’IFMS en vue d’une convention"}, "fina": {"pt": "Reitora e pró-reitor de Extensão do Instituto Federal receberam lideranças indígenas para discutir um selo editorial de autoria indígena e um núcleo de propriedade intelectual e conhecimentos tradicionais.", "en": "The rector and the Dean of Extension of the Federal Institute received Indigenous leaders to discuss an Indigenous-authored publishing imprint and a center for intellectual property and traditional knowledge.", "es": "La rectora y el prorrector de Extensión del Instituto Federal recibieron a líderes indígenas para debatir un sello editorial de autoría indígena y un núcleo de propiedad intelectual y conocimientos tradicionales.", "fr": "La rectrice et le pro-recteur de l’Extension de l’Institut fédéral ont reçu des dirigeants autochtones pour discuter d’un label éditorial d’auteurs autochtones et d’un pôle de propriété intellectuelle et de savoirs traditionnels."}, "local": {"pt": "Campo Grande (MS), 11 de outubro de 2026", "en": "Campo Grande (MS), October 11, 2026", "es": "Campo Grande (MS), 11 de octubre de 2026", "fr": "Campo Grande (MS), 11 octobre 2026"}, "texto": {"pt": ["Em reunião realizada na sexta-feira, 9 de outubro, começaram as tratativas para um convênio entre o Instituto Federal de Mato Grosso do Sul (IFMS) e quatro organizações indígenas do estado: o Instituto Cacique Enir Terena (ICET), o Conselho Municipal dos Direitos e Defesa dos Povos Indígenas (CMDDI), o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS) e a União Nacional dos Produtores e Agricultores Indígenas do Brasil (UNIPBRAS).", "O encontro reuniu a reitora do IFMS, Dra. Elaine Borges Monteiro Cassiano, e o pró-reitor de Extensão, Dr. Anderson Martins Corrêa. Pelo lado indígena, participaram a presidente do ICET, Maria Auxiliadora Bezerra; o presidente do CMDDI e da Cooperativa Estadual dos Povos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; e o presidente do FOCAMS e da UNIPBRAS, Aguinaldo Arruda Areco. Esteve presente ainda Germano Coelho Ramos Rocha-Silva, conselheiro do CMDDI, secretário-geral do ICET, mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação e autor do projeto que embasa a proposta.", "O projeto apresentado ao IFMS tem duas frentes. A primeira é a expansão do selo editorial do ICET em uma biblioteca digital de autoria indígena, sem edição em papel, com curadoria técnica do próprio Instituto e publicação conjunta nos portais das instituições parceiras. A segunda é a criação de um núcleo permanente de propriedade intelectual, biotecnologia e conhecimentos tradicionais, que vai documentar, com consentimento prévio, livre e informado das comunidades, obras, elementos culturais e saberes de medicina tradicional dos povos indígenas do estado.", "Segundo o projeto, a documentação reunida pelo núcleo servirá de base para estudos técnicos que subsidiem pedidos de proteção junto ao Instituto Nacional da Propriedade Industrial (INPI), acordos de repartição de benefícios e, no médio prazo, propostas normativas em âmbito municipal e estadual.", "A autoria, a curadoria e a titularidade do selo permanecem com o ICET e com o CMDDI. Ao IFMS caberia oferecer respaldo técnico e acadêmico, por meio do Núcleo de Inovação Tecnológica e das pró-reitorias de Pesquisa e de Extensão. A proposta prevê, ainda, a cooperação do Ministério Público de Mato Grosso do Sul.", "O ICET já mantém editora, selo e conselho editorial próprios e tem uma obra publicada, Autodeterminação Cultural, sobre a cerâmica Terena, a ancestralidade Arawak e a propriedade intelectual coletiva, escrita por seis coautores. Pelas regras do selo, autores não indígenas só podem participar de uma publicação se ao menos um dos autores for indígena, e o Instituto arca com os custos de registro de direitos autorais e de ISBN.", "As tratativas estão em fase inicial. O instrumento jurídico da parceria e os termos da cooperação ainda serão definidos e dependem dos trâmites internos de cada instituição. A iniciativa parte de uma convicção registrada no próprio projeto: a história, a cultura e os conhecimentos de um povo ganham força, e proteção jurídica, quando são documentados, narrados e geridos por quem os vive."], "en": ["At a meeting held on Friday, October 9, talks began on a cooperation agreement between the Federal Institute of Mato Grosso do Sul (IFMS) and four Indigenous organizations of the state: the Instituto Cacique Enir Terena (ICET), the Municipal Council for the Rights and Defense of Indigenous Peoples (CMDDI), the Forum of Chiefs of Mato Grosso do Sul (FOCAMS) and the National Union of Indigenous Producers and Farmers of Brazil (UNIPBRAS).", "The meeting brought together the rector of IFMS, Dr. Elaine Borges Monteiro Cassiano, and the Dean of Extension, Dr. Anderson Martins Corrêa. On the Indigenous side, those present were the president of ICET, Maria Auxiliadora Bezerra; the president of CMDDI and of the State Cooperative of Indigenous Peoples of Mato Grosso do Sul (COOPIMS), Lisio Lili; and the president of FOCAMS and UNIPBRAS, Aguinaldo Arruda Areco. Also present was Germano Coelho Ramos Rocha-Silva, a CMDDI councillor, secretary-general of ICET, holder of a master's degree in Intellectual Property and Technology Transfer for Innovation and author of the project behind the proposal.", "The project submitted to IFMS has two fronts. The first is to expand ICET's publishing imprint into a digital library of Indigenous authorship, with no paper edition, curated technically by the Institute itself and published jointly on the partner institutions' portals. The second is to create a permanent center for intellectual property, biotechnology and traditional knowledge, which will document, with the prior, free and informed consent of the communities, works, cultural elements and traditional medicine knowledge of the Indigenous peoples of the state.", "According to the project, the documentation gathered by the center will support technical studies for protection requests before the National Institute of Industrial Property (INPI), benefit-sharing agreements and, in the medium term, regulatory proposals at the municipal and state levels.", "Authorship, curatorship and ownership of the imprint remain with ICET and CMDDI. IFMS would provide technical and academic support through its Technological Innovation Center and its Research and Extension deaneries. The proposal also foresees the cooperation of the Public Prosecutor's Office of Mato Grosso do Sul.", "ICET already runs its own publishing house, imprint and editorial board, and has one published work, Autodeterminação Cultural, on Terena ceramics, Arawak ancestry and collective intellectual property, written by six co-authors. Under the imprint's rules, non-Indigenous authors may take part in a publication only if at least one of the authors is Indigenous, and the Institute bears the costs of copyright registration and ISBN.", "The talks are at an early stage. The legal instrument of the partnership and the terms of cooperation are still to be defined and depend on the internal procedures of each institution. The initiative rests on a conviction stated in the project itself: the history, culture and knowledge of a people gain strength, and legal protection, when they are documented, narrated and managed by those who live them."], "es": ["En una reunión realizada el viernes 9 de octubre, comenzaron las conversaciones para un convenio entre el Instituto Federal de Mato Grosso do Sul (IFMS) y cuatro organizaciones indígenas del estado: el Instituto Cacique Enir Terena (ICET), el Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas (CMDDI), el Foro de Caciques de Mato Grosso do Sul (FOCAMS) y la Unión Nacional de los Productores y Agricultores Indígenas de Brasil (UNIPBRAS).", "El encuentro reunió a la rectora del IFMS, Dra. Elaine Borges Monteiro Cassiano, y al prorrector de Extensión, Dr. Anderson Martins Corrêa. Por el lado indígena participaron la presidenta del ICET, Maria Auxiliadora Bezerra; el presidente del CMDDI y de la Cooperativa Estatal de los Pueblos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; y el presidente del FOCAMS y de la UNIPBRAS, Aguinaldo Arruda Areco. Estuvo presente también Germano Coelho Ramos Rocha-Silva, consejero del CMDDI, secretario general del ICET, magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación y autor del proyecto que sustenta la propuesta.", "El proyecto presentado al IFMS tiene dos frentes. El primero es la expansión del sello editorial del ICET en una biblioteca digital de autoría indígena, sin edición en papel, con curaduría técnica del propio Instituto y publicación conjunta en los portales de las instituciones socias. El segundo es la creación de un núcleo permanente de propiedad intelectual, biotecnología y conocimientos tradicionales, que documentará, con el consentimiento previo, libre e informado de las comunidades, obras, elementos culturales y saberes de medicina tradicional de los pueblos indígenas del estado.", "Según el proyecto, la documentación reunida por el núcleo servirá de base para estudios técnicos que respalden solicitudes de protección ante el Instituto Nacional de la Propiedad Industrial (INPI), acuerdos de distribución de beneficios y, a mediano plazo, propuestas normativas en el ámbito municipal y estatal.", "La autoría, la curaduría y la titularidad del sello permanecen con el ICET y el CMDDI. Al IFMS le correspondería aportar respaldo técnico y académico, por medio del Núcleo de Innovación Tecnológica y de las prorrectorías de Investigación y de Extensión. La propuesta prevé, además, la cooperación del Ministerio Público de Mato Grosso do Sul.", "El ICET ya cuenta con editorial, sello y consejo editorial propios y tiene una obra publicada, Autodeterminação Cultural, sobre la cerámica Terena, la ascendencia Arawak y la propiedad intelectual colectiva, escrita por seis coautores. Según las reglas del sello, los autores no indígenas solo pueden participar en una publicación si al menos uno de los autores es indígena, y el Instituto asume los costos de registro de derechos de autor y de ISBN.", "Las conversaciones están en una fase inicial. El instrumento jurídico de la alianza y los términos de la cooperación aún serán definidos y dependen de los trámites internos de cada institución. La iniciativa parte de una convicción registrada en el propio proyecto: la historia, la cultura y los conocimientos de un pueblo ganan fuerza, y protección jurídica, cuando son documentados, narrados y gestionados por quienes los viven."], "fr": ["Lors d’une réunion tenue le vendredi 9 octobre, des discussions ont commencé en vue d’une convention entre l’Institut fédéral du Mato Grosso do Sul (IFMS) et quatre organisations autochtones de l’État : l’Institut Cacique Enir Terena (ICET), le Conseil municipal des droits et de la défense des peuples autochtones (CMDDI), le Forum des caciques du Mato Grosso do Sul (FOCAMS) et l’Union nationale des producteurs et agriculteurs autochtones du Brésil (UNIPBRAS).", "La rencontre a réuni la rectrice de l’IFMS, Dre Elaine Borges Monteiro Cassiano, et le pro-recteur de l’Extension, Dr. Anderson Martins Corrêa. Du côté autochtone, ont participé la présidente de l’ICET, Maria Auxiliadora Bezerra ; le président du CMDDI et de la Coopérative des peuples autochtones du Mato Grosso do Sul (COOPIMS), Lisio Lili ; et le président du FOCAMS et de l’UNIPBRAS, Aguinaldo Arruda Areco. Était également présent Germano Coelho Ramos Rocha-Silva, conseiller du CMDDI, secrétaire général de l’ICET, titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation et auteur du projet qui fonde la proposition.", "Le projet présenté à l’IFMS comporte deux volets. Le premier est l’extension du label éditorial de l’ICET en une bibliothèque numérique d’auteurs autochtones, sans édition papier, avec une curation technique assurée par l’Institut lui-même et une publication conjointe sur les portails des institutions partenaires. Le second est la création d’un pôle permanent de propriété intellectuelle, de biotechnologie et de savoirs traditionnels, qui documentera, avec le consentement préalable, libre et éclairé des communautés, des œuvres, des éléments culturels et des savoirs de médecine traditionnelle des peuples autochtones de l’État.", "Selon le projet, la documentation réunie par le pôle servira de base à des études techniques destinées à appuyer des demandes de protection auprès de l’Institut national de la propriété industrielle (INPI), des accords de partage des avantages et, à moyen terme, des propositions normatives aux niveaux municipal et de l’État.", "La paternité, la curation et la titularité du label restent à l’ICET et au CMDDI. L’IFMS apporterait un appui technique et académique, par l’intermédiaire de son Pôle d’innovation technologique et de ses prorrectorats de la Recherche et de l’Extension. La proposition prévoit en outre la coopération du Ministère public du Mato Grosso do Sul.", "L’ICET dispose déjà d’une maison d’édition, d’un label et d’un comité éditorial propres, et compte une œuvre publiée, Autodeterminação Cultural, consacrée à la céramique Terena, à l’ascendance Arawak et à la propriété intellectuelle collective, rédigée par six coauteurs. Selon les règles du label, des auteurs non autochtones ne peuvent participer à une publication que si au moins l’un des auteurs est autochtone, et l’Institut prend en charge les frais d’enregistrement du droit d’auteur et de l’ISBN.", "Les discussions en sont à un stade initial. L’instrument juridique du partenariat et les termes de la coopération restent à définir et dépendent des procédures internes de chaque institution. L’initiative repose sur une conviction inscrite dans le projet lui-même : l’histoire, la culture et les savoirs d’un peuple gagnent en force, et en protection juridique, lorsqu’ils sont documentés, racontés et gérés par ceux qui les vivent."]}, "capa": "imgs/galeria/convenio-ifms-02-reuniao.jpg", "capaLeg": {"pt": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "en": "Working meeting on the agreement, held at IFMS.", "es": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "fr": "Réunion de travail sur la convention, tenue à l’IFMS."}, "fotos": [{"src": "imgs/galeria/convenio-ifms-01-grupo.jpg", "leg": {"pt": "Reitora e pró-reitores do IFMS e presidentes das instituições no encontro para o convênio entre CMDDI, ICET, FOCAMS, IFMS e MPE/MS.", "en": "The rector and deans of IFMS and the presidents of the institutions at the meeting on the agreement among CMDDI, ICET, FOCAMS, IFMS and MPE/MS.", "es": "La rectora y los prorrectores del IFMS y los presidentes de las instituciones en el encuentro para el convenio entre CMDDI, ICET, FOCAMS, IFMS y MPE/MS.", "fr": "La rectrice et les pro-recteurs de l’IFMS et les présidents des institutions lors de la rencontre pour la convention entre le CMDDI, l’ICET, le FOCAMS, l’IFMS et le MPE/MS."}}, {"src": "imgs/galeria/convenio-ifms-02-reuniao.jpg", "leg": {"pt": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "en": "Working meeting on the agreement, held at IFMS.", "es": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "fr": "Réunion de travail sur la convention, tenue à l’IFMS."}}, {"src": "imgs/galeria/convenio-ifms-03-documento.jpg", "leg": {"pt": "Entrega de documento durante o encontro para o convênio.", "en": "Handing over of a document during the meeting on the agreement.", "es": "Entrega de un documento durante el encuentro para el convenio.", "fr": "Remise d’un document lors de la rencontre pour la convention."}}], "assinatura": "Aldeia XP Comunicação", "assinaturaLogo": "imgs/aldeiaxp-logo-escura.png"}}}</script>
 <script>
+/* ===== Notícias do ICET: release do site e "Ler na íntegra" =====
+   Releases em #nt-dados-iniciais; notícias da imprensa continuam no dados.json
+   (publicadas pelo ADM em "Publicar nova notícia"). */
 (function(){
-  var T={"pt": {"nav": "Notícia", "sel": "Notícia", "tit": "ICET, CMDDI, FOCAMS e UNIPBRAS iniciam tratativas com o IFMS para firmar convênio", "fina": "Reitora e pró-reitor de Extensão do Instituto Federal receberam lideranças indígenas para discutir um selo editorial de autoria indígena e um núcleo de propriedade intelectual e conhecimentos tradicionais.", "data": "Campo Grande (MS), 11 de outubro de 2026", "cap": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "p1": "Em reunião realizada na sexta-feira, 9 de outubro, começaram as tratativas para um convênio entre o Instituto Federal de Mato Grosso do Sul (IFMS) e quatro organizações indígenas do estado: o Instituto Cacique Enir Terena (ICET), o Conselho Municipal dos Direitos e Defesa dos Povos Indígenas (CMDDI), o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS) e a União Nacional dos Produtores e Agricultores Indígenas do Brasil (UNIPBRAS).", "p2": "O encontro reuniu a reitora do IFMS, Dra. Elaine Borges Monteiro Cassiano, e o pró-reitor de Extensão, Dr. Anderson Martins Corrêa. Pelo lado indígena, participaram a presidente do ICET, Maria Auxiliadora Bezerra; o presidente do CMDDI e da Cooperativa Estadual dos Povos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; e o presidente do FOCAMS e da UNIPBRAS, Aguinaldo Arruda Areco. Esteve presente ainda Germano Coelho Ramos Rocha-Silva, conselheiro do CMDDI, secretário-geral do ICET, mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação e autor do projeto que embasa a proposta.", "p3": "O projeto apresentado ao IFMS tem duas frentes. A primeira é a expansão do selo editorial do ICET em uma biblioteca digital de autoria indígena, sem edição em papel, com curadoria técnica do próprio Instituto e publicação conjunta nos portais das instituições parceiras. A segunda é a criação de um núcleo permanente de propriedade intelectual, biotecnologia e conhecimentos tradicionais, que vai documentar, com consentimento prévio, livre e informado das comunidades, obras, elementos culturais e saberes de medicina tradicional dos povos indígenas do estado.", "p4": "Segundo o projeto, a documentação reunida pelo núcleo servirá de base para estudos técnicos que subsidiem pedidos de proteção junto ao Instituto Nacional da Propriedade Industrial (INPI), acordos de repartição de benefícios e, no médio prazo, propostas normativas em âmbito municipal e estadual.", "p5": "A autoria, a curadoria e a titularidade do selo permanecem com o ICET e com o CMDDI. Ao IFMS caberia oferecer respaldo técnico e acadêmico, por meio do Núcleo de Inovação Tecnológica e das pró-reitorias de Pesquisa e de Extensão. A proposta prevê, ainda, a cooperação do Ministério Público de Mato Grosso do Sul.", "p6": "O ICET já mantém editora, selo e conselho editorial próprios e tem uma obra publicada, Autodeterminação Cultural, sobre a cerâmica Terena, a ancestralidade Arawak e a propriedade intelectual coletiva, escrita por seis coautores. Pelas regras do selo, autores não indígenas só podem participar de uma publicação se ao menos um dos autores for indígena, e o Instituto arca com os custos de registro de direitos autorais e de ISBN.", "p7": "As tratativas estão em fase inicial. O instrumento jurídico da parceria e os termos da cooperação ainda serão definidos e dependem dos trâmites internos de cada instituição. A iniciativa parte de uma convicção registrada no próprio projeto: a história, a cultura e os conhecimentos de um povo ganham força, e proteção jurídica, quando são documentados, narrados e geridos por quem os vive.", "fotos_h": "Registros do encontro", "l1": "Reitora e pró-reitores do IFMS e presidentes das instituições no encontro para o convênio entre CMDDI, ICET, FOCAMS, IFMS e MPE/MS.", "l2": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "l3": "Entrega de documento durante o encontro para o convênio.", "assina": "Texto", "fechar": "Fechar"}, "en": {"nav": "News", "sel": "News", "tit": "ICET, CMDDI, FOCAMS and UNIPBRAS open talks with IFMS toward a cooperation agreement", "fina": "The rector and the Dean of Extension of the Federal Institute received Indigenous leaders to discuss an Indigenous-authored publishing imprint and a center for intellectual property and traditional knowledge.", "data": "Campo Grande (MS), October 11, 2026", "cap": "Working meeting on the agreement, held at IFMS.", "p1": "At a meeting held on Friday, October 9, talks began on a cooperation agreement between the Federal Institute of Mato Grosso do Sul (IFMS) and four Indigenous organizations of the state: the Instituto Cacique Enir Terena (ICET), the Municipal Council for the Rights and Defense of Indigenous Peoples (CMDDI), the Forum of Chiefs of Mato Grosso do Sul (FOCAMS) and the National Union of Indigenous Producers and Farmers of Brazil (UNIPBRAS).", "p2": "The meeting brought together the rector of IFMS, Dr. Elaine Borges Monteiro Cassiano, and the Dean of Extension, Dr. Anderson Martins Corrêa. On the Indigenous side, those present were the president of ICET, Maria Auxiliadora Bezerra; the president of CMDDI and of the State Cooperative of Indigenous Peoples of Mato Grosso do Sul (COOPIMS), Lisio Lili; and the president of FOCAMS and UNIPBRAS, Aguinaldo Arruda Areco. Also present was Germano Coelho Ramos Rocha-Silva, a CMDDI councillor, secretary-general of ICET, holder of a master's degree in Intellectual Property and Technology Transfer for Innovation and author of the project behind the proposal.", "p3": "The project submitted to IFMS has two fronts. The first is to expand ICET's publishing imprint into a digital library of Indigenous authorship, with no paper edition, curated technically by the Institute itself and published jointly on the partner institutions' portals. The second is to create a permanent center for intellectual property, biotechnology and traditional knowledge, which will document, with the prior, free and informed consent of the communities, works, cultural elements and traditional medicine knowledge of the Indigenous peoples of the state.", "p4": "According to the project, the documentation gathered by the center will support technical studies for protection requests before the National Institute of Industrial Property (INPI), benefit-sharing agreements and, in the medium term, regulatory proposals at the municipal and state levels.", "p5": "Authorship, curatorship and ownership of the imprint remain with ICET and CMDDI. IFMS would provide technical and academic support through its Technological Innovation Center and its Research and Extension deaneries. The proposal also foresees the cooperation of the Public Prosecutor's Office of Mato Grosso do Sul.", "p6": "ICET already runs its own publishing house, imprint and editorial board, and has one published work, Autodeterminação Cultural, on Terena ceramics, Arawak ancestry and collective intellectual property, written by six co-authors. Under the imprint's rules, non-Indigenous authors may take part in a publication only if at least one of the authors is Indigenous, and the Institute bears the costs of copyright registration and ISBN.", "p7": "The talks are at an early stage. The legal instrument of the partnership and the terms of cooperation are still to be defined and depend on the internal procedures of each institution. The initiative rests on a conviction stated in the project itself: the history, culture and knowledge of a people gain strength, and legal protection, when they are documented, narrated and managed by those who live them.", "fotos_h": "Photos from the meeting", "l1": "The rector and deans of IFMS and the presidents of the institutions at the meeting on the agreement among CMDDI, ICET, FOCAMS, IFMS and MPE/MS.", "l2": "Working meeting on the agreement, held at IFMS.", "l3": "Handing over of a document during the meeting on the agreement.", "assina": "Text", "fechar": "Close"}, "es": {"nav": "Noticia", "sel": "Noticia", "tit": "ICET, CMDDI, FOCAMS y UNIPBRAS inician conversaciones con el IFMS para firmar un convenio", "fina": "La rectora y el prorrector de Extensión del Instituto Federal recibieron a líderes indígenas para debatir un sello editorial de autoría indígena y un núcleo de propiedad intelectual y conocimientos tradicionales.", "data": "Campo Grande (MS), 11 de octubre de 2026", "cap": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "p1": "En una reunión realizada el viernes 9 de octubre, comenzaron las conversaciones para un convenio entre el Instituto Federal de Mato Grosso do Sul (IFMS) y cuatro organizaciones indígenas del estado: el Instituto Cacique Enir Terena (ICET), el Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas (CMDDI), el Foro de Caciques de Mato Grosso do Sul (FOCAMS) y la Unión Nacional de los Productores y Agricultores Indígenas de Brasil (UNIPBRAS).", "p2": "El encuentro reunió a la rectora del IFMS, Dra. Elaine Borges Monteiro Cassiano, y al prorrector de Extensión, Dr. Anderson Martins Corrêa. Por el lado indígena participaron la presidenta del ICET, Maria Auxiliadora Bezerra; el presidente del CMDDI y de la Cooperativa Estatal de los Pueblos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; y el presidente del FOCAMS y de la UNIPBRAS, Aguinaldo Arruda Areco. Estuvo presente también Germano Coelho Ramos Rocha-Silva, consejero del CMDDI, secretario general del ICET, magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación y autor del proyecto que sustenta la propuesta.", "p3": "El proyecto presentado al IFMS tiene dos frentes. El primero es la expansión del sello editorial del ICET en una biblioteca digital de autoría indígena, sin edición en papel, con curaduría técnica del propio Instituto y publicación conjunta en los portales de las instituciones socias. El segundo es la creación de un núcleo permanente de propiedad intelectual, biotecnología y conocimientos tradicionales, que documentará, con el consentimiento previo, libre e informado de las comunidades, obras, elementos culturales y saberes de medicina tradicional de los pueblos indígenas del estado.", "p4": "Según el proyecto, la documentación reunida por el núcleo servirá de base para estudios técnicos que respalden solicitudes de protección ante el Instituto Nacional de la Propiedad Industrial (INPI), acuerdos de distribución de beneficios y, a mediano plazo, propuestas normativas en el ámbito municipal y estatal.", "p5": "La autoría, la curaduría y la titularidad del sello permanecen con el ICET y el CMDDI. Al IFMS le correspondería aportar respaldo técnico y académico, por medio del Núcleo de Innovación Tecnológica y de las prorrectorías de Investigación y de Extensión. La propuesta prevé, además, la cooperación del Ministerio Público de Mato Grosso do Sul.", "p6": "El ICET ya cuenta con editorial, sello y consejo editorial propios y tiene una obra publicada, Autodeterminação Cultural, sobre la cerámica Terena, la ascendencia Arawak y la propiedad intelectual colectiva, escrita por seis coautores. Según las reglas del sello, los autores no indígenas solo pueden participar en una publicación si al menos uno de los autores es indígena, y el Instituto asume los costos de registro de derechos de autor y de ISBN.", "p7": "Las conversaciones están en una fase inicial. El instrumento jurídico de la alianza y los términos de la cooperación aún serán definidos y dependen de los trámites internos de cada institución. La iniciativa parte de una convicción registrada en el propio proyecto: la historia, la cultura y los conocimientos de un pueblo ganan fuerza, y protección jurídica, cuando son documentados, narrados y gestionados por quienes los viven.", "fotos_h": "Registros del encuentro", "l1": "La rectora y los prorrectores del IFMS y los presidentes de las instituciones en el encuentro para el convenio entre CMDDI, ICET, FOCAMS, IFMS y MPE/MS.", "l2": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "l3": "Entrega de un documento durante el encuentro para el convenio.", "assina": "Texto", "fechar": "Cerrar"}, "fr": {"nav": "Actualité", "sel": "Actualité", "tit": "L’ICET, le CMDDI, le FOCAMS et l’UNIPBRAS ouvrent des discussions avec l’IFMS en vue d’une convention", "fina": "La rectrice et le pro-recteur de l’Extension de l’Institut fédéral ont reçu des dirigeants autochtones pour discuter d’un label éditorial d’auteurs autochtones et d’un pôle de propriété intellectuelle et de savoirs traditionnels.", "data": "Campo Grande (MS), 11 octobre 2026", "cap": "Réunion de travail sur la convention, tenue à l’IFMS.", "p1": "Lors d’une réunion tenue le vendredi 9 octobre, des discussions ont commencé en vue d’une convention entre l’Institut fédéral du Mato Grosso do Sul (IFMS) et quatre organisations autochtones de l’État : l’Institut Cacique Enir Terena (ICET), le Conseil municipal des droits et de la défense des peuples autochtones (CMDDI), le Forum des caciques du Mato Grosso do Sul (FOCAMS) et l’Union nationale des producteurs et agriculteurs autochtones du Brésil (UNIPBRAS).", "p2": "La rencontre a réuni la rectrice de l’IFMS, Dre Elaine Borges Monteiro Cassiano, et le pro-recteur de l’Extension, Dr. Anderson Martins Corrêa. Du côté autochtone, ont participé la présidente de l’ICET, Maria Auxiliadora Bezerra ; le président du CMDDI et de la Coopérative des peuples autochtones du Mato Grosso do Sul (COOPIMS), Lisio Lili ; et le président du FOCAMS et de l’UNIPBRAS, Aguinaldo Arruda Areco. Était également présent Germano Coelho Ramos Rocha-Silva, conseiller du CMDDI, secrétaire général de l’ICET, titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation et auteur du projet qui fonde la proposition.", "p3": "Le projet présenté à l’IFMS comporte deux volets. Le premier est l’extension du label éditorial de l’ICET en une bibliothèque numérique d’auteurs autochtones, sans édition papier, avec une curation technique assurée par l’Institut lui-même et une publication conjointe sur les portails des institutions partenaires. Le second est la création d’un pôle permanent de propriété intellectuelle, de biotechnologie et de savoirs traditionnels, qui documentera, avec le consentement préalable, libre et éclairé des communautés, des œuvres, des éléments culturels et des savoirs de médecine traditionnelle des peuples autochtones de l’État.", "p4": "Selon le projet, la documentation réunie par le pôle servira de base à des études techniques destinées à appuyer des demandes de protection auprès de l’Institut national de la propriété industrielle (INPI), des accords de partage des avantages et, à moyen terme, des propositions normatives aux niveaux municipal et de l’État.", "p5": "La paternité, la curation et la titularité du label restent à l’ICET et au CMDDI. L’IFMS apporterait un appui technique et académique, par l’intermédiaire de son Pôle d’innovation technologique et de ses prorrectorats de la Recherche et de l’Extension. La proposition prévoit en outre la coopération du Ministère public du Mato Grosso do Sul.", "p6": "L’ICET dispose déjà d’une maison d’édition, d’un label et d’un comité éditorial propres, et compte une œuvre publiée, Autodeterminação Cultural, consacrée à la céramique Terena, à l’ascendance Arawak et à la propriété intellectuelle collective, rédigée par six coauteurs. Selon les règles du label, des auteurs non autochtones ne peuvent participer à une publication que si au moins l’un des auteurs est autochtone, et l’Institut prend en charge les frais d’enregistrement du droit d’auteur et de l’ISBN.", "p7": "Les discussions en sont à un stade initial. L’instrument juridique du partenariat et les termes de la coopération restent à définir et dépendent des procédures internes de chaque institution. L’initiative repose sur une conviction inscrite dans le projet lui-même : l’histoire, la culture et les savoirs d’un peuple gagnent en force, et en protection juridique, lorsqu’ils sont documentés, racontés et gérés par ceux qui les vivent.", "fotos_h": "Images de la rencontre", "l1": "La rectrice et les pro-recteurs de l’IFMS et les présidents des institutions lors de la rencontre pour la convention entre le CMDDI, l’ICET, le FOCAMS, l’IFMS et le MPE/MS.", "l2": "Réunion de travail sur la convention, tenue à l’IFMS.", "l3": "Remise d’un document lors de la rencontre pour la convention.", "assina": "Texte", "fechar": "Fermer"}}, KEY="icet_lang";
-  function lang(){var l='pt';try{if(KEY)l=localStorage.getItem(KEY)||'pt';}catch(e){}return T[l]?l:'pt';}
-  function aplicar(){
-    var l=lang(),d=T[l],base=T.pt;
-    var els=document.querySelectorAll('#noticia-convenio [data-rl], a[data-rl="nav"]');
-    for(var i=0;i<els.length;i++){
-      var el=els[i],k=el.getAttribute('data-rl'),v=d[k]!=null?d[k]:base[k];
-      if(v==null)continue;
-      if(el.getAttribute('data-rl-alt')){el.setAttribute('alt',v);}else{el.innerHTML=v;}
-    }
-    document.documentElement.setAttribute('data-rl-lang',l);
-    var x=document.getElementById('rl-lb-x'); if(x)x.setAttribute('aria-label',d.fechar||base.fechar);
-  }
-  aplicar();
-  document.addEventListener('DOMContentLoaded',aplicar);
-  window.addEventListener('load',function(){aplicar();setTimeout(aplicar,1200);});
-  document.addEventListener('click',function(){setTimeout(aplicar,80);setTimeout(aplicar,600);},true);
-  window.addEventListener('storage',aplicar);
-  var lb=document.getElementById('rl-lb');
-  function abrir(img){
-    var fig=img.closest('figure'),leg=fig?fig.querySelector('figcaption'):null;
-    document.getElementById('rl-lb-img').src=img.src;
-    document.getElementById('rl-lb-img').alt=img.alt||'';
-    document.getElementById('rl-lb-leg').textContent=leg?leg.textContent:'';
-    lb.hidden=false;lb.classList.add('rl-on');
-  }
-  function fechar(){lb.classList.remove('rl-on');lb.hidden=true;}
-  document.addEventListener('click',function(e){
-    var im=e.target.closest&&e.target.closest('#noticia-convenio img');
-    if(im&&!im.closest('.rl-assina')){abrir(im);return;}
-    if(e.target===lb||e.target.id==='rl-lb-x')fechar();
+var KEY = 'icet_lang';
+var UI = {
+  pt: {ler:'Ler na íntegra', ler_midia:'Ler a matéria em {v}', selo_release:'Release produzido para o site do ICET', selo_midia:'Na mídia · {v}',
+       aviso_release:'Este é um release produzido para o site do Instituto Cacique Enir Terena. Veículos de comunicação podem reproduzi-lo, total ou parcialmente, citando a fonte.',
+       aviso_midia:'Matéria publicada por {v}. O texto completo está no site do veículo.', texto_por:'Texto', fotos:'Registros', fechar:'Fechar', veiculo:'Veículo', publicado:'Publicado em'},
+  en: {ler:'Read in full', ler_midia:'Read the story at {v}', selo_release:'Press release written for the ICET website', selo_midia:'In the media · {v}',
+       aviso_release:'This press release was written for the Cacique Enir Terena Institute website. Media outlets may reproduce it, in whole or in part, crediting the source.',
+       aviso_midia:'Story published by {v}. The full text is on the outlet’s website.', texto_por:'Text', fotos:'Photos', fechar:'Close', veiculo:'Outlet', publicado:'Published on'},
+  es: {ler:'Leer completa', ler_midia:'Leer la nota en {v}', selo_release:'Comunicado de prensa elaborado para el sitio del ICET', selo_midia:'En los medios · {v}',
+       aviso_release:'Este comunicado fue elaborado para el sitio del Instituto Cacique Enir Terena. Los medios pueden reproducirlo, total o parcialmente, citando la fuente.',
+       aviso_midia:'Nota publicada por {v}. El texto completo está en el sitio del medio.', texto_por:'Texto', fotos:'Registros', fechar:'Cerrar', veiculo:'Medio', publicado:'Publicado el'},
+  fr: {ler:'Lire en entier', ler_midia:'Lire l’article sur {v}', selo_release:'Communiqué rédigé pour le site de l’ICET', selo_midia:'Dans les médias · {v}',
+       aviso_release:'Ce communiqué a été rédigé pour le site de l’Institut Cacique Enir Terena. Les médias peuvent le reproduire, en tout ou en partie, en citant la source.',
+       aviso_midia:'Article publié par {v}. Le texte intégral se trouve sur le site du média.', texto_por:'Texte', fotos:'Photos', fechar:'Fermer', veiculo:'Média', publicado:'Publié le'}
+};
+var LOCALE = {pt:'pt-BR', en:'en-US', es:'es-ES', fr:'fr-FR'};
+var REL = {};
+try{ REL = (JSON.parse(document.getElementById('nt-dados-iniciais').textContent).itens) || {}; }catch(e){}
+var MIDIA = {};
+
+function $(id){ return document.getElementById(id); }
+function lang(){ try{ var l = (window.ICET_getLang ? window.ICET_getLang() : localStorage.getItem(KEY)) || 'pt'; return UI[l] ? l : 'pt'; }catch(e){ return 'pt'; } }
+function u(k, v){ var d = UI[lang()], s = d[k] != null ? d[k] : UI.pt[k]; if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
+function tx(v){ if (v == null) return ''; if (typeof v === 'string') return v; var l = lang(); return v[l] != null ? v[l] : (v.pt || ''); }
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function urlSegura(s){ s = String(s || '').trim(); return /^(https?:\/\/|imgs\/)/i.test(s) ? s : ''; }
+function pick(n, c){ return window.ICET_pick ? window.ICET_pick(n, c) : n[c]; }
+function dataFmt(iso){
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); if (!m) return '';
+  try{ return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString(LOCALE[lang()], {day:'numeric', month:'long', year:'numeric'}); }catch(e){ return m[3] + '/' + m[2] + '/' + m[1]; }
+}
+
+/* cartões usados por renderNoticias() */
+window.NT_cartoesRelease = function(){
+  return Object.keys(REL).sort(function(a, b){ return (REL[a].data || '') < (REL[b].data || '') ? 1 : -1; }).map(function(k){
+    var it = REL[k], card = document.createElement('div');
+    card.className = 'nc-card nc-release reveal';
+    card.innerHTML = '<div class="nc-selo">📝 ' + esc(u('selo_release')) + '</div>' +
+      '<div class="nc-data">' + esc(dataFmt(it.data)) + '</div>' +
+      (it.assinatura ? '<div class="nc-fonte">' + esc(u('texto_por')) + ': ' + esc(it.assinatura) + '</div>' : '') +
+      '<div class="nc-ti">' + esc(tx(it.titulo)) + '</div>' +
+      (tx(it.fina) ? '<div class="nc-de">' + esc(tx(it.fina)) + '</div>' : '') +
+      '<button type="button" class="nc-ler" data-nt-rel="' + esc(k) + '">📰 ' + esc(u('ler')) + '</button>';
+    return card;
   });
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')fechar();});
+};
+window.NT_botaoMidia = function(n){
+  MIDIA[n.id] = n;
+  return '<button type="button" class="nc-ler" data-nt-midia="' + esc(n.id) + '">📰 ' + esc(u('ler')) + '</button>';
+};
+
+function abrirModal(h){
+  $('nt-art').innerHTML = '<button type="button" class="nt-fechar" id="nt-fechar" aria-label="' + esc(u('fechar')) + '">&times;</button>' + h;
+  var m = $('nt-modal'); m.hidden = false; m.scrollTop = 0;
+  document.documentElement.style.overflow = 'hidden';
+  $('nt-fechar').focus();
+}
+function abrirRelease(k){
+  var it = REL[k]; if (!it) return;
+  var capa = urlSegura(it.capa), h = '<span class="nt-selo nt-selo-release">📝 ' + esc(u('selo_release')) + '</span>';
+  h += '<h3>' + esc(tx(it.titulo)) + '</h3>';
+  if (tx(it.fina)) h += '<p class="nt-art-fina">' + esc(tx(it.fina)) + '</p>';
+  h += '<div class="nt-art-meta"><span>' + esc(tx(it.local) || dataFmt(it.data)) + '</span>' + (it.assinatura ? '<span><strong>' + esc(u('texto_por')) + ':</strong> ' + esc(it.assinatura) + '</span>' : '') + '</div>';
+  if (capa) h += '<figure class="nt-art-capa"><img src="' + esc(capa) + '" alt="' + esc(tx(it.capaLeg)) + '" data-nt-zoom="1">' + (tx(it.capaLeg) ? '<figcaption>' + esc(tx(it.capaLeg)) + '</figcaption>' : '') + '</figure>';
+  var t = tx(it.texto); t = Array.isArray(t) ? t : String(t || '').split(/\n\s*\n/);
+  h += '<div class="nt-art-texto">' + t.filter(Boolean).map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
+  var fotos = (it.fotos || []).filter(function(f){ return urlSegura(f && f.src); });
+  if (fotos.length) h += '<h4 class="nt-art-fotos-h">' + esc(u('fotos')) + '</h4><div class="nt-art-fotos">' + fotos.map(function(f){
+    return '<figure><img src="' + esc(urlSegura(f.src)) + '" alt="' + esc(tx(f.leg)) + '" loading="lazy" data-nt-zoom="1"><figcaption>' + esc(tx(f.leg)) + '</figcaption></figure>';
+  }).join('') + '</div>';
+  if (it.assinatura){ var logo = urlSegura(it.assinaturaLogo); h += '<div class="nt-art-assina">' + (logo ? '<img src="' + esc(logo) + '" alt="' + esc(it.assinatura) + '">' : '') + '<span>' + esc(u('texto_por')) + ': ' + esc(it.assinatura) + '</span></div>'; }
+  h += '<p class="nt-art-aviso">📝 ' + esc(u('aviso_release')) + '</p>';
+  abrirModal(h);
+}
+function abrirMidia(id){
+  var n = MIDIA[id]; if (!n) return;
+  var fonte = n.fonte || '', link = urlSegura(n.link);
+  var h = '<span class="nt-selo nt-selo-midia">📺 ' + esc(u('selo_midia', {v: fonte})) + '</span>';
+  h += '<h3>' + esc(pick(n, 'titulo')) + '</h3>';
+  h += '<div class="nt-art-meta">' + (n.data ? '<span><strong>' + esc(u('publicado')) + '</strong> ' + esc(n.data) + '</span>' : '') + (fonte ? '<span><strong>' + esc(u('veiculo')) + ':</strong> ' + esc(fonte) + '</span>' : '') + (pick(n, 'cat') ? '<span>' + esc(pick(n, 'cat')) + '</span>' : '') + '</div>';
+  var d = pick(n, 'desc');
+  if (d) h += '<div class="nt-art-texto">' + String(d).split(/\n\s*\n/).filter(Boolean).map(function(p){ return '<p>' + esc(p.trim()) + '</p>'; }).join('') + '</div>';
+  if (fonte) h += '<p class="nt-art-aviso">📺 ' + esc(u('aviso_midia', {v: fonte})) + '</p>';
+  if (link && /^https?:/i.test(link)) h += '<div class="nt-art-link"><a class="nt-btn" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">↗ ' + esc(u('ler_midia', {v: fonte})) + '</a></div>';
+  abrirModal(h);
+}
+function fechar(){ $('nt-modal').hidden = true; document.documentElement.style.overflow = ''; }
+function zoom(img){
+  $('nt-lb-img').src = img.src; $('nt-lb-img').alt = img.alt || '';
+  var fig = img.closest('figure'), leg = fig ? fig.querySelector('figcaption') : null;
+  $('nt-lb-leg').textContent = leg ? leg.textContent : (img.alt || '');
+  $('nt-lb').hidden = false;
+}
+function fecharZoom(){ $('nt-lb').hidden = true; $('nt-lb-img').removeAttribute('src'); }
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('[data-nt-rel],[data-nt-midia]');
+  if (!b) return;
+  if (b.hasAttribute('data-nt-rel')) abrirRelease(b.getAttribute('data-nt-rel'));
+  else abrirMidia(b.getAttribute('data-nt-midia'));
+});
+$('nt-modal').addEventListener('click', function(e){
+  if (e.target.id === 'nt-modal' || e.target.closest('#nt-fechar')) fechar();
+  else if (e.target.closest('[data-nt-zoom]')) zoom(e.target.closest('[data-nt-zoom]'));
+});
+$('nt-lb').addEventListener('click', function(e){ if (e.target.id !== 'nt-lb-img') fecharZoom(); });
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  if (!$('nt-lb').hidden) fecharZoom(); else if (!$('nt-modal').hidden) fechar();
+});
+if (typeof renderNoticias === 'function') renderNoticias();
 })();
 </script>
 </body>
