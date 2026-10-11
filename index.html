@@ -1820,6 +1820,37 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
 
 </style>
 <style id="icet-gal-ajuste">.gal-item:nth-child(4n+1){aspect-ratio:auto}</style>
+<style id="rl-estilo">
+/* RELEASE: notícia do convênio (rl-) */
+#noticia-convenio{background:var(--k2);color:var(--cr);padding:clamp(3rem,6vw,5.5rem) 1.25rem;scroll-margin-top:84px;font-family:'Lora',serif}
+#noticia-convenio *{box-sizing:border-box}
+#noticia-convenio .rl-wrap{max-width:860px;margin:0 auto}
+#noticia-convenio .rl-sel{display:inline-block;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--oc);border-bottom:2px solid var(--oc);padding-bottom:.25rem}
+#noticia-convenio .rl-h{font-family:'Cinzel',serif;font-size:clamp(1.65rem,4.2vw,2.55rem);line-height:1.16;color:var(--ou);margin:.9rem 0 1rem;font-weight:700;letter-spacing:-.005em}
+#noticia-convenio .rl-fina{font-size:1.12rem;line-height:1.55;color:var(--tx2);margin:0 0 1.1rem}
+#noticia-convenio .rl-meta{font-size:.86rem;color:var(--tx2);padding:.7rem 0;border-top:1px solid rgba(242,196,90,.25);border-bottom:1px solid rgba(242,196,90,.25);display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;align-items:center}
+#noticia-convenio .rl-meta strong{color:var(--cr)}
+#noticia-convenio .rl-capa{margin:1.6rem 0 0}
+#noticia-convenio .rl-capa img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;border-radius:6px;cursor:zoom-in;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+#noticia-convenio figcaption{font-size:.84rem;color:var(--tx2);font-style:italic;line-height:1.45;margin-top:.55rem}
+#noticia-convenio .rl-corpo{margin-top:1.6rem}
+#noticia-convenio .rl-corpo p{font-size:1.06rem;line-height:1.78;margin:0 0 1.15rem;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+#noticia-convenio .rl-corpo p:first-child::first-letter{font-family:'Cinzel',serif;float:left;font-size:3.5rem;line-height:.9;padding:.2rem .5rem 0 0;color:var(--ou);font-weight:700}
+#noticia-convenio .rl-fotos-h{font-family:'Cinzel',serif;font-size:1.15rem;color:var(--ou);margin:2.2rem 0 .9rem;font-weight:700}
+#noticia-convenio .rl-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+#noticia-convenio .rl-fotos figure{margin:0}
+#noticia-convenio .rl-fotos img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;border-radius:6px;cursor:zoom-in;transition:transform .25s}
+#noticia-convenio .rl-fotos img:hover{transform:translateY(-3px)}
+#noticia-convenio .rl-assina{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:2.2rem;padding:.85rem 1.2rem;background:#120d09;border-radius:6px;border-left:4px solid var(--oc)}
+#noticia-convenio .rl-assina img{height:44px;width:auto;display:block}
+#noticia-convenio .rl-assina span{color:#F3E7CC;font-size:.82rem;letter-spacing:.06em}
+@media (max-width:680px){#noticia-convenio .rl-fotos{grid-template-columns:1fr}#noticia-convenio .rl-corpo p{text-align:left}}
+.rl-lb{position:fixed;inset:0;z-index:99999;background:rgba(8,6,4,.93);display:none;align-items:center;justify-content:center;flex-direction:column;padding:1rem}
+.rl-lb.rl-on{display:flex}
+.rl-lb img{max-width:96vw;max-height:80vh;border-radius:6px;display:block}
+.rl-lb p{color:#F3E7CC;font:.9rem/1.5 system-ui,sans-serif;max-width:760px;text-align:center;margin:.9rem 0 0}
+.rl-lb button{position:absolute;top:14px;right:18px;background:none;border:0;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+</style>
 </head>
 <body>
 <canvas id="sparkle-canvas" aria-hidden="true"></canvas>
@@ -1851,6 +1882,7 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
     <li><a href="#oreka" onclick="closeMenu()" data-i18n="nav_oreka">OREKA</a></li>
     <li><a href="#ceramica" onclick="closeMenu()" data-i18n="nav_ceramica">Cerâmica</a></li>
     <li><a href="#diretoria" onclick="closeMenu()" data-i18n="nav_diretoria">Diretoria</a></li>
+    <li><a href="#noticia-convenio" onclick="closeMenu()" data-rl="nav">Notícia</a></li>
     <li><a href="#noticias" onclick="closeMenu()" data-i18n="nav_noticias">Notícias</a></li>
     <li><a href="#calendario" onclick="closeMenu()" data-i18n="nav_calendario">Agenda</a></li>
     <li><a href="#galeria" onclick="closeMenu()" data-i18n="nav_galeria">Galeria</a></li>
@@ -2464,6 +2496,35 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
   <line x1="652" y1="30" x2="670" y2="30" stroke="rgba(247,242,232,.4)" stroke-width="1" stroke-dasharray="2,3"/>
 </svg>
 </div>
+<section id="noticia-convenio" aria-labelledby="rl-titulo">
+  <article class="rl-wrap">
+    <span class="rl-sel" data-rl="sel"></span>
+    <h2 class="rl-h" id="rl-titulo" data-rl="tit"></h2>
+    <p class="rl-fina" data-rl="fina"></p>
+    <div class="rl-meta"><span data-rl="data"></span><span><strong>Aldeia XP Comunicação</strong></span></div>
+    <figure class="rl-capa">
+      <img src="imgs/galeria/convenio-ifms-02-reuniao.jpg" alt="" data-rl="cap" data-rl-alt="1" loading="lazy">
+      <figcaption data-rl="cap"></figcaption>
+    </figure>
+    <div class="rl-corpo">
+      <p data-rl="p1"></p>
+      <p data-rl="p2"></p>
+      <p data-rl="p3"></p>
+      <p data-rl="p4"></p>
+      <p data-rl="p5"></p>
+      <p data-rl="p6"></p>
+      <p data-rl="p7"></p>
+    </div>
+    <h3 class="rl-fotos-h" data-rl="fotos_h"></h3>
+    <div class="rl-fotos">
+      <figure><img src="imgs/galeria/convenio-ifms-01-grupo.jpg" alt="" data-rl="l1" data-rl-alt="1" loading="lazy"><figcaption data-rl="l1"></figcaption></figure>
+      <figure><img src="imgs/galeria/convenio-ifms-02-reuniao.jpg" alt="" data-rl="l2" data-rl-alt="1" loading="lazy"><figcaption data-rl="l2"></figcaption></figure>
+      <figure><img src="imgs/galeria/convenio-ifms-03-documento.jpg" alt="" data-rl="l3" data-rl-alt="1" loading="lazy"><figcaption data-rl="l3"></figcaption></figure>
+    </div>
+    <div class="rl-assina"><img src="imgs/aldeiaxp-logo-escura.png" alt="Aldeia XP"><span><span data-rl="assina"></span>: Aldeia XP Comunicação</span></div>
+  </article>
+</section>
+<div class="rl-lb" id="rl-lb" role="dialog" aria-modal="true" hidden><button type="button" id="rl-lb-x" aria-label="Fechar">&times;</button><img id="rl-lb-img" alt=""><p id="rl-lb-leg"></p></div>
 <section id="noticias">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -7544,6 +7605,43 @@ document.addEventListener('DOMContentLoaded', function(){
       });
     }
   } catch(e){ }
+})();
+</script>
+<script>
+(function(){
+  var T={"pt": {"nav": "Notícia", "sel": "Notícia", "tit": "ICET, CMDDI, FOCAMS e UNIPBRAS iniciam tratativas com o IFMS para firmar convênio", "fina": "Reitora e pró-reitor de Extensão do Instituto Federal receberam lideranças indígenas para discutir um selo editorial de autoria indígena e um núcleo de propriedade intelectual e conhecimentos tradicionais.", "data": "Campo Grande (MS), 11 de outubro de 2026", "cap": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "p1": "Em reunião realizada na sexta-feira, 9 de outubro, começaram as tratativas para um convênio entre o Instituto Federal de Mato Grosso do Sul (IFMS) e quatro organizações indígenas do estado: o Instituto Cacique Enir Terena (ICET), o Conselho Municipal dos Direitos e Defesa dos Povos Indígenas (CMDDI), o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS) e a União Nacional dos Produtores e Agricultores Indígenas do Brasil (UNIPBRAS).", "p2": "O encontro reuniu a reitora do IFMS, Dra. Elaine Borges Monteiro Cassiano, e o pró-reitor de Extensão, Dr. Anderson Martins Corrêa. Pelo lado indígena, participaram a presidente do ICET, Maria Auxiliadora Bezerra; o presidente do CMDDI e da Cooperativa Estadual dos Povos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; e o presidente do FOCAMS e da UNIPBRAS, Aguinaldo Arruda Areco. Esteve presente ainda Germano Coelho Ramos Rocha-Silva, conselheiro do CMDDI, secretário-geral do ICET, mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação e autor do projeto que embasa a proposta.", "p3": "O projeto apresentado ao IFMS tem duas frentes. A primeira é a expansão do selo editorial do ICET em uma biblioteca digital de autoria indígena, sem edição em papel, com curadoria técnica do próprio Instituto e publicação conjunta nos portais das instituições parceiras. A segunda é a criação de um núcleo permanente de propriedade intelectual, biotecnologia e conhecimentos tradicionais, que vai documentar, com consentimento prévio, livre e informado das comunidades, obras, elementos culturais e saberes de medicina tradicional dos povos indígenas do estado.", "p4": "Segundo o projeto, a documentação reunida pelo núcleo servirá de base para estudos técnicos que subsidiem pedidos de proteção junto ao Instituto Nacional da Propriedade Industrial (INPI), acordos de repartição de benefícios e, no médio prazo, propostas normativas em âmbito municipal e estadual.", "p5": "A autoria, a curadoria e a titularidade do selo permanecem com o ICET e com o CMDDI. Ao IFMS caberia oferecer respaldo técnico e acadêmico, por meio do Núcleo de Inovação Tecnológica e das pró-reitorias de Pesquisa e de Extensão. A proposta prevê, ainda, a cooperação do Ministério Público de Mato Grosso do Sul.", "p6": "O ICET já mantém editora, selo e conselho editorial próprios e tem uma obra publicada, Autodeterminação Cultural, sobre a cerâmica Terena, a ancestralidade Arawak e a propriedade intelectual coletiva, escrita por seis coautores. Pelas regras do selo, autores não indígenas só podem participar de uma publicação se ao menos um dos autores for indígena, e o Instituto arca com os custos de registro de direitos autorais e de ISBN.", "p7": "As tratativas estão em fase inicial. O instrumento jurídico da parceria e os termos da cooperação ainda serão definidos e dependem dos trâmites internos de cada instituição. A iniciativa parte de uma convicção registrada no próprio projeto: a história, a cultura e os conhecimentos de um povo ganham força, e proteção jurídica, quando são documentados, narrados e geridos por quem os vive.", "fotos_h": "Registros do encontro", "l1": "Reitora e pró-reitores do IFMS e presidentes das instituições no encontro para o convênio entre CMDDI, ICET, FOCAMS, IFMS e MPE/MS.", "l2": "Reunião de trabalho sobre o convênio, realizada no IFMS.", "l3": "Entrega de documento durante o encontro para o convênio.", "assina": "Texto", "fechar": "Fechar"}, "en": {"nav": "News", "sel": "News", "tit": "ICET, CMDDI, FOCAMS and UNIPBRAS open talks with IFMS toward a cooperation agreement", "fina": "The rector and the Dean of Extension of the Federal Institute received Indigenous leaders to discuss an Indigenous-authored publishing imprint and a center for intellectual property and traditional knowledge.", "data": "Campo Grande (MS), October 11, 2026", "cap": "Working meeting on the agreement, held at IFMS.", "p1": "At a meeting held on Friday, October 9, talks began on a cooperation agreement between the Federal Institute of Mato Grosso do Sul (IFMS) and four Indigenous organizations of the state: the Instituto Cacique Enir Terena (ICET), the Municipal Council for the Rights and Defense of Indigenous Peoples (CMDDI), the Forum of Chiefs of Mato Grosso do Sul (FOCAMS) and the National Union of Indigenous Producers and Farmers of Brazil (UNIPBRAS).", "p2": "The meeting brought together the rector of IFMS, Dr. Elaine Borges Monteiro Cassiano, and the Dean of Extension, Dr. Anderson Martins Corrêa. On the Indigenous side, those present were the president of ICET, Maria Auxiliadora Bezerra; the president of CMDDI and of the State Cooperative of Indigenous Peoples of Mato Grosso do Sul (COOPIMS), Lisio Lili; and the president of FOCAMS and UNIPBRAS, Aguinaldo Arruda Areco. Also present was Germano Coelho Ramos Rocha-Silva, a CMDDI councillor, secretary-general of ICET, holder of a master's degree in Intellectual Property and Technology Transfer for Innovation and author of the project behind the proposal.", "p3": "The project submitted to IFMS has two fronts. The first is to expand ICET's publishing imprint into a digital library of Indigenous authorship, with no paper edition, curated technically by the Institute itself and published jointly on the partner institutions' portals. The second is to create a permanent center for intellectual property, biotechnology and traditional knowledge, which will document, with the prior, free and informed consent of the communities, works, cultural elements and traditional medicine knowledge of the Indigenous peoples of the state.", "p4": "According to the project, the documentation gathered by the center will support technical studies for protection requests before the National Institute of Industrial Property (INPI), benefit-sharing agreements and, in the medium term, regulatory proposals at the municipal and state levels.", "p5": "Authorship, curatorship and ownership of the imprint remain with ICET and CMDDI. IFMS would provide technical and academic support through its Technological Innovation Center and its Research and Extension deaneries. The proposal also foresees the cooperation of the Public Prosecutor's Office of Mato Grosso do Sul.", "p6": "ICET already runs its own publishing house, imprint and editorial board, and has one published work, Autodeterminação Cultural, on Terena ceramics, Arawak ancestry and collective intellectual property, written by six co-authors. Under the imprint's rules, non-Indigenous authors may take part in a publication only if at least one of the authors is Indigenous, and the Institute bears the costs of copyright registration and ISBN.", "p7": "The talks are at an early stage. The legal instrument of the partnership and the terms of cooperation are still to be defined and depend on the internal procedures of each institution. The initiative rests on a conviction stated in the project itself: the history, culture and knowledge of a people gain strength, and legal protection, when they are documented, narrated and managed by those who live them.", "fotos_h": "Photos from the meeting", "l1": "The rector and deans of IFMS and the presidents of the institutions at the meeting on the agreement among CMDDI, ICET, FOCAMS, IFMS and MPE/MS.", "l2": "Working meeting on the agreement, held at IFMS.", "l3": "Handing over of a document during the meeting on the agreement.", "assina": "Text", "fechar": "Close"}, "es": {"nav": "Noticia", "sel": "Noticia", "tit": "ICET, CMDDI, FOCAMS y UNIPBRAS inician conversaciones con el IFMS para firmar un convenio", "fina": "La rectora y el prorrector de Extensión del Instituto Federal recibieron a líderes indígenas para debatir un sello editorial de autoría indígena y un núcleo de propiedad intelectual y conocimientos tradicionales.", "data": "Campo Grande (MS), 11 de octubre de 2026", "cap": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "p1": "En una reunión realizada el viernes 9 de octubre, comenzaron las conversaciones para un convenio entre el Instituto Federal de Mato Grosso do Sul (IFMS) y cuatro organizaciones indígenas del estado: el Instituto Cacique Enir Terena (ICET), el Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas (CMDDI), el Foro de Caciques de Mato Grosso do Sul (FOCAMS) y la Unión Nacional de los Productores y Agricultores Indígenas de Brasil (UNIPBRAS).", "p2": "El encuentro reunió a la rectora del IFMS, Dra. Elaine Borges Monteiro Cassiano, y al prorrector de Extensión, Dr. Anderson Martins Corrêa. Por el lado indígena participaron la presidenta del ICET, Maria Auxiliadora Bezerra; el presidente del CMDDI y de la Cooperativa Estatal de los Pueblos Indígenas de Mato Grosso do Sul (COOPIMS), Lisio Lili; y el presidente del FOCAMS y de la UNIPBRAS, Aguinaldo Arruda Areco. Estuvo presente también Germano Coelho Ramos Rocha-Silva, consejero del CMDDI, secretario general del ICET, magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación y autor del proyecto que sustenta la propuesta.", "p3": "El proyecto presentado al IFMS tiene dos frentes. El primero es la expansión del sello editorial del ICET en una biblioteca digital de autoría indígena, sin edición en papel, con curaduría técnica del propio Instituto y publicación conjunta en los portales de las instituciones socias. El segundo es la creación de un núcleo permanente de propiedad intelectual, biotecnología y conocimientos tradicionales, que documentará, con el consentimiento previo, libre e informado de las comunidades, obras, elementos culturales y saberes de medicina tradicional de los pueblos indígenas del estado.", "p4": "Según el proyecto, la documentación reunida por el núcleo servirá de base para estudios técnicos que respalden solicitudes de protección ante el Instituto Nacional de la Propiedad Industrial (INPI), acuerdos de distribución de beneficios y, a mediano plazo, propuestas normativas en el ámbito municipal y estatal.", "p5": "La autoría, la curaduría y la titularidad del sello permanecen con el ICET y el CMDDI. Al IFMS le correspondería aportar respaldo técnico y académico, por medio del Núcleo de Innovación Tecnológica y de las prorrectorías de Investigación y de Extensión. La propuesta prevé, además, la cooperación del Ministerio Público de Mato Grosso do Sul.", "p6": "El ICET ya cuenta con editorial, sello y consejo editorial propios y tiene una obra publicada, Autodeterminação Cultural, sobre la cerámica Terena, la ascendencia Arawak y la propiedad intelectual colectiva, escrita por seis coautores. Según las reglas del sello, los autores no indígenas solo pueden participar en una publicación si al menos uno de los autores es indígena, y el Instituto asume los costos de registro de derechos de autor y de ISBN.", "p7": "Las conversaciones están en una fase inicial. El instrumento jurídico de la alianza y los términos de la cooperación aún serán definidos y dependen de los trámites internos de cada institución. La iniciativa parte de una convicción registrada en el propio proyecto: la historia, la cultura y los conocimientos de un pueblo ganan fuerza, y protección jurídica, cuando son documentados, narrados y gestionados por quienes los viven.", "fotos_h": "Registros del encuentro", "l1": "La rectora y los prorrectores del IFMS y los presidentes de las instituciones en el encuentro para el convenio entre CMDDI, ICET, FOCAMS, IFMS y MPE/MS.", "l2": "Reunión de trabajo sobre el convenio, realizada en el IFMS.", "l3": "Entrega de un documento durante el encuentro para el convenio.", "assina": "Texto", "fechar": "Cerrar"}, "fr": {"nav": "Actualité", "sel": "Actualité", "tit": "L’ICET, le CMDDI, le FOCAMS et l’UNIPBRAS ouvrent des discussions avec l’IFMS en vue d’une convention", "fina": "La rectrice et le pro-recteur de l’Extension de l’Institut fédéral ont reçu des dirigeants autochtones pour discuter d’un label éditorial d’auteurs autochtones et d’un pôle de propriété intellectuelle et de savoirs traditionnels.", "data": "Campo Grande (MS), 11 octobre 2026", "cap": "Réunion de travail sur la convention, tenue à l’IFMS.", "p1": "Lors d’une réunion tenue le vendredi 9 octobre, des discussions ont commencé en vue d’une convention entre l’Institut fédéral du Mato Grosso do Sul (IFMS) et quatre organisations autochtones de l’État : l’Institut Cacique Enir Terena (ICET), le Conseil municipal des droits et de la défense des peuples autochtones (CMDDI), le Forum des caciques du Mato Grosso do Sul (FOCAMS) et l’Union nationale des producteurs et agriculteurs autochtones du Brésil (UNIPBRAS).", "p2": "La rencontre a réuni la rectrice de l’IFMS, Dre Elaine Borges Monteiro Cassiano, et le pro-recteur de l’Extension, Dr. Anderson Martins Corrêa. Du côté autochtone, ont participé la présidente de l’ICET, Maria Auxiliadora Bezerra ; le président du CMDDI et de la Coopérative des peuples autochtones du Mato Grosso do Sul (COOPIMS), Lisio Lili ; et le président du FOCAMS et de l’UNIPBRAS, Aguinaldo Arruda Areco. Était également présent Germano Coelho Ramos Rocha-Silva, conseiller du CMDDI, secrétaire général de l’ICET, titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation et auteur du projet qui fonde la proposition.", "p3": "Le projet présenté à l’IFMS comporte deux volets. Le premier est l’extension du label éditorial de l’ICET en une bibliothèque numérique d’auteurs autochtones, sans édition papier, avec une curation technique assurée par l’Institut lui-même et une publication conjointe sur les portails des institutions partenaires. Le second est la création d’un pôle permanent de propriété intellectuelle, de biotechnologie et de savoirs traditionnels, qui documentera, avec le consentement préalable, libre et éclairé des communautés, des œuvres, des éléments culturels et des savoirs de médecine traditionnelle des peuples autochtones de l’État.", "p4": "Selon le projet, la documentation réunie par le pôle servira de base à des études techniques destinées à appuyer des demandes de protection auprès de l’Institut national de la propriété industrielle (INPI), des accords de partage des avantages et, à moyen terme, des propositions normatives aux niveaux municipal et de l’État.", "p5": "La paternité, la curation et la titularité du label restent à l’ICET et au CMDDI. L’IFMS apporterait un appui technique et académique, par l’intermédiaire de son Pôle d’innovation technologique et de ses prorrectorats de la Recherche et de l’Extension. La proposition prévoit en outre la coopération du Ministère public du Mato Grosso do Sul.", "p6": "L’ICET dispose déjà d’une maison d’édition, d’un label et d’un comité éditorial propres, et compte une œuvre publiée, Autodeterminação Cultural, consacrée à la céramique Terena, à l’ascendance Arawak et à la propriété intellectuelle collective, rédigée par six coauteurs. Selon les règles du label, des auteurs non autochtones ne peuvent participer à une publication que si au moins l’un des auteurs est autochtone, et l’Institut prend en charge les frais d’enregistrement du droit d’auteur et de l’ISBN.", "p7": "Les discussions en sont à un stade initial. L’instrument juridique du partenariat et les termes de la coopération restent à définir et dépendent des procédures internes de chaque institution. L’initiative repose sur une conviction inscrite dans le projet lui-même : l’histoire, la culture et les savoirs d’un peuple gagnent en force, et en protection juridique, lorsqu’ils sont documentés, racontés et gérés par ceux qui les vivent.", "fotos_h": "Images de la rencontre", "l1": "La rectrice et les pro-recteurs de l’IFMS et les présidents des institutions lors de la rencontre pour la convention entre le CMDDI, l’ICET, le FOCAMS, l’IFMS et le MPE/MS.", "l2": "Réunion de travail sur la convention, tenue à l’IFMS.", "l3": "Remise d’un document lors de la rencontre pour la convention.", "assina": "Texte", "fechar": "Fermer"}}, KEY="icet_lang";
+  function lang(){var l='pt';try{if(KEY)l=localStorage.getItem(KEY)||'pt';}catch(e){}return T[l]?l:'pt';}
+  function aplicar(){
+    var l=lang(),d=T[l],base=T.pt;
+    var els=document.querySelectorAll('#noticia-convenio [data-rl], a[data-rl="nav"]');
+    for(var i=0;i<els.length;i++){
+      var el=els[i],k=el.getAttribute('data-rl'),v=d[k]!=null?d[k]:base[k];
+      if(v==null)continue;
+      if(el.getAttribute('data-rl-alt')){el.setAttribute('alt',v);}else{el.innerHTML=v;}
+    }
+    document.documentElement.setAttribute('data-rl-lang',l);
+    var x=document.getElementById('rl-lb-x'); if(x)x.setAttribute('aria-label',d.fechar||base.fechar);
+  }
+  aplicar();
+  document.addEventListener('DOMContentLoaded',aplicar);
+  window.addEventListener('load',function(){aplicar();setTimeout(aplicar,1200);});
+  document.addEventListener('click',function(){setTimeout(aplicar,80);setTimeout(aplicar,600);},true);
+  window.addEventListener('storage',aplicar);
+  var lb=document.getElementById('rl-lb');
+  function abrir(img){
+    var fig=img.closest('figure'),leg=fig?fig.querySelector('figcaption'):null;
+    document.getElementById('rl-lb-img').src=img.src;
+    document.getElementById('rl-lb-img').alt=img.alt||'';
+    document.getElementById('rl-lb-leg').textContent=leg?leg.textContent:'';
+    lb.hidden=false;lb.classList.add('rl-on');
+  }
+  function fechar(){lb.classList.remove('rl-on');lb.hidden=true;}
+  document.addEventListener('click',function(e){
+    var im=e.target.closest&&e.target.closest('#noticia-convenio img');
+    if(im&&!im.closest('.rl-assina')){abrir(im);return;}
+    if(e.target===lb||e.target.id==='rl-lb-x')fechar();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')fechar();});
 })();
 </script>
 </body>
