@@ -4789,6 +4789,10 @@ function renderGalIndice(){
   if(!box)return;
   var db=dbLer();
   var nomes={todos:'Todas',eventos:'Eventos',cultura:'Cultura',ceramica:'Cerâmica',oreka:'OREKA'};
+  var _nomesL={en:{todos:'All',eventos:'Events',cultura:'Culture',ceramica:'Ceramics',oreka:'OREKA'},
+               es:{todos:'Todas',eventos:'Eventos',cultura:'Cultura',ceramica:'Cerámica',oreka:'OREKA'},
+               fr:{todos:'Toutes',eventos:'Événements',cultura:'Culture',ceramica:'Céramique',oreka:'OREKA'}};
+  try{ var _lg=window.ICET_getLang?window.ICET_getLang():(localStorage.getItem('icet_lang')||'pt'); if(_nomesL[_lg])nomes=_nomesL[_lg]; }catch(e){}
   // contadores nos botões
   var cont={todos:0,eventos:0,cultura:0,ceramica:0,oreka:0};
   if(db.galeria)Object.keys(db.galeria).forEach(function(k){
@@ -4816,7 +4820,7 @@ function renderGalIndice(){
   box.style.display='block';
   var html='<div class="gal-ind-head">📋 '+itens.length+' '+(window.ICET_L?window.ICET_L('js_registros_de'):'registro(s) em')+' <strong>'+(nomes[_galFiltro]||_galFiltro)+'</strong> - '+(window.ICET_L?window.ICET_L('js_recente'):'do mais recente ao mais antigo. Role a lista e clique para abrir.')+'</div><div class="gal-ind-lista">';
   itens.forEach(function(x){
-    var leg=(x.item.leg||'Sem legenda');
+    var leg=((window.ICET_pick?window.ICET_pick(x.item,'leg'):x.item.leg)||'Sem legenda');
     var resumo=leg.length>90?leg.substring(0,90)+'…':leg;
     html+='<div class="gal-ind-row" onclick="abrirLB(\''+x.item.src+'\')">'
       +'<img src="'+x.item.src+'" alt="" loading="lazy">'
