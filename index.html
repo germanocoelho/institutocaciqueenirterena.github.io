@@ -1923,6 +1923,143 @@ textarea.nt-in{resize:vertical;line-height:1.55}
 .nt-form[data-tipo="midia"] .nt-so-release{display:none}
 .nt-form[data-tipo="release"] .nt-so-midia{display:none}
 </style>
+<script>
+/* ===== Tradução automática (português -> inglês, espanhol e francês) =====
+   Usada quando o ADM insere ou altera um texto no site.
+   1) Se este navegador tiver a chave do Claude configurada (Sala de Imprensa ->
+      Configurações), traduz pelo Claude.
+   2) Sem chave, ou se o Claude falhar, usa o serviço gratuito MyMemory.
+   Se nenhum dos dois responder, devolve null e o texto fica em português. */
+(function(){
+if (window.TRAD_AUTO) return;
+var LINGUAS = ['en', 'es', 'fr'];
+var MM_LANG = {en:'en-GB', es:'es-ES', fr:'fr-FR'};
+
+function chaveClaude(){
+  try{
+    var direta = localStorage.getItem('trad_claude_key'); if (direta) return direta.trim();
+    var cfgs = ['cmddi_si_cfg', 'icet_si_cfg', 'aldeiaxp_si_cfg', 'focams_si_cfg'];
+    for (var i = 0; i < cfgs.length; i++){
+      var c = JSON.parse(localStorage.getItem(cfgs[i]) || '{}');
+      if (c && c.claude) return String(c.claude).trim();
+    }
+  }catch(e){}
+  return '';
+}
+
+function viaClaude(textos, chave){
+  var schema = {type:'object', additionalProperties:false, required:LINGUAS, properties:{}};
+  LINGUAS.forEach(function(l){ schema.properties[l] = {type:'array', items:{type:'string'}}; });
+  var corpo = {
+    model: 'claude-opus-5-5',
+    max_tokens: 16000,
+    fallbacks: 'default',
+    output_config: {effort: 'low', format: {type: 'json_schema', schema: schema}},
+    system: 'Você traduz textos de sites institucionais de organizações indígenas de Mato Grosso do Sul (Brasil) do português para inglês (en), espanhol latino-americano (es) e francês (fr). ' +
+      'Preserve intactos nomes próprios de pessoas, organizações, etnias, aldeias e lugares, siglas (ICET, CMDDI, FOCAMS, UNIPBRAS, IFMS, MPE/MS, COOPIMS, INPI, FUNAI etc.), números, datas e links. ' +
+      'Use tom formal e respeitoso. Cada lista de saída deve ter exatamente um item por texto de entrada, na mesma ordem; quebras de linha devem ser mantidas.',
+    messages: [{role: 'user', content: JSON.stringify({textos: textos})}]
+  };
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': chave,
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'server-side-fallback-2026-07-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(corpo)
+  }).then(function(r){
+    return r.json().then(function(j){
+      if (!r.ok) throw new Error((j && j.error && j.error.message) || ('HTTP ' + r.status));
+      if (j.stop_reason === 'refusal') throw new Error('recusado');
+      var bloco = (j.content || []).filter(function(b){ return b.type === 'text'; })[0];
+      if (!bloco) throw new Error('resposta vazia');
+      var out = JSON.parse(bloco.text);
+      LINGUAS.forEach(function(l){ if (!Array.isArray(out[l]) || out[l].length !== textos.length) throw new Error('resposta incompleta'); });
+      return out;
+    });
+  });
+}
+
+/* MyMemory aceita até ~500 caracteres por pedido: divide por parágrafo e frase */
+function pedacos(t){
+  var out = [];
+  String(t).split(/(\n+)/).forEach(function(par){
+    if (par.length <= 450){ out.push(par); return; }
+    var atual = '';
+    par.split(/(?<=[.!?;:])\s+/).forEach(function(fr){
+      while (fr.length > 450){ if (atual){ out.push(atual); atual = ''; } out.push(fr.slice(0, 450)); fr = fr.slice(450); }
+      if ((atual + ' ' + fr).trim().length > 450){ out.push(atual); atual = fr; }
+      else atual = atual ? atual + ' ' + fr : fr;
+    });
+    if (atual) out.push(atual);
+  });
+  return out;
+}
+function mmUm(trecho, l){
+  if (!trecho.trim()) return Promise.resolve(trecho);
+  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(trecho) + '&langpair=' + encodeURIComponent('pt-BR|' + MM_LANG[l]);
+  return fetch(url).then(function(r){ return r.json(); }).then(function(j){
+    if (!j || j.responseStatus != 200 || !j.responseData) throw new Error((j && j.responseDetails) || 'MyMemory');
+    var t = j.responseData.translatedText || '';
+    if (/MYMEMORY WARNING|QUERY LENGTH LIMIT/i.test(t)) throw new Error(t.slice(0, 80));
+    var tmp = document.createElement('textarea'); tmp.innerHTML = t; return tmp.value;
+  });
+}
+function viaMyMemory(textos){
+  var out = {en: [], es: [], fr: []}, fila = Promise.resolve();
+  textos.forEach(function(texto, i){
+    LINGUAS.forEach(function(l){
+      fila = fila.then(function(){
+        var p = pedacos(texto), res = [], f2 = Promise.resolve();
+        p.forEach(function(tr){ f2 = f2.then(function(){ return mmUm(tr, l).then(function(x){ res.push(x); }); }); });
+        return f2.then(function(){ out[l][i] = res.join(''); });
+      });
+    });
+  });
+  return fila.then(function(){ return out; });
+}
+
+/* textos: lista de strings em português. Devolve {en:[...], es:[...], fr:[...]} ou null. */
+function traduzir(textos){
+  textos = (textos || []).map(function(t){ return String(t == null ? '' : t); });
+  if (!textos.some(function(t){ return t.trim(); })) return Promise.resolve({en: textos.slice(), es: textos.slice(), fr: textos.slice()});
+  var chave = chaveClaude();
+  var tentativa = chave ? viaClaude(textos, chave).catch(function(e){ console.warn('Tradução pelo Claude falhou, usando MyMemory:', e && e.message); return viaMyMemory(textos); })
+                        : viaMyMemory(textos);
+  return tentativa.catch(function(e){ console.warn('Tradução automática indisponível:', e && e.message); return null; });
+}
+
+/* Preenche campo_en / campo_es / campo_fr de um objeto a partir de campo (pt).
+   Só traduz o que falta ou o que mudou desde a última tradução automática
+   (traduções feitas à mão, sem registro em trad_src, não são sobrescritas). */
+function pendentes(item, campos){
+  return campos.filter(function(c){
+    var pt = item[c]; if (typeof pt !== 'string' || !pt.trim()) return false;
+    var src = item.trad_src && item.trad_src[c];
+    var falta = LINGUAS.some(function(l){ return !item[c + '_' + l]; });
+    return falta || (src != null && src !== pt);
+  });
+}
+function traduzirCampos(item, campos){
+  var cs = pendentes(item, campos); if (!cs.length) return Promise.resolve(false);
+  return traduzir(cs.map(function(c){ return item[c]; })).then(function(t){
+    if (!t) return false;
+    item.trad_src = item.trad_src || {};
+    cs.forEach(function(c, i){
+      var mudou = item.trad_src[c] != null && item.trad_src[c] !== item[c];
+      LINGUAS.forEach(function(l){ if (mudou || !item[c + '_' + l]) item[c + '_' + l] = t[l][i]; });
+      item.trad_src[c] = item[c];
+    });
+    return true;
+  });
+}
+
+window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendentes: pendentes, chaveClaude: chaveClaude, linguas: LINGUAS};
+})();
+</script>
 </head>
 <body>
 <canvas id="sparkle-canvas" aria-hidden="true"></canvas>
@@ -4306,7 +4443,48 @@ function uploadCloudinary(file, statusEl, callback){
 
 // ══ GITHUB SAVE ══
 var _ghSha='';
+// ══ TRADUÇÃO AUTOMÁTICA DO QUE O ADM INSERE ══
+// Depois de cada gravação, traduz para en/es/fr os textos novos ou alterados e grava de novo.
+var TRAD_SECOES={noticias:['cat','titulo','desc'],galeria:['leg'],vasos:['leg'],produtos:['nome','desc','aldeia'],videos:['titulo','desc','resumo'],
+  diretoria:['cargo','bio'],comenda:['cargo','bio'],eventos:['titulo','desc'],depoimentos:['texto'],acervo:['ti','sub','btn']};
+var _tradTimer=null,_tradRodando=false;
+function _tradAlvos(db){
+  var alvos=[];
+  Object.keys(TRAD_SECOES).forEach(function(sec){
+    if(!db[sec]||typeof db[sec]!=='object')return;
+    Object.keys(db[sec]).forEach(function(k){var it=db[sec][k];if(it&&typeof it==='object')alvos.push({cam:[sec,k],campos:TRAD_SECOES[sec],it:it});});
+  });
+  if(db.maria&&typeof db.maria==='object')alvos.push({cam:['maria'],campos:['cargo','bio'],it:db.maria});
+  if(db.secEdits)Object.keys(db.secEdits).forEach(function(k){if(db.secEdits[k])alvos.push({cam:['secEdits',k],campos:['t','l'],it:db.secEdits[k]});});
+  return alvos.filter(function(a){return window.TRAD_AUTO&&TRAD_AUTO.pendentes(a.it,a.campos).length;});
+}
+function _tradNo(db,cam){var o=db;for(var i=0;i<cam.length;i++){if(!o)return null;o=o[cam[i]];}return o;}
+function traduzirPendentesICET(){
+  if(_tradRodando||!window.TRAD_AUTO||!GH.token)return;
+  var alvos=_tradAlvos(dbLer()); if(!alvos.length)return;
+  _tradRodando=true; notif('🌐 Traduzindo '+alvos.length+' item(ns) para inglês, espanhol e francês...','ok');
+  var fila=Promise.resolve(),feitos=[];
+  alvos.forEach(function(a){fila=fila.then(function(){var antes=JSON.stringify(a.it);return TRAD_AUTO.traduzirCampos(a.it,a.campos).then(function(ok){if(ok)feitos.push({a:a,antes:JSON.parse(antes)});});});});
+  fila.then(function(){
+    _tradRodando=false;
+    if(!feitos.length){notif('⚠️ Tradução automática indisponível agora; o texto fica em português.','err');return;}
+    var db=dbLer(),n=0;   // aplica sobre a versão mais recente, só se o português não mudou nesse meio-tempo
+    feitos.forEach(function(f){
+      var atual=_tradNo(db,f.a.cam); if(!atual)return;
+      f.a.campos.forEach(function(c){
+        if(atual[c]!==f.antes[c]||!f.a.it.trad_src||f.a.it.trad_src[c]!==atual[c])return;
+        ['en','es','fr'].forEach(function(l){if(f.a.it[c+'_'+l]!=null)atual[c+'_'+l]=f.a.it[c+'_'+l];});
+        atual.trad_src=atual.trad_src||{};atual.trad_src[c]=atual[c];n++;
+      });
+    });
+    if(!n)return;
+    dbSalvar(db);
+    ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos','renderNoticias','renderDepoimentos','renderComenda','renderGridVasos','renderAcervoDinamico','aplicarSecEdits'].forEach(function(fn){try{if(typeof window[fn]==='function')window[fn]();}catch(e){}});
+    salvarGitHub(); notif('🌐 Traduções salvas','ok');
+  }).catch(function(){_tradRodando=false;});
+}
 function salvarGitHub(){
+  if(GH.token&&window.TRAD_AUTO){clearTimeout(_tradTimer);_tradTimer=setTimeout(traduzirPendentesICET,1500);}
   var db=dbLer();
   var conteudo=btoa(unescape(encodeURIComponent(JSON.stringify(db,null,2))));
   var api='https://api.github.com/repos/'+GH.repo+'/contents/'+GH.file;
@@ -4353,7 +4531,8 @@ function aplicarSecEdits(){
   Object.keys(db.secEdits).forEach(function(id){
     var sec=document.getElementById(id);
     if(!sec)return;
-    var e=db.secEdits[id];
+    var e0=db.secEdits[id], lg=(window.ICET_getLang?window.ICET_getLang():'pt');
+    var e={t:(lg==='pt'?e0.t:e0['t_'+lg]), l:(lg==='pt'?e0.l:e0['l_'+lg])};
     var t=sec.querySelector('.sec-title');
     var l=sec.querySelector('.sec-lead');
     if(e.t&&t){ if(t.childNodes[0]&&t.childNodes[0].nodeType===3){t.childNodes[0].nodeValue=e.t;} else {t.insertBefore(document.createTextNode(e.t),t.firstChild);} }
@@ -5572,7 +5751,7 @@ function renderCalendario(){
     var evD=evMap[ds]||[];
     var cls='cal-day'+(isH?' today':'')+(evD.length?' has-event':'');
     h+='<div class="'+cls+'"><span class="cal-day-n">'+d+'</span>';
-    evD.slice(0,2).forEach(function(ev){h+='<span class="cal-event-dot" style="color:'+(EVCORES[ev.cat]||'var(--ou)')+'">'+ev.titulo+'</span>';});
+    evD.slice(0,2).forEach(function(ev){h+='<span class="cal-event-dot" style="color:'+(EVCORES[ev.cat]||'var(--ou)')+'">'+(window.ICET_pick?window.ICET_pick(ev,'titulo'):ev.titulo)+'</span>';});
     if(evD.length>2)h+='<span style="font-size:.58rem;color:var(--tx3)">+'+(evD.length-2)+'</span>';
     h+='</div>';
   }
@@ -5603,8 +5782,8 @@ function renderListaEventos(){
     var cor=EVCORES[ev.cat]||'var(--ou)';
     h+='<div class="cal-ev-item" style="border-left-color:'+cor+'">'
       +'<div class="cal-ev-data">'+df+'</div>'
-      +'<div><div class="cal-ev-ti">'+ev.titulo+'</div>'
-      +(ev.desc?'<div class="cal-ev-desc">'+ev.desc+'</div>':'')
+      +'<div><div class="cal-ev-ti">'+(window.ICET_pick?window.ICET_pick(ev,'titulo'):ev.titulo)+'</div>'
+      +(ev.desc?'<div class="cal-ev-desc">'+(window.ICET_pick?window.ICET_pick(ev,'desc'):ev.desc)+'</div>':'')
       +(ev.link?'<a href="'+ev.link+'" target="_blank" style="font-size:.72rem;color:'+cor+'">Ver mais</a>':'')
       +'</div>'
       +'<button class="cal-ev-del btn-sm del" data-ev-del="'+ev.key+'">&#10005;</button>'
@@ -5712,8 +5891,8 @@ function renderComenda(){
     card.innerHTML=(c.foto?'<img src="'+c.foto+'" class="comenda-foto" alt="'+c.nome+'">'
       :'<div class="comenda-foto-vazio">🏅</div>')
       +'<div class="comenda-nome">'+c.nome+'</div>'
-      +(c.cargo?'<div class="comenda-cargo">'+c.cargo+'</div>':'')
-      +'<div class="comenda-bio">'+c.bio+'</div>'
+      +(c.cargo?'<div class="comenda-cargo">'+(window.ICET_pick?window.ICET_pick(c,'cargo'):c.cargo)+'</div>':'')
+      +'<div class="comenda-bio">'+(window.ICET_pick?window.ICET_pick(c,'bio'):c.bio)+'</div>'
       +'<div class="comenda-adm"><button class="btn-sm" data-cm-trad="'+k+'" title="Traduzir">🌐</button> <button class="btn-sm del" data-cm-del="'+k+'">🗑</button></div>';
     grid.appendChild(card);
   });
@@ -5736,9 +5915,9 @@ function renderAcervoDinamico(){
     var lista='<div class="acervo-grupo-ti">Adicionados pelo ADM</div><div class="acervo-lista">';
     docs.forEach(function(d){
       lista+='<div class="acervo-item"><div class="acervo-item-linha"></div><div class="acervo-item-body">'
-        +'<div class="acervo-item-ti">'+d.ti+'</div>'
-        +(d.sub?'<div class="acervo-item-sub">'+d.sub+'</div>':'')
-        +'<a class="acervo-link" href="'+d.url+'" target="_blank">'+d.btn+'</a>'
+        +'<div class="acervo-item-ti">'+(window.ICET_pick?window.ICET_pick(d,'ti'):d.ti)+'</div>'
+        +(d.sub?'<div class="acervo-item-sub">'+(window.ICET_pick?window.ICET_pick(d,'sub'):d.sub)+'</div>':'')
+        +'<a class="acervo-link" href="'+d.url+'" target="_blank" rel="noopener">'+(window.ICET_pick?window.ICET_pick(d,'btn'):d.btn)+'</a>'
         +' <button class="btn-sm del" data-doc-del="'+d.key+'">✕</button>'
         +'</div></div>';
     });
@@ -6297,7 +6476,7 @@ document.addEventListener('DOMContentLoaded',function(){
       document.documentElement.setAttribute('lang', l);
       // Re-renderiza seções dinâmicas para aplicar o idioma (cada uma protegida)
       if(window._i18nReady){
-        ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos','renderNoticias','renderDepoimentos','renderComenda','renderGridVasos'].forEach(function(fn){
+        ['renderCalendario','renderGaleria','renderGalIndice','renderVideos','renderProdutos','renderNoticias','renderDepoimentos','renderComenda','renderGridVasos','renderAcervoDinamico','aplicarSecEdits'].forEach(function(fn){
           try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
         });
         // Atualiza bios/cargos da diretoria por idioma (sem duplicar cards)
@@ -6325,6 +6504,8 @@ document.addEventListener('DOMContentLoaded',function(){
             var e=I18N[el.getAttribute('data-i18n')]; if(e){var t=e[l]||e.pt; if(t!=null)el.textContent=t;}
           });
         }catch(e){}
+        // títulos e textos de seção editados pelo ADM (na versão do idioma) vêm por último
+        try{ if(typeof aplicarSecEdits==='function') aplicarSecEdits(); }catch(e){}
       }
     }
     window.ICET_aplicarIdioma = aplicarIdioma;
