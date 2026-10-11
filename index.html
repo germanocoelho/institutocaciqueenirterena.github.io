@@ -4088,13 +4088,25 @@ window.ICET_pick = window.ICET_pick;
 
 // ══ CONFIG ══
 var CLOUD = {name:'dn1ubybc0', preset:'cmddi_galeria'};
+// Token do GitHub guardado CIFRADO com a senha de ADM (PBKDF2 + AES-GCM).
+// Só é decifrado, em memória, quando o ADM entra com a senha.
+var GH_TOKEN_CIFRADO = {s:'IIKfxd4vBhzqTifEbHJtkw==', iv:'z62p04azctTn4XnZ', c:'EfDJlM5ciA01ZYYYDV4f//ASxNhxbp4AmjADK3qMC8Nhahw54fvx88owfajFyhLv1AuaL156cGQ=', it:600000};
+var _ghToken = '';
+function _b64bytes(s){ var b=atob(s), u=new Uint8Array(b.length); for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i); return u; }
+function abrirTokenGH(senha){
+  if(!(window.crypto && crypto.subtle && window.TextEncoder)) return Promise.resolve(false);
+  var c=GH_TOKEN_CIFRADO;
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey'])
+    .then(function(k){ return crypto.subtle.deriveKey({name:'PBKDF2', salt:_b64bytes(c.s), iterations:c.it, hash:'SHA-256'}, k, {name:'AES-GCM', length:256}, false, ['decrypt']); })
+    .then(function(key){ return crypto.subtle.decrypt({name:'AES-GCM', iv:_b64bytes(c.iv)}, key, _b64bytes(c.c)); })
+    .then(function(buf){ _ghToken = new TextDecoder().decode(buf); return true; }, function(){ return false; });
+}
 var GH = {
-  token:['ghp_lBOh','tA9ekMqmr6uL','lhuSY0LPllbVRy1U9enp'].join(''),
+  get token(){ return _ghToken; },
   repo:'germanocoelho/institutocaciqueenirterena.github.io',
   file:'dados.json'
 };
 var DB_KEY = 'icet3_db';
-var ADM_HASH = 'c337e3cb'; // icet2026
 
 // ══ DB LOCAL ══
 var _db = {};
@@ -4143,13 +4155,15 @@ function fecharAdm(){
 }
 function loginAdm(){
   var pw=document.getElementById('adm-pw').value;
-  if(hashStr(pw)===ADM_HASH){
-    document.body.classList.add('adm-on');
-    fecharAdm(); notif('✅ ADM ativado - edite qualquer elemento','ok');
-  } else {
-    document.getElementById('adm-msg').textContent='Senha incorreta.';
-    document.getElementById('adm-pw').value='';
-  }
+  abrirTokenGH(pw).then(function(ok){
+    if(ok){
+      document.body.classList.add('adm-on');
+      fecharAdm(); notif('✅ ADM ativado - edite qualquer elemento','ok');
+    } else {
+      document.getElementById('adm-msg').textContent='Senha incorreta.';
+      document.getElementById('adm-pw').value='';
+    }
+  });
 }
 
 // ══ CLOUDINARY UPLOAD ══
@@ -6374,7 +6388,6 @@ document.addEventListener('DOMContentLoaded',function(){
 // inteligência de classificação e relatórios), com arquitetura
 // de dados privados própria e independente.
 // ═══════════════════════════════════════════════════════════
-var ICET_GH_TOKEN = GH.token; // reaproveita o token já configurado no site
 var ICET_GH_REPO_PRIVADO = 'germanocoelho/icet-dados-privados';
 var ICET_GH_FILE_PRIVADO = 'dados-privado.json';
 var ICET_GH_API_PRIVADO = 'https://api.github.com/repos/' + ICET_GH_REPO_PRIVADO + '/contents/' + ICET_GH_FILE_PRIVADO;
@@ -6397,13 +6410,13 @@ function salvarNoGitHubPrivado() {
   var dados = dbLerPrivado();
   var conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
   function shaFresco() {
-    return fetch(ICET_GH_API_PRIVADO + '?t=' + Date.now(), { cache:'no-store', headers: { 'Authorization': 'token ' + ICET_GH_TOKEN } })
+    return fetch(ICET_GH_API_PRIVADO + '?t=' + Date.now(), { cache:'no-store', headers: { 'Authorization': 'token ' + GH.token } })
       .then(function(r){ return r.json(); }).then(function(res){ return res.sha || null; });
   }
   function tentarPut(sha) {
     var body = { message: 'Atualizar dados privados do ICET', content: conteudo };
     if (sha) body.sha = sha;
-    return fetch(ICET_GH_API_PRIVADO, { method:'PUT', headers: { 'Authorization': 'token ' + ICET_GH_TOKEN, 'Content-Type':'application/json' }, body: JSON.stringify(body) })
+    return fetch(ICET_GH_API_PRIVADO, { method:'PUT', headers: { 'Authorization': 'token ' + GH.token, 'Content-Type':'application/json' }, body: JSON.stringify(body) })
       .then(function(r){ return r.json(); });
   }
   shaFresco().then(function(sha){ return tentarPut(sha); }).then(function(res){

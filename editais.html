@@ -296,8 +296,21 @@ input[type=checkbox]{accent-color:var(--ter);width:16px;height:16px}
 <div id="notif"></div>
 
 <script>
+// Token do GitHub guardado CIFRADO com a senha de ADM (PBKDF2 + AES-GCM).
+// Só é decifrado, em memória, quando o ADM entra com a senha.
+var GH_TOKEN_CIFRADO = {s:'IIKfxd4vBhzqTifEbHJtkw==', iv:'z62p04azctTn4XnZ', c:'EfDJlM5ciA01ZYYYDV4f//ASxNhxbp4AmjADK3qMC8Nhahw54fvx88owfajFyhLv1AuaL156cGQ=', it:600000};
+var _ghToken = '';
+function _b64bytes(s){ var b=atob(s), u=new Uint8Array(b.length); for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i); return u; }
+function abrirTokenGH(senha){
+  if(!(window.crypto && crypto.subtle && window.TextEncoder)) return Promise.resolve(false);
+  var c=GH_TOKEN_CIFRADO;
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey'])
+    .then(function(k){ return crypto.subtle.deriveKey({name:'PBKDF2', salt:_b64bytes(c.s), iterations:c.it, hash:'SHA-256'}, k, {name:'AES-GCM', length:256}, false, ['decrypt']); })
+    .then(function(key){ return crypto.subtle.decrypt({name:'AES-GCM', iv:_b64bytes(c.iv)}, key, _b64bytes(c.c)); })
+    .then(function(buf){ _ghToken = new TextDecoder().decode(buf); return true; }, function(){ return false; });
+}
 var GH = {
-  token:['ghp_lBOh','tA9ekMqmr6uL','lhuSY0LPllbVRy1U9enp'].join(''),
+  get token(){ return _ghToken; },
   repo:'germanocoelho/institutocaciqueenirterena.github.io',
   file:'editais/editais.json'
 };
@@ -307,10 +320,12 @@ var DB=null, SHA=null;
 function notif(m){var n=document.getElementById('notif');n.textContent=m;n.style.display='block';clearTimeout(n._t);n._t=setTimeout(function(){n.style.display='none'},3500);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function entrar(){
-  if(document.getElementById('senha').value!=='icet2026'){notif('Senha incorreta');return;}
-  document.getElementById('gate').style.display='none';
-  document.getElementById('painel').style.display='block';
-  carregar(false);
+  abrirTokenGH(document.getElementById('senha').value).then(function(ok){
+    if(!ok){notif('Senha incorreta');return;}
+    document.getElementById('gate').style.display='none';
+    document.getElementById('painel').style.display='block';
+    carregar(false);
+  });
 }
 function b64utf8_decode(b){return decodeURIComponent(escape(atob(b.replace(/\n/g,''))));}
 function b64utf8_encode(s){return btoa(unescape(encodeURIComponent(s)));}
