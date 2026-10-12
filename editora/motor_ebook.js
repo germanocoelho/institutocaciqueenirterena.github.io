@@ -149,12 +149,12 @@ function logoDados(l) {
 var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
-  sinopse: '', licenca: 'todos', direitosTexto: '', capaGerada: false, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
-  numeracao: 'auto', revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
+  sinopse: '', licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
+  numeracao: 'auto', estiloCitacao: 'maioria', revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
 var _origemIA = {};
-function obraCarregar() { try { var o = JSON.parse(localStorage.getItem(LS_OBRA) || 'null'); if (o) obra = mesclar(clone(OBRA_PADRAO), o); } catch (e) {} }
+function obraCarregar() { try { var o = JSON.parse(localStorage.getItem(LS_OBRA) || 'null'); if (o) obra = mesclar(clone(OBRA_PADRAO), o); } catch (e) {} obra.correcoes = mesclar({ tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, obra.correcoes || {}); }
 function obraGuardar() { var o = clone(obra); if (o.capaPropria && o.capaPropria.length > 1500000) o.capaPropria = ''; try { localStorage.setItem(LS_OBRA, JSON.stringify(o)); } catch (e) {} }
 
 function pessoas(s) {
@@ -187,7 +187,7 @@ function isbnFormatado(s) {
 
 /* ───────────────────────── auditoria ───────────────────────── */
 function Auditoria() { this.itens = []; this.correcoes = {}; }
-Auditoria.prototype.add = function (sev, cat, msg, o) { o = o || {}; this.itens.push({ sev: sev, cat: cat, msg: msg, onde: o.onde || '', norma: o.norma || '', sug: o.sug || '' }); };
+Auditoria.prototype.add = function (sev, cat, msg, o) { o = o || {}; this.itens.push({ sev: sev, cat: cat, msg: msg, onde: o.onde || '', norma: o.norma || '', sug: o.sug || '', acao: o.acao || null }); };
 Auditoria.prototype.corr = function (tipo, n) { if (n === undefined) n = 1; if (!n) return; this.correcoes[tipo] = (this.correcoes[tipo] || 0) + n; };
 Auditoria.prototype.conta = function (sev) { return this.itens.filter(function (i) { return i.sev === sev; }).length; };
 var PESO = { bloqueante: 25, grave: 8, aviso: 2, info: 0 };
@@ -561,6 +561,76 @@ function extrairPreliminares(sec, livro, A, doc) {
   return { resto: resto, novas: novas };
 }
 
+/* ───────────────────────── CORREÇÕES DO EDITOR ─────────────────────────
+   Decisões tomadas no painel de correções ficam em obra.correcoes e são
+   reaplicadas a cada geração: o manuscrito original nunca é alterado. */
+function corrAtual() {
+  var c = obra.correcoes = obra.correcoes || {};
+  ['tabelas', 'refsEdit', 'citIgnorar'].forEach(function (k) { if (!c[k] || typeof c[k] !== 'object' || Array.isArray(c[k])) c[k] = {}; });
+  ['refsNovas', 'textos'].forEach(function (k) { if (!Array.isArray(c[k])) c[k] = []; });
+  return c;
+}
+function correcoesVazias() { return { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }; }
+function fpRef(t) { return N(t).replace(/[^A-Z0-9]/g, '').slice(0, 70); }
+function fpTabela(tb) { var r = tb.querySelector('tr'); return N(r ? r.textContent : '').replace(/[^A-Z0-9]/g, '').slice(0, 70) + ':' + tb.querySelectorAll('tr').length; }
+function mdLite(doc, alvo, texto) {
+  var partes = String(texto).split(/(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_)/);
+  partes.forEach(function (x) {
+    if (!x) return;
+    var m = /^\*\*([^*]+)\*\*$/.exec(x); if (m) { alvo.appendChild(el(doc, 'strong', null, [m[1]])); return; }
+    m = /^(?:\*([^*]+)\*|_([^_]+)_)$/.exec(x); if (m) { alvo.appendChild(el(doc, 'em', null, [m[1] || m[2]])); return; }
+    alvo.appendChild(doc.createTextNode(x));
+  });
+  return alvo;
+}
+function aplicarTextos(raiz, lista, A) {
+  if (!lista || !lista.length) return;
+  var nos = [], w = raiz.ownerDocument.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null), n;
+  while ((n = w.nextNode())) nos.push(n);
+  var feitas = 0;
+  lista.forEach(function (c) {
+    if (!c || !c.de || c.de === c.para) return;
+    var achou = 0;
+    var lim = function (ch) { return /[\p{L}\p{N}]/u.test(ch); };
+    var rx = new RegExp((lim(c.de.charAt(0)) ? '(?<![\\p{L}\\p{N}])' : '') + c.de.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (lim(c.de.charAt(c.de.length - 1)) ? '(?![\\p{L}\\p{N}])' : ''), 'gu');
+    nos.forEach(function (n) { var k = 0; var v = n.nodeValue.replace(rx, function () { k++; return c.para; }); if (k) { achou += k; n.nodeValue = v; } });
+    if (achou) feitas += achou;
+    else A.add('aviso', 'Revisão', 'Correção do editor não localizada no texto: “' + c.de.slice(0, 80) + '”.', { sug: 'O trecho pode ter mudado no manuscrito; remova ou refaça a correção no painel.', acao: { tipo: 'remover-texto', de: c.de } });
+  });
+  A.corr('Correções de texto do editor aplicadas', feitas);
+}
+function propostaTituloTabela(tb) {
+  var r = tb.querySelector('tr'); if (!r) return '';
+  var cab = Array.prototype.map.call(r.children, function (c) { return txt(c).replace(/[.:;]+$/, ''); }).filter(function (x) { return x && x.length < 80; });
+  if (cab.length < 2) return '';
+  cab = cab.slice(0, 5);
+  var t = cab.length > 1 ? cab.slice(0, -1).join(', ') + ' e ' + cab[cab.length - 1] : cab[0];
+  return t.length > 170 ? t.slice(0, 167).replace(/\s+\S*$/, '') + '…' : t;
+}
+/* sinopse extraída da apresentação/introdução (quando não há IA) */
+function sinopseExtrativa(livro) {
+  var s = livro.secoes.find(function (x) { return x.tipo === 'apresentacao'; }) || livro.secoes.find(function (x) { return x.tipo === 'capitulo' && /INTRODUCAO/.test(N(x.titulo)); }) || livro.secoes.find(function (x) { return x.tipo === 'prefacio'; });
+  if (!s) return '';
+  var t = Array.prototype.map.call(s.cont.querySelectorAll(':scope > p'), txt).filter(function (x) { return x.length > 120; }).join(' ');
+  var frases = t.match(/[^.!?…]+[.!?…]+(\s|$)/g) || [], out = '';
+  for (var i = 0; i < frases.length; i++) { if ((out + frases[i]).length > 900) break; out += frases[i]; }
+  return out.trim();
+}
+/* termos do índice: glossário, siglas e nomes próprios recorrentes */
+function termosAutomaticos(livro) {
+  var cont = {}, texto = livro.secoes.filter(function (s) { return /^(capitulo|abertura|apresentacao|prefacio|posfacio)$/.test(s.tipo); }).map(function (s) { return s.cont.textContent; }).join(' \n ');
+  function freq(t) { var rx = new RegExp('(^|[^\\p{L}])' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=$|[^\\p{L}])', 'gu'); return (texto.match(rx) || []).length; }
+  var cand = [];
+  livro.secoes.filter(function (s) { return s.tipo === 'glossario'; }).forEach(function (s) { s.cont.querySelectorAll('p > strong:first-child').forEach(function (b) { var t = txt(b).replace(/[:.]$/, ''); if (t.length > 2 && t.length < 50) cand.push(t); }); });
+  (livro.siglas || []).forEach(function (x) { cand.push(x.sigla); });
+  var rx = /\b([A-ZÀ-Ý][a-zà-ÿ]+(?:\s+(?:de|da|do|dos|das|e)?\s*[A-ZÀ-Ý][a-zà-ÿ]+){1,4})\b/g, m;
+  while ((m = rx.exec(texto))) { var k = m[1].replace(/\s+/g, ' '); cont[k] = (cont[k] || 0) + 1; }
+  Object.keys(cont).filter(function (k) { return cont[k] >= 5 && !/^(Em|No|Na|Os|As|O|A|De|Do|Da|Para|Com|Por|Esta|Este|Nos|Nas|Ao|Aos|Se|Um|Uma)\s/.test(k); }).sort(function (a, b) { return cont[b] - cont[a]; }).slice(0, 40).forEach(function (k) { cand.push(k); });
+  var vistos = {}, out = [];
+  cand.forEach(function (t) { var n = N(t); if (vistos[n] || freq(t) < 2) return; vistos[n] = 1; out.push(t); });
+  return out.slice(0, 80);
+}
+
 /* ───────────────────────── 3. TIPOGRAFIA ───────────────────────── */
 var RX_ABRE = /[\s(\[{—–\/‘“ -]/;
 function blocoDe(n, raiz) { var e = n.parentNode; while (e && e !== raiz && !/^(P|LI|H[1-6]|TD|TH|BLOCKQUOTE|CAPTION|DT|DD|FIGCAPTION)$/.test(e.tagName)) e = e.parentNode; return e; }
@@ -621,7 +691,7 @@ function extrairCitacoes(texto) {
   while ((m = rp.exec(texto))) {
     var pend = [];
     m[1].split(/;/).forEach(function (pedaco) {
-      var p = /^\s*([^,\d][^,\d:]{0,120}?),\s*((?:1[5-9]\d{2}|20\d{2})[a-z]?)\b/.exec(pedaco);
+      var p = /^\s*([^,\d][^,\d:]{0,120}?),\s*((?:1[5-9]\d{2}|20\d{2})[a-z]?)\b(?!\s*[-–]\s*\d)/.exec(pedaco);
       if (p) {
         var autor = (pend.length ? pend[0] : p[1]).trim().replace(/^(ver|vide|cf\.?|apud|conforme|segundo|in)\s+/i, ''); pend = [];
         if (!/^(p|pp|v|n|art|cf|apud)\.?$/i.test(autor) && /^[A-ZÀ-Ý]/.test(autor) && !/[:;]/.test(autor) && autor.split(/\s+/).length <= 8) cit.push({ autor: autor, chave: chaveAutor(autor), ano: p[2], tipo: 'parentetica', caixa: /[a-zà-ÿ]/.test(autor.replace(/et al\.?/i, '')) ? 'mista' : 'alta' });
@@ -633,11 +703,116 @@ function extrairCitacoes(texto) {
     var antes = texto.slice(Math.max(0, m.index - 40), m.index + (m[0].length - m[0].replace(/^[^A-ZÀ-Ý]*/, '').length)).trim().split(/\s+/);
     var ant = antes[antes.length - 1] || '', ant2 = antes[antes.length - 2] || '';
     if (/^[A-ZÀ-Ý]/.test(ant) || (/^(de|da|do|das|dos|e|sobre)$/.test(ant) && /^[A-ZÀ-Ý]/.test(ant2)) || /[’”']$/.test(m[1]) || /[a-zà-ÿ][A-Z]/.test(m[1])) continue;
+    if (/^(the|of|and|del|la|el|los|las|des|du|le|les)$/i.test(ant)) continue;
+    if (/^[A-ZÀ-Ý0-9\/\-]+$/.test(m[1]) && /^(pela|pelo|na|no|nas|nos|em)$/i.test(ant)) continue;
     cit.push({ autor: m[1], chave: chaveAutor(m[1]), ano: m[2], tipo: 'narrativa' });
   }
   return cit;
 }
+function padronizarCitacoes(livro, alvo) {
+  var n = 0;
+  function conv(autor) {
+    if (/^[A-ZÀ-Ý0-9\/\-]{2,10}$/.test(autor.trim())) return autor;
+    if (alvo === 'alta') return autor.replace(/[^;]+/g, function (a) { return a.replace(/^(\s*)(.*?)(\s+et al\.?)?\s*$/i, function (m, e, nome, etal) { return e + nome.toUpperCase() + (etal || ''); }); });
+    return autor.replace(/[A-ZÀ-Ý][A-ZÀ-Ý'’\-]+/g, function (w) { return /^(DE|DA|DO|DOS|DAS|E)$/.test(w) ? w.toLowerCase() : w.charAt(0) + w.slice(1).toLowerCase(); });
+  }
+  livro.secoes.forEach(function (s) {
+    if (/^(referencias|epigrafe|dedicatoria|sobre)$/.test(s.tipo)) return;
+    var w = s.cont.ownerDocument.createTreeWalker(s.cont, NodeFilter.SHOW_TEXT, null), x, nos = [];
+    while ((x = w.nextNode())) if (!x.parentNode.closest('.referencias,figcaption,caption,.fonte')) nos.push(x);
+    nos.forEach(function (tn) {
+      var v = tn.nodeValue.replace(/\(([^()]*\b(?:1[5-9]\d{2}|20\d{2})[a-z]?[^()]*)\)/g, function (m, dentro) {
+        var novo = dentro.split(';').map(function (pd) {
+          return pd.replace(/^(\s*)([A-ZÀ-Ýa-zà-ÿ][^,\d:]{1,120}?)(,\s*(?:1[5-9]\d{2}|20\d{2}))/, function (mm, e, autor, resto) {
+            var a = autor.replace(/^(ver|vide|cf\.?|apud|conforme)\s+/i, function (q) { return q; });
+            if (!/^[A-ZÀ-Ý]/.test(a.replace(/^(ver|vide|cf\.?|apud|conforme)\s+/i, '')) || a.split(/\s+/).length > 8) return mm;
+            var c = conv(a); if (c !== a) n++; return e + c + resto;
+          });
+        }).join(';');
+        return '(' + novo + ')';
+      });
+      if (v !== tn.nodeValue) tn.nodeValue = v;
+    });
+  });
+  return n;
+}
+function distancia(a, b) {
+  var m = a.length, n = b.length, d = []; for (var i = 0; i <= m; i++) { d[i] = [i]; } for (var j = 0; j <= n; j++) d[0][j] = j;
+  for (i = 1; i <= m; i++) for (j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
 function sigla(s) { return N(s).split(' ').filter(function (w) { return w && !/^(DE|DA|DO|DAS|DOS|E|PARA|EM|A|O|AS|OS)$/.test(w); }).map(function (w) { return w[0]; }).join(''); }
+function refParaMd(p) {
+  var s = '';
+  p.childNodes.forEach(function (n) { if (n.nodeType === 3) s += n.nodeValue; else if (/^(STRONG|B)$/.test(n.tagName)) s += '**' + n.textContent + '**'; else if (/^(EM|I)$/.test(n.tagName)) s += '*' + n.textContent + '*'; else s += n.textContent; });
+  return s.replace(/\s+/g, ' ').trim();
+}
+var RX_LEGISL = /^(Lei|Decreto|Resolu[cç][aã]o|Portaria|Constitui[cç][aã]o|\[?Constitui|Instru[cç][aã]o Normativa|Medida Provis[oó]ria|Emenda Constitucional|Projeto de Lei|Ac[oó]rd[aã]o|Recurso|Parecer|Conven[cç][aã]o|Declara[cç][aã]o|Protocolo|Tratado|Pacto|Acordo)\b/i;
+function fimAutoria(t) {
+  if (/^_{3,}\.?\s*/.test(t)) return t.match(/^_{3,}\.?\s*/)[0].length;
+  // autoria pessoal: SOBRENOME, Prenomes; SOBRENOME, P. (org.).
+  if (/^[A-ZÀ-Ý][A-ZÀ-Ý'’\- ]+,\s/.test(t)) {
+    var rx = /\S+/g, m, dentroPrenome = true, toks = [];
+    while ((m = rx.exec(t))) toks.push({ s: m[0], fim: m.index + m[0].length });
+    for (var k = 0; k < toks.length && k < 60; k++) {
+      var w = toks[k].s;
+      if (/^[A-ZÀ-Ý][A-ZÀ-Ý'’\-]+,$/.test(w) || /^(DE|DA|DO|DOS|DAS|E)$/.test(w)) continue;          // sobrenome
+      if (/^\((orgs?|eds?|coords?|dirs?|comps?)\.\)\.?$/i.test(w)) { if (/\.$/.test(w) && !/\)\.$/.test(w) ? false : /\)\.$/.test(w)) return toks[k].fim + 1; continue; }
+      if (/^al\.$/.test(w) && k && /^et$/.test(toks[k - 1].s)) return toks[k].fim + 1;
+      if (/;$/.test(w)) continue;                                                                    // próximo autor
+      if (/^[A-ZÀ-Ý]\.$/.test(w) || /^[A-ZÀ-Ý]\.[A-ZÀ-Ý]\.$/.test(w)) {                              // inicial
+        var prox = toks[k + 1] ? toks[k + 1].s : '';
+        if (/^([A-ZÀ-Ý]\.|[A-ZÀ-Ý][a-zà-ÿ'’\-]*[;.]|\((orgs?|eds?|coords?)\.\)\.?|et|[A-ZÀ-Ý]\.;)$/i.test(prox) || /^(de|da|do|dos|das)$/.test(prox)) continue;
+        return toks[k].fim + 1;
+      }
+      if (/\.$/.test(w) && /[a-zà-ÿ)]\.$/.test(w)) return toks[k].fim + 1;                            // fim do prenome
+      if (/^[A-ZÀ-Ý][a-zà-ÿ'’\-]+$/.test(w) || /^(de|da|do|dos|das|e|van|von|del|la|y)$/.test(w)) continue;
+      break;
+    }
+  }
+  // autoria institucional ou entrada pelo título
+  var rx2 = /\.\s+(?=[A-ZÀ-Ý“"‘'\[(¿¡0-9])/g, m2;
+  while ((m2 = rx2.exec(t))) {
+    var antes = t.slice(0, m2.index), ult = antes.split(/[\s(]+/).pop();
+    if (ult.replace(/[^A-Za-zÀ-ÿ)]/g, '').length < 2 && !/\)$/.test(ult)) continue;
+    return m2.index + m2[0].length;
+  }
+  return -1;
+}
+/* devolve [início, fim] do trecho que deve receber destaque, ou null */
+function alvoDestaque(t) {
+  var ia = fimAutoria(t); if (ia < 0) return null;
+  var r = t.slice(ia);
+  if (RX_LEGISL.test(r)) { var mDO = /Di[aá]rio Oficial( d[aoe]s?)?( [A-ZÀ-Ý][\wÀ-ÿ]*| da| do| de)*/.exec(r); return mDO ? [ia + mDO.index, ia + mDO.index + mDO[0].trim().length] : null; }
+  var mIn = /\bIn:\s+/.exec(r);
+  if (mIn) {
+    var resto = r.slice(mIn.index + mIn[0].length), mEd = /^[^.]*?\((?:orgs?|eds?|coords?|dirs?|comps?)\.\)\.\s+/i.exec(resto), ini;
+    if (mEd) ini = mEd[0].length; else { var fa = fimAutoria(resto); if (fa < 0) return null; ini = fa; }
+    var tit = resto.slice(ini), fim = tit.search(/:\s|\.\s|,\s/); if (fim < 0) fim = tit.length;
+    var a0 = ia + mIn.index + mIn[0].length + ini; return [a0, a0 + fim];
+  }
+  var mPer = /,\s*(v\.|n\.|ano|vol\.)\s*\d/i.exec(r);
+  if (mPer) {
+    var antesP = r.slice(0, mPer.index), ini2 = antesP.lastIndexOf('. ') + 2; if (ini2 < 2) ini2 = 0;
+    var seg = r.slice(ini2, mPer.index), f2 = seg.indexOf(','); if (f2 >= 0) seg = seg.slice(0, f2);
+    if (seg.trim().length < 3) return null;
+    return [ia + ini2, ia + ini2 + seg.replace(/\s+$/, '').length];
+  }
+  var fim3 = r.search(/:\s|\.\s|\.$|\?\s/); if (fim3 < 0) fim3 = r.length;
+  if (r.charAt(fim3) === '?') fim3++;
+  if (fim3 < 3) return null;
+  return [ia, ia + fim3];
+}
+function destacarTitulo(p) {
+  if (p.childNodes.length !== 1 || p.firstChild.nodeType !== 3) return false;
+  var t = p.firstChild.nodeValue, al = alvoDestaque(t);
+  if (!al || al[1] - al[0] < 3 || al[1] - al[0] > 260) return false;
+  var doc = p.ownerDocument; p.textContent = '';
+  p.appendChild(doc.createTextNode(t.slice(0, al[0])));
+  p.appendChild(el(doc, 'strong', null, [t.slice(al[0], al[1])]));
+  p.appendChild(doc.createTextNode(t.slice(al[1])));
+  return true;
+}
 function chaveRef(texto, anterior) {
   var t = texto.trim();
   if (/^_{3,}/.test(t)) return anterior || '';
@@ -657,7 +832,8 @@ function casaCitacao(c, refs) {
     return r.anos.some(function (a) { return a === c.ano || a.replace(/[a-z]$/, '') === c.ano; });
   });
 }
-function processarRefs(nos, A, onde, doc) {
+function processarRefs(nos, A, onde, doc, corr) {
+  corr = corr || correcoesVazias();
   // nós = elementos contíguos da seção de referências
   var itens = [], grupoAtual = [], grupos = [grupoAtual], anteriorChave = '';
   nos.forEach(function (n) {
@@ -668,10 +844,12 @@ function processarRefs(nos, A, onde, doc) {
       var p = el;
       if (el.tagName !== 'P') { p = doc.createElement('p'); while (el.firstChild) p.appendChild(el.firstChild); }
       p.className = 'ref';
+      var nova = corr.refsEdit[fpRef(txt(p))];
+      if (nova) { p.textContent = ''; mdLite(doc, p, nova); A.corr('Referências corrigidas pelo editor'); }
       grupoAtual.push(p);
     });
   });
-  var foraOrdem = 0, caixaFix = 0, semAno = 0, semAcesso = 0, semDestaque = 0, sd = 0, destaques = {};
+  var foraOrdem = 0, caixaFix = 0, semAno = 0, semAcesso = 0, semDestaque = 0, sd = 0, destaques = {}, autoDest = 0;
   grupos.forEach(function (g) {
     g.forEach(function (p) {
       var t = txt(p);
@@ -683,10 +861,12 @@ function processarRefs(nos, A, onde, doc) {
       }
       var chave = chaveRef(t, anteriorChave); anteriorChave = chave;
       var anos = anosRef(t);
-      if (!anos.length) { semAno++; if (/\[s\.\s?d\.\]/i.test(t)) sd++; A.add('grave', 'Referências', 'Referência sem ano de publicação: “' + t.slice(0, 90) + (t.length > 90 ? '…' : '') + '”.', { onde: onde, norma: 'NBR 6023', sug: 'Indique o ano; se desconhecido, use data provável entre colchetes, por exemplo [1990?] ou [199-].' }); }
-      if (/(https?:\/\/|www\.)/i.test(t) && !(/Dispon[ií]vel em\s*:/i.test(t) && /Acesso em\s*:/i.test(t))) { semAcesso++; A.add('grave', 'Referências', 'Documento on-line sem “Disponível em:” e “Acesso em:”: “' + t.slice(0, 90) + '…”.', { onde: onde, norma: 'NBR 6023', sug: 'Acrescente: Disponível em: <endereço>. Acesso em: dia mês abreviado ano.' }); }
+      var acaoRef = { tipo: 'ref-editar', fp: fpRef(t), texto: refParaMd(p) };
+      if (!anos.length) { semAno++; if (/\[s\.\s?d\.\]/i.test(t)) sd++; A.add('grave', 'Referências', 'Referência sem ano de publicação: “' + t.slice(0, 90) + (t.length > 90 ? '…' : '') + '”.', { onde: onde, norma: 'NBR 6023', sug: 'Indique o ano; se desconhecido, use data provável entre colchetes, por exemplo [1990?] ou [199-].', acao: acaoRef }); }
+      if (/(https?:\/\/|www\.)/i.test(t) && !(/Dispon[ií]vel em\s*:/i.test(t) && /Acesso em\s*:/i.test(t))) { semAcesso++; A.add('grave', 'Referências', 'Documento on-line sem “Disponível em:” e “Acesso em:”: “' + t.slice(0, 90) + '…”.', { onde: onde, norma: 'NBR 6023', sug: 'Acrescente: Disponível em: <endereço>. Acesso em: dia mês abreviado ano.', acao: acaoRef }); }
+      if (!p.querySelector('strong,b,em,i') && destacarTitulo(p)) autoDest++;
       var d = p.querySelector('strong,b') ? 'negrito' : p.querySelector('em,i') ? 'italico' : '';
-      if (d) destaques[d] = (destaques[d] || 0) + 1; else if (!/^_{3,}/.test(t) && t.length > 40) semDestaque++;
+      if (d) destaques[d] = (destaques[d] || 0) + 1; else if (!/^_{3,}/.test(t) && t.length > 40 && !RX_LEGISL.test(t.slice(Math.max(0, fimAutoria(t))))) semDestaque++;
       itens.push({ el: p, chave: chave, anos: anos, texto: t, palavras: N(t.split(/Dispon[ií]vel em/i)[0]).replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/) });
       p._ordem = N(/^_{3,}/.test(t) ? (chave + ' ' + t.replace(/^_+\.?/, '')) : t);
     });
@@ -697,6 +877,12 @@ function processarRefs(nos, A, onde, doc) {
   if (caixaFix) A.corr('Sobrenomes de entrada das referências passados para MAIÚSCULAS (NBR 6023)', caixaFix);
   if (foraOrdem) A.corr('Referências reordenadas alfabeticamente (NBR 6023, sistema alfabético)', foraOrdem);
   if (semDestaque) A.add('aviso', 'Referências', semDestaque + ' referência(s) sem destaque tipográfico no título (negrito ou itálico).', { onde: onde, norma: 'NBR 6023', sug: 'Destaque o título principal de cada obra, sempre com o mesmo recurso.' });
+  if (autoDest) A.corr('Destaque em negrito aplicado ao título de referências (NBR 6023) — confira os casos atípicos', autoDest);
+  if (destaques.negrito && destaques.italico && destaques.negrito + destaques.italico > 4) {
+    var maior = destaques.negrito >= destaques.italico ? 'strong' : 'em', menor = maior === 'strong' ? 'em,i' : 'strong,b', trocas = 0;
+    itens.forEach(function (it) { it.el.querySelectorAll(menor).forEach(function (x) { var y = el(it.el.ownerDocument, maior); while (x.firstChild) y.appendChild(x.firstChild); x.parentNode.replaceChild(y, x); trocas++; }); });
+    A.corr('Destaque das referências padronizado em ' + (maior === 'strong' ? 'negrito' : 'itálico'), trocas); destaques = {};
+  }
   if (destaques.negrito && destaques.italico) A.add('aviso', 'Referências', 'Destaque misturado nas referências: ' + destaques.negrito + ' em negrito e ' + destaques.italico + ' em itálico.', { onde: onde, norma: 'NBR 6023', sug: 'Use um único recurso de destaque em todas as referências.' });
   if (sd) A.add('aviso', 'Referências', 'Uso de “[s.d.]” em ' + sd + ' referência(s). A norma pede data, ainda que aproximada.', { onde: onde, norma: 'NBR 6023' });
   return { itens: itens, grupos: grupos };
@@ -781,12 +967,14 @@ async function processar(entrada, opcoes, progresso) {
 
   /* tipografia */
   tipografia(body, A);
+  var corr = mesclar(correcoesVazias(), opcoes.correcoes || {});
+  aplicarTextos(body, corr.textos, A);
   etapa('tipografia', 'ok');
 
   /* segmentação em seções */
   var secs = segmentar(body, A);
   if (!secs.length) throw new Error('O manuscrito está vazio.');
-  var livro = { secoes: [], notas: notas, meta: meta, A: A, imagens: [], ilustracoes: [], tabelas: [], siglas: [], termosIndice: [], refsGlobais: null, opcoes: opcoes };
+  var livro = { corr: corr, secoes: [], notas: notas, meta: meta, A: A, imagens: [], ilustracoes: [], tabelas: [], siglas: [], termosIndice: [], refsGlobais: null, opcoes: opcoes };
   var idc = 0; function nid(p) { return p + '-' + (++idc); }
   var ab = secs[0] && secs[0].tipo === 'abertura' ? secs[0] : null;
   if (ab) {
@@ -1032,13 +1220,21 @@ async function processar(entrada, opcoes, progresso) {
 
   /* referências: seção própria e blocos “Referências” dentro de capítulos */
   var todasRefs = [];
+  if (corr.refsNovas.length && !livro.secoes.some(function (s) { return s.tipo === 'referencias'; })) {
+    var sr = { tipo: 'referencias', def: TIPOS.referencias, id: nid('referencias'), titulo: 'Referências', cont: el(doc, 'div'), subtitulos: [] };
+    var iPos = livro.secoes.findIndex(function (s) { return TIPOS[s.tipo] && TIPOS[s.tipo].parte === 'back'; });
+    livro.secoes.splice(iPos < 0 ? livro.secoes.length : iPos, 0, sr);
+  }
   livro.secoes.forEach(function (s) {
     if (s.tipo === 'referencias') {
       s.cont.className = 'referencias';
       var notasRef = Array.prototype.slice.call(s.cont.querySelectorAll(':scope > hr.notas-sep, :scope > aside.nota'));
       notasRef.forEach(function (x) { x.remove(); });
       var nos = Array.prototype.slice.call(s.cont.children);
-      var r = processarRefs(nos, A, 'Referências', doc);
+      corr.refsNovas.forEach(function (t) { if (String(t).trim()) nos.push(mdLite(doc, el(doc, 'p'), t)); });
+      if (corr.refsNovas.length) A.corr('Referências incluídas pelo editor', corr.refsNovas.length);
+      livro._refsNovasFeitas = true;
+      var r = processarRefs(nos, A, 'Referências', doc, corr);
       s.cont.innerHTML = '';
       r.grupos.forEach(function (g) { if (g.cab) { var gp = el(doc, 'h2', { id: nid('h') }, [txt(g.cab)]); s.cont.appendChild(gp); } (g.ordenado || g).forEach(function (p) { s.cont.appendChild(p); }); });
       notasRef.forEach(function (x) { s.cont.appendChild(x); });
@@ -1047,7 +1243,7 @@ async function processar(entrada, opcoes, progresso) {
       s.cont.querySelectorAll('h2[data-ref]').forEach(function (h) {
         var nos = [], n = h.nextElementSibling;
         while (n && !/^H[1-2]$/.test(n.tagName) && !n.classList.contains('notas-sep') && n.tagName !== 'ASIDE') { nos.push(n); n = n.nextElementSibling; }
-        var r = processarRefs(nos, A, s.titulo + ' › Referências', doc);
+        var r = processarRefs(nos, A, s.titulo + ' › Referências', doc, corr);
         var marcador = doc.createComment('refs');
         h.parentNode.insertBefore(marcador, nos[0] || h.nextSibling);
         nos.forEach(function (x) { if (x.parentNode) x.parentNode.removeChild(x); });
@@ -1062,28 +1258,58 @@ async function processar(entrada, opcoes, progresso) {
   livro.refsGlobais = todasRefs;
 
   /* conferência citação × referência */
-  var semRef = {}, estilos = { alta: 0, mista: 0 }, citadas = [];
+  var semRef = {}, estilos = { alta: 0, mista: 0 }, citadas = [], todasCits = [];
   livro.secoes.forEach(function (s) {
     if (/^(referencias|epigrafe|dedicatoria|sobre)$/.test(s.tipo)) return;
     var clone_ = s.cont.cloneNode(true); clone_.querySelectorAll('aside,.referencias,.fonte,figcaption,caption,p.legenda').forEach(function (x) { x.remove(); }); clone_.querySelectorAll('p').forEach(function (p) { if (RX_FONTE.test(txt(p)) || RX_LEG.test(txt(p)) || RX_LEG_T.test(txt(p))) p.remove(); });
+    clone_.querySelectorAll('p,li,td,th,h2,h3,h4,h5,h6,blockquote,dd,dt').forEach(function (b) { b.appendChild(doc.createTextNode(' \n ')); });
     var cits = extrairCitacoes(clone_.textContent);
+    cits.forEach(function (c) { todasCits.push(c); });
     var base = s.refsProprias ? s.refs : todasRefs;
     cits.forEach(function (c) {
       if (c.caixa) estilos[c.caixa]++;
       if (!base.length) return;
       if (casaCitacao(c, base)) { citadas.push(c); return; }
+      if (corr.citIgnorar[N(c.autor) + '|' + c.ano]) return;
       var chave = c.autor + ', ' + c.ano;
-      if (!semRef[chave]) semRef[chave] = { c: c, onde: s.titulo, n: 0 };
+      if (!semRef[chave]) semRef[chave] = { c: c, onde: s.titulo, n: 0, base: base };
       semRef[chave].n++;
     });
   });
+  A.itens.forEach(function (it) {
+    if (it.cat !== 'Referências' || !/sem ano/.test(it.msg) || !it.acao) return;
+    var ref = todasRefs.find(function (r) { return fpRef(r.texto) === it.acao.fp; }); if (!ref) return;
+    var anos = []; todasCits.forEach(function (c) { if ((c.chave === ref.chave || c.chave.split(' ')[0] === ref.chave.split(' ')[0]) && anos.indexOf(c.ano) < 0) anos.push(c.ano); });
+    if (anos.length) { it.msg += ' No texto, esta obra é citada com o ano ' + anos.join(' / ') + '.'; it.acao.anosCit = anos; }
+  });
   Object.keys(semRef).forEach(function (k) {
     var x = semRef[k];
-    A.add(x.c.tipo === 'parentetica' ? 'grave' : 'aviso', 'Citações', 'Citação sem referência correspondente: ' + (x.c.tipo === 'parentetica' ? '(' + k + ')' : x.c.autor + ' (' + x.c.ano + ')') + (x.n > 1 ? ' — ' + x.n + ' ocorrências' : '') + '.', { onde: x.onde, norma: 'NBR 10520 / NBR 6023', sug: 'Inclua a obra nas referências ou corrija autor/ano da citação.' });
+    var mesmos = x.base.filter(function (r) { var k2 = r.chave; return k2 === x.c.chave || k2.split(' ')[0] === x.c.chave.split(' ')[0] || (r.palavras && x.c.chave.indexOf(' ') < 0 && r.palavras.indexOf(x.c.chave) >= 0); });
+    var anosRef = []; mesmos.forEach(function (r) { r.anos.forEach(function (a) { if (anosRef.indexOf(a) < 0) anosRef.push(a); }); });
+    var rot = x.c.tipo === 'parentetica' ? '(' + k + ')' : x.c.autor + ' (' + x.c.ano + ')';
+    var parecido = null;
+    if (!mesmos.length && x.c.chave.length >= 4) {
+      var melhor = 99;
+      var alvoK = x.c.chave.split(' ')[0], lim = alvoK.length >= 7 ? 2 : 1;
+      x.base.forEach(function (r) {
+        var cands = [r.chave.split(' ')[0]].concat((r.texto.match(/\(([A-ZÀ-Ý]{3,})\)/g) || []).map(function (q) { return N(q).replace(/[()]/g, ''); }));
+        cands.forEach(function (w) { if (w.length < 5 || alvoK.length < 5 || Math.abs(w.length - alvoK.length) > lim) return; var d = distancia(w, alvoK); if (d > 0 && d <= lim && d < melhor && r.anos.some(function (a) { return a.slice(0, 4) === x.c.ano.slice(0, 4); })) { melhor = d; parecido = w; } });
+      });
+    }
+    var diag = parecido ? ' Possível erro de digitação: há referência de ' + parecido + ' (' + x.c.ano + ').' : anosRef.length ? ' Há referência de ' + x.c.autor + ' com outro ano (' + anosRef.slice(0, 4).join(', ') + '): verifique se o ano da citação ou o da referência está errado.' : ' Nenhuma obra de ' + x.c.autor + ' nas referências.';
+    A.add(x.c.tipo === 'parentetica' ? 'grave' : 'aviso', 'Citações', 'Citação sem referência correspondente: ' + rot + (x.n > 1 ? ' — ' + x.n + ' ocorrências' : '') + '.' + diag, { onde: x.onde, norma: 'NBR 10520 / NBR 6023', sug: anosRef.length ? 'Corrija o ano na citação ou na referência.' : 'Inclua a obra nas referências, corrija a autoria ou marque como “não é citação” se for fonte de dados já identificada.',
+      acao: { tipo: 'citacao', autor: x.c.autor, ano: x.c.ano, forma: x.c.tipo, anosRef: anosRef, parecido: parecido, refs: mesmos.slice(0, 3).map(function (r) { return { fp: fpRef(r.texto), texto: refParaMd(r.el) }; }) } });
   });
   if (todasRefs.length) {
     var naoCit = todasRefs.filter(function (r) { return !citadas.some(function (c) { return casaCitacao(c, [r]); }); });
     if (naoCit.length) A.add('info', 'Referências', naoCit.length + ' referência(s) não citada(s) no texto (aceitável em bibliografia de livro, mas confira).', { norma: 'NBR 6023', sug: naoCit.slice(0, 5).map(function (r) { return r.texto.slice(0, 60) + '…'; }).join(' | ') });
+  }
+  var estiloCit = opcoes.estiloCitacao || 'maioria';
+  if (estilos.alta && estilos.mista && estiloCit !== 'manter') {
+    var alvoEst = estiloCit === 'alta' ? 'alta' : estiloCit === 'mista' ? 'mista' : (estilos.alta >= estilos.mista ? 'alta' : 'mista');
+    var nPad = padronizarCitacoes(livro, alvoEst);
+    A.corr('Autoria nas citações entre parênteses padronizada em ' + (alvoEst === 'alta' ? 'MAIÚSCULAS' : 'maiúsculas e minúsculas') + ' (NBR 10520)', nPad);
+    estilos = { alta: 0, mista: 0 };
   }
   if (estilos.alta && estilos.mista) A.add('aviso', 'Citações', 'Autoria nas citações entre parênteses aparece ora em MAIÚSCULAS (' + estilos.alta + '), ora em maiúsculas e minúsculas (' + estilos.mista + ').', { norma: 'NBR 10520', sug: 'Padronize a grafia da autoria em todas as citações, conforme a versão vigente da NBR 10520 adotada pela Editora.' });
   if (!todasRefs.length && livro.secoes.some(function (s) { return extrairCitacoes(s.cont.textContent).length > 2; })) A.add('grave', 'Referências', 'O texto tem citações no sistema autor-data, mas o manuscrito não tem seção de Referências.', { norma: 'NBR 6023', sug: 'Inclua a seção REFERÊNCIAS ao final.' });
@@ -1276,17 +1502,24 @@ async function processarIlustracoes(livro) {
       if (tb.parentNode && tb.parentNode.closest && tb.parentNode.closest('table')) return;
       var esc_ = escolherLegenda(tb, conv), cap = esc_ ? esc_.el : null, leg = esc_ ? esc_.leg : null;
       var aposFonte = (esc_ && esc_.lado === 'p') ? cap.nextElementSibling : tb.nextElementSibling;
+      var fpT = fpTabela(tb), origemTit = '';
+      if (!leg) {
+        var tEd = (livro.corr && livro.corr.tabelas[fpT]) || '', tProp = tEd ? '' : propostaTituloTabela(tb);
+        if (tEd || tProp) { leg = { tipo: 'Tabela', num: '', titulo: tEd || tProp }; origemTit = tEd ? 'editor' : 'auto'; }
+      }
       var fonte = ehFonte(aposFonte) ? aposFonte : null;
       var tipo = (leg && leg.tipo) || 'Tabela', titulo = leg ? leg.titulo : '', notaTab = null;
       var wrap = el(doc, 'div', { 'class': 'tabela', id: 'tb-' + pad(livro.tabelas.length + livro.ilustracoes.length + 1, 3) });
       tb.parentNode.insertBefore(wrap, tb);
       var item = { id: wrap.id, secao: s, rotulo: tipo, titulo: titulo || '(sem título)' };
-      if (cap) {
-        var pref = doc.createTextNode(tipo + ' – ');
-        tb.insertBefore(el(doc, 'caption', null, [pref, titulo]), tb.firstChild); cap.remove();
+      if (leg) {
+        var pref = doc.createTextNode(tipo + ' – '), tnTit = doc.createTextNode(titulo);
+        tb.insertBefore(el(doc, 'caption', null, [pref, tnTit]), tb.firstChild); if (cap) cap.remove();
+        if (origemTit === 'auto') { (livro.titulosAuto = livro.titulosAuto || []).push({ fp: fpT, no: tnTit, item: item, tb: tb, secao: s.titulo }); }
+        if (origemTit === 'editor') A.corr('Títulos de tabela definidos pelo editor');
         if (leg.nota) { notaTab = el(doc, 'p', { 'class': 'fonte' }, ['Nota: ' + leg.nota]); A.corr('Texto explicativo das legendas transferido para “Nota” abaixo da tabela (IBGE)'); }
         legendas.push({ tipo: tipo, numOrig: leg.num, prefixo: pref, secao: s, reg: item });
-      } else A.add('grave', 'Ilustrações', 'Tabela sem título (identificação acima da tabela).', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', sug: 'Escreva acima da tabela: “Tabela N – Título”.' });
+      } else A.add('grave', 'Ilustrações', 'Tabela sem título (identificação acima da tabela).', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', sug: 'Escreva acima da tabela: “Tabela N – Título”.', acao: { tipo: 'tabela-titulo', fp: fpT, proposta: '' } });
       wrap.appendChild(tb);
       if (notaTab) wrap.appendChild(notaTab);
       if (fonte) { fonte.className = 'fonte'; wrap.appendChild(fonte); } else A.add('aviso', 'Ilustrações', 'Tabela sem indicação de fonte' + (titulo ? ': “' + titulo.slice(0, 70) + '”' : '') + '.', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular', sug: 'Abaixo da tabela, informe “Fonte: …”, mesmo que seja elaboração própria.' });
@@ -1348,12 +1581,34 @@ async function processarIlustracoes(livro) {
   if (semFonte) A.add('aviso', 'Ilustrações', semFonte + ' ilustração(ões) sem indicação de fonte.', { norma: 'NBR 6029', sug: 'Abaixo da imagem: “Fonte: …” (inclusive “Fonte: acervo do autor”).' });
 }
 
+function registrarTitulosAuto(livro) {
+  (livro.titulosAuto || []).forEach(function (x) {
+    livro.A.add('aviso', 'Ilustrações', 'Tabela sem título no manuscrito. Título proposto ' + (x.ia ? 'pela IA' : 'a partir do cabeçalho') + ': “' + x.no.nodeValue + '” (' + x.item.rotulo + '). Revise.', { onde: x.secao, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', acao: { tipo: 'tabela-titulo', fp: x.fp, proposta: x.no.nodeValue } });
+  });
+  if ((livro.titulosAuto || []).length) livro.A.corr('Tabelas sem título receberam título proposto', livro.titulosAuto.length);
+}
+function iaTitulosTabelas(livro) {
+  var lista = (livro.titulosAuto || []).slice(0, 40);
+  if (!lista.length) return Promise.resolve();
+  var dados = lista.map(function (x, i) {
+    var linhas = Array.prototype.slice.call(x.tb.querySelectorAll('tr'), 0, 4).map(function (r) { return Array.prototype.map.call(r.children, txt).join(' | '); });
+    var ant = x.tb.parentNode.previousElementSibling;
+    return { i: i, capitulo: x.secao, contexto: ant ? txt(ant).slice(0, 400) : '', linhas: linhas };
+  });
+  var schema = { type: 'object', additionalProperties: false, required: ['titulos'], properties: { titulos: { type: 'array', items: { type: 'string' } } } };
+  var sis = 'Você é editor de uma editora acadêmica brasileira. Para cada tabela, escreva um título conciso (até 120 caracteres), descritivo, em português, no padrão das Normas de Apresentação Tabular do IBGE: diz o quê, onde e quando, quando houver. Sem número e sem a palavra "Tabela". Devolva exatamente um título por tabela, na mesma ordem.';
+  return claude(sis, JSON.stringify(dados), schema, 4000).then(function (r) {
+    (r.titulos || []).forEach(function (t, i) { if (lista[i] && t && t.trim()) { lista[i].no.nodeValue = t.trim(); lista[i].item.titulo = t.trim(); lista[i].ia = true; } });
+  });
+}
+
 /* ───────────────────────── 7. ÍNDICE REMISSIVO (NBR 6034) ───────────────────────── */
 function gerarIndice(livro, termos) {
   var doc = livro.doc, A = livro.A, entradas = [];
   termos = termos.map(function (t) { return t.trim(); }).filter(function (t, i, a) { return t.length > 1 && a.indexOf(t) === i; });
   termos.forEach(function (termo, k) {
-    var rx = new RegExp('(^|[^\\p{L}\\p{N}])(' + termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?=$|[^\\p{L}\\p{N}])', 'iu');
+    var sigla_ = /^[A-Z0-9ÀÁÂÃÉÊÍÓÔÕÚÇ\/\-]{2,}$/.test(termo);
+    var rx = new RegExp('(^|[^\\p{L}\\p{N}])(' + termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?=$|[^\\p{L}\\p{N}])', sigla_ ? 'u' : 'iu');
     var locais = [];
     livro.secoes.forEach(function (s) {
       if (!/^(capitulo|abertura|apresentacao|prefacio|posfacio|apendice|anexo|parte)$/.test(s.tipo)) return;
@@ -1426,6 +1681,11 @@ function iaMetadados(entrada, texto) {
     'Palavras-chave: 5 a 8. Termos de índice remissivo: 15 a 40 nomes próprios, povos, lugares e conceitos centrais exatamente como grafados no texto. ' +
     'cddSugerida: classe CDD provável com 3 dígitos e breve rótulo, apenas como sugestão para o bibliotecário.';
   return claude(sis, 'Metadados do arquivo: ' + JSON.stringify(entrada.meta || {}) + '\n\nManuscrito (trecho inicial):\n' + texto.slice(0, 24000), schema, 6000);
+}
+function iaFormatarReferencia(dados) {
+  var schema = { type: 'object', additionalProperties: false, required: ['referencia'], properties: { referencia: { type: 'string' } } };
+  var sis = 'Formate os dados recebidos como uma referência conforme a ABNT NBR 6023:2018. Use somente as informações fornecidas: não acrescente autor, título, editora, ano, páginas ou endereço que não estejam nos dados; se faltar algo obrigatório, escreva [?] no lugar. Marque o destaque do título com **negrito**. Devolva apenas a referência.';
+  return claude(sis, dados, schema, 1500).then(function (r) { return r.referencia; });
 }
 function iaRevisao(secoes, aoAvancar) {
   var schema = {
@@ -1990,6 +2250,23 @@ function auditarObra(o, A, logos) {
     else if (!l.autorizado) A.add('grave', 'Marcas', 'Uso da marca ' + l.sigla + ' sem autorização registrada.', { norma: 'Lei 9.279/1996 (propriedade industrial) e manuais de identidade visual', sug: 'Obtenha autorização formal da instituição e marque “uso autorizado” na aba “Logomarcas”.' });
   });
 }
+function acoesPadrao(A) {
+  A.itens.forEach(function (i) {
+    if (i.acao) return;
+    var m = i.msg;
+    if (i.cat === 'Conselho' || (i.cat === 'Ficha' && /bibliotec/i.test(m))) i.acao = { tipo: 'aba', aba: 'ed', rotulo: 'Abrir “Editora e conselho”' };
+    else if (i.cat === 'Marcas') i.acao = { tipo: 'aba', aba: 'lg', rotulo: 'Abrir “Logomarcas”' };
+    else if (i.cat === 'ISBN') i.acao = { tipo: 'campo', campo: 'isbn' };
+    else if (i.cat === 'Ficha' && /CDD|CDU/.test(m)) i.acao = { tipo: 'campo', campo: 'cdd' };
+    else if (i.cat === 'Ficha' && /Assuntos/.test(m)) i.acao = { tipo: 'campo', campo: 'assuntos' };
+    else if (i.cat === 'Ficha' && /Cutter/.test(m)) i.acao = { tipo: 'campo', campo: 'cutter' };
+    else if (i.cat === 'Metadados' && /Sinopse/.test(m)) i.acao = { tipo: 'campo', campo: 'sinopse' };
+    else if (i.cat === 'Metadados' && /Palavras/.test(m)) i.acao = { tipo: 'campo', campo: 'palavrasChave' };
+    else if (i.cat === 'Metadados' && /Título/.test(m)) i.acao = { tipo: 'campo', campo: 'titulo' };
+    else if (i.cat === 'Metadados' && /autor/i.test(m)) i.acao = { tipo: 'campo', campo: 'autores' };
+    else if (i.cat === 'Selo') i.acao = { tipo: 'campo', campo: 'autores' };
+  });
+}
 function resumoAuditoria(A) {
   var pontos = 100;
   A.itens.forEach(function (i) { pontos -= PESO[i.sev] || 0; });
@@ -2034,6 +2311,8 @@ function relatorioHtml(livro, o, res, revisao) {
     '<p class="meta">' + res.b + ' bloqueante(s) · ' + res.g + ' grave(s) · ' + res.a + ' aviso(s) · ' + res.i + ' informação(ões) · ' + livro.ordem.length + ' arquivos de conteúdo · ' + livro.imagens.length + ' imagem(ns) · ' + livro.tabelas.length + ' tabela(s)</p>' +
     '<h2>Verificação por requisito</h2><table><tr><th>Requisito</th><th>Resultado</th></tr>' + linhasCheck + '</table>' +
     '<h2>Ocorrências</h2>' + (itens ? '<table><tr><th>Nível</th><th>Área</th><th>Ocorrência e providência</th><th>Local</th><th>Base normativa</th></tr>' + itens + '</table>' : '<p>Nenhuma ocorrência.</p>') +
+    (function () { var C = o.correcoes || {}; var l = [['Correções de texto (revisão e citações)', (C.textos || []).length], ['Títulos de tabela definidos', Object.keys(C.tabelas || {}).length], ['Referências incluídas', (C.refsNovas || []).length], ['Referências corrigidas', Object.keys(C.refsEdit || {}).length], ['Ocorrências marcadas como “não é citação”', Object.keys(C.citIgnorar || {}).length]].filter(function (x) { return x[1]; });
+      return l.length ? '<h2>Decisões do editor registradas no projeto</h2><table><tr><th>Decisão</th><th>Qtd.</th></tr>' + l.map(function (x) { return '<tr><td>' + x[0] + '</td><td style="text-align:right">' + x[1] + '</td></tr>'; }).join('') + '</table>' : ''; })() +
     '<h2>Correções automáticas aplicadas</h2>' + (corr ? '<table><tr><th>Correção</th><th>Qtd.</th></tr>' + corr + '</table>' : '<p>Nenhuma.</p>') +
     (revisao ? '<h2>Revisão linguística assistida por IA (sugestões — não aplicadas)</h2>' + (rev ? '<table><tr><th>Seção</th><th>Tipo</th><th>Trecho</th><th>Sugestão</th><th>Motivo</th></tr>' + rev + '</table>' : '<p>Nenhum problema objetivo apontado.</p>') + (errosRev.length ? '<p><small>' + errosRev.length + ' trecho(s) não puderam ser revisados: ' + esc(errosRev[0].erro) + '</small></p>' : '') : '') +
     '<h2>Observações do auditor</h2><p class="meta">Este relatório verifica a conformidade formal do livro digital com as normas da ABNT aplicáveis a livros (NBR 6029, 6027, 6024, 6023, 10520 e 6034), com a legislação do livro (Lei 10.753/2003), com a política do selo e com as diretrizes de acessibilidade EPUB. ' +
@@ -2110,7 +2389,7 @@ async function produzir(opcoesExtras) {
     if (!obra.autores && !obra.organizadores && estado.entrada.meta && estado.entrada.meta.autor) obra.autores = estado.entrada.meta.autor;
     obraGuardar();
 
-    var opcoes = { numeracao: obra.numeracao, indice: obra.indice, dedicatoria: obra.dedicatoria, epigrafe: obra.epigrafe };
+    var opcoes = { numeracao: obra.numeracao, indice: obra.indice, dedicatoria: obra.dedicatoria, epigrafe: obra.epigrafe, correcoes: obra.correcoes, estiloCitacao: obra.estiloCitacao };
     var livro = await processar(estado.entrada, opcoes, etapa);
     if (!obra.titulo && livro.meta.titulo) obra.titulo = livro.meta.titulo;
     if (!obra.subtitulo && livro.meta.subtitulo) obra.subtitulo = livro.meta.subtitulo;
@@ -2119,6 +2398,9 @@ async function produzir(opcoesExtras) {
     estado.livro = livro;
     etapa('ilustracoes', 'rodando');
     await processarIlustracoes(livro);
+    if (chaveClaude() && (livro.titulosAuto || []).length) { try { await iaTitulosTabelas(livro); } catch (e) { livro.A.add('info', 'Ilustrações', 'IA indisponível para títulos de tabela: ' + e.message, {}); } }
+    registrarTitulosAuto(livro);
+    metadadosAutomaticos(livro);
     etapa('ilustracoes', 'ok', livro.imagens.length + ' imagem(ns), ' + livro.tabelas.length + ' tabela(s)');
 
     var revisao = null;
@@ -2126,7 +2408,7 @@ async function produzir(opcoesExtras) {
       etapa('ia-revisao', 'rodando', 'iniciando…');
       revisao = await iaRevisao(livro.secoes, function (f, t) { etapa('ia-revisao', 'rodando', f + '/' + t + ' trechos'); });
       var ok = revisao.filter(function (r) { return !r.erro; });
-      ok.forEach(function (r) { livro.A.add('aviso', 'Revisão', '“' + r.trecho + '” → “' + r.correcao + '” (' + r.tipo + ')', { onde: r.secao, sug: r.explicacao }); });
+      ok.forEach(function (r) { if (r.trecho === r.correcao || (obra.correcoes.textos || []).some(function (c) { return c.de === r.trecho; })) return; livro.A.add('aviso', 'Revisão', '“' + r.trecho + '” → “' + r.correcao + '” (' + r.tipo + ')', { onde: r.secao, sug: r.explicacao, acao: { tipo: 'texto', de: r.trecho, para: r.correcao } }); });
       etapa('ia-revisao', revisao.some(function (r) { return r.erro; }) ? 'aviso' : 'ok', ok.length + ' sugestão(ões)');
     } else etapa('ia-revisao', 'pulado', obra.revisaoIA ? 'sem chave do Claude configurada' : 'desligada');
     estado.revisao = revisao;
@@ -2144,6 +2426,7 @@ async function produzir(opcoesExtras) {
     estado.epub = blob;
     etapa('epub', 'ok', (blob.size / 1024 / 1024).toFixed(2) + ' MB · ' + livro.ordem.length + ' arquivos');
 
+    acoesPadrao(livro.A);
     var res = resumoAuditoria(livro.A);
     estado.res = res;
     estado.relatorio = relatorioHtml(livro, obra, res, revisao);
@@ -2155,6 +2438,25 @@ async function produzir(opcoesExtras) {
     ui.msg('Erro na produção: ' + e.message, 'err');
     ui.etapaErro(e.message);
   } finally { estado.rodando = false; ui.travar(false); }
+}
+/* preenche sinopse, palavras-chave e termos do índice quando nem o editor nem a IA o fizeram */
+function metadadosAutomaticos(livro) {
+  var A = livro.A, feitos = [];
+  if (!String(obra.palavrasChave || '').trim() && String(obra.assuntos || '').trim()) {
+    obra.palavrasChave = obra.assuntos.split(/\n|;/).map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 8).join('; ');
+    _origemIA.palavrasChave = 1; feitos.push('palavras-chave (dos assuntos da ficha)');
+  }
+  if (!String(obra.sinopse || '').trim()) {
+    var si = sinopseExtrativa(livro);
+    if (si) { obra.sinopse = si; _origemIA.sinopse = 1; feitos.push('sinopse (extraída da apresentação)');
+      A.add('aviso', 'Metadados', 'Sinopse extraída automaticamente do início da apresentação. Uma sinopse de quarta capa deve ser redigida para o leitor: revise.', { acao: { tipo: 'campo', campo: 'sinopse' } }); }
+  }
+  if (obra.indice && !String(obra.termosIndice || '').trim()) {
+    var tm = termosAutomaticos(livro);
+    if (tm.length) { obra.termosIndice = tm.join('\n'); _origemIA.termosIndice = 1; feitos.push(tm.length + ' termos do índice (glossário, siglas e nomes recorrentes)');
+      A.add('aviso', 'Índice', 'Termos do índice remissivo selecionados automaticamente (' + tm.length + '). Revise a lista.', { norma: 'NBR 6034', acao: { tipo: 'campo', campo: 'termosIndice' } }); }
+  }
+  if (feitos.length) { A.add('info', 'Metadados', 'Gerado automaticamente: ' + feitos.join('; ') + '.', {}); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }
 }
 function povosDaSecaoSobre(livro) {
   var mapa = {};
@@ -2195,7 +2497,7 @@ async function receberArquivo(file) {
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
-    if (novo) { var manter = { numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
+    if (novo) { var manter = { estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
     await produzir();
   } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
@@ -2244,6 +2546,7 @@ var CSS_PAINEL = '\
 .ebm .lg{border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:.7rem;display:grid;gap:.45rem}\
 .ebm .lg .vis{height:110px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}.ebm .lg .vis img{max-height:96px;max-width:90%}\
 .ebm .lg .falta{color:#fca5a5;font-size:.75rem;font-weight:700}.ebm .linha{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}\
+.ebm .acao{margin-top:.45rem;display:grid;gap:.35rem}.ebm .acao .linha{display:flex;gap:.35rem;flex-wrap:wrap}.ebm .acao .bt{font-size:.7rem;padding:.3rem .6rem;justify-self:start}.ebm .acao .feito{color:#86efac;font-size:.74rem}\
 .ebm .aviso-box{border-left:3px solid #E8A853;background:rgba(232,168,83,.08);padding:.6rem .8rem;font-size:.76rem;border-radius:4px;margin:.6rem 0;line-height:1.5}';
 
 var ui = {};
@@ -2260,10 +2563,12 @@ function montarUI(alvo) {
       '<div class="opc">' +
         '<label>Numeração <select data-o="numeracao"><option value="auto">Automática</option><option value="abnt">Progressiva ABNT (1, 1.1, 1.1.1)</option><option value="capitulo">Capítulo 1, 2, 3</option><option value="nenhuma">Sem numeração</option></select></label>' +
         '<label>Listas <select data-o="listas"><option value="auto">Automáticas (3+ itens)</option><option value="sempre">Sempre</option><option value="nunca">Nunca</option></select></label>' +
+        '<label>Citações <select data-o="estiloCitacao"><option value="maioria">Padronizar pela maioria</option><option value="alta">AUTOR, ano</option><option value="mista">Autor, ano</option><option value="manter">Manter como no manuscrito</option></select></label>' +
         '<label><input type="checkbox" data-o="indice"> Índice remissivo</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
       '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button></div>' +
+      '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
       '<div class="res" hidden><div class="placar"></div><div class="filtros"></div><div class="ocorr"></div>' +
@@ -2337,6 +2642,21 @@ function montarUI(alvo) {
 
   // ações
   Q('[data-a="regerar"]').addEventListener('click', function () { produzir(); });
+  Q('[data-a="proj-salvar"]').addEventListener('click', function () {
+    var pj = { tipo: 'projeto-editora-cacique-enir-terena', versao: VERSAO, salvo: new Date().toISOString(), obra: obra };
+    baixar(new Blob([JSON.stringify(pj, null, 2)], { type: 'application/json' }), 'projeto-' + slug(obra.titulo || 'livro') + '.json');
+  });
+  Q('[data-a="proj-abrir"]').addEventListener('click', function () { Q('[data-proj]').click(); });
+  Q('[data-proj]').addEventListener('change', function (e) {
+    var f = e.target.files[0]; if (!f) return; e.target.value = '';
+    f.text().then(function (t) {
+      var pj = JSON.parse(t); if (!pj || !pj.obra) throw new Error('arquivo de projeto inválido');
+      obra = mesclar(clone(OBRA_PADRAO), pj.obra); obra.correcoes = mesclar(correcoesVazias(), obra.correcoes || {});
+      obraGuardar(); ui.preencherForm(); ui.pendentes();
+      ui.msg('Projeto “' + (obra.titulo || f.name) + '” aberto.' + (estado.entrada ? ' Clique em Regerar.' : ' Envie o manuscrito ' + (obra._arquivo ? '(' + obra._arquivo + ')' : '') + ' para gerar o livro.'), 'ok');
+    }).catch(function (er) { ui.msg('Não foi possível abrir o projeto: ' + er.message, 'err'); });
+  });
+  Q('[data-a="corr-limpar"]').addEventListener('click', function () { if (!confirm('Desfazer todas as correções do editor guardadas neste projeto?')) return; obra.correcoes = correcoesVazias(); obraGuardar(); estado.pendentes = 1; ui.pendentes(); ui.msg('Correções desfeitas. Clique em Regerar.', 'ok'); });
   Q('[data-a="regerar2"]').addEventListener('click', function () { if (!estado.entrada) { ui.msg('Envie o manuscrito na aba Produção.', 'err'); return; } QA('.tab')[0].click(); produzir(); });
   Q('[data-a="epub"]').addEventListener('click', function () { if (estado.epub) baixar(estado.epub, slug(obra.titulo) + '.epub'); });
   Q('[data-a="rel"]').addEventListener('click', function () { if (estado.relatorio) baixar(new Blob([estado.relatorio], { type: 'text/html' }), 'auditoria-' + slug(obra.titulo) + '.html'); });
@@ -2413,19 +2733,88 @@ function montarUI(alvo) {
       box.appendChild(d);
     });
   };
+  var ROT_CAMPO = { sinopse: 'Sinopse', termosIndice: 'Termos do índice', isbn: 'ISBN', cdd: 'CDD/CDU', assuntos: 'Assuntos', cutter: 'Cutter', palavrasChave: 'Palavras-chave', titulo: 'Título', autores: 'Autores' };
+  function abrirAba(aba) { var b = raiz.querySelector('.tab[data-p="' + aba + '"]'); if (b) { b.click(); b.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+  function abrirCampo(c) { abrirAba('obra'); var f = raiz.querySelector('[data-f="' + c + '"]'); if (f) setTimeout(function () { f.focus(); f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200); }
+  function botao(rot, fn, pri) { var b = document.createElement('button'); b.type = 'button'; b.className = 'bt' + (pri ? ' pri' : ''); b.textContent = rot; b.addEventListener('click', fn); return b; }
+  function controleAcao(i) {
+    var a = i.acao; if (!a) return null;
+    var d = document.createElement('div'); d.className = 'acao';
+    function feito(msg) { obraGuardar(); estado.pendentes = (estado.pendentes || 0) + 1; d.innerHTML = '<span class="feito">✓ ' + esc(msg) + '. Será aplicado ao regerar.</span>'; ui.pendentes(); }
+    function campoTexto(valor, multi, ph) { var x = document.createElement(multi ? 'textarea' : 'input'); if (!multi) x.type = 'text'; x.value = valor || ''; if (ph) x.placeholder = ph; return x; }
+    if (a.tipo === 'aba') d.appendChild(botao(a.rotulo || 'Abrir', function () { abrirAba(a.aba); }));
+    else if (a.tipo === 'campo') d.appendChild(botao('Editar “' + (ROT_CAMPO[a.campo] || a.campo) + '”', function () { abrirCampo(a.campo); }));
+    else if (a.tipo === 'texto') {
+      var tx = campoTexto(a.para);
+      d.appendChild(tx);
+      d.appendChild(botao('Aplicar correção', function () { corrAtual().textos.push({ de: a.de, para: tx.value }); feito('Correção aceita'); }, true));
+    } else if (a.tipo === 'remover-texto') d.appendChild(botao('Remover esta correção', function () { obra.correcoes.textos = corrAtual().textos.filter(function (c) { return c.de !== a.de; }); feito('Correção removida'); }));
+    else if (a.tipo === 'tabela-titulo') {
+      var tt = campoTexto(a.proposta, false, 'Título da tabela');
+      d.appendChild(tt);
+      d.appendChild(botao('Usar este título', function () { if (!tt.value.trim()) return; corrAtual().tabelas[a.fp] = tt.value.trim(); feito('Título definido'); }, true));
+    } else if (a.tipo === 'ref-editar') {
+      var tr = campoTexto(a.texto, true); tr.style.minHeight = '3.4rem';
+      d.appendChild(tr);
+      d.appendChild(el(document, 'small', null, ['Use **negrito** ou *itálico* para o destaque do título.']));
+      (a.anosCit || []).forEach(function (y) { d.appendChild(botao('Inserir o ano ' + y + ' (como citado no texto)', function () { var v = tr.value; tr.value = /\.\s*Dispon[ií]vel em/i.test(v) ? v.replace(/\.\s*(Dispon[ií]vel em)/i, ', ' + y + '. $1') : v.replace(/\.?\s*$/, ', ' + y + '.'); })); });
+      d.appendChild(botao('Salvar referência corrigida', function () { corrAtual().refsEdit[a.fp] = tr.value.trim(); feito('Referência corrigida'); }, true));
+    } else if (a.tipo === 'citacao') {
+      var linha = document.createElement('div'); linha.className = 'linha';
+      (a.anosRef || []).slice(0, 4).forEach(function (y) {
+        linha.appendChild(botao('Corrigir a citação para ' + y, function () {
+          if (a.forma === 'parentetica') corrAtual().textos.push({ de: a.autor + ', ' + a.ano, para: a.autor + ', ' + y });
+          else corrAtual().textos.push({ de: a.autor + ' (' + a.ano, para: a.autor + ' (' + y });
+          feito('Ano da citação corrigido para ' + y);
+        }));
+      });
+      if (a.parecido) linha.appendChild(botao('Corrigir autoria para ' + a.parecido, function () {
+        var nome = a.autor === a.autor.toUpperCase() ? a.parecido : tituloCaso(a.parecido);
+        corrAtual().textos.push({ de: a.autor + (a.forma === 'parentetica' ? ', ' : ' (') + a.ano, para: nome + (a.forma === 'parentetica' ? ', ' : ' (') + a.ano });
+        feito('Autoria corrigida para ' + nome);
+      }, true));
+      linha.appendChild(botao('Não é citação (ignorar)', function () { corrAtual().citIgnorar[N(a.autor) + '|' + a.ano] = true; feito('Ocorrência ignorada'); }));
+      d.appendChild(linha);
+      var nr = campoTexto('', true, 'Nova referência: SOBRENOME, Nome. **Título**: subtítulo. Local: Editora, ' + a.ano + '.'); nr.style.minHeight = '3.2rem';
+      d.appendChild(nr);
+      var l2 = document.createElement('div'); l2.className = 'linha';
+      l2.appendChild(botao('Incluir nas referências', function () { if (!nr.value.trim()) return; corrAtual().refsNovas.push(nr.value.trim()); feito('Referência incluída'); }, true));
+      if (chaveClaude()) l2.appendChild(botao('Formatar em ABNT (IA)', function (e) {
+        if (!nr.value.trim()) { ui.msg('Escreva ou cole os dados da obra no campo primeiro.', 'err'); return; }
+        e.target.disabled = true;
+        iaFormatarReferencia(nr.value).then(function (r) { nr.value = r; }, function (er) { ui.msg('IA: ' + er.message, 'err'); }).then(function () { e.target.disabled = false; });
+      }));
+      d.appendChild(l2);
+    }
+    return d;
+  }
+  ui.pendentes = function () {
+    var n = estado.pendentes || 0, b = Q('[data-a="regerar"]');
+    b.textContent = n ? '⟳ Regerar com ' + n + ' correção(ões)' : '⟳ Regerar com os dados atuais';
+    var C = obra.correcoes || {}, tot = (C.textos || []).length + Object.keys(C.tabelas || {}).length + (C.refsNovas || []).length + Object.keys(C.refsEdit || {}).length + Object.keys(C.citIgnorar || {}).length;
+    Q('.corr-total').textContent = tot ? tot + ' correção(ões) do editor guardada(s) neste projeto' : '';
+  };
   ui.resultado = function (livro, res) {
     var r = Q('.res'); r.hidden = false;
     Q('.placar').innerHTML = '<img class="capa-mini" alt="Capa gerada" src="' + URL.createObjectURL(new Blob([livro.capaBytes], { type: 'image/jpeg' })) + '"><div><div class="st ' + res.classe + '">' + res.status + '</div><div class="ct">' + res.b + ' bloqueante(s) · ' + res.g + ' grave(s) · ' + res.a + ' aviso(s) · ' + Object.keys(livro.A.correcoes).length + ' tipos de correção automática</div></div><div class="pt">' + res.pontos + '<span style="font-size:.8rem">/100</span></div>';
-    var sevs = ['bloqueante', 'grave', 'aviso', 'info', 'correções'];
-    Q('.filtros').innerHTML = sevs.map(function (s) { var n = s === 'correções' ? Object.keys(livro.A.correcoes).length : livro.A.conta(s); return '<button class="bt" data-sv="' + s + '">' + s + ' (' + n + ')</button>'; }).join('');
+    var sevs = ['com-acao', 'bloqueante', 'grave', 'aviso', 'info', 'correções'];
+    var nAcao = livro.A.itens.filter(function (i) { return i.acao && i.sev !== 'info'; }).length;
+    Q('.filtros').innerHTML = sevs.map(function (s) { var n = s === 'correções' ? Object.keys(livro.A.correcoes).length : s === 'com-acao' ? nAcao : livro.A.conta(s); return '<button class="bt" data-sv="' + s + '">' + (s === 'com-acao' ? '🛠 a corrigir' : s) + ' (' + n + ')</button>'; }).join('');
     function lista(sv) {
       var oc = Q('.ocorr');
       if (sv === 'correções') { oc.innerHTML = Object.keys(livro.A.correcoes).map(function (k) { return '<div><span class="sv info">✓ ' + livro.A.correcoes[k] + '</span>' + esc(k) + '</div>'; }).join('') || '<div>Nenhuma.</div>'; return; }
-      var it = livro.A.itens.filter(function (i) { return !sv || i.sev === sv; });
-      oc.innerHTML = it.map(function (i) { return '<div><span class="sv ' + i.sev + '">' + i.sev + '</span><b>' + esc(i.cat) + ':</b> ' + esc(i.msg) + (i.onde ? ' <i>(' + esc(i.onde) + ')</i>' : '') + (i.sug || i.norma ? '<small>' + (i.norma ? esc(i.norma) + (i.sug ? ' · ' : '') : '') + esc(i.sug) + '</small>' : '') + '</div>'; }).join('') || '<div>Nenhuma ocorrência.</div>';
+      var it = livro.A.itens.filter(function (i) { return sv === 'com-acao' ? !!i.acao && i.sev !== 'info' : (!sv || i.sev === sv); });
+      oc.innerHTML = it.length ? '' : '<div>Nenhuma ocorrência.</div>';
+      it.forEach(function (i) {
+        var d = document.createElement('div');
+        d.innerHTML = '<span class="sv ' + i.sev + '">' + i.sev + '</span><b>' + esc(i.cat) + ':</b> ' + esc(i.msg) + (i.onde ? ' <i>(' + esc(i.onde) + ')</i>' : '') + (i.sug || i.norma ? '<small>' + (i.norma ? esc(i.norma) + (i.sug ? ' · ' : '') : '') + esc(i.sug) + '</small>' : '');
+        var c = controleAcao(i); if (c) d.appendChild(c);
+        oc.appendChild(d);
+      });
     }
     QA('.filtros button').forEach(function (b) { b.addEventListener('click', function () { lista(b.getAttribute('data-sv')); }); });
-    lista(res.b ? 'bloqueante' : res.g ? 'grave' : 'aviso');
+    lista(nAcao ? 'com-acao' : res.b ? 'bloqueante' : res.g ? 'grave' : 'aviso');
+    estado.pendentes = 0; ui.pendentes();
     selPg.innerHTML = livro.paginas.map(function (p, i) { return '<option value="' + i + '">' + esc(rotuloNav(p.s)) + '</option>'; }).join('');
     selPg.value = 0; mostrarPg(0);
   };

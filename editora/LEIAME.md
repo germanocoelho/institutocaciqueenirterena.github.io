@@ -18,6 +18,17 @@ Painel no ADM do site do ICET (seção “Editora Cacique Enir Terena”, visív
 - Faz a auditoria: política do selo (autoria indígena), ISBN (Lei 10.753/2003), ficha, marcas, citações × referências, acessibilidade e integridade técnica.
 - Com a chave do Claude configurada no site, sugere metadados (título, sinopse, palavras-chave, termos do índice) e faz a revisão linguística. As sugestões vão para o relatório e nada é alterado no texto sem decisão humana.
 
+## Painel de correções e projeto
+- Depois de cada geração, o filtro **🛠 a corrigir** mostra só as ocorrências que têm conserto pelo próprio painel: dar título a uma tabela, corrigir ou incluir uma referência (com formatação ABNT pela IA), corrigir o ano ou a grafia de uma citação, marcar falsos alarmes como “não é citação” e aplicar sugestões da revisão linguística. Os itens de configuração levam direto ao campo ou à aba certa.
+- As decisões ficam guardadas no projeto e são reaplicadas a cada geração. O manuscrito original nunca é alterado.
+- **💾 Salvar projeto** baixa um arquivo `.json` com os dados da obra e todas as correções. **📂 Abrir projeto** retoma o trabalho em qualquer computador: abra o projeto e envie o mesmo manuscrito.
+- O motor também faz sozinho:
+  - dá destaque ao título das referências (NBR 6023) e padroniza a grafia da autoria nas citações (opção “Citações”);
+  - propõe título para tabelas sem título, pela IA ou pelo cabeçalho;
+  - extrai a sinopse da apresentação e as palavras-chave dos assuntos da ficha;
+  - seleciona os termos do índice a partir do glossário, das siglas e dos nomes recorrentes.
+  Tudo isso é sinalizado para revisão.
+
 ## Dicas para o manuscrito
 - Use os estilos “Título 1/2/3” para capítulos e seções, “Citação” para citações longas e “Legenda” para títulos de figuras.
 - Escreva “Figura 1 – Título” acima da imagem e “Fonte: …” abaixo; para tabelas, “Tabela 1 – Título” acima.
