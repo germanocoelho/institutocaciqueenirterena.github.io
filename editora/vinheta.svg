@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 18" width="160" height="18" role="img" aria-hidden="true">
+  <title>Vinheta</title>
+  <g fill="none" stroke="#B8862B" stroke-width="1.2">
+    <path d="M2 9 H46"/>
+    <path d="M114 9 H158"/>
+  </g>
+  <g fill="#B8862B">
+    <path d="M48 9 l5 -5 l5 5 l-5 5 z"/>
+    <path d="M102 9 l5 -5 l5 5 l-5 5 z"/>
+  </g>
+  <g fill="#8B3A0F">
+    <path d="M62 9 l4 -6 l4 6 z"/>
+    <path d="M90 9 l4 6 l4 -6 z"/>
+    <path d="M72 9 l8 -8 l8 8 l-8 8 z"/>
+  </g>
+  <path d="M77 9 l3 -3 l3 3 l-3 3 z" fill="#F2C45A"/>
+</svg>

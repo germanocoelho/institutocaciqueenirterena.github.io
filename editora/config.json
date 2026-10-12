@@ -1,0 +1,33 @@
+{
+  "versao": 1,
+  "editora": {
+    "nome": "Editora Cacique Enir Terena",
+    "mantenedora": "Instituto Cacique Enir Terena (ICET)",
+    "cidade": "Campo Grande",
+    "uf": "MS",
+    "endereco": "",
+    "email": "",
+    "site": "https://institutocaciqueenirterena.com.br",
+    "politica": "Selo editorial de autoria indígena. Autores não indígenas só participam de uma publicação se ao menos um dos autores for indígena. O Instituto arca com os custos de registro de direitos autorais e de ISBN."
+  },
+  "regras": {
+    "exigeAutorIndigena": true
+  },
+  "conselho": [],
+  "equipe": {
+    "editor": "",
+    "revisao": "",
+    "projetoGrafico": "Editora Cacique Enir Terena",
+    "capa": "",
+    "diagramacao": "Motor editorial digital da Editora Cacique Enir Terena",
+    "bibliotecario": "",
+    "crb": ""
+  },
+  "logos": [
+    {"id": "icet", "sigla": "ICET", "nome": "Instituto Cacique Enir Terena", "papel": "Realização", "arquivo": "logos/icet.jpg", "fundo": "#ffffff", "autorizado": true},
+    {"id": "cmddi", "sigla": "CMDDI", "nome": "Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande", "papel": "Apoio institucional", "arquivo": "logos/cmddi.jpg", "fundo": "#000000", "autorizado": false},
+    {"id": "focams", "sigla": "FOCAMS", "nome": "Fórum dos Caciques de Mato Grosso do Sul", "papel": "Apoio institucional", "arquivo": "logos/focams.jpg", "fundo": "#ffffff", "autorizado": false},
+    {"id": "ifms", "sigla": "IFMS", "nome": "Instituto Federal de Educação, Ciência e Tecnologia de Mato Grosso do Sul", "papel": "Parceria", "arquivo": "", "fundo": "#ffffff", "autorizado": false},
+    {"id": "mpms", "sigla": "MPMS", "nome": "Ministério Público do Estado de Mato Grosso do Sul", "papel": "Parceria", "arquivo": "", "fundo": "#ffffff", "autorizado": false}
+  ]
+}
