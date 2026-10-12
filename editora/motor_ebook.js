@@ -149,7 +149,7 @@ function logoDados(l) {
 var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
-  sinopse: '', licenca: 'todos', termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
+  sinopse: '', licenca: 'todos', direitosTexto: '', capaGerada: false, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
   numeracao: 'auto', revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
@@ -180,11 +180,9 @@ function isbnValido(s) {
   return false;
 }
 function isbnFormatado(s) {
-  var d = isbnLimpo(s);
-  if (d.length !== 13) return String(s || '').trim();
-  if (/^97865/.test(d)) return d.slice(0, 3) + '-' + d.slice(3, 5) + '-' + d.slice(5, 9) + '-' + d.slice(9, 12) + '-' + d[12];
-  if (/^97885/.test(d)) return d.slice(0, 3) + '-' + d.slice(3, 5) + '-' + d.slice(5, 9) + '-' + d.slice(9, 12) + '-' + d[12];
-  return String(s).trim();
+  // a hifenização depende das faixas de editora atribuídas pela agência; mantém a forma informada
+  var t = String(s || '').trim().replace(/[.\s]+$/, '');
+  return /-/.test(t) ? t : isbnLimpo(t);
 }
 
 /* ───────────────────────── auditoria ───────────────────────── */
@@ -424,16 +422,17 @@ function extrairNotas(body) {
 }
 
 var ESPECIAIS = [
-  [/^DEDICATORIA$/, 'dedicatoria'], [/^AGRADECIMENTOS?$/, 'agradecimentos'], [/^EPIGRAFE$/, 'epigrafe'],
+  [/^(DEDICATORIA|DEDICACAO|DEDICATORIAS)$/, 'dedicatoria'], [/^AGRADECIMENTOS?$/, 'agradecimentos'], [/^EPIGRAFE$/, 'epigrafe'],
   [/^ERRATA$/, 'errata'], [/^PREFACIO$/, 'prefacio'], [/^APRESENTACAO$/, 'apresentacao'],
   [/^NOTA (DO|DA|DOS|DAS) (AUTOR|AUTORA|AUTORES|AUTORAS|EDITOR|EDITORA|EDITORES|ORGANIZADOR|ORGANIZADORA|ORGANIZADORES|ORGANIZADORAS)$/, 'prefacio'],
   [/^(SUMARIO|INDICE GERAL|CONTEUDO)$/, 'sumario-orig'], [/^LISTA DE /, 'lista-orig'],
   [/^POSFACIO$/, 'posfacio'], [/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA|OBRAS CITADAS|BIBLIOGRAFIA CONSULTADA)$/, 'referencias'],
-  [/^GLOSSARIO$/, 'glossario'], [/^APENDICES?\b/, 'apendice'], [/^ANEXOS?\b/, 'anexo'],
+  [/^GLOSSARIO\b/, 'glossario'], [/^APENDICES?\b/, 'apendice'], [/^ANEXOS?\b/, 'anexo'],
   [/^INDICE( REMISSIVO| ONOMASTICO| DE ASSUNTOS)?$/, 'indice-orig'],
-  [/^SOBRE (O|A|OS|AS) (AUTOR|AUTORA|AUTORES|AUTORAS|ORGANIZADOR|ORGANIZADORA|ORGANIZADORES|ORGANIZADORAS|COLABORADORES|COLABORADORAS)$|^(OS )?AUTORES$|^QUEM ESCREVE$/, 'sobre']
+  [/^(NOTA |NOTAS )?SOBRE (O|A|OS|AS) (AUTOR|AUTORA|AUTORES|AUTORAS|ORGANIZADOR|ORGANIZADORA|ORGANIZADORES|ORGANIZADORAS|COLABORADORES|COLABORADORAS)$|^(OS )?AUTORES$|^QUEM ESCREVE$/, 'sobre']
 ];
 var RX_NUM = /^\s*(\d+(?:\.\d+)*)\s*\.?\s*(?:[-–—:.]\s*)?(?=\S)/;
+var RX_NUM_SEC = /^\s*(\d+(?:\.\d+)*)(-[A-Z])?\s*\.?\s+(?=\S)/;
 var RX_CAP = /^\s*cap[ií]tulo\s+(\d+|[ivxlc]+)\b\s*(?:[-–—:.]\s*)?/i;
 var RX_PARTE = /^\s*parte\s+(\d+|[ivxlc]+|primeira|segunda|terceira|quarta|quinta|sexta|s[eé]tima|oitava|nona|d[eé]cima|[úu]nica)\b\s*(?:[-–—:.]\s*)?/i;
 function classificar(titulo) {
@@ -475,23 +474,98 @@ function ajustarNiveis(body, A) {
 function segmentar(body, A) {
   var secs = [], cur = null, pre = [];
   Array.prototype.slice.call(body.children).forEach(function (n) {
-    if (n.tagName === 'H1') { cur = { tituloOrig: txt(n), hOrig: n, nos: [] }; secs.push(cur); return; }
+    if (n.tagName === 'H1' || (!secs.some(function (x) { return x.hOrig && x.hOrig.tagName === 'H1'; }) && /^H[2-4]$/.test(n.tagName) && !/^(capitulo|parte)$/.test(classificar(txt(n))))) { cur = { tituloOrig: txt(n), hOrig: n, nos: [] }; secs.push(cur); return; }
     (cur ? cur.nos : pre).push(n);
   });
   var temConteudo = pre.some(function (n) { return txt(n) || (n.querySelector && n.querySelector('img')) || n.tagName === 'IMG'; });
-  if (temConteudo) {
-    secs.unshift({ tituloOrig: '', nos: pre, tipo: 'abertura' });
-    A.add('aviso', 'Estrutura', 'Há texto antes do primeiro título do manuscrito; ele foi mantido como seção de abertura, sem título.', { onde: 'Início do manuscrito', norma: 'NBR 6029', sug: 'Se for dedicatória, epígrafe ou apresentação, inicie o trecho com o título correspondente.' });
-  }
+  if (temConteudo) secs.unshift({ tituloOrig: '', nos: pre, tipo: 'abertura' });
   secs.forEach(function (s) { if (!s.tipo) s.tipo = classificar(s.tituloOrig); });
   return secs;
+}
+
+
+/* Elementos que o manuscrito traz antes do primeiro título: capa, folha de rosto,
+   ficha catalográfica, direitos e epígrafe. Viram metadados; o motor recompõe tudo no padrão da Editora. */
+function extrairPreliminares(sec, livro, A, doc) {
+  var nos = sec.nos, meta = livro.meta, i = 0, usados = [];
+  var plano = [];
+  nos.forEach(function (n) { if (n.tagName === 'BLOCKQUOTE') Array.prototype.slice.call(n.children).forEach(function (c) { plano.push(c); }); else plano.push(n); });
+  nos.length = 0; plano.forEach(function (n) { nos.push(n); });
+  function t(n) { return n ? txt(n) : ''; }
+  function caixaAlta(x) { var l = x.replace(/[^A-Za-zÀ-ÿ]/g, ''); return l.length >= 4 && l === l.toUpperCase(); }
+  // capa
+  while (i < nos.length && nos[i].tagName === 'P' && !t(nos[i]) && nos[i].querySelectorAll('img').length === 1) {
+    if (!meta.capa) { meta.capa = nos[i].querySelector('img').getAttribute('src'); A.add('info', 'Estrutura', 'A imagem no início do manuscrito foi usada como capa do e-book.', { sug: 'Para usar a capa gerada no padrão da Editora, clique em “Usar capa gerada” na aba Dados da obra.' }); }
+    usados.push(nos[i]); i++;
+  }
+  // folha de rosto do manuscrito
+  var linhas = [];
+  while (i < nos.length && nos[i].tagName === 'P') {
+    var x = t(nos[i]), nx = N(x);
+    if (!x) { usados.push(nos[i]); i++; continue; }
+    if (x.length > 220 || /^(FICHA CATALOGRAFICA|DADOS INTERNACIONAIS)/.test(nx) || /^©/.test(x) || /^[“"«]/.test(x)) break;
+    linhas.push({ el: nos[i], t: x }); i++;
+  }
+  if (linhas.length) {
+    var run = 0; while (run < linhas.length && caixaAlta(linhas[run].t)) run++;
+    if (run >= 1) {
+      var tituloL = linhas[run - 1].t, autoresL = linhas.slice(0, run - 1).map(function (l) { return l.t; }).filter(function (x) { return !/\d/.test(x) && x.split(/\s+/).length >= 2 && x.split(/\s+/).length <= 8; });
+      if (!meta.titulo) meta.titulo = tituloCaso(tituloL);
+      if (autoresL.length && !meta.autores) meta.autores = autoresL.map(tituloCaso);
+      var subs = [];
+      linhas.slice(run).forEach(function (l) {
+        if (/^\d{4}$/.test(l.t)) { meta.ano = l.t; return; }
+        if (/^[A-ZÀ-Ý][^,]{2,40},\s*[A-ZÀ-Ý][^,]{1,30}$/.test(l.t) && l.t.length < 60) { meta.local = l.t; return; }
+        if (/^(Obra|Livro|Pesquisa|Trabalho|Texto|Edi[cç][aã]o)\b/i.test(l.t)) { meta.nota = l.t; return; }
+        subs.push(l.t.replace(/[.\s]+$/, ''));
+      });
+      if (subs.length && !meta.subtitulo) meta.subtitulo = subs.join('. ');
+      linhas.forEach(function (l) { usados.push(l.el); });
+      A.add('info', 'Estrutura', 'Folha de rosto do manuscrito lida e recomposta no padrão da Editora (título, autoria' + (subs.length ? ', subtítulo' : '') + (meta.local ? ', local' : '') + (meta.ano ? ', ano' : '') + ').', { norma: 'NBR 6029' });
+    } else i -= linhas.length;
+  }
+  // ficha catalográfica do manuscrito
+  if (i < nos.length && /^(FICHA CATALOGRAFICA|DADOS INTERNACIONAIS)/.test(N(t(nos[i])))) {
+    var bloco = [];
+    usados.push(nos[i]); i++;
+    while (i < nos.length && nos[i].tagName === 'P' && !/^©/.test(t(nos[i])) && !/^[“"«]/.test(t(nos[i]))) { bloco.push(t(nos[i])); usados.push(nos[i]); i++; }
+    var f = bloco.join('\n'), m, ficha = {};
+    if ((m = /ISBN[:\s]*((?:97[89][\s\-]?)?[\d][\d\-\s]{8,16}[\dXx])/i.exec(f))) ficha.isbn = m[1].replace(/\s+/g, '');
+    if ((m = /CDD[:\s]*([0-9][0-9.\/\-]*[0-9])/i.exec(f))) ficha.cdd = m[1];
+    if ((m = /CDU[:\s]*([^\n]+?)(?=\s+CDD\b|\n|$)/i.exec(f))) ficha.cdu = m[1].trim();
+    if ((m = /(?:^|\s)1\.\s+([\s\S]+?)(?=\s+I\.\s|\n|$)/.exec(f))) ficha.assuntos = ('1. ' + m[1]).split(/\s*\d+\.\s+/).map(function (x) { return x.replace(/\.$/, '').trim(); }).filter(Boolean);
+    var linha1 = bloco[0] || '';
+    if ((m = /^([A-Z]\d{2,3}[a-z]?)\s/.exec(linha1))) ficha.cutter = m[1];
+    meta.ficha = ficha;
+    A.add('info', 'Ficha', 'Dados da ficha catalográfica do manuscrito aproveitados (' + Object.keys(ficha).join(', ') + '). A ficha foi recomposta no padrão da Editora.', { norma: 'AACR2 / Lei 10.753/2003' });
+  }
+  // direitos autorais
+  if (i < nos.length && /^©/.test(t(nos[i]))) { meta.direitos = t(nos[i]); usados.push(nos[i]); i++; }
+  // epígrafe
+  var epis = [];
+  while (i < nos.length && nos[i].tagName === 'P' && /^[“"«]/.test(t(nos[i]))) { epis.push(nos[i]); usados.push(nos[i]); i++; if (i < nos.length && nos[i].tagName === 'P' && t(nos[i]).length < 120 && !/^[“"«]/.test(t(nos[i]))) { epis.push(nos[i]); usados.push(nos[i]); i++; } }
+  usados.forEach(function (n) { var k = nos.indexOf(n); if (k >= 0) nos.splice(k, 1); });
+  var resto = nos.some(function (n) { return t(n) || (n.querySelector && n.querySelector('img')); });
+  if (resto) A.add('aviso', 'Estrutura', 'Há texto antes do primeiro título do manuscrito que não é folha de rosto, ficha nem epígrafe; ele foi mantido como seção de abertura, sem título.', { onde: 'Início do manuscrito', norma: 'NBR 6029', sug: 'Se for dedicatória ou apresentação, inicie o trecho com o título correspondente.' });
+  var novas = [];
+  if (epis.length) {
+    var se = { tituloOrig: 'Epígrafe', nos: [], tipo: 'epigrafe' };
+    epis.forEach(function (p) {
+      var tx = p.textContent, fim = Math.max(tx.lastIndexOf('”'), tx.lastIndexOf('"'), tx.lastIndexOf('»'));
+      var cauda = fim > 0 ? tx.slice(fim + 1).trim() : '';
+      if (cauda && cauda.length < 160) { se.nos.push(el(doc, 'p', null, [tx.slice(0, fim + 1).trim()])); se.nos.push(el(doc, 'p', null, ['— ' + cauda.replace(/^[—–\-·]\s*/, '')])); }
+      else se.nos.push(p);
+    });
+    novas.push(se);
+  }
+  return { resto: resto, novas: novas };
 }
 
 /* ───────────────────────── 3. TIPOGRAFIA ───────────────────────── */
 var RX_ABRE = /[\s(\[{—–\/‘“ -]/;
 function blocoDe(n, raiz) { var e = n.parentNode; while (e && e !== raiz && !/^(P|LI|H[1-6]|TD|TH|BLOCKQUOTE|CAPTION|DT|DD|FIGCAPTION)$/.test(e.tagName)) e = e.parentNode; return e; }
 function tipografia(raiz, A) {
-  var c = { aspas: 0, apostrofo: 0, retic: 0, trav: 0, inter: 0, esp: 0, ord: 0, pont: 0 };
+  var c = { aspas: 0, apostrofo: 0, retic: 0, trav: 0, inter: 0, esp: 0, ord: 0, pont: 0, tab: 0 };
   var w = raiz.ownerDocument.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null), n, blocoAnt = null, prev = '';
   var nos = []; while ((n = w.nextNode())) nos.push(n);
   nos.forEach(function (n) {
@@ -499,6 +573,7 @@ function tipografia(raiz, A) {
     var b = blocoDe(n, raiz);
     if (b !== blocoAnt) { prev = ''; blocoAnt = b; }
     var s = n.nodeValue, o = s;
+    s = s.replace(/([a-zà-ÿA-ZÀ-Ý])\t([a-zà-ÿ])/g, function (m, a, b2) { c.tab++; return a + b2; }).replace(/\t/g, function () { c.tab++; return ' '; });
     s = s.replace(/[ \t ]{2,}/g, function (m) { c.esp++; return m.indexOf(' ') >= 0 ? ' ' : ' '; });
     if (prev === '' && /^\s+/.test(s)) s = s.replace(/^\s+/, '');
     s = s.replace(/(\S)\s+([,;:!?](?=\s|$)|\.(?=\s|$)(?!\.))/g, function (m, a, p) { if (/[.…]/.test(a)) return m; c.pont++; return a + p; });
@@ -529,6 +604,7 @@ function tipografia(raiz, A) {
   A.corr('Hífens convertidos em travessão (—) em incisos e diálogos', c.trav);
   A.corr('Intervalos numéricos com meia-risca (–)', c.inter);
   A.corr('Espaços duplos removidos', c.esp);
+  A.corr('Tabulações e quebras espúrias removidas do texto', c.tab);
   A.corr('Espaço indevido antes de pontuação removido', c.pont);
   A.corr('Símbolo de grau trocado por ordinal (nº)', c.ord);
 }
@@ -545,15 +621,20 @@ function extrairCitacoes(texto) {
   while ((m = rp.exec(texto))) {
     var pend = [];
     m[1].split(/;/).forEach(function (pedaco) {
-      var p = /^\s*([^,\d][^,]{0,120}?),\s*((?:1[5-9]\d{2}|20\d{2})[a-z]?)\b/.exec(pedaco);
+      var p = /^\s*([^,\d][^,\d:]{0,120}?),\s*((?:1[5-9]\d{2}|20\d{2})[a-z]?)\b/.exec(pedaco);
       if (p) {
-        var autor = (pend.length ? pend[0] : p[1]).trim(); pend = [];
-        if (!/^(p|pp|v|n|art|cf|apud)\.?$/i.test(autor) && new RegExp('^' + LETRA).test(autor)) cit.push({ autor: autor, chave: chaveAutor(autor), ano: p[2], tipo: 'parentetica', caixa: /[a-zà-ÿ]/.test(autor.replace(/et al\.?/i, '')) ? 'mista' : 'alta' });
+        var autor = (pend.length ? pend[0] : p[1]).trim().replace(/^(ver|vide|cf\.?|apud|conforme|segundo|in)\s+/i, ''); pend = [];
+        if (!/^(p|pp|v|n|art|cf|apud)\.?$/i.test(autor) && /^[A-ZÀ-Ý]/.test(autor) && !/[:;]/.test(autor) && autor.split(/\s+/).length <= 8) cit.push({ autor: autor, chave: chaveAutor(autor), ano: p[2], tipo: 'parentetica', caixa: /[a-zà-ÿ]/.test(autor.replace(/et al\.?/i, '')) ? 'mista' : 'alta' });
       } else if (pedaco.trim() && !/\d/.test(pedaco)) pend.push(pedaco);
     });
   }
   var rn = new RegExp("(?:^|[^A-Za-zÀ-ÿ])([A-ZÀ-Ý][A-Za-zÀ-ÿ'’\\-]+(?:\\s+(?:et al\\.|e\\s+[A-ZÀ-Ý][A-Za-zÀ-ÿ'’\\-]+))?)\\s+\\(((?:1[5-9]\\d{2}|20\\d{2})[a-z]?)(?:,\\s*p\\.?\\s*[\\d\\-–]+)?\\)", 'g');
-  while ((m = rn.exec(texto))) cit.push({ autor: m[1], chave: chaveAutor(m[1]), ano: m[2], tipo: 'narrativa' });
+  while ((m = rn.exec(texto))) {
+    var antes = texto.slice(Math.max(0, m.index - 40), m.index + (m[0].length - m[0].replace(/^[^A-ZÀ-Ý]*/, '').length)).trim().split(/\s+/);
+    var ant = antes[antes.length - 1] || '', ant2 = antes[antes.length - 2] || '';
+    if (/^[A-ZÀ-Ý]/.test(ant) || (/^(de|da|do|das|dos|e|sobre)$/.test(ant) && /^[A-ZÀ-Ý]/.test(ant2)) || /[’”']$/.test(m[1]) || /[a-zà-ÿ][A-Z]/.test(m[1])) continue;
+    cit.push({ autor: m[1], chave: chaveAutor(m[1]), ano: m[2], tipo: 'narrativa' });
+  }
   return cit;
 }
 function sigla(s) { return N(s).split(' ').filter(function (w) { return w && !/^(DE|DA|DO|DAS|DOS|E|PARA|EM|A|O|AS|OS)$/.test(w); }).map(function (w) { return w[0]; }).join(''); }
@@ -571,7 +652,7 @@ function anosRef(texto) {
 }
 function casaCitacao(c, refs) {
   return refs.some(function (r) {
-    var k = r.chave, ok = k === c.chave || k.split(' ')[0] === c.chave.split(' ')[0] || sigla(k) === c.chave.replace(/ /g, '') || k.indexOf(c.chave) === 0 || k.split(' ').indexOf(c.chave) >= 0;
+    var k = r.chave, ok = (r.palavras && c.chave.indexOf(' ') < 0 && r.palavras.indexOf(c.chave) >= 0) || k === c.chave || k.split(' ')[0] === c.chave.split(' ')[0] || sigla(k) === c.chave.replace(/ /g, '') || k.indexOf(c.chave) === 0 || k.split(' ').indexOf(c.chave) >= 0;
     if (!ok) return false;
     return r.anos.some(function (a) { return a === c.ano || a.replace(/[a-z]$/, '') === c.ano; });
   });
@@ -606,7 +687,7 @@ function processarRefs(nos, A, onde, doc) {
       if (/(https?:\/\/|www\.)/i.test(t) && !(/Dispon[ií]vel em\s*:/i.test(t) && /Acesso em\s*:/i.test(t))) { semAcesso++; A.add('grave', 'Referências', 'Documento on-line sem “Disponível em:” e “Acesso em:”: “' + t.slice(0, 90) + '…”.', { onde: onde, norma: 'NBR 6023', sug: 'Acrescente: Disponível em: <endereço>. Acesso em: dia mês abreviado ano.' }); }
       var d = p.querySelector('strong,b') ? 'negrito' : p.querySelector('em,i') ? 'italico' : '';
       if (d) destaques[d] = (destaques[d] || 0) + 1; else if (!/^_{3,}/.test(t) && t.length > 40) semDestaque++;
-      itens.push({ el: p, chave: chave, anos: anos, texto: t });
+      itens.push({ el: p, chave: chave, anos: anos, texto: t, palavras: N(t.split(/Dispon[ií]vel em/i)[0]).replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/) });
       p._ordem = N(/^_{3,}/.test(t) ? (chave + ' ' + t.replace(/^_+\.?/, '')) : t);
     });
     var ord = g.slice().sort(function (a, b) { return a._ordem.localeCompare(b._ordem, 'pt'); });
@@ -673,7 +754,15 @@ async function processar(entrada, opcoes, progresso) {
       p.remove(); tocRem++;
     }
   });
-  if (tocRem) A.corr('Sumário automático do Word removido (' + tocRem + ' linhas) e regerado conforme NBR 6027');
+  var RX_ITEM_SUM = /(,\s*p\.\s*\d+|\.{4,}\s*\d+|\t\s*\d+)\s*$/;
+  body.querySelectorAll('p,h1,h2,h3,h4').forEach(function (p) {
+    if (!p.parentNode || !/^(SUMARIO|INDICE|CONTEUDO)$/.test(N(txt(p)))) return;
+    var itens = [], n = p.nextElementSibling, falhas = 0;
+    while (n && n.tagName === 'P' && falhas < 2) { if (RX_ITEM_SUM.test(n.textContent)) { itens.push(n); falhas = 0; } else if (txt(n).length < 160 && itens.length) { itens.push(n); falhas++; } else break; n = n.nextElementSibling; }
+    while (itens.length && !RX_ITEM_SUM.test(itens[itens.length - 1].textContent)) itens.pop();
+    if (itens.length >= 3) { itens.forEach(function (x) { x.remove(); }); p.remove(); tocRem += itens.length; }
+  });
+  if (tocRem) A.corr('Sumário do manuscrito removido (' + tocRem + ' linhas, com números de página) e regerado conforme NBR 6027');
   sanitizar(body);
   var meta = clone(entrada.meta || {});
   var td = body.querySelector('.titulo-doc');
@@ -699,11 +788,25 @@ async function processar(entrada, opcoes, progresso) {
   if (!secs.length) throw new Error('O manuscrito está vazio.');
   var livro = { secoes: [], notas: notas, meta: meta, A: A, imagens: [], ilustracoes: [], tabelas: [], siglas: [], termosIndice: [], refsGlobais: null, opcoes: opcoes };
   var idc = 0; function nid(p) { return p + '-' + (++idc); }
+  var ab = secs[0] && secs[0].tipo === 'abertura' ? secs[0] : null;
+  if (ab) {
+    var pr = extrairPreliminares(ab, livro, A, doc);
+    if (!pr.resto) secs.shift();
+    var pos = pr.resto ? 1 : 0;
+    pr.novas.forEach(function (n) { if (!secs.some(function (x) { return x.tipo === n.tipo; })) secs.splice(pos++, 0, n); });
+  }
 
   // seções descartadas (o motor gera as suas)
   secs = secs.filter(function (s) {
     if (s.tipo === 'sumario-orig') { A.corr('Sumário do manuscrito descartado e regerado conforme NBR 6027'); return false; }
-    if (s.tipo === 'lista-orig') { A.corr('Lista do manuscrito descartada e regerada automaticamente'); return false; }
+    if (s.tipo === 'lista-orig') {
+      if (/ABREVIATURA|SIGLA/.test(N(s.tituloOrig))) {
+        var sg = [];
+        s.nos.forEach(function (n) { (n.tagName === 'UL' || n.tagName === 'OL' || n.tagName === 'TABLE' ? Array.prototype.slice.call(n.querySelectorAll('li,tr')) : [n]).forEach(function (x) { var m = /^([A-ZÀ-Ý][A-Za-zÀ-Ý0-9\/\-.&]{1,15})\s*[–—:\-]?\s+(.{3,})$/.exec(txt(x)); if (m && /[A-Z]{2}/.test(m[1])) sg.push({ sigla: m[1], nome: m[2].trim() }); }); });
+        if (sg.length) { livro.siglasAutor = sg; A.corr('Lista de abreviaturas e siglas do manuscrito recomposta em ordem alfabética', sg.length); return false; }
+      }
+      A.corr('Lista do manuscrito descartada e regerada automaticamente'); return false;
+    }
     if (s.tipo === 'indice-orig') {
       var termos = [];
       s.nos.forEach(function (n) { (n.tagName === 'UL' || n.tagName === 'OL' ? Array.prototype.slice.call(n.children) : [n]).forEach(function (li) { var m = /^(.+?)[\s.,…]+\d/.exec(txt(li)); if (m && m[1].length < 60) termos.push(m[1].trim()); }); });
@@ -721,6 +824,11 @@ async function processar(entrada, opcoes, progresso) {
   var modo = opcoes.numeracao === 'abnt' ? 'abnt' : opcoes.numeracao === 'nenhuma' ? 'livre' : opcoes.numeracao === 'capitulo' ? 'capitulo' :
     (caps.length && nNum >= caps.length / 2 ? 'abnt' : caps.length && nCap >= caps.length / 2 ? 'capitulo' : 'livre');
   livro.modo = modo;
+  if (modo === 'capitulo') {
+    var hsCap = [], hsNum = 0;
+    secs.filter(function (s) { return s.tipo === 'capitulo' && RX_CAP.test(s.tituloOrig); }).forEach(function (s) { s.nos.forEach(function (n) { if (n.tagName === 'H2') { hsCap.push(n); if (RX_NUM_SEC.test(txt(n))) hsNum++; } }); });
+    livro.renumerarSecoes = hsCap.length > 0 && hsNum >= hsCap.length / 2;
+  }
 
   var nCapitulo = 0, nParte = 0, numAjust = 0, sepAjust = 0, apLetra = { apendice: 0, anexo: 0 };
   secs.forEach(function (s, iS) {
@@ -734,13 +842,15 @@ async function processar(entrada, opcoes, progresso) {
         if (mN && +mN[1] !== nCapitulo) numAjust++;
         if (/^\s*\d+\s*[.\-–—:]/.test(titulo)) sepAjust++;
         titulo = titulo.replace(RX_CAP, '').replace(RX_NUM, '').trim();
-        sec.numero = String(nCapitulo);
+        sec.numero = String(nCapitulo); sec.nCap = nCapitulo;
       } else if (modo === 'capitulo' && tipo === 'capitulo') {
         var mC = RX_CAP.exec(titulo);
-        nCapitulo++;
-        if (mC) { if (numeroDe(mC[1]) !== nCapitulo) numAjust++; titulo = titulo.replace(RX_CAP, '').trim(); }
-        sec.rotulo = 'Capítulo ' + nCapitulo;
-        if (!titulo) { titulo = sec.rotulo; sec.rotulo = ''; }
+        if (mC || !caps.some(function (c) { return RX_CAP.test(c.tituloOrig); })) {
+          nCapitulo++;
+          if (mC) { if (numeroDe(mC[1]) !== nCapitulo) numAjust++; titulo = titulo.replace(RX_CAP, '').trim(); }
+          sec.rotulo = 'Capítulo ' + nCapitulo; sec.nCap = nCapitulo;
+          if (!titulo) { titulo = sec.rotulo; sec.rotulo = ''; }
+        } else if (caixaAltaTit(titulo)) titulo = tituloCaso(titulo);
       }
     } else if (tipo === 'parte') {
       nParte++;
@@ -755,9 +865,12 @@ async function processar(entrada, opcoes, progresso) {
       var letra = (mA && mA[2]) ? mA[2].toUpperCase() : String.fromCharCode(64 + apLetra[tipo]);
       var resto = mA ? mA[3].trim() : '';
       titulo = (tipo === 'apendice' ? 'APÊNDICE ' : 'ANEXO ') + letra + (resto ? ' – ' + resto : '');
+      sec.letra = letra;
       if (N(titulo) !== N(t2)) A.corr('Títulos de apêndices e anexos padronizados (letra maiúscula + travessão)');
     } else if (tipo === 'sobre') {
       titulo = titulo.replace(RX_NUM, '').trim();
+    } else if (tipo === 'glossario' && N(titulo) !== 'GLOSSARIO') {
+      titulo = tituloCaso(titulo.replace(RX_NUM, '').trim());
     } else if (TITULO_CANONICO[tipo]) {
       if (N(titulo.replace(RX_NUM, '')) !== N(TITULO_CANONICO[tipo]) && tipo === 'referencias') A.corr('Título “' + titulo + '” substituído por “Referências” (NBR 6023)');
       titulo = TITULO_CANONICO[tipo];
@@ -771,15 +884,27 @@ async function processar(entrada, opcoes, progresso) {
     if (pa && pa.tagName === 'P' && /^(autoria|autor(a|es|as)?)\s*:/i.test(txt(pa))) { sec.autoria = txt(pa).replace(/^[^:]+:\s*/, ''); pa.remove(); }
 
     // subtítulos internos: hierarquia e numeração progressiva
-    var cont = [0, 0, 0, 0, 0, 0, 0], ant = 1;
+    var cont = [0, 0, 0, 0, 0, 0, 0], ant = 1, ultInd = [];
+    var renumCap = modo === 'capitulo' && sec.nCap && livro.renumerarSecoes;
     sec.cont.querySelectorAll('h2,h3,h4,h5,h6').forEach(function (h) {
       var lv = +h.tagName[1];
       if (lv > ant + 1) { lv = ant + 1; A.corr('Níveis de título corrigidos (salto de hierarquia)'); }
       ant = lv;
       var t = txt(h);
-      if (/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA)$/.test(N(t.replace(RX_NUM, '')))) { lv = 2; h.setAttribute('data-ref', '1'); }
+      if (/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA)( D[OA] CAPITULO.*| D[OA]S? (AUTOR|AUTORA|AUTORES))?$/.test(N(t.replace(RX_NUM, '')))) { lv = 2; h.setAttribute('data-ref', '1'); }
       var nh = doc.createElement('h' + lv); nh.id = nid('h');
-      if (modo === 'abnt' && tipo === 'capitulo' && !h.hasAttribute('data-ref')) {
+      var mSuf = renumCap ? RX_NUM_SEC.exec(t) : null;
+      if (renumCap && mSuf && !h.hasAttribute('data-ref')) {
+        var ind2;
+        if (mSuf[2]) ind2 = (ultInd[lv] || [sec.nCap].concat(cont.slice(2, lv + 1)).join('.')) + mSuf[2];
+        else { cont[lv]++; for (var k2 = lv + 1; k2 < 7; k2++) cont[k2] = 0; ind2 = [sec.nCap].concat(cont.slice(2, lv + 1)).join('.'); ultInd[lv] = ind2; }
+        if (mSuf[1] + (mSuf[2] || '') !== ind2) numAjust++;
+        while (h.firstChild) nh.appendChild(h.firstChild);
+        var tw2 = doc.createTreeWalker(nh, NodeFilter.SHOW_TEXT, null), tn2 = tw2.nextNode();
+        if (tn2) tn2.nodeValue = tn2.nodeValue.replace(RX_NUM_SEC, '');
+        nh.insertBefore(el(doc, 'span', { 'class': 'indicativo' }, [ind2]), nh.firstChild);
+        nh.setAttribute('data-ind', ind2);
+      } else if (modo === 'abnt' && tipo === 'capitulo' && !h.hasAttribute('data-ref')) {
         cont[lv]++; for (var k = lv + 1; k < 7; k++) cont[k] = 0;
         var ind = [sec.numero].concat(cont.slice(2, lv + 1)).join('.');
         var mm = /^\s*(\d+(?:\.\d+)*)/.exec(t);
@@ -792,7 +917,7 @@ async function processar(entrada, opcoes, progresso) {
         nh.setAttribute('data-ind', ind);
       } else {
         while (h.firstChild) nh.appendChild(h.firstChild);
-        if (h.hasAttribute('data-ref')) { nh.textContent = 'Referências'; nh.setAttribute('data-ref', '1'); }
+        if (h.hasAttribute('data-ref')) { nh.setAttribute('data-ref', '1'); if (/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA)$/.test(N(txt(nh)))) nh.textContent = 'Referências'; }
       }
       h.parentNode.replaceChild(nh, h);
       if (lv <= 3) sec.subtitulos.push({ id: nh.id, nivel: lv, ind: nh.getAttribute('data-ind') || '', texto: txt(nh).replace(/^\d+(\.\d+)*\s*/, '') });
@@ -993,6 +1118,7 @@ async function processar(entrada, opcoes, progresso) {
       if (sel.length >= 2 && N(sel[0])[0] === N(sg)[0]) siglas[sg] = sel.join(' ');
     }
   });
+  if (livro.siglasAutor) { livro.siglas = livro.siglasAutor.slice().sort(function (a, b) { return a.sigla.localeCompare(b.sigla, 'pt'); }); } else
   livro.siglas = Object.keys(siglas).sort(function (a, b) { return a.localeCompare(b, 'pt'); }).map(function (k) { return { sigla: k, nome: siglas[k] }; });
 
   /* parágrafos em caixa alta (provável título sem estilo) */
@@ -1015,7 +1141,10 @@ async function processar(entrada, opcoes, progresso) {
 /* ───────────────────────── 6. ILUSTRAÇÕES E TABELAS ───────────────────────── */
 var RX_LEG = /^(Figura|Fotografia|Foto|Imagem|Mapa|Gr[aá]fico|Quadro|Desenho|Ilustra[cç][aã]o|Esquema|Fluxograma|Organograma|Infogr[aá]fico|Prancha|Retrato)\s*(\d+)?\s*[–—:.\-]\s*([\s\S]+)$/i;
 var RX_LEG_T = /^(Tabela)\s*(\d+)?\s*[–—:.\-]\s*([\s\S]+)$/i;
-var RX_FONTE = /^Fonte\s*:/i;
+var TIPOS_ROT = 'Figura|Fotografia|Foto|Imagem|Mapa|Gr[aá]fico|Quadro|Desenho|Ilustra[cç][aã]o|Esquema|Fluxograma|Organograma|Infogr[aá]fico|Prancha|Retrato|Tabela';
+var RX_ROT = new RegExp('^(' + TIPOS_ROT + ')\\s*(\\d+(?:\\.\\d+)*)?\\s*((?:\\.\\s*)?[–—:.,;\\-])?\\s+([\\s\\S]+)$', 'i');
+var RX_ROT_INI = new RegExp('^\\s*(' + TIPOS_ROT + ')\\s*(\\d+(?:\\.\\d+)*)?\\s*((?:\\.\\s*)?[–—:.,;\\-])?\\s+', 'i');
+var RX_FONTE = /^(Fontes?\s*:|Elabora[cç][aã]o\s+pr[oó]pria\b)/i;
 function tipoCap(s) { s = semAcento(s).toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); }
 var NOME_TIPO = { Figura: 'Figura', Fotografia: 'Fotografia', Foto: 'Fotografia', Imagem: 'Imagem', Mapa: 'Mapa', Grafico: 'Gráfico', Quadro: 'Quadro', Desenho: 'Desenho', Ilustracao: 'Ilustração', Esquema: 'Esquema', Fluxograma: 'Fluxograma', Organograma: 'Organograma', Infografico: 'Infográfico', Prancha: 'Prancha', Retrato: 'Retrato', Tabela: 'Tabela' };
 
@@ -1032,6 +1161,17 @@ function canvasPara(img, maxLado, mime, q) {
   g.drawImage(img, 0, 0, c.width, c.height);
   return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok({ bytes: new Uint8Array(ab), mime: mime, w: c.width, h: c.height }); }); }, mime, q || 0.88); });
 }
+/* apara margens brancas (capas exportadas com moldura de página) */
+async function aparar(bmp) {
+  var k = Math.min(1, 600 / Math.max(bmp.width, bmp.height)), w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  var c = document.createElement('canvas'); c.width = w; c.height = h; var g = c.getContext('2d'); g.drawImage(bmp, 0, 0, w, h);
+  var d = g.getImageData(0, 0, w, h).data, x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var i = (y * w + x) * 4; if (d[i] < 200 || d[i + 1] < 200 || d[i + 2] < 200) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+  if (x1 <= x0 || y1 <= y0 || (x0 < 3 && y0 < 3 && w - x1 < 4 && h - y1 < 4)) return bmp;
+  var X0 = Math.floor(x0 / k), Y0 = Math.floor(y0 / k), W = Math.ceil((x1 - x0 + 1) / k), H = Math.ceil((y1 - y0 + 1) / k);
+  var c2 = document.createElement('canvas'); c2.width = W; c2.height = H; c2.getContext('2d').drawImage(bmp, X0, Y0, W, H, 0, 0, W, H);
+  return c2;
+}
 async function normalizarImagem(bytes, mime) {
   var EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/svg+xml': 'svg' };
   if (mime === 'image/svg+xml') return { bytes: bytes, mime: mime, ext: 'svg', corrigida: false };
@@ -1045,8 +1185,42 @@ async function normalizarImagem(bytes, mime) {
   return { bytes: r.bytes, mime: r.mime, ext: EXT[r.mime], w: r.w, h: r.h, corrigida: true };
 }
 
+function legendaDe(el_) {
+  if (!el_ || el_.tagName !== 'P') return null;
+  var t = txt(el_);
+  if (t.length > 900 || RX_FONTE.test(t)) return null;
+  var m = RX_ROT.exec(t);
+  if (m && (m[2] || m[3]) && (t.length <= 320 || m[2])) {
+    var tit = m[4].trim(), nota = '';
+    var corte = /^(.{20,}?[^A-Z.]\.)\s+([A-ZÀ-Ý].{20,})$/.exec(tit);
+    if (tit.length > 160 && corte && !/\b(n|v|p|art|vs|Dr|Sr|Ed|ed|cap|séc|Séc|c)\.$/.test(corte[1])) { tit = corte[1].replace(/\.$/, ''); nota = corte[2]; }
+    return { tipo: NOME_TIPO[tipoCap(m[1])] || 'Figura', num: m[2] || '', titulo: tit.replace(/\.$/, ''), nota: nota };
+  }
+  if (el_.classList.contains('legenda')) return { tipo: '', num: '', titulo: t };
+  return null;
+}
+function ehFonte(el_) { return !!(el_ && el_.tagName === 'P' && RX_FONTE.test(txt(el_))); }
+function escolherLegenda(bloco, conv) {
+  var ant = bloco.previousElementSibling, prox = bloco.nextElementSibling;
+  var la = legendaDe(ant), lp = legendaDe(prox);
+  var ordem = conv === 'depois' ? [['p', lp, prox], ['a', la, ant]] : [['a', la, ant], ['p', lp, prox]];
+  for (var i = 0; i < 2; i++) if (ordem[i][1]) return { lado: ordem[i][0], leg: ordem[i][1], el: ordem[i][2] };
+  return null;
+}
 async function processarIlustracoes(livro) {
-  var A = livro.A, doc = livro.doc, cont = {}, seqProblema = {}, mapa = {}, nImg = 0, convertidas = 0, altDeriv = 0, semAlt = 0, semLeg = 0, semFonte = 0;
+  var A = livro.A, doc = livro.doc, mapa = {}, nImg = 0, convertidas = 0, altDeriv = 0, semAlt = 0, semLeg = 0, semFonte = 0, legendas = [];
+  // convenção do manuscrito: legenda acima ou abaixo?
+  var acima = 0, abaixo = 0;
+  livro.secoes.forEach(function (s) {
+    s.cont.querySelectorAll('table, p > img').forEach(function (x) {
+      var b = x.tagName === 'TABLE' ? x : x.parentNode;
+      if (legendaDe(b.previousElementSibling)) acima++;
+      if (legendaDe(b.nextElementSibling)) abaixo++;
+    });
+  });
+  var conv = abaixo > acima ? 'depois' : 'antes';
+  if (abaixo > acima) A.corr('Legendas de tabelas e ilustrações movidas para cima do elemento (NBR 6029; IBGE)', abaixo);
+
   for (var s of livro.secoes) {
     var imgs = Array.prototype.slice.call(s.cont.querySelectorAll('img'));
     for (var img of imgs) {
@@ -1067,33 +1241,26 @@ async function processarIlustracoes(livro) {
       }
       img.setAttribute('src', '../' + reg.arquivo);
       var alt = (img.getAttribute('alt') || '').trim();
-
-      // figura com identificação e fonte
       var p = img.parentNode, bloco = (p && p !== s.cont && p.tagName === 'P' && !txt(p) && p.querySelectorAll('img').length === 1) ? p : (p === s.cont ? img : null);
       if (!bloco) { if (!alt) { semAlt++; img.setAttribute('alt', ''); } continue; }
-      var ant = bloco.previousElementSibling, prox = bloco.nextElementSibling, cap = null, fonte = null;
-      if (ant && ant.tagName === 'P' && (RX_LEG.test(txt(ant)) || ant.classList.contains('legenda')) && !RX_FONTE.test(txt(ant))) cap = ant;
-      else if (prox && prox.tagName === 'P' && (RX_LEG.test(txt(prox)) || prox.classList.contains('legenda')) && !RX_FONTE.test(txt(prox))) { cap = prox; prox = prox.nextElementSibling; }
-      if (prox && prox.tagName === 'P' && RX_FONTE.test(txt(prox))) fonte = prox;
-      var fig = el(doc, 'figure', { 'class': 'ilustracao' });
-      var tipo = 'Figura', titulo = '', numOrig = null;
-      if (cap) { var m = RX_LEG.exec(txt(cap)); if (m) { tipo = NOME_TIPO[tipoCap(m[1])] || 'Figura'; numOrig = m[2] ? +m[2] : null; titulo = m[3].trim(); } else titulo = txt(cap); }
-      cont[tipo] = (cont[tipo] || 0) + 1;
-      var num = cont[tipo];
-      if (numOrig != null && numOrig !== num) { seqProblema[tipo] = true; num = numOrig; }
-      fig.id = 'il-' + tipo.toLowerCase().replace(/[^a-z]/g, '') + '-' + pad(livro.ilustracoes.length + 1, 3);
+      var esc_ = escolherLegenda(bloco, conv), cap = esc_ ? esc_.el : null, leg = esc_ ? esc_.leg : null;
+      var aposFonte = (esc_ && esc_.lado === 'p') ? cap.nextElementSibling : bloco.nextElementSibling;
+      var fonte = ehFonte(aposFonte) ? aposFonte : null;
+      var fig = el(doc, 'figure', { 'class': 'ilustracao', id: 'il-' + pad(livro.ilustracoes.length + livro.tabelas.length + 1, 3) });
+      var tipo = (leg && leg.tipo) || 'Figura', titulo = leg ? leg.titulo : '';
+      var item = { id: fig.id, secao: s, rotulo: tipo, titulo: titulo || alt || '(sem título)' };
       if (cap || alt) {
-        var fc = el(doc, 'figcaption');
-        fc.appendChild(doc.createTextNode(tipo + ' ' + num + ' – '));
+        var fc = el(doc, 'figcaption'), pref = doc.createTextNode(tipo + ' – ');
+        fc.appendChild(pref);
         if (cap) {
           var tmp = cap.cloneNode(true), tw = doc.createTreeWalker(tmp, NodeFilter.SHOW_TEXT, null), tn = tw.nextNode();
-          if (tn && RX_LEG.test(txt(cap))) { var mm = /^\s*\S+\s*\d*\s*[–—:.\-]\s*/.exec(tn.nodeValue); if (mm) tn.nodeValue = tn.nodeValue.slice(mm[0].length); }
+          if (tn && leg.tipo) { var mm = RX_ROT_INI.exec(tn.nodeValue); if (mm) tn.nodeValue = tn.nodeValue.slice(mm[0].length); }
           while (tmp.firstChild) fc.appendChild(tmp.firstChild);
         } else { fc.appendChild(doc.createTextNode(alt)); titulo = alt; }
         fig.appendChild(fc);
-        if (cap && N(txt(cap)) !== N(txt(fc))) A.corr('Identificação de ilustrações padronizada (tipo, número e travessão)');
+        legendas.push({ tipo: tipo, numOrig: leg ? leg.num : '', prefixo: pref, secao: s, reg: item });
       }
-      if (!cap) { semLeg++; }
+      if (!cap) semLeg++;
       if (!alt && titulo) { img.setAttribute('alt', titulo); altDeriv++; }
       else if (!alt) { img.setAttribute('alt', ''); semAlt++; }
       bloco.parentNode.insertBefore(fig, bloco);
@@ -1101,42 +1268,79 @@ async function processarIlustracoes(livro) {
       if (bloco !== img) bloco.remove();
       if (cap) cap.remove();
       if (fonte) { fonte.className = 'fonte'; fig.appendChild(fonte); } else semFonte++;
-      livro.ilustracoes.push({ id: fig.id, secao: s, rotulo: tipo + ' ' + num, titulo: titulo || alt || '(sem título)' });
+      livro.ilustracoes.push(item);
     }
 
-    // tabelas
+    // tabelas (e quadros/figuras feitos como tabela)
     Array.prototype.slice.call(s.cont.querySelectorAll('table')).forEach(function (tb) {
-      var ant = tb.previousElementSibling, prox = tb.nextElementSibling, cap = null, fonte = null;
-      if (ant && ant.tagName === 'P' && (RX_LEG_T.test(txt(ant)) || RX_LEG.test(txt(ant)) && /^quadro/i.test(txt(ant)))) cap = ant;
-      else if (prox && prox.tagName === 'P' && RX_LEG_T.test(txt(prox))) { cap = prox; prox = prox.nextElementSibling; }
-      if (prox && prox.tagName === 'P' && RX_FONTE.test(txt(prox))) fonte = prox;
-      var tipo = cap && /^quadro/i.test(txt(cap)) ? 'Quadro' : 'Tabela';
-      cont[tipo] = (cont[tipo] || 0) + 1;
-      var num = cont[tipo], titulo = '';
+      if (tb.parentNode && tb.parentNode.closest && tb.parentNode.closest('table')) return;
+      var esc_ = escolherLegenda(tb, conv), cap = esc_ ? esc_.el : null, leg = esc_ ? esc_.leg : null;
+      var aposFonte = (esc_ && esc_.lado === 'p') ? cap.nextElementSibling : tb.nextElementSibling;
+      var fonte = ehFonte(aposFonte) ? aposFonte : null;
+      var tipo = (leg && leg.tipo) || 'Tabela', titulo = leg ? leg.titulo : '', notaTab = null;
       var wrap = el(doc, 'div', { 'class': 'tabela', id: 'tb-' + pad(livro.tabelas.length + livro.ilustracoes.length + 1, 3) });
       tb.parentNode.insertBefore(wrap, tb);
+      var item = { id: wrap.id, secao: s, rotulo: tipo, titulo: titulo || '(sem título)' };
       if (cap) {
-        var m = (RX_LEG_T.exec(txt(cap)) || RX_LEG.exec(txt(cap)));
-        if (m && m[2] && +m[2] !== num) { seqProblema[tipo] = true; num = +m[2]; }
-        titulo = m ? m[3].trim() : txt(cap);
-        var c = el(doc, 'caption', null, [tipo + ' ' + num + ' – ' + titulo]);
-        tb.insertBefore(c, tb.firstChild); cap.remove();
-      } else A.add('grave', 'Ilustrações', tipo + ' sem título (identificação acima da tabela).', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', sug: 'Escreva acima da tabela: “Tabela N – Título”.' });
+        var pref = doc.createTextNode(tipo + ' – ');
+        tb.insertBefore(el(doc, 'caption', null, [pref, titulo]), tb.firstChild); cap.remove();
+        if (leg.nota) { notaTab = el(doc, 'p', { 'class': 'fonte' }, ['Nota: ' + leg.nota]); A.corr('Texto explicativo das legendas transferido para “Nota” abaixo da tabela (IBGE)'); }
+        legendas.push({ tipo: tipo, numOrig: leg.num, prefixo: pref, secao: s, reg: item });
+      } else A.add('grave', 'Ilustrações', 'Tabela sem título (identificação acima da tabela).', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', sug: 'Escreva acima da tabela: “Tabela N – Título”.' });
       wrap.appendChild(tb);
-      if (fonte) { fonte.className = 'fonte'; wrap.appendChild(fonte); } else A.add('aviso', 'Ilustrações', tipo + ' ' + num + ' sem indicação de fonte.', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular', sug: 'Abaixo da tabela, informe “Fonte: …”, mesmo que seja elaboração própria.' });
+      if (notaTab) wrap.appendChild(notaTab);
+      if (fonte) { fonte.className = 'fonte'; wrap.appendChild(fonte); } else A.add('aviso', 'Ilustrações', 'Tabela sem indicação de fonte' + (titulo ? ': “' + titulo.slice(0, 70) + '”' : '') + '.', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular', sug: 'Abaixo da tabela, informe “Fonte: …”, mesmo que seja elaboração própria.' });
       if (!tb.querySelector('th')) {
         var r1 = tb.querySelector('tr');
-        if (r1 && tb.querySelectorAll('tr').length > 1 && Array.prototype.every.call(r1.children, function (td) { return td.querySelector('strong') && txt(td.querySelector('strong')) === txt(td); })) {
+        var cab = r1 && tb.querySelectorAll('tr').length > 1 && (Array.prototype.every.call(r1.children, function (td) { return td.querySelector('strong') && txt(td.querySelector('strong')) === txt(td); }) || Array.prototype.every.call(r1.children, function (td) { var t = txt(td); return t && t.length < 60 && !/^\d/.test(t); }));
+        if (cab) {
           Array.prototype.slice.call(r1.children).forEach(function (td) { var th = el(doc, 'th', { scope: 'col' }); while (td.firstChild) th.appendChild(td.firstChild); th.querySelectorAll('strong').forEach(desembrulhar); r1.replaceChild(th, td); });
           var th_ = el(doc, 'thead'); tb.insertBefore(th_, r1.parentNode.tagName === 'TBODY' ? r1.parentNode : r1); th_.appendChild(r1);
           A.corr('Linha de cabeçalho de tabela marcada para leitores de tela');
-        } else A.add('aviso', 'Acessibilidade', tipo + ' ' + num + ' sem linha de cabeçalho marcada.', { onde: s.titulo, norma: 'EPUB Accessibility 1.1 / WCAG 2.1 (1.3.1)', sug: 'No Word, marque a primeira linha como “Repetir como linha de cabeçalho”.' });
+        } else A.add('aviso', 'Acessibilidade', 'Tabela sem linha de cabeçalho marcada.', { onde: s.titulo, norma: 'EPUB Accessibility 1.1 / WCAG 2.1 (1.3.1)', sug: 'No Word, marque a primeira linha como “Repetir como linha de cabeçalho”.' });
       }
       tb.querySelectorAll('th').forEach(function (th) { if (!th.getAttribute('scope')) th.setAttribute('scope', 'col'); });
-      livro.tabelas.push({ id: wrap.id, secao: s, rotulo: tipo + ' ' + num, titulo: titulo || '(sem título)' });
+      livro.tabelas.push(item);
     });
   }
-  Object.keys(seqProblema).forEach(function (t) { A.add('grave', 'Ilustrações', 'Numeração de “' + t + '” fora de sequência no manuscrito. A numeração original foi mantida para não quebrar remissões no texto.', { norma: 'NBR 6029', sug: 'Renumere em sequência e revise as remissões (“ver ' + t + ' N”).' }); });
+
+  /* numeração (NBR 6029): por capítulo ou sequencial, conforme o padrão do manuscrito; remissões atualizadas */
+  var comNum = legendas.filter(function (i) { return i.numOrig; });
+  var porCapitulo = comNum.length > 0 && comNum.filter(function (i) { return /\./.test(i.numOrig); }).length >= comNum.length / 2;
+  var seq = {}, mapaSec = {}, mapaGlob = {}, dup = {}, mudou = 0;
+  legendas.forEach(function (i) {
+    var pre = '', chave = i.tipo;
+    if (porCapitulo) { var c = i.secao.nCap || i.secao.letra; if (c) { pre = c + '.'; chave = i.tipo + '@' + i.secao.id; } }
+    seq[chave] = (seq[chave] || 0) + 1;
+    var novo = porCapitulo && !pre ? (i.numOrig || String(seq[chave])) : pre + seq[chave];
+    if (i.numOrig) {
+      var k = i.tipo + ' ' + i.numOrig;
+      (mapaSec[i.secao.id] = mapaSec[i.secao.id] || {})[k] = i.tipo + ' ' + novo;
+      if (!(k in mapaGlob)) mapaGlob[k] = i.tipo + ' ' + novo; else { mapaGlob[k] = null; dup[k] = 1; }
+      if (i.numOrig !== novo) mudou++;
+    } else mudou++;
+    i.prefixo.nodeValue = i.tipo + ' ' + novo + ' – ';
+    i.reg.rotulo = i.tipo + ' ' + novo;
+  });
+  if (mudou) A.corr('Ilustrações e tabelas numeradas ' + (porCapitulo ? 'por capítulo' : 'em sequência') + ' (NBR 6029)', mudou);
+  Object.keys(dup).forEach(function (k) { A.add('aviso', 'Ilustrações', 'Numeração repetida no manuscrito: “' + k + '” aparece mais de uma vez (corrigida na edição).', { norma: 'NBR 6029' }); });
+  if (mudou) {
+    var rem = 0, rx = /\b(Tabela|Quadro|Figura|Gr[aá]fico|Mapa|Fotografia|Ilustra[cç][aã]o)\s+(\d+(?:\.\d+)*)\b/g;
+    livro.secoes.forEach(function (s) {
+      var w = doc.createTreeWalker(s.cont, NodeFilter.SHOW_TEXT, null), n, nos = [];
+      while ((n = w.nextNode())) nos.push(n);
+      nos.forEach(function (n) {
+        if (n.parentNode.closest('figcaption,caption')) return;
+        var v = n.nodeValue.replace(rx, function (m, t, num) {
+          var k = (NOME_TIPO[tipoCap(t)] || t) + ' ' + num, novo = (mapaSec[s.id] && mapaSec[s.id][k]) || mapaGlob[k];
+          if (novo && novo !== k) { rem++; return t + ' ' + novo.split(' ').pop(); }
+          return m;
+        });
+        if (v !== n.nodeValue) n.nodeValue = v;
+      });
+    });
+    A.corr('Remissões a tabelas e ilustrações atualizadas no texto', rem);
+  }
   if (convertidas) A.corr('Imagens convertidas/otimizadas para o padrão EPUB (≤ 2000 px)', convertidas);
   if (altDeriv) A.add('aviso', 'Acessibilidade', altDeriv + ' imagem(ns) sem texto alternativo receberam o título da ilustração como descrição.', { norma: 'Lei 13.146/2015 (LBI), art. 68; EPUB Accessibility 1.1', sug: 'Revise e escreva descrições que expliquem o conteúdo da imagem (no Word: botão direito › Editar texto alternativo).' });
   if (semAlt) A.add('grave', 'Acessibilidade', semAlt + ' imagem(ns) sem texto alternativo e sem legenda.', { norma: 'Lei 13.146/2015 (LBI), art. 68; WCAG 2.1 (1.1.1)', sug: 'Descreva cada imagem no texto alternativo do Word.' });
@@ -1334,6 +1538,14 @@ async function gerarCapa(o, logos) {
   return new Promise(function (ok) { c.toBlob(function (b) { b.arrayBuffer().then(function (ab) { ok(new Uint8Array(ab)); }); }, 'image/jpeg', 0.9); });
 }
 
+function caixaAltaTit(x) { var l = String(x).replace(/[^A-Za-zÀ-ÿ]/g, ''); return l.length >= 4 && l === l.toUpperCase(); }
+function tituloCaso(t) {
+  var PART = /^(de|da|do|das|dos|e|em|a|o|as|os|para|com|na|no|nas|nos|por|sobre|à|ao|aos|às|y|del|la|el)$/i;
+  return String(t).toLowerCase().split(/(\s+)/).map(function (w, i) {
+    if (/^\s+$/.test(w) || (i && PART.test(w))) return w;
+    return w.split(/([\-‑])/).map(function (x) { return x.charAt(0).toUpperCase() + x.slice(1); }).join('');
+  }).join('').replace(/\b(Ii|Iii|Iv|Vi|Vii|Viii|Ix|Xi|Xii)\b/g, function (r) { return r.toUpperCase(); });
+}
 function frase(lista) { return lista.length <= 1 ? (lista[0] || '') : lista.slice(0, -1).join(', ') + ' e ' + lista[lista.length - 1]; }
 function fichaCatalografica(o, livro) {
   var aut = pessoas(o.autores), org = pessoas(o.organizadores);
@@ -1416,8 +1628,9 @@ async function montarEditoriais(livro, o, logos) {
     'cc-by-nc-sa': 'Esta obra está licenciada sob a licença Creative Commons Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional (CC BY-NC-SA 4.0).',
     'cc-by-nc-nd': 'Esta obra está licenciada sob a licença Creative Commons Atribuição-NãoComercial-SemDerivações 4.0 Internacional (CC BY-NC-ND 4.0).'
   };
-  livro.direitos = '© ' + o.ano + ' ' + frase(autoresTodos) + '. ' + (LIC[o.licenca] || LIC.todos);
-  cred.cont.appendChild(el(doc, 'p', { 'class': 'direitos' }, ['© ' + o.ano + ' ' + frase(autoresTodos), el(doc, 'br'), LIC[o.licenca] || LIC.todos]));
+  var licTxt = (o.direitosTexto || '').trim() ? o.direitosTexto.trim().replace(/^©\s*\d{4}\s*[^.]*\.\s*/, '') : (LIC[o.licenca] || LIC.todos);
+  livro.direitos = '© ' + o.ano + ' ' + frase(autoresTodos) + '. ' + licTxt;
+  cred.cont.appendChild(el(doc, 'p', { 'class': 'direitos' }, ['© ' + o.ano + ' ' + frase(autoresTodos), el(doc, 'br'), licTxt]));
   var indig = aut.concat(org).filter(function (p) { return p.indigena; });
   cred.cont.appendChild(el(doc, 'p', { 'class': 'selo-politica' }, [cfg.editora.nome + ' — selo editorial de autoria indígena do ' + cfg.editora.mantenedora + '.' + (indig.length ? ' Autoria indígena: ' + frase(indig.map(function (p) { return p.nome + ' (' + p.povo + ')'; })) + '.' : '')]));
   if (o.ctDeclaracao && o.ctTexto) cred.cont.appendChild(el(doc, 'p', null, [o.ctTexto]));
@@ -1625,7 +1838,8 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
 
   // capa
   var capaBytes;
-  if (o.capaPropria) { var dc = dataUrlParaBytes(o.capaPropria); var nz = dc && await normalizarImagem(dc.bytes, dc.mime); if (nz && nz.mime === 'image/png') { var bm = await decodificarImagem(nz.bytes, nz.mime); nz = await canvasPara(bm, 2560, 'image/jpeg', 0.9); } capaBytes = nz ? nz.bytes : null; }
+  var fonteCapa = o.capaPropria || (!o.capaGerada && livro.meta.capa) || '';
+  if (fonteCapa) { var dc = dataUrlParaBytes(fonteCapa); var nz = dc && await normalizarImagem(dc.bytes, dc.mime); if (nz) { var bm = await decodificarImagem(nz.bytes, nz.mime); nz = await canvasPara(await aparar(bm), 2560, 'image/jpeg', 0.9); } capaBytes = nz ? nz.bytes : null; }
   if (!capaBytes) capaBytes = await gerarCapa(o, logos);
   livro.capaBytes = capaBytes;
   add('img/capa.jpg', capaBytes, 'image/jpeg', 'img-capa', 'cover-image');
@@ -1766,6 +1980,7 @@ function auditarObra(o, A, logos) {
   if (!cfg.equipe.bibliotecario || !cfg.equipe.crb) A.add('grave', 'Ficha', 'Ficha catalográfica sem bibliotecário(a) responsável e registro no CRB.', { norma: 'Lei 4.084/1962 (profissão de bibliotecário); Lei 10.753/2003, art. 6º', sug: 'A ficha (CIP) deve ser elaborada e assinada por bibliotecário(a) com registro no CRB.' });
   if (!o.cdd && !o.cdu) A.add('grave', 'Ficha', 'Classificação (CDD ou CDU) não informada na ficha catalográfica.', { sug: 'O(a) bibliotecário(a) define a classificação.' });
   if (!String(o.assuntos || '').trim()) A.add('grave', 'Ficha', 'Assuntos (cabeçalhos de assunto) não informados na ficha catalográfica.', { sug: 'Cabeçalhos definidos pelo(a) bibliotecário(a), com vocabulário controlado.' });
+  if (aut.length > 3) A.add('info', 'Ficha', 'Obra com ' + aut.length + ' autores: pela AACR2, a entrada principal da ficha é pelo título, com os autores em entradas secundárias. Confirme com o(a) bibliotecário(a).', {});
   if (!o.cutter) A.add('aviso', 'Ficha', 'Notação de autor (Cutter-Sanborn ou PHA) não informada.', {});
   if (!o.sinopse) A.add('aviso', 'Metadados', 'Sinopse não informada (usada pelas lojas e bibliotecas digitais).', {});
   if (!o.palavrasChave) A.add('aviso', 'Metadados', 'Palavras-chave não informadas.', {});
@@ -1899,6 +2114,7 @@ async function produzir(opcoesExtras) {
     var livro = await processar(estado.entrada, opcoes, etapa);
     if (!obra.titulo && livro.meta.titulo) obra.titulo = livro.meta.titulo;
     if (!obra.subtitulo && livro.meta.subtitulo) obra.subtitulo = livro.meta.subtitulo;
+    aplicarMetaManuscrito(livro);
     obraGuardar(); ui.preencherForm();
     estado.livro = livro;
     etapa('ilustracoes', 'rodando');
@@ -1939,6 +2155,36 @@ async function produzir(opcoesExtras) {
     ui.msg('Erro na produção: ' + e.message, 'err');
     ui.etapaErro(e.message);
   } finally { estado.rodando = false; ui.travar(false); }
+}
+function povosDaSecaoSobre(livro) {
+  var mapa = {};
+  livro.secoes.filter(function (s) { return s.tipo === 'sobre'; }).forEach(function (s) {
+    s.cont.querySelectorAll('h2,h3,h4,h5,p').forEach(function (h) {
+      var m = /^(.{5,90}?)\s*\(([^)]{3,40})\)\s*$/.exec(txt(h));
+      if (m && !/\d/.test(m[2])) mapa[N(m[1].replace(/[‑–]/g, '-'))] = tituloCaso(m[2]);
+    });
+  });
+  return mapa;
+}
+function aplicarMetaManuscrito(livro) {
+  var m = livro.meta, f = m.ficha || {}, usados = [];
+  function pre(c, v) { if (v && !String(obra[c] || '').trim()) { obra[c] = v; usados.push(c); } }
+  pre('titulo', m.titulo); pre('subtitulo', m.subtitulo);
+  if (m.autores && m.autores.length) pre('autores', m.autores.join('\n'));
+  pre('isbn', f.isbn); pre('cdd', f.cdd); pre('cdu', f.cdu); pre('cutter', f.cutter);
+  if (f.assuntos) pre('assuntos', f.assuntos.join('\n'));
+  pre('direitosTexto', m.direitos);
+  if (m.local && !obra.local) { obra.local = m.local; usados.push('local'); }
+  var povos = povosDaSecaoSobre(livro), np = 0;
+  ['autores', 'organizadores'].forEach(function (c) {
+    obra[c] = String(obra[c] || '').split('\n').map(function (l) {
+      var pp = l.split(/\s*;\s*/); if (!pp[0].trim() || (pp[1] || '').trim()) return l;
+      var povo = povos[N(pp[0].replace(/[‑–]/g, '-'))]; if (povo) { np++; return pp[0].trim() + '; ' + povo; } return l;
+    }).join('\n');
+  });
+  if (np) usados.push('povo de ' + np + ' autor(es), pela seção sobre a autoria');
+  if (usados.length) livro.A.add('info', 'Metadados', 'Dados lidos do próprio manuscrito: ' + usados.join(', ') + '. Confira na aba “Dados da obra”.', {});
+  obraGuardar(); if (ui.preencherForm) ui.preencherForm();
 }
 async function receberArquivo(file) {
   if (!file) return;
@@ -2038,6 +2284,7 @@ function montarUI(alvo) {
       campo('termosIndice', 'Termos do índice remissivo (um por linha)', 'area') +
       campo('dedicatoria', 'Dedicatória (se não estiver no manuscrito)', 'area') +
       campo('epigrafe', 'Epígrafe (se não estiver no manuscrito)', 'area', 'Última linha iniciada por — vira a autoria.') +
+      campo('direitosTexto', 'Texto de direitos autorais (se preenchido, substitui a licença)', 'area') +
       '<div class="campo"><label>Licença</label><select data-f="licenca"><option value="todos">Todos os direitos reservados</option><option value="cc-by">CC BY 4.0</option><option value="cc-by-sa">CC BY-SA 4.0</option><option value="cc-by-nc">CC BY-NC 4.0</option><option value="cc-by-nc-sa">CC BY-NC-SA 4.0</option><option value="cc-by-nc-nd">CC BY-NC-ND 4.0</option></select></div>' +
       '<div class="campo"><label><input type="checkbox" data-f="ctDeclaracao"> Incluir declaração sobre conhecimentos tradicionais</label><textarea data-f="ctTexto"></textarea></div>' +
       '<div class="campo"><label>Capa própria (opcional, JPG/PNG 1600×2560)</label><input type="file" accept="image/*" data-capa><div class="linha" style="margin-top:.4rem"><img class="capa-mini" alt="Capa atual" hidden><button class="bt" data-a="sem-capa" type="button">Usar capa gerada</button></div></div>' +
@@ -2078,8 +2325,8 @@ function montarUI(alvo) {
   // opções e formulário da obra
   QA('[data-o]').forEach(function (x) { x.addEventListener('change', function () { obra[x.getAttribute('data-o')] = x.type === 'checkbox' ? x.checked : x.value; obraGuardar(); }); });
   QA('[data-f]').forEach(function (x) { x.addEventListener('input', function () { var k = x.getAttribute('data-f'); obra[k] = x.type === 'checkbox' ? x.checked : x.value; delete _origemIA[k]; var m = raiz.querySelector('[data-ia="' + k + '"]'); if (m) m.hidden = true; obraGuardar(); }); x.addEventListener('change', function () { x.dispatchEvent(new Event('input')); }); });
-  Q('[data-capa]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { obra.capaPropria = r.result; obraGuardar(); ui.preencherForm(); }; r.readAsDataURL(f); });
-  Q('[data-a="sem-capa"]').addEventListener('click', function () { obra.capaPropria = ''; obraGuardar(); ui.preencherForm(); });
+  Q('[data-capa]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { obra.capaPropria = r.result; obra.capaGerada = false; obraGuardar(); ui.preencherForm(); }; r.readAsDataURL(f); });
+  Q('[data-a="sem-capa"]').addEventListener('click', function () { obra.capaPropria = ''; obra.capaGerada = true; obraGuardar(); ui.preencherForm(); ui.msg('A capa gerada no padrão da Editora será usada. Clique em “Aplicar e regerar”.', 'ok'); });
 
   // configuração
   QA('[data-c]').forEach(function (x) { x.addEventListener('input', function () { setC(x.getAttribute('data-c'), x.type === 'checkbox' ? x.checked : x.value); cfgGuardarLocal(); }); x.addEventListener('change', function () { x.dispatchEvent(new Event('input')); }); });
