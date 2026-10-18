@@ -150,7 +150,7 @@ var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
   sinopse: '', licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
-  numeracao: 'auto', estiloCitacao: 'maioria', revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
+  numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
 var _origemIA = {};
@@ -1417,10 +1417,19 @@ function legendaDe(el_) {
   if (t.length > 900 || RX_FONTE.test(t)) return null;
   var m = RX_ROT.exec(t);
   if (m && (m[2] || m[3]) && (t.length <= 320 || m[2])) {
-    var tit = m[4].trim(), nota = '';
-    var corte = /^(.{20,}?[^A-Z.]\.)\s+([A-ZÀ-Ý].{20,})$/.exec(tit);
-    if (tit.length > 160 && corte && !/\b(n|v|p|art|vs|Dr|Sr|Ed|ed|cap|séc|Séc|c)\.$/.test(corte[1])) { tit = corte[1].replace(/\.$/, ''); nota = corte[2]; }
-    return { tipo: NOME_TIPO[tipoCap(m[1])] || 'Figura', num: m[2] || '', titulo: tit.replace(/\.$/, ''), nota: nota };
+    var tit = m[4].trim(), nota = '', fonteL = '';
+    var mf = /\.\s+((?:Elabora[cç][aã]o|Fontes?\s*:|Adaptad[oa] de)[^]*)$/i.exec(tit);
+    if (mf) { fonteL = mf[1].trim(); tit = tit.slice(0, mf.index); }
+    if (tit.length > 160) {
+      var rxc = /\.\s+(?=[A-ZÀ-Ý])/g, mc;
+      while ((mc = rxc.exec(tit))) {
+        var ant = tit.slice(0, mc.index);
+        if (ant.length < 30 || /\b(n|v|p|pp|art|vs|Dr|Sr|Ed|ed|cap|séc|Séc|c|et al|nº|Lei|Dec|inc)$/i.test(ant) || /\b[A-Z]$/.test(ant)) continue;
+        if (tit.length - mc.index < 25) break;
+        nota = tit.slice(mc.index + mc[0].length).trim(); tit = ant; break;
+      }
+    }
+    return { tipo: NOME_TIPO[tipoCap(m[1])] || 'Figura', num: m[2] || '', titulo: tit.replace(/\.$/, ''), nota: nota, fonte: fonteL };
   }
   if (el_.classList.contains('legenda')) return { tipo: '', num: '', titulo: t };
   return null;
@@ -1522,6 +1531,7 @@ async function processarIlustracoes(livro) {
       } else A.add('grave', 'Ilustrações', 'Tabela sem título (identificação acima da tabela).', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular / NBR 6029', sug: 'Escreva acima da tabela: “Tabela N – Título”.', acao: { tipo: 'tabela-titulo', fp: fpT, proposta: '' } });
       wrap.appendChild(tb);
       if (notaTab) wrap.appendChild(notaTab);
+      if (!fonte && leg && leg.fonte) { fonte = el(doc, 'p', null, [/^Fontes?\s*:/i.test(leg.fonte) ? leg.fonte : 'Fonte: ' + leg.fonte.charAt(0).toLowerCase() + leg.fonte.slice(1)]); A.corr('Fonte separada do título da tabela e posta abaixo dela (IBGE)'); }
       if (fonte) { fonte.className = 'fonte'; wrap.appendChild(fonte); } else A.add('aviso', 'Ilustrações', 'Tabela sem indicação de fonte' + (titulo ? ': “' + titulo.slice(0, 70) + '”' : '') + '.', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular', sug: 'Abaixo da tabela, informe “Fonte: …”, mesmo que seja elaboração própria.' });
       if (!tb.querySelector('th')) {
         var r1 = tb.querySelector('tr');
@@ -1899,6 +1909,9 @@ async function montarEditoriais(livro, o, logos) {
     var ul = el(doc, 'ul');
     cfg.conselho.forEach(function (m) { ul.appendChild(el(doc, 'li', null, [m.nome + (m.vinculo ? ' — ' + m.vinculo : '')])); });
     cred.cont.appendChild(ul);
+  } else if (o.emitirComPendencias) {
+    cred.cont.appendChild(el(doc, 'h2', null, ['Conselho Editorial']));
+    cred.cont.appendChild(el(doc, 'p', null, ['Em desenvolvimento.']));
   }
   var eq = cfg.equipe, linhasEq = [['Edição', eq.editor], ['Revisão', eq.revisao], ['Projeto gráfico', eq.projetoGrafico], ['Capa', eq.capa], ['Diagramação digital', eq.diagramacao]].filter(function (x) { return x[1]; });
   if (linhasEq.length) {
@@ -1919,7 +1932,10 @@ async function montarEditoriais(livro, o, logos) {
   if (cl) corpo.appendChild(el(doc, 'p', { 'class': 'cdd' }, [cl]));
   ficha.appendChild(corpo);
   cred.cont.appendChild(ficha);
-  if (eq.bibliotecario) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por ' + eq.bibliotecario + (eq.crb ? ' – ' + eq.crb : '')]));
+  if (eq.bibliotecario && eq.crb) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por ' + eq.bibliotecario + ' – ' + eq.crb]));
+  else if (o.emitirComPendencias) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por: ' + (eq.bibliotecario ? eq.bibliotecario + ' – registro no CRB em desenvolvimento.' : 'em desenvolvimento (bibliotecário(a) responsável e registro no CRB).')]));
+  var semAut = logos.filter(function (l) { return !l.autorizado; });
+  if (o.emitirComPendencias && semAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Autorização de uso das marcas institucionais (' + frase(semAut.map(function (l) { return l.sigla; })) + '): em desenvolvimento.']));
   var ed = cfg.editora;
   var contato = [ed.nome, ed.mantenedora, ed.endereco, (ed.cidade + ' – ' + ed.uf), ed.email, ed.site].filter(Boolean);
   cred.cont.appendChild(el(doc, 'h2', null, ['Editora']));
@@ -2236,8 +2252,11 @@ function auditarObra(o, A, logos) {
     if (!/^97[89](65|85)/.test(isbnLimpo(o.isbn))) A.add('aviso', 'ISBN', 'ISBN sem prefixo de grupo brasileiro (978-65 ou 978-85).', { norma: 'ISO 2108' });
     if (o.isbnImpresso && isbnLimpo(o.isbnImpresso) === isbnLimpo(o.isbn)) A.add('bloqueante', 'ISBN', 'O ISBN do e-book é igual ao do livro impresso. Cada formato exige ISBN próprio.', { norma: 'ISO 2108' });
   }
-  if (!cfg.conselho.length) A.add('bloqueante', 'Conselho', 'Conselho editorial não cadastrado. O selo exige a relação do conselho no verso da folha de rosto.', { norma: 'Política editorial da Editora', sug: 'Cadastre os membros na aba “Editora e conselho”.' });
-  if (!cfg.equipe.bibliotecario || !cfg.equipe.crb) A.add('grave', 'Ficha', 'Ficha catalográfica sem bibliotecário(a) responsável e registro no CRB.', { norma: 'Lei 4.084/1962 (profissão de bibliotecário); Lei 10.753/2003, art. 6º', sug: 'A ficha (CIP) deve ser elaborada e assinada por bibliotecário(a) com registro no CRB.' });
+  var dec = !!o.emitirComPendencias;
+  if (!cfg.conselho.length && dec) A.add('info', 'Conselho', 'Conselho editorial declarado como “em desenvolvimento” no verso da folha de rosto (emissão com pendências declaradas).', { sug: 'Ao definir o conselho, cadastre-o na aba “Editora e conselho” e emita nova versão.' });
+  else if (!cfg.conselho.length) A.add('bloqueante', 'Conselho', 'Conselho editorial não cadastrado. O selo exige a relação do conselho no verso da folha de rosto.', { norma: 'Política editorial da Editora', sug: 'Cadastre os membros na aba “Editora e conselho”.' });
+  if ((!cfg.equipe.bibliotecario || !cfg.equipe.crb) && dec) A.add('info', 'Ficha', 'Responsável pela ficha catalográfica declarado como “em desenvolvimento” (emissão com pendências declaradas).', { norma: 'Lei 4.084/1962; Lei 10.753/2003, art. 6º' });
+  else if (!cfg.equipe.bibliotecario || !cfg.equipe.crb) A.add('grave', 'Ficha', 'Ficha catalográfica sem bibliotecário(a) responsável e registro no CRB.', { norma: 'Lei 4.084/1962 (profissão de bibliotecário); Lei 10.753/2003, art. 6º', sug: 'A ficha (CIP) deve ser elaborada e assinada por bibliotecário(a) com registro no CRB.' });
   if (!o.cdd && !o.cdu) A.add('grave', 'Ficha', 'Classificação (CDD ou CDU) não informada na ficha catalográfica.', { sug: 'O(a) bibliotecário(a) define a classificação.' });
   if (!String(o.assuntos || '').trim()) A.add('grave', 'Ficha', 'Assuntos (cabeçalhos de assunto) não informados na ficha catalográfica.', { sug: 'Cabeçalhos definidos pelo(a) bibliotecário(a), com vocabulário controlado.' });
   if (aut.length > 3) A.add('info', 'Ficha', 'Obra com ' + aut.length + ' autores: pela AACR2, a entrada principal da ficha é pelo título, com os autores em entradas secundárias. Confirme com o(a) bibliotecário(a).', {});
@@ -2246,7 +2265,9 @@ function auditarObra(o, A, logos) {
   if (!o.palavrasChave) A.add('aviso', 'Metadados', 'Palavras-chave não informadas.', {});
   if (!/^\d{4}$/.test(o.ano || '')) A.add('grave', 'Metadados', 'Ano de publicação inválido.', {});
   logos.forEach(function (l) {
-    if (!l.dados) A.add('bloqueante', 'Marcas', 'Logomarca oficial de ' + l.sigla + ' não carregada.', { sug: 'Envie o arquivo oficial (PNG ou JPG, ao menos 600 px) na aba “Logomarcas”, obtido no manual de identidade visual da instituição.' });
+    if (!l.dados && o.emitirComPendencias) A.add('grave', 'Marcas', 'Logomarca oficial de ' + l.sigla + ' não carregada: a régua de marcas mostra a sigla no lugar.', { sug: 'Envie o arquivo oficial na aba “Logomarcas” e emita nova versão.' });
+    else if (!l.dados) A.add('bloqueante', 'Marcas', 'Logomarca oficial de ' + l.sigla + ' não carregada.', { sug: 'Envie o arquivo oficial (PNG ou JPG, ao menos 600 px) na aba “Logomarcas”, obtido no manual de identidade visual da instituição.' });
+    else if (!l.autorizado && dec) A.add('info', 'Marcas', 'Autorização de uso da marca ' + l.sigla + ' declarada como “em desenvolvimento” nos créditos.', { norma: 'Lei 9.279/1996' });
     else if (!l.autorizado) A.add('grave', 'Marcas', 'Uso da marca ' + l.sigla + ' sem autorização registrada.', { norma: 'Lei 9.279/1996 (propriedade industrial) e manuais de identidade visual', sug: 'Obtenha autorização formal da instituição e marque “uso autorizado” na aba “Logomarcas”.' });
   });
 }
@@ -2267,13 +2288,15 @@ function acoesPadrao(A) {
     else if (i.cat === 'Selo') i.acao = { tipo: 'campo', campo: 'autores' };
   });
 }
-function resumoAuditoria(A) {
+function resumoAuditoria(A, final) {
   var pontos = 100;
   A.itens.forEach(function (i) { pontos -= PESO[i.sev] || 0; });
   pontos = Math.max(0, pontos);
   var b = A.conta('bloqueante'), g = A.conta('grave');
   var status = b ? 'REPROVADO PARA PUBLICAÇÃO' : g ? 'APROVADO COM RESSALVAS' : 'APROVADO PARA PUBLICAÇÃO';
-  return { pontos: pontos, status: status, classe: b ? 'rep' : g ? 'ress' : 'apr', b: b, g: g, a: A.conta('aviso'), i: A.conta('info') };
+  if (final && b) status = 'EMITIDO POR DECISÃO DO EDITOR, COM PENDÊNCIAS';
+  else if (final && (g || A.itens.some(function (i) { return /em desenvolvimento/.test(i.msg); }))) status = 'VERSÃO FINAL EMITIDA COM PENDÊNCIAS DECLARADAS';
+  return { pontos: pontos, status: status, classe: b ? (final ? 'ress' : 'rep') : g ? 'ress' : 'apr', b: b, g: g, a: A.conta('aviso'), i: A.conta('info') };
 }
 var CHECKLIST = [
   ['Selo', 'Política do selo (autoria indígena)'], ['Conselho', 'Conselho editorial'], ['ISBN', 'ISBN do livro digital (Lei 10.753/2003)'],
@@ -2315,6 +2338,7 @@ function relatorioHtml(livro, o, res, revisao) {
       return l.length ? '<h2>Decisões do editor registradas no projeto</h2><table><tr><th>Decisão</th><th>Qtd.</th></tr>' + l.map(function (x) { return '<tr><td>' + x[0] + '</td><td style="text-align:right">' + x[1] + '</td></tr>'; }).join('') + '</table>' : ''; })() +
     '<h2>Correções automáticas aplicadas</h2>' + (corr ? '<table><tr><th>Correção</th><th>Qtd.</th></tr>' + corr + '</table>' : '<p>Nenhuma.</p>') +
     (revisao ? '<h2>Revisão linguística assistida por IA (sugestões — não aplicadas)</h2>' + (rev ? '<table><tr><th>Seção</th><th>Tipo</th><th>Trecho</th><th>Sugestão</th><th>Motivo</th></tr>' + rev + '</table>' : '<p>Nenhum problema objetivo apontado.</p>') + (errosRev.length ? '<p><small>' + errosRev.length + ' trecho(s) não puderam ser revisados: ' + esc(errosRev[0].erro) + '</small></p>' : '') : '') +
+    (o.emitirComPendencias ? '<h2>Emissão</h2><p>Versão final emitida por decisão do editor. Pendências declaradas no próprio livro como “em desenvolvimento”: ' + esc([!cfg.conselho.length ? 'conselho editorial' : '', !(cfg.equipe.bibliotecario && cfg.equipe.crb) ? 'responsável pela ficha catalográfica (CRB)' : '', estado.logos.some(function (l) { return !l.autorizado; }) ? 'autorização de uso das marcas' : ''].filter(Boolean).join('; ') || 'nenhuma') + '.</p>' : '') +
     '<h2>Observações do auditor</h2><p class="meta">Este relatório verifica a conformidade formal do livro digital com as normas da ABNT aplicáveis a livros (NBR 6029, 6027, 6024, 6023, 10520 e 6034), com a legislação do livro (Lei 10.753/2003), com a política do selo e com as diretrizes de acessibilidade EPUB. ' +
     'A ficha catalográfica é gerada em formato de rascunho a partir dos dados informados e deve ser conferida e assinada por bibliotecário(a) com registro no CRB. A revisão de conteúdo, a revisão técnica especializada e a aprovação do conselho editorial continuam sendo atos humanos indispensáveis.</p>' +
     '</body></html>';
@@ -2336,9 +2360,16 @@ function htmlPrevia(livro, k, logos) {
   var p = livro.paginas[k];
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>' + cssParaNavegador(livro.css) + 'body{margin:1.6em 8%;font-size:17px;background:#fffdf8}</style></head><body>' + trocarImagens(corpoDe(p.arq), livro, logos).replace(/href="([^"#:]*\.xhtml)(#[^"]*)?"/g, 'href="#" data-arq="$1"') + '</body></html>';
 }
+function trocarImagensDados(html, livro, logos) {
+  var mapa = { 'img/vinheta.svg': BASE + 'vinheta.svg' };
+  if (livro.capaBytes) mapa['img/capa.jpg'] = bytesParaDataUrl(livro.capaBytes, 'image/jpeg');
+  livro.imagens.forEach(function (im) { mapa[im.arquivo] = bytesParaDataUrl(im.bytes, im.mime); });
+  logos.forEach(function (l) { if (l.arquivoEpub && l.dados) mapa[l.arquivoEpub] = l.dados.url; });
+  return html.replace(/src="\.\.\/(img\/[^"]+)"/g, function (m, p) { return 'src="' + (mapa[p] || p) + '"'; });
+}
 function htmlImpressao(livro, logos, o) {
   var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}';
-  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagens(corpoDe(p.arq), livro, logos) + '</div>'; }).join('\n');
+  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(corpoDe(p.arq), livro, logos) + '</div>'; }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 
@@ -2427,7 +2458,7 @@ async function produzir(opcoesExtras) {
     etapa('epub', 'ok', (blob.size / 1024 / 1024).toFixed(2) + ' MB · ' + livro.ordem.length + ' arquivos');
 
     acoesPadrao(livro.A);
-    var res = resumoAuditoria(livro.A);
+    var res = resumoAuditoria(livro.A, obra.emitirComPendencias);
     estado.res = res;
     estado.relatorio = relatorioHtml(livro, obra, res, revisao);
     etapa('auditoria', res.b ? 'erro' : res.g ? 'aviso' : 'ok', res.status + ' · ' + res.pontos + '/100');
@@ -2497,7 +2528,7 @@ async function receberArquivo(file) {
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
-    if (novo) { var manter = { estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
+    if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
     await produzir();
   } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
@@ -2565,6 +2596,7 @@ function montarUI(alvo) {
         '<label>Listas <select data-o="listas"><option value="auto">Automáticas (3+ itens)</option><option value="sempre">Sempre</option><option value="nunca">Nunca</option></select></label>' +
         '<label>Citações <select data-o="estiloCitacao"><option value="maioria">Padronizar pela maioria</option><option value="alta">AUTOR, ano</option><option value="mista">Autor, ano</option><option value="manter">Manter como no manuscrito</option></select></label>' +
         '<label><input type="checkbox" data-o="indice"> Índice remissivo</label>' +
+        '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
       '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button></div>' +
@@ -2832,7 +2864,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
+  _interno: { htmlImpressao: htmlImpressao, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');
