@@ -1553,6 +1553,10 @@ async function processarIlustracoes(livro) {
         } else A.add('aviso', 'Acessibilidade', 'Tabela sem linha de cabeçalho marcada.', { onde: s.titulo, norma: 'EPUB Accessibility 1.1 / WCAG 2.1 (1.3.1)', sug: 'No Word, marque a primeira linha como “Repetir como linha de cabeçalho”.' });
       }
       tb.querySelectorAll('th').forEach(function (th) { if (!th.getAttribute('scope')) th.setAttribute('scope', 'col'); });
+      // justificação só onde a coluna comporta (≤ 2 colunas); em colunas estreitas, justificar abre “rios”
+      // entre palavras e a boa prática tipográfica é alinhar à esquerda com hifenização
+      var nCol = Math.max.apply(null, Array.from(tb.querySelectorAll('tr')).map(function (tr) { return Array.from(tr.children).reduce(function (s, c) { return s + (parseInt(c.getAttribute('colspan'), 10) || 1); }, 0); }).concat([1]));
+      tb.querySelectorAll('td').forEach(function (td) { if (txt(td).length > 90) td.setAttribute('class', nCol <= 2 ? 'longo' : 'longo estreito'); });
       livro.tabelas.push(item);
     });
   }
@@ -2411,10 +2415,64 @@ function trocarImagensDados(html, livro, logos) {
   logos.forEach(function (l) { if (l.arquivoEpub && l.dados) mapa[l.arquivoEpub] = l.dados.url; });
   return html.replace(/src="\.\.\/(img\/[^"]+)"/g, function (m, p) { return 'src="' + (mapa[p] || p) + '"'; });
 }
+/* Hifenização pt-BR para a saída impressa (PDF): os motores de impressão do navegador não trazem
+   dicionário de hifenização do português, e texto justificado sem partição abre “rios” entre palavras.
+   Insere hífens condicionais (U+00AD) segundo a divisão silábica (Acordo Ortográfico de 1990, Base XX):
+   consoante simples vai para a sílaba seguinte; separam-se rr, ss, sc, sç, xc e consoantes heterossilábicas;
+   não se separam os grupos consonantais (bl, br, cl, cr, dr, fl, fr, gl, gr, pl, pr, tr, vr), os dígrafos
+   ch, lh, nh nem qu/gu + vogal. Encontros vocálicos nunca são partidos (evita erro entre hiato e ditongo).
+   Palavras em língua indígena ou estrangeira (com k, w, y), siglas, itálicos, títulos, referências e ficha
+   ficam intactos. O EPUB não recebe U+00AD: os leitores hifenizam pelo CSS e a leitura por voz fica limpa. */
+var SIL_VOG = 'aeiouáàâãéêíóôõúü', SIL_GRUPOS = /^(?:[bcfgpv][lr]|dr|tr|ch|lh|nh|qu|gu)$/;
+function silabarPt(w) {
+  var l = w.toLowerCase(), n = l.length, tipo = [], cortes = [], i;
+  for (i = 0; i < n; i++) tipo.push(SIL_VOG.indexOf(l[i]) >= 0 ? 'V' : 'C');
+  for (i = 1; i < n - 1; i++) if (l[i] === 'u' && (l[i - 1] === 'q' || l[i - 1] === 'g') && tipo[i + 1] === 'V') tipo[i] = 'C';
+  i = 0; while (i < n && tipo[i] === 'C') i++;
+  while (i < n) {
+    while (i < n && tipo[i] === 'V') i++;
+    var s = i; while (i < n && tipo[i] === 'C') i++;
+    if (i >= n) break;
+    var run = l.slice(s, i), k = run.length, c;
+    if (k === 1) c = s;
+    else c = SIL_GRUPOS.test(run.slice(-2)) ? i - 2 : i - 1;
+    if (c === 2 && /^sub[lr]/.test(l)) c = 3;
+    if (c >= 2 && n - c >= 3) cortes.push(c);
+  }
+  if (!cortes.length) return w;
+  var out = '', a = 0; cortes.forEach(function (c) { out += w.slice(a, c) + '­'; a = c; });
+  return out + w.slice(a);
+}
+var HIFEN_PULAR = 'h1,h2,h3,h4,h5,h6,nav,th,caption,figcaption,em,i,cite,code,pre,a,.ficha,p.ref,.referencias p,.rosto,.falsa-rosto,.colofao,.capa,.parte,.sumario,.lista,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
+function hifenizarHtml(html) {
+  var d = new DOMParser().parseFromString('<!DOCTYPE html><html lang="pt-BR"><body>' + html + '</body></html>', 'text/html');
+  var tw = d.createTreeWalker(d.body, 4), nos = [], t;
+  while ((t = tw.nextNode())) nos.push(t);
+  nos.forEach(function (no) {
+    var pai = no.parentElement; if (!pai || pai.closest(HIFEN_PULAR)) return;
+    no.nodeValue = no.nodeValue.replace(/(^|[^\wÀ-ÿ@\/.:­-])([A-Za-zÀ-ÖØ-öø-ÿ]{7,})(?=$|[^\wÀ-ÿ@\/­])/g, function (m, pre, w) {
+      if (/[kwyKWY]/.test(w) || /th|sh|ph|ck|[^aeiouáàâãéêíóôõúüsrlmzxn]$/i.test(w) || /[A-ZÀ-Þ].*[A-ZÀ-Þ]/.test(w)) return m;
+      return pre + silabarPt(w);
+    });
+  });
+  return d.body.innerHTML;
+}
+/* Executado na página de impressão, já com as fontes carregadas: mede, na largura da mancha impressa
+   (148 − 17 − 15 = 116 mm), onde cada hífen condicional caiu e remove os que não quebraram linha.
+   A quebra de linha é gulosa, então retirar as oportunidades não usadas não altera a diagramação,
+   e a camada de texto do PDF fica limpa para busca, cópia e leitores de tela. */
+var AJUSTE_HIFENS_JS = '(function(){var b=document.body,w0=b.style.width;b.style.width="116mm";' +
+  'var tw=document.createTreeWalker(b,4),nos=[],t;while((t=tw.nextNode()))if(t.nodeValue.indexOf("\\u00AD")>=0)nos.push(t);' +
+  'var r=document.createRange(),usados=0;var dec=nos.map(function(no){var v=no.nodeValue,k={};' +
+  'for(var i=v.indexOf("\\u00AD");i>=0;i=v.indexOf("\\u00AD",i+1)){if(i===0||i===v.length-1)continue;' +
+  'r.setStart(no,i-1);r.setEnd(no,i+2);var q=r.getClientRects(),t0=q.length?q[0].top:0,br=false;' +
+  'for(var m=1;m<q.length;m++)if(q[m].top>t0+2)br=true;if(br){k[i]=1;usados++;}}return k;});' +
+  'nos.forEach(function(no,j){var v=no.nodeValue,s="",k=dec[j];for(var i=0;i<v.length;i++)if(v[i]!=="\\u00AD"||k[i])s+=v[i];no.nodeValue=s;});' +
+  'b.style.width=w0;document.documentElement.setAttribute("data-hifens",String(usados));})();';
 function htmlImpressao(livro, logos, o) {
   var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}';
-  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(corpoDe(p.arq), livro, logos) + '</div>'; }).join('\n');
-  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){setTimeout(function(){window.print();},400);});<\/script></body></html>';
+  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq)), livro, logos) + '</div>'; }).join('\n');
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 
 /* ───────────────────────── 13. ORQUESTRAÇÃO ───────────────────────── */
@@ -2922,7 +2980,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { htmlImpressao: htmlImpressao, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
+  _interno: { htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

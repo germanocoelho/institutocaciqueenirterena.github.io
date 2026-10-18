@@ -19,12 +19,16 @@ body {
   line-height: 1.5;
   margin: 0 5%;
   color: #1c140c;
-  -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto;
+  text-align: justify; text-justify: inter-word;
+  -webkit-hyphens: auto; -epub-hyphens: auto; -moz-hyphens: auto; hyphens: auto; adobe-hyphenate: auto;
+  -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; hyphenate-limit-chars: 7 3 3;
   widows: 2; orphans: 2;
 }
+/* composição justificada em todo texto corrido; exceções apenas onde a norma ou a função exigem
+   (referências NBR 6023, ficha catalográfica, sumário, títulos, legendas curtas) */
 
 /* ---------- texto corrido ---------- */
-p { margin: 0; text-indent: 1.5em; text-align: justify; }
+p { margin: 0; text-indent: 1.5em; text-align: justify; text-justify: inter-word; }
 h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p,
 .abre-capitulo + p, .autoria-cap + p, hr + p, blockquote + p, figure + p,
 .tabela + p, ul + p, ol + p, .sem-recuo { text-indent: 0; }
@@ -34,7 +38,7 @@ sup { font-size: .7em; line-height: 0; vertical-align: super; }
 sub { font-size: .7em; line-height: 0; vertical-align: sub; }
 a { color: #8C2F1C; text-decoration: none; }
 ul, ol { margin: .8em 0 .8em 1.6em; padding: 0; }
-li { margin: .2em 0; text-align: left; }
+li { margin: .2em 0; text-align: justify; }
 li p { text-indent: 0; }
 .nao-quebrar { -webkit-hyphens: none; hyphens: none; }
 
@@ -106,7 +110,7 @@ figure img, .ilustracao img { max-width: 100%; height: auto; }
 figcaption, .tabela caption {
   font-size: .85em; color: #2E1A10; line-height: 1.3; text-align: center; margin: 0 0 .5em; caption-side: top;
 }
-.fonte { font-size: .78em; text-indent: 0; text-align: left; margin-top: .4em; line-height: 1.3; }
+.fonte { font-size: .78em; text-indent: 0; text-align: justify; margin-top: .4em; line-height: 1.3; }
 .ilustracao .fonte { text-align: center; }
 .tabela { margin: 1.6em 0; overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: .85em; line-height: 1.3; }
@@ -115,12 +119,14 @@ thead th, tr:first-child th { border-bottom: 1px solid #8C2F1C; background-color
 table { border-top: 1.5px solid #8C2F1C; border-bottom: 1.5px solid #8C2F1C; }
 tbody tr + tr td { border-top: 1px dotted #D9C5A8; }
 td p, th p { text-indent: 0; text-align: left; }
+td.longo, td.longo p { text-align: justify; text-justify: inter-word; -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; }
+td.longo.estreito, td.longo.estreito p { text-align: left; }
 
 /* ---------- notas (NBR 10520) ---------- */
 a.noteref { color: #B0702F; font-size: .72em; vertical-align: super; line-height: 0; text-decoration: none; }
 hr.notas-sep { width: 22%; margin: 2.4em 0 1em; border: 0; border-top: 1px dotted #B0702F; text-align: left; }
 aside.nota { font-size: .82em; line-height: 1.35; margin: 0 0 .5em; }
-aside.nota p { text-indent: 0; text-align: left; }
+aside.nota p { text-indent: 0; text-align: justify; }
 aside.nota a.volta { margin-right: .35em; }
 
 /* ---------- referências (NBR 6023) ---------- */
@@ -131,7 +137,7 @@ aside.nota a.volta { margin-right: .35em; }
 p.grupo-ref { font-weight: 700; text-indent: 0; margin: 1.4em 0 .8em; }
 
 /* glossário, listas, índice */
-.glossario p { text-indent: 0; text-align: left; margin: 0 0 .7em; }
+.glossario p { text-indent: 0; text-align: justify; margin: 0 0 .7em; }
 .lista p, .lista li { text-indent: 0; text-align: left; }
 .lista ol, .indice-remissivo ul { list-style: none; margin: 0; padding: 0; }
 .lista li { margin: 0 0 .55em; }
@@ -178,7 +184,7 @@ nav.sumario a { color: #1c140c; }
 .logo-tile.texto { line-height: 1.2; font-size: .62em; font-weight: 700; padding: .4em; box-sizing: border-box; display: inline-block; }
 
 .creditos { font-size: .8em; line-height: 1.35; }
-.creditos p { text-indent: 0; text-align: left; margin: 0 0 .55em; }
+.creditos p { text-indent: 0; text-align: justify; margin: 0 0 .55em; }
 .creditos h2 { font-family: "Literata", Georgia, serif; font-size: 1em; margin: 1.3em 0 .4em; }
 .creditos .direitos { margin-bottom: 1.1em; }
 .creditos ul { list-style: none; margin: 0; padding: 0; }
@@ -206,7 +212,7 @@ nav.sumario a { color: #1c140c; }
 .colofao p { text-indent: 0; text-align: center; margin: 0 0 .7em; }
 .colofao .vinheta, .colofao .emblema { display: block; margin: 1.4em auto; height: 2.4em; width: auto; }
 .colofao .arte { font-style: italic; }
-.licencas p { text-indent: 0; text-align: left; font-size: .8em; margin: 0 0 .6em; }
+.licencas p { text-indent: 0; text-align: justify; font-size: .8em; margin: 0 0 .6em; }
 .licencas pre { white-space: pre-wrap; font-size: .7em; font-family: "Literata", Georgia, serif; }
 
 /* leitores com modo noturno: preserva legibilidade */
