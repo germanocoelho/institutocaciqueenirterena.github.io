@@ -42,7 +42,7 @@
       "papel": "Apoio institucional",
       "arquivo": "logos/cmddi.jpg",
       "fundo": "#000000",
-      "autorizado": false,
+      "autorizado": true,
       "rotulo": "logomarca atual"
     },
     {
@@ -53,7 +53,7 @@
       "papel": "Apoio institucional",
       "arquivo": "logos/cmddi-antiga.png",
       "fundo": "#ffffff",
-      "autorizado": false
+      "autorizado": true
     },
     {
       "id": "focams",

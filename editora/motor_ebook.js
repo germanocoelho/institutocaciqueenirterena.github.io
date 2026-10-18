@@ -150,7 +150,7 @@ var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
   sinopse: '', notasRevisao: '', logosObra: [], licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
-  numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
+  numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, ocultarResponsavelFicha: false, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
 var _origemIA = {};
@@ -589,11 +589,21 @@ function aplicarTextos(raiz, lista, A) {
   while ((n = w.nextNode())) nos.push(n);
   var feitas = 0;
   lista.forEach(function (c) {
-    if (!c || !c.de || c.de === c.para) return;
+    if (!c || !c.de || (c.de === c.para && !c.ate)) return;
     var achou = 0;
     var lim = function (ch) { return /[\p{L}\p{N}]/u.test(ch); };
-    var rx = new RegExp((lim(c.de.charAt(0)) ? '(?<![\\p{L}\\p{N}])' : '') + c.de.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + (lim(c.de.charAt(c.de.length - 1)) ? '(?![\\p{L}\\p{N}])' : ''), 'gu');
-    nos.forEach(function (n) { var k = 0; var v = n.nodeValue.replace(rx, function () { k++; return c.para; }); if (k) { achou += k; n.nodeValue = v; } });
+    var escR = function (x) { return x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+    var rx = c.ate ? new RegExp(escR(c.de) + '[\\s\\S]*?' + escR(c.ate), 'gu') : new RegExp((lim(c.de.charAt(0)) ? '(?<![\\p{L}\\p{N}])' : '') + escR(c.de) + (lim(c.de.charAt(c.de.length - 1)) ? '(?![\\p{L}\\p{N}])' : ''), 'gu');
+    nos.forEach(function (n) {
+      var k = 0; var v = n.nodeValue.replace(rx, function () { k++; return c.para; });
+      if (!k) return;
+      achou += k; n.nodeValue = v.replace(/\s{2,}/g, ' ');
+      var b = n.parentNode && n.parentNode.closest ? n.parentNode.closest('p,li,td,th') : null;
+      if (b && !txt(b) && !b.querySelector('img')) {
+        if (/^T[DH]$/.test(b.tagName)) { var tr = b.parentNode; b.textContent = '—'; if (tr && !Array.prototype.some.call(tr.children, function (x) { return txt(x) && txt(x) !== '—'; })) tr.remove(); }
+        else b.remove();
+      }
+    });
     if (achou) feitas += achou;
     else A.add('aviso', 'Revisão', 'Correção do editor não localizada no texto: “' + c.de.slice(0, 80) + '”.', { sug: 'O trecho pode ter mudado no manuscrito; remova ou refaça a correção no painel.', acao: { tipo: 'remover-texto', de: c.de } });
   });
@@ -1941,8 +1951,10 @@ async function montarEditoriais(livro, o, logos) {
   ficha.appendChild(corpo);
   cred.cont.appendChild(ficha);
   if (eq.bibliotecario && eq.crb) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por ' + eq.bibliotecario + ' – ' + eq.crb]));
-  else if (o.emitirComPendencias) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por: ' + (eq.bibliotecario ? eq.bibliotecario + ' – registro no CRB em desenvolvimento.' : 'em desenvolvimento (bibliotecário(a) responsável e registro no CRB).')]));
+  else if (o.emitirComPendencias && !o.ocultarResponsavelFicha) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por: ' + (eq.bibliotecario ? eq.bibliotecario + ' – registro no CRB em desenvolvimento.' : 'em desenvolvimento (bibliotecário(a) responsável e registro no CRB).')]));
   var semAut = logos.filter(function (l) { return !l.autorizado; });
+  var comAut = logos.filter(function (l) { return l.autorizado && l.arquivoEpub; }).map(function (l) { return l.sigla; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+  if (comAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Logomarcas institucionais reproduzidas com autorização: ' + frase(comAut) + '.']));
   if (o.emitirComPendencias && semAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Autorização de uso das marcas institucionais (' + frase(semAut.map(function (l) { return l.sigla; }).filter(function (v, i, arr) { return arr.indexOf(v) === i; })) + '): em desenvolvimento.']));
   var ed = cfg.editora;
   var contato = [ed.nome, ed.mantenedora, ed.endereco, (ed.cidade + ' – ' + ed.uf), ed.email, ed.site].filter(Boolean);
@@ -2285,7 +2297,8 @@ function auditarObra(o, A, logos) {
   if (!cfg.conselho.length && cfg.editora.conselhoAto) A.add('info', 'Conselho', 'Conselho Editorial indicado pelo ato de constituição (' + cfg.editora.conselhoAto + '), sem a relação nominal dos membros.', { sug: 'Para publicar os nomes, cadastre-os na aba “Editora e conselho”.' });
   else if (!cfg.conselho.length && dec) A.add('info', 'Conselho', 'Conselho editorial declarado como “em desenvolvimento” no verso da folha de rosto (emissão com pendências declaradas).', { sug: 'Ao definir o conselho, cadastre-o na aba “Editora e conselho” e emita nova versão.' });
   else if (!cfg.conselho.length) A.add('bloqueante', 'Conselho', 'Conselho editorial não cadastrado. O selo exige a relação do conselho no verso da folha de rosto.', { norma: 'Política editorial da Editora', sug: 'Cadastre os membros na aba “Editora e conselho”.' });
-  if ((!cfg.equipe.bibliotecario || !cfg.equipe.crb) && dec) A.add('info', 'Ficha', 'Responsável pela ficha catalográfica declarado como “em desenvolvimento” (emissão com pendências declaradas).', { norma: 'Lei 4.084/1962; Lei 10.753/2003, art. 6º' });
+  if ((!cfg.equipe.bibliotecario || !cfg.equipe.crb) && o.ocultarResponsavelFicha) A.add('info', 'Ficha', 'Responsável pela ficha catalográfica omitido nesta versão por decisão do editor.', { norma: 'Lei 4.084/1962; Lei 10.753/2003, art. 6º' });
+  else if ((!cfg.equipe.bibliotecario || !cfg.equipe.crb) && dec) A.add('info', 'Ficha', 'Responsável pela ficha catalográfica declarado como “em desenvolvimento” (emissão com pendências declaradas).', { norma: 'Lei 4.084/1962; Lei 10.753/2003, art. 6º' });
   else if (!cfg.equipe.bibliotecario || !cfg.equipe.crb) A.add('grave', 'Ficha', 'Ficha catalográfica sem bibliotecário(a) responsável e registro no CRB.', { norma: 'Lei 4.084/1962 (profissão de bibliotecário); Lei 10.753/2003, art. 6º', sug: 'A ficha (CIP) deve ser elaborada e assinada por bibliotecário(a) com registro no CRB.' });
   if (!o.cdd && !o.cdu) A.add('grave', 'Ficha', 'Classificação (CDD ou CDU) não informada na ficha catalográfica.', { sug: 'O(a) bibliotecário(a) define a classificação.' });
   if (!String(o.assuntos || '').trim()) A.add('grave', 'Ficha', 'Assuntos (cabeçalhos de assunto) não informados na ficha catalográfica.', { sug: 'Cabeçalhos definidos pelo(a) bibliotecário(a), com vocabulário controlado.' });
@@ -2630,6 +2643,7 @@ function montarUI(alvo) {
         '<label>Listas <select data-o="listas"><option value="auto">Automáticas (3+ itens)</option><option value="sempre">Sempre</option><option value="nunca">Nunca</option></select></label>' +
         '<label>Citações <select data-o="estiloCitacao"><option value="maioria">Padronizar pela maioria</option><option value="alta">AUTOR, ano</option><option value="mista">Autor, ano</option><option value="manter">Manter como no manuscrito</option></select></label>' +
         '<label><input type="checkbox" data-o="indice"> Índice remissivo</label>' +
+        '<label><input type="checkbox" data-o="ocultarResponsavelFicha"> Omitir responsável pela ficha</label>' +
         '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
