@@ -2620,7 +2620,7 @@ function silabarPt(w) {
   var out = '', a = 0; cortes.forEach(function (c) { out += w.slice(a, c) + '­'; a = c; });
   return out + w.slice(a);
 }
-var HIFEN_PULAR = '.credito-citacao,h1,h2,h3,h4,h5,h6,nav,th,caption,figcaption,em,i,cite,code,pre,a,.ficha,p.ref,.referencias p,.rosto,.falsa-rosto,.colofao,.capa,.parte,.sumario,.lista,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
+var HIFEN_PULAR = '.credito-citacao,h1,h2,h3,h4,h5,h6,th,em,i,cite,code,pre,p.ref,.referencias p,.rosto,.falsa-rosto,.capa,.parte,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
 function hifenizarHtml(html) {
   var d = new DOMParser().parseFromString('<!DOCTYPE html><html lang="pt-BR"><body>' + html + '</body></html>', 'text/html');
   var tw = d.createTreeWalker(d.body, 4), nos = [], t;
@@ -2649,7 +2649,7 @@ var AJUSTE_HIFENS_JS = '(function(){var b=document.body,w0=b.style.width;b.style
 function htmlImpressao(livro, logos, o) {
   var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}' +
     // no PDF, o título da tabela sai do <caption> para um parágrafo preso à tabela (o navegador não segura caption + 1ª linha na mesma página)
-    '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}';
+    '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:justify;text-align-last:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}';
   var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#').replace(/<table>\s*<caption>([\s\S]*?)<\/caption>/g, '<p class="cap-tab">$1</p><table>')), livro, logos) + '</div>'; }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }

@@ -108,19 +108,18 @@ blockquote p { text-indent: 0; text-align: justify; }
 figure, .ilustracao { margin: 1.6em 0; text-align: center; page-break-inside: avoid; break-inside: avoid; }
 figure img, .ilustracao img { max-width: 100%; height: auto; }
 figcaption, .tabela caption {
-  font-size: .85em; color: #2E1A10; line-height: 1.3; text-align: center; margin: 0 0 .5em; caption-side: top;
+  font-size: .85em; color: #2E1A10; line-height: 1.3; text-align: justify; text-align-last: center; margin: 0 0 .5em; caption-side: top;
 }
 .fonte { font-size: .78em; text-indent: 0; text-align: justify; margin-top: .4em; line-height: 1.3; }
-.ilustracao .fonte { text-align: center; }
+.ilustracao .fonte { text-align: justify; text-align-last: center; }
 .tabela { margin: 1.6em 0; overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: .85em; line-height: 1.3; }
-th, td { padding: .3em .5em; text-align: left; vertical-align: top; }
+th, td { padding: .3em .5em; text-align: justify; vertical-align: top; }
 thead th, tr:first-child th { border-bottom: 1px solid #8C2F1C; background-color: #F4EADA; font-weight: 700; }
 table { border-top: 1.5px solid #8C2F1C; border-bottom: 1.5px solid #8C2F1C; }
 tbody tr + tr td { border-top: 1px dotted #D9C5A8; }
-td p, th p { text-indent: 0; text-align: left; }
+td p, th p { text-indent: 0; text-align: justify; text-align-last: left; -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; }
 td.longo, td.longo p { text-align: justify; text-justify: inter-word; -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; }
-td.longo.estreito, td.longo.estreito p { text-align: left; }
 
 /* ---------- notas (NBR 10520) ---------- */
 a.noteref { color: #B0702F; font-size: .72em; vertical-align: super; line-height: 0; text-decoration: none; }
@@ -140,21 +139,24 @@ p.grupo-ref { font-weight: 700; text-indent: 0; margin: 1.4em 0 .8em; }
 
 /* glossário, listas, índice */
 .glossario p { text-indent: 0; text-align: justify; margin: 0 0 .7em; }
-.lista p, .lista li { text-indent: 0; text-align: left; }
+.lista p, .lista li { text-indent: 0; text-align: justify; text-align-last: left; -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; }
 .lista ol, .indice-remissivo ul { list-style: none; margin: 0; padding: 0; }
 .lista li { margin: 0 0 .55em; }
 .indice-remissivo h2 { font-size: 1em; margin: 1.2em 0 .4em; }
-.indice-remissivo li { margin: 0 0 .3em; text-indent: -1em; padding-left: 1em; }
+.indice-remissivo li { margin: 0 0 .3em; text-indent: -1em; padding-left: 1em; text-align: justify; text-align-last: left; }
 
 /* ---------- sumário (NBR 6027) ---------- */
 nav.sumario ol { list-style: none; margin: 0; padding: 0; }
-nav.sumario li { margin: .5em 0; text-align: left; }
+nav.sumario li { margin: .5em 0; text-indent: 0; text-align: justify; text-align-last: left; -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; }
+/* número pendurado: o título começa sempre na mesma coluna e as linhas seguintes alinham sob ele */
+nav.sumario li > a { display: block; padding-left: 3em; text-indent: -3em; text-align: justify; text-align-last: left; }
+nav.sumario .s-parte > a { padding-left: 0; text-indent: 0; }
 nav.sumario li li { margin: .3em 0 .3em 1.4em; }
 nav.sumario .s-parte { font-family: "Cinzel", Georgia, serif; font-weight: 700; margin-top: 1.3em; color: #8C2F1C; }
 nav.sumario .s-num { color: #B0702F; }
 nav.sumario .s-cap { font-weight: 700; }
-nav.sumario .s-num { display: inline-block; min-width: 2.6em; }
-nav.sumario .s-autoria { display: block; font-size: .85em; font-style: italic; font-weight: 400; margin-left: 2.6em; }
+nav.sumario .s-num { display: inline-block; width: 3em; text-indent: 0; }
+nav.sumario .s-autoria { display: block; font-size: .85em; font-style: italic; font-weight: 400; text-indent: 0; padding-left: 3em; }
 nav.sumario a { color: #1c140c; }
 
 /* ---------- elementos pré-textuais ---------- */
@@ -195,7 +197,7 @@ nav.sumario a { color: #1c140c; }
   border: 1px solid #3d1d08; padding: .8em 1em; margin: 1.4em 0 .6em;
   font-family: "Literata", Georgia, serif; font-size: .92em; line-height: 1.3; page-break-inside: avoid;
 }
-.ficha p { text-indent: 0; text-align: left; margin: 0 0 .5em; }
+.ficha p { text-indent: 0; text-align: justify; text-align-last: left; margin: 0 0 .5em; }
 .ficha .cip { text-align: center; font-weight: 700; margin-bottom: .8em; }
 .ficha .corpo { margin-left: 3.2em; }
 .ficha .cutter { float: left; width: 3em; margin-left: -3.2em; }
@@ -230,3 +232,12 @@ hr.pausa { border: 0; height: 1.2em; margin: 1.6em auto; background: url("../img
 /* crédito de citação em destaque: à direita, presa à citação */
 p.credito-citacao { text-indent: 0; text-align: right; font-style: italic; font-size: .85em; color: #5a4636; margin: -.5em 0 1.8em 25%; -webkit-hyphens: manual; hyphens: manual; }
 p.credito-citacao em, p.credito-citacao i { font-style: italic; }
+
+/* subtítulos de várias linhas também justificados (a última linha fica à esquerda) */
+h2, h3, h4, h5, h6 { text-align: justify; text-align-last: left; }
+.titulo-centro, section.pre > h1, section.pos > h1, section.parte h1 { text-align: center; text-align-last: center; }
+
+/* páginas de composição especial: blocos de várias linhas justificados, mantendo o eixo da página na última linha */
+.rosto p, .colofao p, .falsa-rosto p { text-align: justify; text-align-last: center; }
+.dedicatoria p, .epigrafe blockquote, .epigrafe p { text-align: justify; text-align-last: right; }
+p.credito-citacao { text-align: justify; text-align-last: right; }
