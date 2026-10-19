@@ -647,10 +647,10 @@ function sepRot() { return obra && obra.semTravessao === false ? ' – ' : '. ';
 function corrAtual() {
   var c = obra.correcoes = obra.correcoes || {};
   ['tabelas', 'refsEdit', 'citIgnorar'].forEach(function (k) { if (!c[k] || typeof c[k] !== 'object' || Array.isArray(c[k])) c[k] = {}; });
-  ['refsNovas', 'textos'].forEach(function (k) { if (!Array.isArray(c[k])) c[k] = []; });
+  ['refsNovas', 'textos', 'blocos'].forEach(function (k) { if (!Array.isArray(c[k])) c[k] = []; });
   return c;
 }
-function correcoesVazias() { return { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }; }
+function correcoesVazias() { return { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [], blocos: [] }; }
 function fpRef(t) { return N(t).replace(/[^A-Z0-9]/g, '').slice(0, 70); }
 function fpTabela(tb) { var r = tb.querySelector('tr'); return N(r ? r.textContent : '').replace(/[^A-Z0-9]/g, '').slice(0, 70) + ':' + tb.querySelectorAll('tr').length; }
 function mdLite(doc, alvo, texto) {
@@ -662,6 +662,29 @@ function mdLite(doc, alvo, texto) {
     alvo.appendChild(doc.createTextNode(x));
   });
   return alvo;
+}
+/* Reestruturação de trechos pelo editor: troca uma sequência de blocos (do bloco que começa por “de”
+   até o que começa por “ate”) por HTML novo, inserido no lugar ou antes do bloco que começa por “ancora”.
+   Serve para refazer tabelas que o manuscrito trouxe desmontadas em parágrafos, por exemplo. */
+function aplicarBlocos(body, lista, A) {
+  var feitas = 0, nrm = function (t) { return String(t || '').replace(/\s+/g, ' ').trim(); };
+  (lista || []).forEach(function (c) {
+    if (!c || !c.de) return;
+    var filhos = Array.prototype.slice.call(body.children), ini = -1, fim = -1, anc = null, i;
+    for (i = 0; i < filhos.length; i++) {
+      var t = nrm(txt(filhos[i]));
+      if (ini < 0) { if (t.indexOf(nrm(c.de)) === 0) { ini = i; if (!c.ate) { fim = i; break; } } }
+      else if (t.indexOf(nrm(c.ate)) === 0) { fim = i; break; }
+    }
+    if (c.ancora) for (i = 0; i < filhos.length; i++) if (nrm(txt(filhos[i])).indexOf(nrm(c.ancora)) === 0) { anc = filhos[i]; break; }
+    if (ini < 0 || fim < 0 || (c.ancora && !anc)) { A.add('aviso', 'Revisão', 'Reestruturação do editor não localizada no texto: “' + nrm(c.de).slice(0, 80) + '”.', { sug: 'O trecho pode ter mudado no manuscrito; refaça a reestruturação.' }); return; }
+    var tmp = body.ownerDocument.createElement('div'); tmp.innerHTML = c.html || '';
+    var ref = anc || filhos[ini];
+    while (tmp.firstChild) body.insertBefore(tmp.firstChild, ref);
+    for (i = ini; i <= fim; i++) filhos[i].remove();
+    feitas++;
+  });
+  A.corr('Trechos reestruturados pelo editor (tabelas e blocos refeitos)', feitas);
 }
 function aplicarTextos(raiz, lista, A, achadas) {
   if (!lista || !lista.length) return;
@@ -1073,6 +1096,7 @@ async function processar(entrada, opcoes, progresso) {
   var corr = mesclar(correcoesVazias(), opcoes.correcoes || {});
   var corrAchadas = {};
   aplicarTextos(body, corr.textos, A, corrAchadas);
+  aplicarBlocos(body, corr.blocos, A);
   etapa('tipografia', 'ok');
 
   /* segmentação em seções */
@@ -1289,6 +1313,19 @@ async function processar(entrada, opcoes, progresso) {
     });
   });
   A.corr('Citações diretas com mais de três linhas recuadas, sem aspas e em fonte menor (NBR 10520)', cl);
+  /* linha de crédito logo após uma citação em destaque (“Tradição oral Terena…”, “Adaptado de…”,
+     autor e obra): alinhada à direita e presa à citação, para não ser lida como título do que vem depois */
+  var nCred = 0;
+  livro.secoes.forEach(function (s) {
+    s.cont.querySelectorAll('blockquote').forEach(function (bq) {
+      var p = bq.nextElementSibling; if (!p || p.tagName !== 'P' || p.getAttribute('class')) return;
+      var t = txt(p); if (!t || t.length > 240 || /[.:;]$/.test(t)) return;
+      var ital = Array.prototype.map.call(p.querySelectorAll('em,i'), txt).join('').replace(/\s+/g, '') === t.replace(/\s+/g, '');
+      if (!ital && !/^(Adaptado|Tradição oral|Depoimento|Fonte oral|Canto)\b/i.test(t)) return;
+      p.setAttribute('class', 'credito-citacao'); nCred++;
+    });
+  });
+  A.corr('Linhas de crédito das citações em destaque alinhadas à direita e presas à citação', nCred);
   A.corr('Aspas removidas de citações longas (NBR 10520)', aspasRet);
   if (longasNaoTratadas) A.add('aviso', 'Citações', longasNaoTratadas + ' citação(ões) direta(s) longa(s) entre aspas no corpo do parágrafo, com formatação interna que impediu o recuo automático.', { norma: 'NBR 10520', sug: 'Aplique o estilo “Citação” a esses trechos no Word.' });
 
@@ -2572,7 +2609,7 @@ function silabarPt(w) {
   var out = '', a = 0; cortes.forEach(function (c) { out += w.slice(a, c) + '­'; a = c; });
   return out + w.slice(a);
 }
-var HIFEN_PULAR = 'h1,h2,h3,h4,h5,h6,nav,th,caption,figcaption,em,i,cite,code,pre,a,.ficha,p.ref,.referencias p,.rosto,.falsa-rosto,.colofao,.capa,.parte,.sumario,.lista,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
+var HIFEN_PULAR = '.credito-citacao,h1,h2,h3,h4,h5,h6,nav,th,caption,figcaption,em,i,cite,code,pre,a,.ficha,p.ref,.referencias p,.rosto,.falsa-rosto,.colofao,.capa,.parte,.sumario,.lista,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
 function hifenizarHtml(html) {
   var d = new DOMParser().parseFromString('<!DOCTYPE html><html lang="pt-BR"><body>' + html + '</body></html>', 'text/html');
   var tw = d.createTreeWalker(d.body, 4), nos = [], t;
@@ -2599,8 +2636,10 @@ var AJUSTE_HIFENS_JS = '(function(){var b=document.body,w0=b.style.width;b.style
   'nos.forEach(function(no,j){var v=no.nodeValue,s="",k=dec[j];for(var i=0;i<v.length;i++)if(v[i]!=="\\u00AD"||k[i])s+=v[i];no.nodeValue=s;});' +
   'b.style.width=w0;document.documentElement.setAttribute("data-hifens",String(usados));})();';
 function htmlImpressao(livro, logos, o) {
-  var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}';
-  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#')), livro, logos) + '</div>'; }).join('\n');
+  var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}' +
+    // no PDF, o título da tabela sai do <caption> para um parágrafo preso à tabela (o navegador não segura caption + 1ª linha na mesma página)
+    '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}';
+  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#').replace(/<table>\s*<caption>([\s\S]*?)<\/caption>/g, '<p class="cap-tab">$1</p><table>')), livro, logos) + '</div>'; }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 

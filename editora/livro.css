@@ -226,3 +226,7 @@ nav.sumario a { color: #1c140c; }
 
 /* quebra de cena: vinheta da Editora no lugar de símbolos */
 hr.pausa { border: 0; height: 1.2em; margin: 1.6em auto; background: url("../img/vinheta.svg") center / contain no-repeat; }
+
+/* crédito de citação em destaque: à direita, presa à citação */
+p.credito-citacao { text-indent: 0; text-align: right; font-style: italic; font-size: .85em; color: #5a4636; margin: -.5em 0 1.8em 25%; -webkit-hyphens: manual; hyphens: manual; }
+p.credito-citacao em, p.credito-citacao i { font-style: italic; }
