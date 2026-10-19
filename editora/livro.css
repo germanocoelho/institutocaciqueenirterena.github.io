@@ -124,6 +124,8 @@ td.longo.estreito, td.longo.estreito p { text-align: left; }
 
 /* ---------- notas (NBR 10520) ---------- */
 a.noteref { color: #B0702F; font-size: .72em; vertical-align: super; line-height: 0; text-decoration: none; }
+span.chamadas { color: #B0702F; font-size: .72em; vertical-align: super; line-height: 0; }
+span.chamadas a { color: inherit; text-decoration: none; }
 hr.notas-sep { width: 22%; margin: 2.4em 0 1em; border: 0; border-top: 1px dotted #B0702F; text-align: left; }
 aside.nota { font-size: .82em; line-height: 1.35; margin: 0 0 .5em; }
 aside.nota p { text-indent: 0; text-align: justify; }

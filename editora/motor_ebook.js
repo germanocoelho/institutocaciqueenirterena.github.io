@@ -410,6 +410,83 @@ function sanitizar(body) {
     if (!txt(p) && !p.querySelector('img')) p.remove();
   });
 }
+/* Notas digitadas à mão: o manuscrito traz, por capítulo, uma lista numerada de notas (“1. …”, “2. …”)
+   e chamadas em algarismos colados ao texto (“exige.1”, “apagar.14,15”), às vezes repetidas e fora de
+   ordem, como em sistema numérico de notas finais. A numeração dos autores é mantida: cada chamada vira
+   número sobrescrito ligado à sua nota na lista (a mais próxima com aquele número, de preferência adiante). */
+var RX_ITEM_NOTA = /^\s*(\d{1,3})\.\s+\S/;
+function chamadasManuais(livro, doc, A) {
+  var itens = [], nLista = 0, ok = 0, sem = [], secOk = /^(capitulo|abertura|apresentacao|prefacio|posfacio|apendice|anexo)$/;
+  // 1. listas de notas: dois ou mais itens consecutivos numerados em sequência, ou um item após título “Notas”
+  livro.secoes.forEach(function (s, is) {
+    if (!secOk.test(s.tipo)) return;
+    var ps = Array.prototype.slice.call(s.cont.querySelectorAll('p')).filter(function (x) { return !x.closest('table,blockquote,aside'); });
+    for (var i = 0; i < ps.length; i++) {
+      var m = RX_ITEM_NOTA.exec(txt(ps[i])); if (!m) continue;
+      var g = [ps[i]], n0 = +m[1], j = i + 1;
+      while (j < ps.length && ps[j] === ps[j - 1].nextElementSibling && (m = RX_ITEM_NOTA.exec(txt(ps[j]))) && +m[1] === n0 + g.length) { g.push(ps[j]); j++; }
+      var ant = g[0].previousElementSibling;
+      if (ant && /citações seguem a ABNT|referências completas/i.test(txt(ant)) && !/^\s*Notas\b/i.test(txt(ant))) ant = ant.previousElementSibling;
+      var cab = ant && /^\s*(\d+(\.\d+)*\s*)?Notas\b/i.test(txt(ant));
+      if ((g.length >= 2 || cab) && ++nLista) g.forEach(function (x, k) { var id = 'nm' + is + '-' + nLista + '-' + (n0 + k); x.setAttribute('id', id); x.setAttribute('class', ((x.getAttribute('class') || '') + ' nota-lista').trim()); itens.push({ s: s, is: is, num: n0 + k, id: id, el: x }); });
+      i = j - 1;
+    }
+  });
+  if (!itens.length) return;
+  var ehItem = {}; itens.forEach(function (x) { ehItem[x.id] = 1; });
+  // posição global de cada item, para escolher a nota mais próxima
+  function ordem(a, b) { return a === b ? 0 : (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1); }
+  function resolve(num, is, no) {
+    var cand = itens.filter(function (x) { return x.num === num && Math.abs(x.is - is) <= 2; });
+    var adiante = cand.filter(function (x) { return x.is > is || x.is === is && ordem(no, x.el) < 0; });
+    var atras = cand.filter(function (x) { return adiante.indexOf(x) < 0; });
+    return adiante.length ? adiante[0] : (atras.length ? atras[atras.length - 1] : null);
+  }
+  // 2. chamadas: algarismos colados a letra minúscula ou pontuação (não a outro número)
+  livro.secoes.forEach(function (s, is) {
+    if (!secOk.test(s.tipo)) return;
+    var nos = [], w = doc.createTreeWalker(s.cont, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) {
+      var pai = n.parentNode;
+      if (pai.closest('h1,h2,h3,h4,h5,h6,a,table,caption,figcaption,.nota-lista,aside')) continue;
+      nos.push(n);
+    }
+    nos.forEach(function (no) {
+      var rx = /([a-zà-ÿ.,;:)\]”’»])(\d{1,3}(?:,\d{1,3})*)(?![\d\p{L}])/gu, m, partes = [], ult = 0, v = no.nodeValue;
+      while ((m = rx.exec(v))) {
+        var antes = v.charAt(m.index - 1);
+        // 1.700, 9.279 e 14,15 não são chamadas; exceção: chamada logo após um ano no fim da frase (“guerra de 1864.14”)
+        if (/[.,;:]/.test(m[1]) && /\d/.test(antes) && !(m[1] === '.' && /(^|\s)(1[5-9]|20)\d\d$/.test(v.slice(Math.max(0, m.index - 5), m.index)) && /^(\s|$)/.test(v.slice(m.index + 1 + m[2].length)))) continue;
+        if (/[.,]/.test(m[1]) && /^\p{L}$/u.test(antes) && (m.index < 2 || /\s/.test(v.charAt(m.index - 2)))) continue; // abreviatura: “n.1”, “p.3”
+        var nums = m[2].split(',').map(Number), alvos = nums.map(function (k) { return resolve(k, is, no); });
+        if (alvos.some(function (x) { return !x; })) {
+          var fimFrase = /[.;:)”]/.test(m[1]) && /\p{L}/u.test(antes) && /^(\s|$)/.test(v.slice(m.index + 1 + m[2].length));
+          if (!alvos.some(Boolean) && !fimFrase) continue;
+          sem.push(s.titulo + ': ' + v.slice(Math.max(0, m.index - 40), m.index + 1 + m[2].length));
+        }
+        partes.push({ ini: m.index + 1, fim: m.index + 1 + m[2].length, nums: nums, alvos: alvos });
+      }
+      if (!partes.length) return;
+      var frag = doc.createDocumentFragment();
+      partes.forEach(function (pt) {
+        frag.appendChild(doc.createTextNode(v.slice(ult, pt.ini)));
+        var sp = el(doc, 'span', { 'class': 'chamadas' });
+        pt.nums.forEach(function (k, ix) {
+          if (ix) sp.appendChild(doc.createTextNode(','));
+          var al = pt.alvos[ix];
+          if (al) { sp.appendChild(el(doc, 'a', { 'class': 'chamada', href: '#' + al.id, 'data-nota': al.s.id, 'epub:type': 'noteref', role: 'doc-noteref' }, [String(k)])); ok++; }
+          else sp.appendChild(doc.createTextNode(String(k)));
+        });
+        frag.appendChild(sp); ult = pt.fim;
+      });
+      frag.appendChild(doc.createTextNode(v.slice(ult)));
+      no.parentNode.replaceChild(frag, no);
+    });
+  });
+  A.corr('Chamadas de nota digitadas no texto convertidas em números sobrescritos ligados às notas dos autores', ok);
+  if (sem.length) A.add('aviso', 'Notas', sem.length + ' chamada(s) de nota sem item correspondente na lista de notas: ' + sem.slice(0, 6).map(function (x) { return '“…' + x + '”'; }).join('; ') + (sem.length > 6 ? '…' : '') + '.', { norma: 'NBR 10520', sug: 'Confira a numeração das notas no manuscrito.' });
+}
+
 function extrairNotas(body) {
   var notas = {};
   body.querySelectorAll('li[id^="footnote-"],li[id^="endnote-"]').forEach(function (li) {
@@ -1214,6 +1291,9 @@ async function processar(entrada, opcoes, progresso) {
   A.corr('Citações diretas com mais de três linhas recuadas, sem aspas e em fonte menor (NBR 10520)', cl);
   A.corr('Aspas removidas de citações longas (NBR 10520)', aspasRet);
   if (longasNaoTratadas) A.add('aviso', 'Citações', longasNaoTratadas + ' citação(ões) direta(s) longa(s) entre aspas no corpo do parágrafo, com formatação interna que impediu o recuo automático.', { norma: 'NBR 10520', sug: 'Aplique o estilo “Citação” a esses trechos no Word.' });
+
+  /* chamadas de nota digitadas à mão (algarismos colados ao texto) ligadas às listas de notas dos autores */
+  chamadasManuais(livro, doc, A);
 
   /* notas de rodapé (NBR 10520): numeração consecutiva por capítulo */
   var notasUsadas = {}, notasFaltando = 0;
@@ -2262,6 +2342,8 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   // remissões de listas e índice usam o nome do arquivo da seção
   var alvos = {};
   livro.ilustracoes.concat(livro.tabelas).forEach(function (x) { alvos[x.id] = x.secao.arquivo + '#' + x.id; });
+  var porId = {}; livro.secoes.forEach(function (s) { porId[s.id] = s; });
+  livro.secoes.forEach(function (s) { s.cont.querySelectorAll('a[data-nota]').forEach(function (a) { var d = porId[a.getAttribute('data-nota')]; if (d && d !== s && d.arquivo) a.setAttribute('href', d.arquivo + a.getAttribute('href')); a.removeAttribute('data-nota'); }); });
   (livro.listasGeradas || []).forEach(function (ls) { ls.cont.querySelectorAll('a[data-alvo]').forEach(function (a) { a.setAttribute('href', alvos[a.getAttribute('data-alvo')] || '#'); a.removeAttribute('data-alvo'); }); });
   preencherSumario(livro, ordem);
 
@@ -2518,7 +2600,7 @@ var AJUSTE_HIFENS_JS = '(function(){var b=document.body,w0=b.style.width;b.style
   'b.style.width=w0;document.documentElement.setAttribute("data-hifens",String(usados));})();';
 function htmlImpressao(livro, logos, o) {
   var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}';
-  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq)), livro, logos) + '</div>'; }).join('\n');
+  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#')), livro, logos) + '</div>'; }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 
