@@ -221,3 +221,6 @@ nav.sumario a { color: #1c140c; }
   h1, h2, h3, h4, h5, h6, .falsa-rosto p, .rosto .r-titulo { color: inherit; }
   nav.sumario a { color: inherit; }
 }
+
+/* quebra de cena: vinheta da Editora no lugar de símbolos */
+hr.pausa { border: 0; height: 1.2em; margin: 1.6em auto; background: url("../img/vinheta.svg") center / contain no-repeat; }
