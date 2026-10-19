@@ -646,11 +646,11 @@ function sepRot() { return obra && obra.semTravessao === false ? ' – ' : '. ';
    reaplicadas a cada geração: o manuscrito original nunca é alterado. */
 function corrAtual() {
   var c = obra.correcoes = obra.correcoes || {};
-  ['tabelas', 'refsEdit', 'citIgnorar'].forEach(function (k) { if (!c[k] || typeof c[k] !== 'object' || Array.isArray(c[k])) c[k] = {}; });
+  ['tabelas', 'refsEdit', 'citIgnorar', 'fontesTabelas'].forEach(function (k) { if (!c[k] || typeof c[k] !== 'object' || Array.isArray(c[k])) c[k] = {}; });
   ['refsNovas', 'textos', 'blocos'].forEach(function (k) { if (!Array.isArray(c[k])) c[k] = []; });
   return c;
 }
-function correcoesVazias() { return { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [], blocos: [] }; }
+function correcoesVazias() { return { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [], blocos: [], fontesTabelas: {} }; }
 function fpRef(t) { return N(t).replace(/[^A-Z0-9]/g, '').slice(0, 70); }
 function fpTabela(tb) { var r = tb.querySelector('tr'); return N(r ? r.textContent : '').replace(/[^A-Z0-9]/g, '').slice(0, 70) + ':' + tb.querySelectorAll('tr').length; }
 function mdLite(doc, alvo, texto) {
@@ -797,8 +797,8 @@ function tipografia(raiz, A) {
   A.corr('Aspas retas convertidas em aspas tipográficas', c.aspas);
   A.corr('Apóstrofos tipográficos', c.apostrofo);
   A.corr('Reticências normalizadas (…)', c.retic);
-  A.corr('Hífens convertidos em travessão (—) em incisos e diálogos', c.trav);
-  A.corr('Intervalos numéricos com meia-risca (–)', c.inter);
+  A.corr('Hífens convertidos em travessão (—) em incisos e diálogos, a revisar no estilo sem travessões', c.trav);
+  A.corr(obra.semTravessao !== false ? 'Intervalos numéricos padronizados com hífen (NBR 6023)' : 'Intervalos numéricos com meia-risca (–)', c.inter);
   A.corr('Espaços duplos removidos', c.esp);
   A.corr('Tabulações e quebras espúrias removidas do texto', c.tab);
   A.corr('Espaço indevido antes de pontuação removido', c.pont);
@@ -1182,7 +1182,7 @@ async function processar(entrada, opcoes, progresso) {
       var resto = mA ? mA[3].trim() : '';
       titulo = (tipo === 'apendice' ? 'APÊNDICE ' : 'ANEXO ') + letra + (resto ? sepRot() + resto : '');
       sec.letra = letra;
-      if (N(titulo) !== N(t2)) A.corr('Títulos de apêndices e anexos padronizados (letra maiúscula + travessão)');
+      if (N(titulo) !== N(t2)) A.corr('Títulos de apêndices e anexos padronizados (letra maiúscula e título)');
     } else if (tipo === 'sobre') {
       titulo = titulo.replace(RX_NUM, '').trim();
     } else if (tipo === 'glossario' && N(titulo) !== 'GLOSSARIO') {
@@ -1705,6 +1705,12 @@ async function processarIlustracoes(livro) {
       wrap.appendChild(tb);
       if (notaTab) wrap.appendChild(notaTab);
       if (!fonte && leg && leg.fonte) { fonte = el(doc, 'p', null, [/^Fontes?\s*:/i.test(leg.fonte) ? leg.fonte : 'Fonte: ' + leg.fonte.charAt(0).toLowerCase() + leg.fonte.slice(1)]); A.corr('Fonte separada do título da tabela e posta abaixo dela (IBGE)'); }
+      // fonte (e nota) definidas pelo editor para a tabela, pelo início do título; uma linha por parágrafo
+      var fEd = livro.corr.fontesTabelas || {}, kEd = titulo && Object.keys(fEd).filter(function (k) { return titulo.indexOf(k) === 0; })[0];
+      if (!fonte && kEd) {
+        String(fEd[kEd]).split(/\n+/).forEach(function (l, il, arr) { l = l.trim(); if (!l) return; var pf = el(doc, 'p', { 'class': 'fonte' }, [l]); if (il < arr.length - 1) wrap.appendChild(pf); else fonte = pf; });
+        A.corr('Fontes de tabela definidas pelo editor (IBGE)');
+      }
       if (fonte) { fonte.className = 'fonte'; wrap.appendChild(fonte); } else A.add('aviso', 'Ilustrações', 'Tabela sem indicação de fonte' + (titulo ? ': “' + titulo.slice(0, 70) + '”' : '') + '.', { onde: s.titulo, norma: 'IBGE — Normas de apresentação tabular', sug: 'Abaixo da tabela, informe “Fonte: …”, mesmo que seja elaboração própria.' });
       if (!tb.querySelector('th')) {
         var r1 = tb.querySelector('tr');
