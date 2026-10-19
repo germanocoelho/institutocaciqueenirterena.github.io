@@ -1200,12 +1200,17 @@ async function processar(entrada, opcoes, progresso) {
     if (pa && pa.tagName === 'P' && /^(autoria|autor(a|es|as)?)\s*:/i.test(txt(pa))) { sec.autoria = txt(pa).replace(/^[^:]+:\s*/, ''); pa.remove(); }
 
     // subtítulos internos: hierarquia e numeração progressiva
-    var cont = [0, 0, 0, 0, 0, 0, 0], ant = 1, ultInd = [];
+    var cont = [0, 0, 0, 0, 0, 0, 0], ultInd = [], pilhaNiv = [];
     var renumCap = modo === 'capitulo' && sec.nCap && livro.renumerarSecoes;
     sec.cont.querySelectorAll('h2,h3,h4,h5,h6').forEach(function (h) {
-      var lv = +h.tagName[1];
-      if (lv > ant + 1) { lv = ant + 1; A.corr('Níveis de título corrigidos (salto de hierarquia)'); }
-      ant = lv;
+      // salto de hierarquia: o nível corrigido acompanha o nível original, de modo que títulos irmãos
+      // (mesmo nível no manuscrito) continuam irmãos depois da correção
+      var orig = +h.tagName[1], lv;
+      while (pilhaNiv.length && pilhaNiv[pilhaNiv.length - 1].o > orig) pilhaNiv.pop();
+      if (pilhaNiv.length && pilhaNiv[pilhaNiv.length - 1].o === orig) lv = pilhaNiv.pop().n;
+      else lv = Math.min(6, (pilhaNiv.length ? pilhaNiv[pilhaNiv.length - 1].n : 1) + 1);
+      pilhaNiv.push({ o: orig, n: lv });
+      if (lv !== orig) A.corr('Níveis de título corrigidos (salto de hierarquia)');
       var t = txt(h);
       if (/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA)( D[OA] CAPITULO.*| D[OA]S? (AUTOR|AUTORA|AUTORES))?$/.test(N(t.replace(RX_NUM, '')))) { lv = 2; h.setAttribute('data-ref', '1'); }
       var nh = doc.createElement('h' + lv); nh.id = nid('h');
