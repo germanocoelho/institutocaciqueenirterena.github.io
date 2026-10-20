@@ -81,7 +81,7 @@ h5, h6 { font-family: "Literata", Georgia, serif; font-size: 1em; font-weight: 4
 p.abre-texto { text-indent: 0; }
 p.abre-texto::first-line { font-variant: small-caps; letter-spacing: .03em; }
 /* fecho de capítulo */
-p.finis { text-align: center; text-indent: 0; margin: 2.2em 0 0; }
+p.finis { text-align: center; text-indent: 0; margin: 2.2em 0 0; break-before: avoid; page-break-before: avoid; }
 p.finis img { height: 1.15em; width: auto; }
 img.faixa { display: block; width: 72%; max-width: 20em; height: auto; margin: 1.6em auto; }
 img.pontos-v { display: block; height: 5.5em; width: auto; margin: 0 0 1.4em auto; }
@@ -241,3 +241,6 @@ h2, h3, h4, h5, h6 { text-align: justify; text-align-last: left; }
 .rosto p, .colofao p, .falsa-rosto p { text-align: justify; text-align-last: center; }
 .dedicatoria p, .epigrafe blockquote, .epigrafe p { text-align: justify; text-align-last: right; }
 p.credito-citacao { text-align: justify; text-align-last: right; }
+
+/* viúvas e órfãs: ao menos duas linhas de parágrafo no pé e no topo da página */
+p { orphans: 2; widows: 2; }

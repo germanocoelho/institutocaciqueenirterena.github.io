@@ -2399,6 +2399,9 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   var paginas = [], ids = {}, links = [];
   ordem.forEach(function (s, k) {
     var secEl = montarSecaoHtml(livro, s);
+    // identificador de bloco (data-b): permite medir no PDF em que página cada bloco começa e, depois,
+    // marcar no EPUB a paginação equivalente (paginarEpub); é retirado do EPUB final nessa etapa
+    if (!s.naoLinear) [secEl].concat(Array.prototype.slice.call(secEl.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,dt,figure,div.tabela'))).forEach(function (e) { e.setAttribute('data-b', 'b' + (livro._nb = (livro._nb || 0) + 1)); });
     var html = limparControles(serial(secEl));
     var tipoBody = s.def.parte === 'front' ? 'frontmatter' : s.def.parte === 'back' ? 'backmatter' : 'bodymatter';
     var arq = xhtml(s.tipo === 'capa' ? o.titulo : s.titulo, html, tipoBody);
@@ -2459,6 +2462,50 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   var blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip', compression: 'DEFLATE', compressionOptions: { level: 9 } });
   livro.css = css;
   return blob;
+}
+
+/* Paginação equivalente no EPUB (EPUB 3 page-list; EPUB Accessibility 1.1): recebe {bloco: página} medido
+   no PDF da obra, insere marcadores doc-pagebreak no início do primeiro bloco de cada página, gera a lista
+   de páginas no nav e declara pageBreakMarkers/pageNavigation nos metadados. O leitor passa a poder ir à
+   página N e citar por página, com a mesma numeração do PDF. */
+async function paginarEpub(blob, pag, fonte, ancoras) {
+  var zip = await window.JSZip.loadAsync(blob), prim = {}, porB = {}, lista = [], EPUB_NS = 'http://www.idpf.org/2007/ops';
+  Object.keys(pag).forEach(function (b) { var n = pag[b]; if (!prim[n] || +b.slice(1) < +prim[n].slice(1)) prim[n] = b; });
+  Object.keys(prim).forEach(function (n) { porB[prim[n]] = +n; });
+  // páginas que começam no meio de um bloco (parágrafo longo): marcador antes da primeira palavra da página
+  var anc = {}; (ancoras || []).forEach(function (a) { if (!prim[a.n]) (anc[a.b] = anc[a.b] || []).push(a); });
+  function marca(d, n) { var sp = d.createElementNS(XHTML_NS, 'span'); sp.setAttributeNS(EPUB_NS, 'epub:type', 'pagebreak'); sp.setAttribute('role', 'doc-pagebreak'); sp.setAttribute('id', 'pg-' + n); sp.setAttribute('aria-label', String(n)); return sp; }
+  var arqs = Object.keys(zip.files).filter(function (f) { return /^OEBPS\/text\/[^\/]+\.xhtml$/.test(f); });
+  for (var i = 0; i < arqs.length; i++) {
+    var f = arqs[i], src = await zip.file(f).async('string'), d = new DOMParser().parseFromString(src, 'application/xhtml+xml');
+    Array.prototype.forEach.call(d.querySelectorAll('[data-b]'), function (e) {
+      var b = e.getAttribute('data-b'); e.removeAttribute('data-b');
+      (anc[b] || []).forEach(function (a) {
+        var tw = d.createTreeWalker(e, 4), t, feito = false;
+        while (!feito && (t = tw.nextNode())) {
+          var i = t.nodeValue.replace(/\u00a0/g, ' ').indexOf(a.texto);
+          if (i < 0) continue;
+          var resto = t.splitText(i); t.parentNode.insertBefore(marca(d, a.n), resto); feito = true;
+          lista.push({ n: a.n, href: 'text/' + f.split('/').pop() + '#pg-' + a.n });
+        }
+      });
+      if (!porB[b]) return;
+      var n = porB[b];
+      e.insertBefore(marca(d, n), e.firstChild);
+      lista.push({ n: n, href: 'text/' + f.split('/').pop() + '#pg-' + n });
+    });
+    zip.file(f, XML + new XMLSerializer().serializeToString(d).replace(/^<\?xml[^>]*>\s*/, ''));
+  }
+  lista.sort(function (a, b) { return a.n - b.n; });
+  var nav = await zip.file('OEBPS/nav.xhtml').async('string');
+  nav = nav.replace('</body>', '<nav epub:type="page-list" id="page-list" hidden=""><h2>Lista de páginas</h2><ol>' + lista.map(function (x) { return '<li><a href="' + x.href + '">' + x.n + '</a></li>'; }).join('') + '</ol></nav>\n</body>');
+  zip.file('OEBPS/nav.xhtml', nav);
+  var opf = await zip.file('OEBPS/content.opf').async('string');
+  opf = opf.replace('</metadata>', '<meta property="schema:accessibilityFeature">pageBreakMarkers</meta>\n    <meta property="schema:accessibilityFeature">pageNavigation</meta>\n  </metadata>')
+    .replace(/(<meta property="schema:accessibilitySummary">[^<]*?)\.?<\/meta>/, function (m, a) { return a + '. Paginação equivalente: ' + esc(fonte || 'edição em PDF desta obra') + '.</meta>'; });
+  zip.file('OEBPS/content.opf', opf);
+  zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
+  return { blob: await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip', compression: 'DEFLATE', compressionOptions: { level: 9 } }), paginas: lista.length };
 }
 
 /* ───────────────────────── 11. AUDITORIA EDITORIAL ───────────────────────── */
@@ -2646,11 +2693,35 @@ var AJUSTE_HIFENS_JS = '(function(){var b=document.body,w0=b.style.width;b.style
   'for(var m=1;m<q.length;m++)if(q[m].top>t0+2)br=true;if(br){k[i]=1;usados++;}}return k;});' +
   'nos.forEach(function(no,j){var v=no.nodeValue,s="",k=dec[j];for(var i=0;i<v.length;i++)if(v[i]!=="\\u00AD"||k[i])s+=v[i];no.nodeValue=s;});' +
   'b.style.width=w0;document.documentElement.setAttribute("data-hifens",String(usados));})();';
-function htmlImpressao(livro, logos, o) {
-  var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm}body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}' +
+/* PDF: fólio (número da página) no rodapé, contado desde a capa para coincidir com o número de página
+   do leitor de PDF e omitido nas páginas pré-textuais de abertura. Sumário e listas recebem o número da
+   página de cada entrada (NBR 6027 e 6029) quando a paginação é informada em opc.paginas ({alvo: página});
+   opc.reservar compõe um primeiro passe com o espaço do número já reservado, para que a paginação medida
+   não mude no passe final. Chromium não implementa target-counter(), daí os dois passes. */
+var SEM_FOLIO = ['capa', 'falsa-rosto', 'rosto', 'creditos', 'dedicatoria', 'epigrafe'];
+function htmlImpressao(livro, logos, o, opc) {
+  opc = opc || {};
+  var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm;@bottom-center{content:counter(page);font-family:"Literata",Georgia,serif;font-size:8.5pt;color:#8C2F1C;vertical-align:top;padding-top:5mm}}' +
+    '@page semfolio{@bottom-center{content:none}}' + SEM_FOLIO.map(function (t) { return '.pg-' + t; }).join(',') + '{page:semfolio}' +
+    'body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}' +
     // no PDF, o título da tabela sai do <caption> para um parágrafo preso à tabela (o navegador não segura caption + 1ª linha na mesma página)
-    '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:justify;text-align-last:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}';
-  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) { return '<div class="pg">' + trocarImagensDados(hifenizarHtml(corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#').replace(/<table>\s*<caption>([\s\S]*?)<\/caption>/g, '<p class="cap-tab">$1</p><table>')), livro, logos) + '</div>'; }).join('\n');
+    '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:justify;text-align-last:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}' +
+    // entradas com número de página: título justificado à esquerda, número alinhado à margem direita na última linha
+    '.com-pag{display:grid!important;grid-template-columns:1fr auto;column-gap:.7em;padding-left:0!important;text-indent:0!important}' +
+    '.com-pag .s-tit{display:block;text-align:justify;text-align-last:left}nav.sumario .com-pag .s-tit{padding-left:3em;text-indent:-3em}nav.sumario .s-parte .com-pag .s-tit{padding-left:0;text-indent:0}' +
+    '.s-pag{align-self:end;text-align:right;width:2.2em;font-variant-numeric:tabular-nums lining-nums;font-weight:400;color:#1c140c}.s-pag.reserva{visibility:hidden}';
+  var corpo = livro.paginas.filter(function (p) { return !p.s.naoLinear; }).map(function (p) {
+    var h = corpoDe(p.arq).replace(/href="[\w\-]+\.xhtml#/g, 'href="#').replace(/href="([\w\-]+)\.xhtml"/g, 'href="#pgf-$1"').replace(/<table>\s*<caption>([\s\S]*?)<\/caption>/g, '<p class="cap-tab">$1</p><table>');
+    if (/^(sumario|lista)/.test(p.s.tipo) && (opc.paginas || opc.reservar)) {
+      h = h.replace(/<a href="#([^"]+)"([^>]*)>([\s\S]*?)<\/a>/g, function (m, alvo, at, dentro) {
+        var n = opc.paginas ? opc.paginas[alvo] : null;
+        var num = n ? '<span class="s-pag">' + n + '</span>' : '<span class="s-pag reserva">000</span>';
+        return '<a href="#' + alvo + '" class="com-pag"' + at + '><span class="s-tit">' + dentro + '</span>' + num + '</a>';
+      });
+    }
+    var id = String(p.s.arquivo || '').replace(/\.xhtml$/, '');
+    return '<div class="pg pg-' + p.s.tipo + '"' + (id ? ' id="pgf-' + id + '"' : '') + '>' + trocarImagensDados(hifenizarHtml(h), livro, logos) + '</div>';
+  }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 
@@ -3160,7 +3231,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
+  _interno: { paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

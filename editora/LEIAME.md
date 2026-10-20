@@ -36,3 +36,19 @@ Painel no ADM do site do ICET (seção “Editora Cacique Enir Terena”, visív
 - Para o índice, informe os termos (um por linha) em “Dados da obra”.
 
 Bibliotecas incluídas: JSZip (MIT) e mammoth.js (BSD-2). Fontes: Literata e Cinzel (SIL OFL 1.1).
+
+## Paginação (PDF e EPUB)
+
+- **PDF:** o fólio (número da página) sai no rodapé, contado desde a capa, para coincidir com o número de página do leitor de PDF. Capa, falsa folha de rosto, folha de rosto, créditos, dedicatória e epígrafe não exibem fólio.
+- **Sumário e listas com número de página (NBR 6027 e 6029):** o navegador não calcula a página de destino (`target-counter`), por isso a produção do PDF final é feita em dois passes:
+  1. `htmlImpressao(livro, logos, obra, { reservar: true })` compõe o livro com o espaço do número já reservado. Mede-se em que página cai cada destino do sumário e das listas.
+  2. `htmlImpressao(livro, logos, obra, { paginas: { alvo: página } })` compõe a versão final, com a mesma paginação.
+
+  O botão "Gerar PDF" do painel imprime direto pelo navegador: sai com fólio, mas sem os números no sumário.
+- **EPUB com paginação equivalente (EPUB 3 `page-list`, EPUB Accessibility 1.1):** cada bloco do livro tem um identificador provisório (`data-b`). A partir da página medida no PDF, `paginarEpub(epub, { bloco: página }, fonte, âncoras)` faz quatro coisas:
+  - insere marcadores `doc-pagebreak` no EPUB;
+  - gera a lista de páginas no `nav`;
+  - declara `pageBreakMarkers` e `pageNavigation` nos metadados;
+  - retira os identificadores provisórios.
+
+  Com isso, o leitor pode ir à página N e citar o e-book pela mesma numeração do PDF.
