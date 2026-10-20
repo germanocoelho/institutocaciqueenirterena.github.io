@@ -678,6 +678,16 @@ function aplicarBlocos(body, lista, A) {
     }
     if (c.ancora) for (i = 0; i < filhos.length; i++) if (nrm(txt(filhos[i])).indexOf(nrm(c.ancora)) === 0) { anc = filhos[i]; break; }
     if (ini < 0 || fim < 0 || (c.ancora && !anc)) { A.add('aviso', 'Revisão', 'Reestruturação do editor não localizada no texto: “' + nrm(c.de).slice(0, 80) + '”.', { sug: 'O trecho pode ter mudado no manuscrito; refaça a reestruturação.' }); return; }
+    if (c.anexarLinhas) {
+      // linhas de tabela que o manuscrito deixou fora da tabela: voltam para a tabela imediatamente anterior
+      var tb = null; for (i = ini - 1; i >= 0 && !tb; i--) tb = filhos[i].tagName === 'TABLE' ? filhos[i] : filhos[i].querySelector && filhos[i].querySelector('table');
+      if (!tb) { A.add('aviso', 'Revisão', 'Reestruturação do editor sem tabela anterior: “' + nrm(c.de).slice(0, 80) + '”.', {}); return; }
+      var tt = body.ownerDocument.createElement('table'); tt.innerHTML = '<tbody>' + (c.html || '') + '</tbody>';
+      var destino = tb.tBodies && tb.tBodies.length ? tb.tBodies[tb.tBodies.length - 1] : tb;
+      Array.prototype.slice.call(tt.querySelectorAll('tr')).forEach(function (tr) { destino.appendChild(tr); });
+      for (i = ini; i <= fim; i++) filhos[i].remove();
+      feitas++; return;
+    }
     var tmp = body.ownerDocument.createElement('div'); tmp.innerHTML = c.html || '';
     var ref = anc || filhos[ini];
     while (tmp.firstChild) body.insertBefore(tmp.firstChild, ref);
@@ -2667,7 +2677,7 @@ function silabarPt(w) {
   var out = '', a = 0; cortes.forEach(function (c) { out += w.slice(a, c) + '­'; a = c; });
   return out + w.slice(a);
 }
-var HIFEN_PULAR = '.credito-citacao,h1,h2,h3,h4,h5,h6,th,em,i,cite,code,pre,p.ref,.referencias p,.rosto,.falsa-rosto,.capa,.parte,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
+var HIFEN_PULAR = '.credito-citacao,h1,h2,h3,h4,h5,h6,em,i,cite,code,pre,p.ref,.referencias p,.rosto,.falsa-rosto,.capa,.parte,.rotulo-cap,.dedicatoria,.epigrafe,.autoria-cap,.regua,.finis,.ilustracao .legenda,[lang]:not([lang^="pt"])';
 function hifenizarHtml(html) {
   var d = new DOMParser().parseFromString('<!DOCTYPE html><html lang="pt-BR"><body>' + html + '</body></html>', 'text/html');
   var tw = d.createTreeWalker(d.body, 4), nos = [], t;
