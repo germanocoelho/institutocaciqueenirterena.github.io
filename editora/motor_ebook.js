@@ -2039,6 +2039,7 @@ function fichaCatalografica(o, livro) {
 
 function orn(doc, nome, cls) { return el(doc, 'img', { 'class': cls, src: '../img/' + nome + '.svg', alt: '', role: 'presentation' }); }
 function regua(doc, logos) {
+  logos = logos.filter(function (l) { return !l.marcaEditora; });
   var div = el(doc, 'div', { 'class': 'regua' });
   var papeis = [];
   logos.forEach(function (l) { if (papeis.indexOf(l.papel) < 0) papeis.push(l.papel); });
@@ -2083,15 +2084,21 @@ async function montarEditoriais(livro, o, logos) {
   if (o.subtitulo) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-subtitulo' }, [o.subtitulo]));
   if (nomesAut.length && nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', null, ['Organização: ' + frase(nomesOrg)]));
   rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-edicao' }, [((o.edicao || '1').replace(/\D/g, '') || '1') + 'ª edição']));
+  var marcaCor = logos.find(function (l) { return l.marcaEditora === 'cor' && l.arquivoEpub; });
   var selo = logos.find(function (l) { return l.id === 'icet' && l.arquivoEpub; });
-  if (selo && !logos.some(function (l) { return l.destaque && l.arquivoEpub; })) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-selo', src: '../' + selo.arquivoEpub, alt: 'Selo: ' + cfg.editora.nome }));
-  rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-local' }, [cfg.editora.nome]));
+  if (marcaCor) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-marca', src: '../' + marcaCor.arquivoEpub, alt: cfg.editora.nome }));
+  else {
+    if (selo && !logos.some(function (l) { return l.destaque && l.arquivoEpub; })) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-selo', src: '../' + selo.arquivoEpub, alt: 'Selo: ' + cfg.editora.nome }));
+    rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-local' }, [cfg.editora.nome]));
+  }
   rosto.cont.appendChild(el(doc, 'p', null, [(o.local || (cfg.editora.cidade + ', ' + cfg.editora.uf)), el(doc, 'br'), String(o.ano)]));
-  rosto.cont.appendChild(regua(doc, logos));
+  if (!marcaCor) rosto.cont.appendChild(regua(doc, logos));
   extras.push(rosto);
 
   // verso da folha de rosto: créditos, conselho, ficha catalográfica
   var cred = sec('creditos', 'copyright-page', '', 'Créditos e ficha catalográfica', 'creditos');
+  // com a marca da Editora na folha de rosto, a régua de realização e apoio abre o verso (créditos)
+  if (marcaCor) cred.cont.appendChild(regua(doc, logos));
   var autoresTodos = nomesAut.length ? nomesAut : nomesOrg;
   var LIC = {
     'todos': 'Todos os direitos reservados. Nenhuma parte desta obra pode ser reproduzida, armazenada ou transmitida, por qualquer meio, sem autorização prévia e por escrito dos autores e da editora (Lei nº 9.610/1998).',
@@ -2140,14 +2147,16 @@ async function montarEditoriais(livro, o, logos) {
   cred.cont.appendChild(ficha);
   if (eq.bibliotecario && eq.crb) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por ' + eq.bibliotecario + ', ' + eq.crb]));
   else if (o.emitirComPendencias && !o.ocultarResponsavelFicha) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Ficha catalográfica elaborada por: ' + (eq.bibliotecario ? eq.bibliotecario + ', com registro no CRB em desenvolvimento.' : 'em desenvolvimento (bibliotecário(a) responsável e registro no CRB).')]));
-  var semAut = logos.filter(function (l) { return !l.autorizado; });
-  var comAut = logos.filter(function (l) { return l.autorizado && l.arquivoEpub; }).map(function (l) { return l.sigla; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+  var parceiros = logos.filter(function (l) { return !l.marcaEditora; });
+  var semAut = parceiros.filter(function (l) { return !l.autorizado; });
+  var comAut = parceiros.filter(function (l) { return l.autorizado && l.arquivoEpub; }).map(function (l) { return l.sigla; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
   if (comAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Logomarcas institucionais reproduzidas com autorização: ' + frase(comAut) + '.']));
   if (o.emitirComPendencias && semAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Autorização de uso das marcas institucionais (' + frase(semAut.map(function (l) { return l.sigla; }).filter(function (v, i, arr) { return arr.indexOf(v) === i; })) + '): em desenvolvimento.']));
   var ed = cfg.editora;
   var contato = [ed.nome, ed.mantenedora, ed.endereco, (ed.cidade + ', ' + ed.uf), ed.email, ed.site].filter(Boolean);
-  cred.cont.appendChild(el(doc, 'h2', null, ['Editora']));
-  contato.forEach(function (l) { cred.cont.appendChild(el(doc, 'p', null, [l])); });
+  // contato da Editora: no colofão, junto da marca, quando houver marca; senão, no fim dos créditos
+  if (!marcaCor) { cred.cont.appendChild(el(doc, 'h2', null, ['Editora'])); contato.forEach(function (l) { cred.cont.appendChild(el(doc, 'p', null, [l])); }); }
+  livro._contatoEditora = marcaCor ? contato : null;
   extras.push(cred);
   livro.ficha = f;
 
@@ -2179,11 +2188,14 @@ async function montarEditoriais(livro, o, logos) {
   // colofão e licenças
   var col = { tipo: 'colofao', def: { et: 'colophon', role: 'doc-colophon', parte: 'back' }, id: 'colofao', titulo: 'Colofão', cont: el(doc, 'div', { 'class': 'colofao' }), subtitulos: [], gerada: true };
   var d = new Date();
-  col.cont.appendChild(orn(doc, 'espiral', 'emblema'));
+  var marcaPb = logos.find(function (l) { return l.marcaEditora === 'pb' && l.arquivoEpub; });
+  if (marcaPb) col.cont.appendChild(el(doc, 'img', { 'class': 'c-marca', src: '../' + marcaPb.arquivoEpub, alt: cfg.editora.nome }));
+  else col.cont.appendChild(orn(doc, 'espiral', 'emblema'));
   col.cont.appendChild(el(doc, 'p', null, ['Este livro foi editado pela ' + cfg.editora.nome + ', selo editorial do ' + cfg.editora.mantenedora + ', em ' + cfg.editora.cidade + ', ' + cfg.editora.uf + ', em ' + MESES[d.getMonth()] + ' de ' + d.getFullYear() + '.']));
   col.cont.appendChild(el(doc, 'p', null, ['Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).']));
   col.cont.appendChild(el(doc, 'p', null, ['Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.']));
   col.cont.appendChild(el(doc, 'p', { 'class': 'arte' }, ['A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.']));
+  if (livro._contatoEditora) col.cont.appendChild(el(doc, 'p', { 'class': 'c-contato' }, linhas(doc, livro._contatoEditora)));
   col.cont.appendChild(el(doc, 'p', null, [el(doc, 'a', { href: 'licencas.xhtml' }, ['Licenças das fontes tipográficas'])]));
   var lic = { tipo: 'licencas', def: { et: '', role: '', parte: 'back' }, id: 'licencas', titulo: 'Licenças das fontes', cont: el(doc, 'div', { 'class': 'licencas' }), subtitulos: [], gerada: true, naoLinear: true };
   lic.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, ['Licenças das fontes']));
@@ -2747,6 +2759,14 @@ async function logosDaObra() {
     if (d && d.mime !== 'image/svg+xml') { try { var bm = await decodificarImagem(d.bytes, d.mime); x.proporcao = bm.width / bm.height; } catch (e) {} }
     if (d) x.arquivoEpub = 'img/logo-' + l.id + '.' + (d.mime === 'image/png' ? 'png' : d.mime === 'image/svg+xml' ? 'svg' : 'jpg');
     lista.push(x);
+  }
+  // marca da própria Editora (logomarca colorida para a folha de rosto, preta para o colofão)
+  var mk = cfg.editora.marca || {};
+  for (var v of ['cor', 'pb']) {
+    if (!mk[v]) continue;
+    var lm = { id: 'editora-' + v, sigla: cfg.editora.nome, nome: cfg.editora.nome, papel: '', arquivo: mk[v], autorizado: true, marcaEditora: v };
+    var dm = await logoDados(lm);
+    if (dm) { lm.dados = dm; lm.arquivoEpub = 'img/logo-editora-' + v + '.' + (dm.mime === 'image/png' ? 'png' : dm.mime === 'image/svg+xml' ? 'svg' : 'jpg'); lista.push(lm); }
   }
   return lista;
 }

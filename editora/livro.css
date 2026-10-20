@@ -167,9 +167,9 @@ nav.sumario a { color: #1c140c; }
 .rosto { text-align: center; }
 .rosto p { text-indent: 0; text-align: center; }
 .rosto .r-autores { font-family: "Cinzel", Georgia, serif; font-size: 1.05em; margin: 1.5em 0 0; }
-.rosto .r-titulo { font-family: "Cinzel", Georgia, serif; font-weight: 700; font-size: 1.7em; color: #3d1d08; margin: 2.6em 0 .4em; line-height: 1.2; }
+.rosto .r-titulo { font-family: "Cinzel", Georgia, serif; font-weight: 700; font-size: 1.7em; color: #3d1d08; margin: 1.9em 0 .4em; line-height: 1.2; }
 .rosto .r-subtitulo { font-style: italic; font-size: 1.1em; margin: 0 0 1.6em; }
-.rosto .r-edicao { margin: 1.4em 0; }
+.rosto .r-edicao { margin: 1em 0 .6em; }
 .rosto .r-local { margin-top: 3em; }
 .rosto .r-selo { display: block; margin: 2.2em auto .4em; height: 3.2em; width: auto; }
 .rosto img.faixa { margin: 0 auto 2em; }
@@ -244,3 +244,11 @@ p.credito-citacao { text-align: justify; text-align-last: right; }
 
 /* viúvas e órfãs: ao menos duas linhas de parágrafo no pé e no topo da página */
 p { orphans: 2; widows: 2; }
+
+/* marca da Editora: imprenta na folha de rosto e assinatura no colofão */
+.rosto .r-marca { display: inline-block; vertical-align: top; width: 40%; max-width: 11em; height: auto; margin: 1.6em auto .7em; }
+.colofao .c-marca { display: inline-block; vertical-align: top; width: 34%; max-width: 9em; height: auto; margin: 0 auto 1.6em; }
+.colofao p.c-contato { font-size: .9em; text-align: center; text-align-last: center; margin-top: 1.2em; }
+/* régua de realização e apoio no verso da folha de rosto */
+.creditos .regua { margin: 0 0 1.4em; font-size: .85em; }
+.creditos .regua .papel { margin-top: 0; }

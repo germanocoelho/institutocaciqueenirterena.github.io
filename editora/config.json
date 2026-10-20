@@ -9,7 +9,12 @@
     "email": "",
     "site": "https://institutocaciqueenirterena.com.br",
     "politica": "Selo editorial de autoria indígena. Autores não indígenas só participam de uma publicação se ao menos um dos autores for indígena. O Instituto arca com os custos de registro de direitos autorais e de ISBN.",
-    "conselhoAto": "aprovado por portaria interna da Diretoria do Instituto Cacique Enir Terena"
+    "conselhoAto": "aprovado por portaria interna da Diretoria do Instituto Cacique Enir Terena",
+    "marca": {
+      "cor": "logos/editora-cor.png",
+      "pb": "logos/editora-pb.png",
+      "branca": "logos/editora-branca.png"
+    }
   },
   "regras": {
     "exigeAutorIndigena": true
