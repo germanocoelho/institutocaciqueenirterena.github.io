@@ -148,7 +148,7 @@ function logoDados(l) {
 /* ───────────────────────── dados da obra ───────────────────────── */
 var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
-  local: '', isbn: '', isbnImpresso: '', cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
+  local: '', isbn: '', isbnImpresso: '', isbnHtml: '', exemplares: [], cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
   sinopse: '', notasRevisao: '', logosObra: [], licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
   numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
@@ -2541,6 +2541,8 @@ function auditarObra(o, A, logos) {
   else if (!isbnValido(o.isbn)) A.add('bloqueante', 'ISBN', 'ISBN inválido (dígito verificador não confere): ' + o.isbn, { norma: 'ISO 2108', sug: 'Confira o número junto à agência do ISBN.' });
   else {
     if (!/^97[89](65|85)/.test(isbnLimpo(o.isbn))) A.add('aviso', 'ISBN', 'ISBN sem prefixo de grupo brasileiro (978-65 ou 978-85).', { norma: 'ISO 2108' });
+    if (o.isbnHtml && !isbnValido(o.isbnHtml)) A.add('grave', 'ISBN', 'ISBN da versão HTML inválido (dígito verificador).', { norma: 'ISO 2108' });
+    if (o.isbnHtml && isbnLimpo(o.isbnHtml) === isbnLimpo(o.isbn)) A.add('bloqueante', 'ISBN', 'O ISBN da versão HTML é igual ao do EPUB. Cada formato exige ISBN próprio.', { norma: 'ISO 2108' });
     if (o.isbnImpresso && isbnLimpo(o.isbnImpresso) === isbnLimpo(o.isbn)) A.add('bloqueante', 'ISBN', 'O ISBN do e-book é igual ao do livro impresso. Cada formato exige ISBN próprio.', { norma: 'ISO 2108' });
   }
   var dec = !!o.emitirComPendencias;
@@ -2632,6 +2634,7 @@ function relatorioHtml(livro, o, res, revisao) {
     '<h2>Correções automáticas aplicadas</h2>' + (corr ? '<table><tr><th>Correção</th><th>Qtd.</th></tr>' + corr + '</table>' : '<p>Nenhuma.</p>') +
     (revisao ? '<h2>Revisão linguística assistida por IA (sugestões — não aplicadas)</h2>' + (rev ? '<table><tr><th>Seção</th><th>Tipo</th><th>Trecho</th><th>Sugestão</th><th>Motivo</th></tr>' + rev + '</table>' : '<p>Nenhum problema objetivo apontado.</p>') + (errosRev.length ? '<p><small>' + errosRev.length + ' trecho(s) não puderam ser revisados: ' + esc(errosRev[0].erro) + '</small></p>' : '') : '') +
     (String(o.notasRevisao || '').trim() ? '<h2>Notas da revisão técnica</h2><p class="meta">Pontos verificados pela Coordenação Editorial Digital que dependem de decisão ou de fonte dos autores. Nada foi alterado no texto quanto a eles.</p><ol>' + o.notasRevisao.split(/\n+/).filter(function (l) { return l.trim(); }).map(function (l) { return '<li>' + esc(l.trim()) + '</li>'; }).join('') + '</ol>' : '') +
+    ((o.exemplares || []).length ? '<h2>Exemplares controlados em HTML</h2><table><tr><th>Nº</th><th>Destinatário</th><th>Data</th></tr>' + o.exemplares.map(function (x) { return '<tr><td>' + String(x.n).padStart(3, '0') + '</td><td>' + esc(x.destinatario) + '</td><td>' + esc(x.data) + '</td></tr>'; }).join('') + '</table>' : '') +
     (o.emitirComPendencias ? '<h2>Emissão</h2><p>Versão final emitida por decisão do editor. Pendências declaradas no próprio livro como “em desenvolvimento”: ' + esc([!cfg.conselho.length ? 'conselho editorial' : '', !(cfg.equipe.bibliotecario && cfg.equipe.crb) ? 'responsável pela ficha catalográfica (CRB)' : '', estado.logos.some(function (l) { return !l.autorizado; }) ? 'autorização de uso das marcas' : ''].filter(Boolean).join('; ') || 'nenhuma') + '.</p>' : '') +
     '<h2>Observações do auditor</h2><p class="meta">Este relatório verifica a conformidade formal do livro digital com as normas da ABNT aplicáveis a livros (NBR 6029, 6027, 6024, 6023, 10520 e 6034), com a legislação do livro (Lei 10.753/2003), com a política do selo e com as diretrizes de acessibilidade EPUB. ' +
     'A ficha catalográfica é gerada em formato de rascunho a partir dos dados informados e deve ser conferida e assinada por bibliotecário(a) com registro no CRB. A revisão de conteúdo, a revisão técnica especializada e a aprovação do conselho editorial continuam sendo atos humanos indispensáveis.</p>' +
@@ -2745,6 +2748,63 @@ function htmlImpressao(livro, logos, o, opc) {
     return '<div class="pg pg-' + p.s.tipo + '"' + (id ? ' id="pgf-' + id + '"' : '') + '>' + trocarImagensDados(hifenizarHtml(h), livro, logos) + '</div>';
   }).join('\n');
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
+}
+
+/* ───────────────────────── 12b. HTML DE LEITURA (CÓPIA CONTROLADA) ─────────────────────────
+   Arquivo único, que abre em qualquer navegador sem instalação nem internet: fontes, imagens e
+   ornamentos embutidos. Identifica a edição pelo ISBN (o próprio do HTML, quando registrado na
+   Agência Brasileira do ISBN, ou o do EPUB, de que é cópia de leitura). Opcionalmente é exemplar
+   numerado e nominal (marca em todas as telas) e cifrado com senha (AES-GCM 256, chave derivada por
+   PBKDF2-SHA-256): sem a senha o texto não pode ser lido nem copiado do arquivo. */
+var CSS_LEITURA = '@media screen{html{background:#efe6d6}body{max-width:36em;margin:0 auto;padding:0 1.4em 4em;font-size:18px;line-height:1.6;background:#fffdf8;box-shadow:0 0 2.5em rgba(60,30,10,.12)}' +
+  '.pg{padding:3.5em 0 2.5em;border-bottom:1px dotted #D9C5A8}.pg:last-child{border-bottom:0}.pg-capa{padding-top:1.5em}.pg-capa img{display:block;width:100%;max-width:30em;height:auto;margin:0 auto;box-shadow:0 .4em 1.4em rgba(0,0,0,.25)}' +
+  '.barra{position:sticky;top:0;z-index:9;display:flex;justify-content:space-between;align-items:center;gap:1em;margin:0 -1.4em;padding:.55em 1.4em;background:#8C2F1C;color:#fff;font:600 .78em/1.25 "Literata",Georgia,serif}' +
+  '.barra a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.45);border-radius:2em;padding:.25em .9em;white-space:nowrap}.barra span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.barra small{display:block;font-weight:400;opacity:.85}' +
+  'aside.nota{border-top:1px dotted #D9C5A8;padding-top:.3em}:target{scroll-margin-top:3.6em}}' +
+  '@media screen and (max-width:40em){body{font-size:16.5px;padding:0 1em 3em}.barra{margin:0 -1em;padding:.5em 1em}}' +
+  '.exemplar{border:1px solid #D9C5A8;border-radius:.4em;padding:1em 1.2em;font-size:.88em;background:#fbf5ea}.exemplar h2{font-size:1.05em;margin:0 0 .6em;text-align:left}.exemplar p{text-indent:0;margin:0 0 .5em}' +
+  '.cofre{max-width:24em;margin:18vh auto;text-align:center;font-family:"Literata",Georgia,serif}.cofre p,.cofre label{text-indent:0;text-align:center;text-align-last:center}.cofre label{display:block;margin-top:1em}.cofre h1{font-size:1.3em}.cofre input{font:inherit;padding:.5em .7em;width:100%;box-sizing:border-box;border:1px solid #b9a385;border-radius:.3em;margin:.8em 0}' +
+  '.cofre button{font:inherit;background:#8C2F1C;color:#fff;border:0;border-radius:2em;padding:.5em 1.6em;cursor:pointer}.cofre .erro{color:#9b1c1c;min-height:1.4em}' +
+  '@media print{.barra{display:none}}';
+async function htmlLeitura(livro, logos, o, opc) {
+  opc = opc || {};
+  var h = htmlImpressao(livro, logos, o).replace(/<script>[\s\S]*?<\/script>/, '');
+  // embute fontes e ornamentos servidos pela Editora
+  var urls = {}, rx = new RegExp(BASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^"\')\\s]+', 'g'), m;
+  while ((m = rx.exec(h))) urls[m[0]] = 1;
+  for (var u in urls) {
+    var mime = /\.woff2$/.test(u) ? 'font/woff2' : /\.woff$/.test(u) ? 'font/woff' : /\.svg$/.test(u) ? 'image/svg+xml' : /\.png$/.test(u) ? 'image/png' : 'image/jpeg';
+    var bytes = new Uint8Array(await (await fetch(u)).arrayBuffer());
+    h = h.split(u).join(bytesParaDataUrl(bytes, mime));
+  }
+  var isbnEpub = isbnValido(o.isbn) ? isbnFormatado(o.isbn) : '', isbnH = isbnValido(o.isbnHtml) ? isbnFormatado(o.isbnHtml) : '';
+  var ident = isbnH ? 'ISBN ' + isbnH + ' (HTML)' + (isbnEpub ? '; edição em EPUB: ISBN ' + isbnEpub : '') : (isbnEpub ? 'Cópia de leitura em HTML da edição digital ISBN ' + isbnEpub + ' (EPUB)' : 'Cópia de leitura em HTML');
+  var ex = opc.exemplar ? String(opc.exemplar).padStart(3, '0') : '';
+  var barra = '<div class="barra"><span>' + esc(o.titulo) + (ex ? '<small>Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') + '</small>' : '<small>' + esc(ident) + '</small>') + '</span><a href="#pgf-sumario">Sumário</a></div>';
+  var aviso = '<div class="pg pg-exemplar"><section class="exemplar" aria-label="Identificação deste arquivo"><h2>' + (ex ? 'Exemplar controlado nº ' + ex : 'Identificação deste arquivo') + '</h2>' +
+    (ex ? '<p>Licenciado a <strong>' + esc(opc.destinatario || '') + '</strong> em ' + new Date().toLocaleDateString('pt-BR') + ', para uso pessoal e intransferível.</p>' : '') +
+    '<p>' + esc(ident) + '. ' + esc(cfg.editora.nome) + ', ' + esc(cfg.editora.cidade) + ', ' + esc(cfg.editora.uf) + ', ' + esc(o.ano || '') + '.</p>' +
+    '<p>É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).' + (ex ? ' Cada exemplar é numerado e registrado pela Editora.' : '') + '</p></section></div>';
+  h = h.replace(/(<div class="pg pg-creditos"[\s\S]*?<\/div>\s*)(?=<div class="pg )/, '$1' + aviso);
+  var meta = '<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="author" content="' + esc(cfg.editora.nome) + '">' +
+    (isbnH ? '<meta name="dc.identifier" content="urn:isbn:' + isbnLimpo(o.isbnHtml) + '">' : '') + (isbnEpub ? '<meta name="dc.relation" content="urn:isbn:' + isbnLimpo(o.isbn) + '">' : '') + (ex ? '<meta name="exemplar" content="' + ex + '">' : '');
+  h = h.replace('<meta charset="UTF-8">', '<meta charset="UTF-8">' + meta).replace('</style>', CSS_LEITURA + '</style>');
+  var i = h.indexOf('<body>') + 6, j = h.lastIndexOf('</body>'), corpo = barra + h.slice(i, j);
+  if (!opc.senha) return h.slice(0, i) + corpo + h.slice(j);
+  // cifra o corpo: só a senha abre o texto
+  var enc = new TextEncoder(), sal = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), ITER = 310000;
+  var base = await crypto.subtle.importKey('raw', enc.encode(opc.senha), 'PBKDF2', false, ['deriveKey']);
+  var chave = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sal, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+  var cif = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, chave, enc.encode(corpo)));
+  var trava = '<div class="cofre" role="main"><h1>' + esc(o.titulo) + '</h1><p>' + (ex ? 'Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') : esc(cfg.editora.nome)) + '</p>' +
+    '<form id="abrir"><label for="senha">Senha de leitura</label><input id="senha" type="password" autocomplete="current-password" autofocus><button type="submit">Abrir o livro</button></form><p class="erro" id="erro" role="alert"></p>' +
+    '<p style="font-size:.8em;opacity:.75">' + esc(ident) + '</p></div>';
+  var js = '(function(){var d=JSON.parse(document.getElementById("cofre-dados").textContent);function b(x){return Uint8Array.from(atob(x),function(c){return c.charCodeAt(0)})}' +
+    'document.getElementById("abrir").addEventListener("submit",function(e){e.preventDefault();var s=document.getElementById("senha").value,er=document.getElementById("erro");er.textContent="Abrindo…";' +
+    'crypto.subtle.importKey("raw",new TextEncoder().encode(s),"PBKDF2",false,["deriveKey"]).then(function(k){return crypto.subtle.deriveKey({name:"PBKDF2",salt:b(d.s),iterations:d.n,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["decrypt"])})' +
+    '.then(function(k){return crypto.subtle.decrypt({name:"AES-GCM",iv:b(d.i)},k,b(d.c))}).then(function(t){document.body.innerHTML=new TextDecoder().decode(t);if(location.hash){var a=document.getElementById(location.hash.slice(1));if(a)a.scrollIntoView()}},function(){er.textContent="Senha incorreta."})})})();';
+  var dados = JSON.stringify({ s: bufParaB64(sal), i: bufParaB64(iv), n: ITER, c: bufParaB64(cif) });
+  return h.slice(0, i) + trava + '<script type="application/json" id="cofre-dados">' + dados + '<\/script><script>' + js + '<\/script>' + h.slice(j);
 }
 
 /* ───────────────────────── 13. ORQUESTRAÇÃO ───────────────────────── */
@@ -2986,7 +3046,7 @@ function montarUI(alvo) {
         '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
-      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button></div>' +
+      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
       '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
@@ -2999,7 +3059,7 @@ function montarUI(alvo) {
       campo('organizadores', 'Organizadores (um por linha: Nome; Povo)', 'area') +
       campo('edicao', 'Edição (número)', 'text') + campo('ano', 'Ano de publicação', 'text') +
       campo('local', 'Local de publicação', 'text', 'Padrão: ' + cfg.editora.cidade + ', ' + cfg.editora.uf) +
-      campo('isbn', 'ISBN do e-book', 'text', 'Obrigatório (Lei 10.753/2003). Diferente do impresso.') + campo('isbnImpresso', 'ISBN do impresso (se houver)', 'text') +
+      campo('isbn', 'ISBN do e-book', 'text', 'Obrigatório (Lei 10.753/2003). Diferente do impresso.') + campo('isbnImpresso', 'ISBN do impresso (se houver)', 'text') + campo('isbnHtml', 'ISBN da versão HTML (se registrada)', 'text', 'Cada formato distribuído separadamente tem ISBN próprio, registrado na Agência Brasileira do ISBN.') +
       campo('serie', 'Série / coleção', 'text') +
       campo('cdd', 'CDD', 'text') + campo('cdu', 'CDU', 'text') + campo('cutter', 'Notação de autor (Cutter)', 'text') +
       campo('assuntos', 'Assuntos da ficha (um por linha)', 'area', 'Definidos pelo(a) bibliotecário(a).') +
@@ -3081,6 +3141,20 @@ function montarUI(alvo) {
   Q('[data-a="regerar2"]').addEventListener('click', function () { if (!estado.entrada) { ui.msg('Envie o manuscrito na aba Produção.', 'err'); return; } QA('.tab')[0].click(); produzir(); });
   Q('[data-a="epub"]').addEventListener('click', function () { if (estado.epub) baixar(estado.epub, slug(obra.titulo) + '.epub'); });
   Q('[data-a="rel"]').addEventListener('click', function () { if (estado.relatorio) baixar(new Blob([estado.relatorio], { type: 'text/html' }), 'auditoria-' + slug(obra.titulo) + '.html'); });
+  Q('[data-a="html"]').addEventListener('click', function () {
+    if (!estado.livro) return;
+    var dest = prompt('Exemplar controlado: nome da pessoa ou instituição que receberá esta cópia.\n(Deixe em branco para uma cópia sem numeração nem senha.)', '');
+    if (dest === null) return;
+    dest = dest.trim(); var senha = '';
+    if (dest) { senha = prompt('Senha de leitura para este exemplar (mínimo de 8 caracteres). Envie a senha à pessoa por um canal diferente do arquivo.', '') || ''; if (senha.length < 8) { ui.msg('Senha muito curta: use ao menos 8 caracteres.', 'err'); return; } }
+    var lista = obra.exemplares = Array.isArray(obra.exemplares) ? obra.exemplares : [];
+    var n = dest ? lista.reduce(function (mx, x) { return Math.max(mx, +x.n || 0); }, 0) + 1 : 0;
+    htmlLeitura(estado.livro, estado.logos, obra, dest ? { exemplar: n, destinatario: dest, senha: senha } : {}).then(function (h) {
+      if (dest) { lista.push({ n: n, destinatario: dest, data: new Date().toISOString().slice(0, 10) }); obraGuardar(); }
+      baixar(new Blob([h], { type: 'text/html' }), slug(obra.titulo) + (n ? '-exemplar-' + String(n).padStart(3, '0') : '') + '.html');
+      ui.msg(dest ? 'Exemplar nº ' + String(n).padStart(3, '0') + ' gerado para ' + dest + ' e registrado no projeto.' : 'HTML de leitura gerado.', 'ok');
+    }, function (er) { ui.msg('Não foi possível gerar o HTML: ' + er.message, 'err'); });
+  });
   Q('[data-a="pdf"]').addEventListener('click', function () {
     if (!estado.livro) return;
     var w = window.open('', '_blank');
@@ -3095,7 +3169,7 @@ function montarUI(alvo) {
   selPg.addEventListener('change', function () { mostrarPg(+selPg.value); });
 
   ui.msg = function (m, t) { var e = Q('.msg'); e.textContent = m; e.className = 'msg' + (t ? ' ' + t : ''); };
-  ui.travar = function (s) { QA('.acoes .bt').forEach(function (b) { if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
+  ui.travar = function (s) { QA('.acoes .bt').forEach(function (b) { if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
     var li = raiz.querySelector('.etapas [data-e="' + id + '"]'); if (!li) return;
@@ -3261,7 +3335,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

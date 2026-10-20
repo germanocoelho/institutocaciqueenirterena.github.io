@@ -52,3 +52,13 @@ Bibliotecas incluídas: JSZip (MIT) e mammoth.js (BSD-2). Fontes: Literata e Cin
   - retira os identificadores provisórios.
 
   Com isso, o leitor pode ir à página N e citar o e-book pela mesma numeração do PDF.
+
+## HTML de leitura e cópias controladas
+
+O botão **"HTML de leitura (cópia controlada)"** gera um arquivo único que abre em qualquer navegador, sem instalar nada e sem internet: fontes, imagens e ornamentos vêm embutidos.
+
+- **Sem destinatário:** cópia de leitura simples, identificada pelo ISBN.
+- **Com destinatário:** exemplar numerado e nominal. O número e o nome aparecem em todas as telas, e o conteúdo vai cifrado (AES-GCM 256, chave derivada da senha por PBKDF2-SHA-256 com 310 mil iterações). Sem a senha o texto não pode ser lido nem copiado do arquivo.
+- **Registro:** cada exemplar entra no projeto (`obra.exemplares`) e no relatório de auditoria.
+- **Senha:** envie-a à pessoa por um canal diferente do arquivo.
+- **ISBN:** cada formato distribuído separadamente tem ISBN próprio (ISO 2108). Enquanto a versão HTML não tiver número registrado na Agência Brasileira do ISBN, o arquivo se identifica como cópia de leitura da edição em EPUB. Ao registrar, informe o número em "ISBN da versão HTML", na aba "Dados da obra".
