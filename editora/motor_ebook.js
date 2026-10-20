@@ -149,7 +149,7 @@ function logoDados(l) {
 var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', isbnHtml: '', exemplares: [], cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
-  sinopse: '', notasRevisao: '', logosObra: [], licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
+  sinopse: '', notasRevisao: '', logosObra: [], marcaEditora: { rosto: 'auto', falsaRosto: '', creditos: '', colofao: 'auto', capa: 'auto', capaAutores: '', capaPosicao: 'auto', html: 'auto' }, licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
   numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
@@ -1964,10 +1964,16 @@ async function gerarCapa(o, logos) {
   g.globalAlpha = 1;
   faixaGrafismo(g, 70, 90, W);
   g.textAlign = 'center'; g.textBaseline = 'alphabetic';
-  g.fillStyle = '#E8A853'; g.font = '400 44px "EB Cinzel", serif';
-  try { g.letterSpacing = '10px'; } catch (e) {}
-  g.fillText(cfg.editora.nome.toUpperCase(), W / 2, 300);
-  try { g.letterSpacing = '0px'; } catch (e) {}
+  var omc = marcaCfgObra(), lCapa = marcaLogo(logos, varMarca(omc.capa, lumHex('#1d0e03'), 'cor'));
+  if (lCapa && lCapa.dados) {
+    var imc = await decodificarImagem(lCapa.dados.bytes, lCapa.dados.mime), lwc = 440, lhc = Math.round(lwc * imc.height / imc.width);
+    g.drawImage(imc, (W - lwc) / 2, 150, lwc, lhc);
+  } else {
+    g.fillStyle = '#E8A853'; g.font = '400 44px "EB Cinzel", serif';
+    try { g.letterSpacing = '10px'; } catch (e) {}
+    g.fillText(cfg.editora.nome.toUpperCase(), W / 2, 300);
+    try { g.letterSpacing = '0px'; } catch (e) {}
+  }
   var tam = 150, linhas;
   do { g.font = '700 ' + tam + 'px "EB Cinzel", serif'; linhas = quebrarLinhas(g, o.titulo || 'Sem título', 1340); tam -= 6; } while ((linhas.length > 5 || linhas.some(function (l) { return g.measureText(l).width > 1400; })) && tam > 60);
   tam += 6;
@@ -1991,7 +1997,7 @@ async function gerarCapa(o, logos) {
   if (!nomes.length && orgs.length) { g.font = 'italic 400 40px "EB Literata", serif'; g.fillText(orgs.length > 1 ? '(organizadores)' : '(organização)', W / 2, yA + linhaAut.length * 76); }
   // régua de logomarcas
   g.fillStyle = '#F7F2E8'; g.fillRect(0, 2090, W, 360);
-  var tiles = logos.slice(0, 6), tw = 230, gap = 26, x0 = (W - (tiles.length * tw + (tiles.length - 1) * gap)) / 2;
+  var tiles = logos.filter(function (l) { return !l.marcaEditora; }).slice(0, 6), tw = 230, gap = 26, x0 = (W - (tiles.length * tw + (tiles.length - 1) * gap)) / 2;
   for (var i = 0; i < tiles.length; i++) {
     var L = tiles[i], x = x0 + i * (tw + gap), ty = 2155;
     g.fillStyle = L.fundo || '#ffffff'; retArred(g, x, ty, tw, tw, 18); g.fill();
@@ -2073,6 +2079,8 @@ async function montarEditoriais(livro, o, logos) {
   // falsa folha de rosto
   var falsa = sec('falsa-rosto', 'halftitlepage', '', 'Falsa folha de rosto', 'falsa-rosto');
   falsa.cont.appendChild(el(doc, 'p', null, [o.titulo]));
+  var om = marcaCfgObra();
+  marcaImgs(doc, logos, varMarca(om.falsaRosto, LUM_PAGINA, 'pb'), 'f-marca').forEach(function (n) { falsa.cont.appendChild(n); });
   extras.push(falsa);
 
   // folha de rosto
@@ -2084,9 +2092,9 @@ async function montarEditoriais(livro, o, logos) {
   if (o.subtitulo) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-subtitulo' }, [o.subtitulo]));
   if (nomesAut.length && nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', null, ['Organização: ' + frase(nomesOrg)]));
   rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-edicao' }, [((o.edicao || '1').replace(/\D/g, '') || '1') + 'ª edição']));
-  var marcaCor = logos.find(function (l) { return l.marcaEditora === 'cor' && l.arquivoEpub; });
+  var imgsRosto = marcaImgs(doc, logos, varMarca(om.rosto, LUM_PAGINA, 'cor'), 'r-marca'), marcaCor = imgsRosto.length > 0;
   var selo = logos.find(function (l) { return l.id === 'icet' && l.arquivoEpub; });
-  if (marcaCor) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-marca', src: '../' + marcaCor.arquivoEpub, alt: cfg.editora.nome }));
+  if (marcaCor) imgsRosto.forEach(function (n) { rosto.cont.appendChild(n); });
   else {
     if (selo && !logos.some(function (l) { return l.destaque && l.arquivoEpub; })) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-selo', src: '../' + selo.arquivoEpub, alt: 'Selo: ' + cfg.editora.nome }));
     rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-local' }, [cfg.editora.nome]));
@@ -2157,6 +2165,8 @@ async function montarEditoriais(livro, o, logos) {
   // contato da Editora: no colofão, junto da marca, quando houver marca; senão, no fim dos créditos
   if (!marcaCor) { cred.cont.appendChild(el(doc, 'h2', null, ['Editora'])); contato.forEach(function (l) { cred.cont.appendChild(el(doc, 'p', null, [l])); }); }
   livro._contatoEditora = marcaCor ? contato : null;
+  var imgsCred = marcaImgs(doc, logos, varMarca(om.creditos, LUM_PAGINA, 'pb'), 'cr-marca');
+  if (imgsCred.length) { var pcm = el(doc, 'p', { 'class': 'cr-marca-p' }); imgsCred.forEach(function (n) { pcm.appendChild(n); }); cred.cont.appendChild(pcm); }
   extras.push(cred);
   livro.ficha = f;
 
@@ -2188,8 +2198,8 @@ async function montarEditoriais(livro, o, logos) {
   // colofão e licenças
   var col = { tipo: 'colofao', def: { et: 'colophon', role: 'doc-colophon', parte: 'back' }, id: 'colofao', titulo: 'Colofão', cont: el(doc, 'div', { 'class': 'colofao' }), subtitulos: [], gerada: true };
   var d = new Date();
-  var marcaPb = logos.find(function (l) { return l.marcaEditora === 'pb' && l.arquivoEpub; });
-  if (marcaPb) col.cont.appendChild(el(doc, 'img', { 'class': 'c-marca', src: '../' + marcaPb.arquivoEpub, alt: cfg.editora.nome }));
+  var imgsCol = marcaImgs(doc, logos, varMarca(om.colofao, LUM_PAGINA, 'pb'), 'c-marca');
+  if (imgsCol.length) imgsCol.forEach(function (n) { col.cont.appendChild(n); });
   else col.cont.appendChild(orn(doc, 'espiral', 'emblema'));
   col.cont.appendChild(el(doc, 'p', null, ['Este livro foi editado pela ' + cfg.editora.nome + ', selo editorial do ' + cfg.editora.mantenedora + ', em ' + cfg.editora.cidade + ', ' + cfg.editora.uf + ', em ' + MESES[d.getMonth()] + ' de ' + d.getFullYear() + '.']));
   col.cont.appendChild(el(doc, 'p', null, ['Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).']));
@@ -2358,6 +2368,7 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   var capaBytes;
   var fonteCapa = o.capaPropria || (!o.capaGerada && livro.meta.capa) || '';
   if (fonteCapa) { var dc = dataUrlParaBytes(fonteCapa); var nz = dc && await normalizarImagem(dc.bytes, dc.mime); if (nz) { var bm = await decodificarImagem(nz.bytes, nz.mime); nz = await canvasPara(await aparar(bm), 2560, 'image/jpeg', 0.9); } capaBytes = nz ? nz.bytes : null; }
+  if (capaBytes && fonteCapa) { var omA = marcaCfgObra(); if (omA.capaAutores) { try { capaBytes = await carimbarMarca(capaBytes, logos, omA.capaAutores, omA.capaPosicao); A.corr('Marca da Editora aplicada na capa enviada pelos autores'); } catch (e) { A.add('aviso', 'Capa', 'Não foi possível aplicar a marca da Editora na capa: ' + e.message, {}); } } }
   if (!capaBytes) capaBytes = await gerarCapa(o, logos);
   livro.capaBytes = capaBytes;
   add('img/capa.jpg', capaBytes, 'image/jpeg', 'img-capa', 'cover-image');
@@ -2756,14 +2767,14 @@ function htmlImpressao(livro, logos, o, opc) {
    Agência Brasileira do ISBN, ou o do EPUB, de que é cópia de leitura). Opcionalmente é exemplar
    numerado e nominal (marca em todas as telas) e cifrado com senha (AES-GCM 256, chave derivada por
    PBKDF2-SHA-256): sem a senha o texto não pode ser lido nem copiado do arquivo. */
-var CSS_LEITURA = '@media screen{html{background:#efe6d6}body{max-width:36em;margin:0 auto;padding:0 1.4em 4em;font-size:18px;line-height:1.6;background:#fffdf8;box-shadow:0 0 2.5em rgba(60,30,10,.12)}' +
+var CSS_LEITURA = 'img.marca-clara{display:inline-block!important}img.marca-escura{display:none!important}@media screen{html{background:#efe6d6}body{max-width:36em;margin:0 auto;padding:0 1.4em 4em;font-size:18px;line-height:1.6;background:#fffdf8;box-shadow:0 0 2.5em rgba(60,30,10,.12)}' +
   '.pg{padding:3.5em 0 2.5em;border-bottom:1px dotted #D9C5A8}.pg:last-child{border-bottom:0}.pg-capa{padding-top:1.5em}.pg-capa img{display:block;width:100%;max-width:30em;height:auto;margin:0 auto;box-shadow:0 .4em 1.4em rgba(0,0,0,.25)}' +
   '.barra{position:sticky;top:0;z-index:9;display:flex;justify-content:space-between;align-items:center;gap:1em;margin:0 -1.4em;padding:.55em 1.4em;background:#8C2F1C;color:#fff;font:600 .78em/1.25 "Literata",Georgia,serif}' +
   '.barra a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.45);border-radius:2em;padding:.25em .9em;white-space:nowrap}.barra span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.barra small{display:block;font-weight:400;opacity:.85}' +
   'aside.nota{border-top:1px dotted #D9C5A8;padding-top:.3em}:target{scroll-margin-top:3.6em}}' +
   '@media screen and (max-width:40em){body{font-size:16.5px;padding:0 1em 3em}.barra{margin:0 -1em;padding:.5em 1em}}' +
   '.exemplar{border:1px solid #D9C5A8;border-radius:.4em;padding:1em 1.2em;font-size:.88em;background:#fbf5ea}.exemplar h2{font-size:1.05em;margin:0 0 .6em;text-align:left}.exemplar p{text-indent:0;margin:0 0 .5em}' +
-  '.cofre{max-width:24em;margin:18vh auto;text-align:center;font-family:"Literata",Georgia,serif}.cofre p,.cofre label{text-indent:0;text-align:center;text-align-last:center}.cofre label{display:block;margin-top:1em}.cofre h1{font-size:1.3em}.cofre input{font:inherit;padding:.5em .7em;width:100%;box-sizing:border-box;border:1px solid #b9a385;border-radius:.3em;margin:.8em 0}' +
+  '.cofre{max-width:24em;margin:18vh auto;padding-top:1.6em;text-align:center;font-family:"Literata",Georgia,serif}.cofre p,.cofre label{text-indent:0;text-align:center;text-align-last:center}.cofre label{display:block;margin-top:1em}.cofre h1{font-size:1.3em}.cofre input{font:inherit;padding:.5em .7em;width:100%;box-sizing:border-box;border:1px solid #b9a385;border-radius:.3em;margin:.8em 0}' +
   '.cofre button{font:inherit;background:#8C2F1C;color:#fff;border:0;border-radius:2em;padding:.5em 1.6em;cursor:pointer}.cofre .erro{color:#9b1c1c;min-height:1.4em}' +
   '@media print{.barra{display:none}}';
 async function htmlLeitura(livro, logos, o, opc) {
@@ -2796,7 +2807,8 @@ async function htmlLeitura(livro, logos, o, opc) {
   var base = await crypto.subtle.importKey('raw', enc.encode(opc.senha), 'PBKDF2', false, ['deriveKey']);
   var chave = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sal, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
   var cif = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, chave, enc.encode(corpo)));
-  var trava = '<div class="cofre" role="main"><h1>' + esc(o.titulo) + '</h1><p>' + (ex ? 'Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') : esc(cfg.editora.nome)) + '</p>' +
+  var lH = marcaLogo(logos, varMarca(marcaCfgObra().html, LUM_PAGINA, 'cor'));
+  var trava = '<div class="cofre" role="main">' + (lH && lH.dados ? '<img src="' + bytesParaDataUrl(lH.dados.bytes, lH.dados.mime) + '" alt="' + esc(cfg.editora.nome) + '" style="width:12em;max-width:70%;height:auto;margin:0 auto 1.4em;display:block">' : '') + '<h1>' + esc(o.titulo) + '</h1><p>' + (ex ? 'Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') : esc(cfg.editora.nome)) + '</p>' +
     '<form id="abrir"><label for="senha">Senha de leitura</label><input id="senha" type="password" autocomplete="current-password" autofocus><button type="submit">Abrir o livro</button></form><p class="erro" id="erro" role="alert"></p>' +
     '<p style="font-size:.8em;opacity:.75">' + esc(ident) + '</p></div>';
   var js = '(function(){var d=JSON.parse(document.getElementById("cofre-dados").textContent);function b(x){return Uint8Array.from(atob(x),function(c){return c.charCodeAt(0)})}' +
@@ -2810,6 +2822,46 @@ async function htmlLeitura(livro, logos, o, opc) {
 /* ───────────────────────── 13. ORQUESTRAÇÃO ───────────────────────── */
 var estado = { arquivo: null, entrada: null, livro: null, epub: null, relatorio: null, revisao: null, logos: [], rodando: false };
 
+/* Marca da Editora: três versões (colorida, preta, branca). Em cada lugar do livro o editor escolhe
+   “auto” (conforme o fundo), uma versão fixa ou nenhuma. Em fundo escuro, “auto” usa a branca; em fundo
+   claro, a colorida (folha de rosto, capa, HTML) ou a preta (colofão, créditos, falsa folha de rosto). */
+var LUM_PAGINA = 0.98, MARCA_LUGARES = [['rosto', 'Folha de rosto', 'cor'], ['falsaRosto', 'Falsa folha de rosto', 'pb'], ['creditos', 'Verso da folha de rosto (créditos)', 'pb'], ['colofao', 'Colofão', 'pb'], ['capa', 'Capa gerada pela Editora', 'cor'], ['capaAutores', 'Capa enviada pelos autores (carimbo)', 'cor'], ['html', 'HTML de leitura (tela de senha)', 'cor']];
+function marcaCfgObra() { return mesclar(clone(OBRA_PADRAO.marcaEditora), obra.marcaEditora || {}); }
+function lumHex(h) { var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(h || ''); if (!m) return 1; var c = [m[1], m[2], m[3]].map(function (x) { x = parseInt(x, 16) / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function varMarca(escolha, lum, preferida) { if (!escolha) return ''; if (escolha !== 'auto') return escolha; return lum < 0.45 ? 'branca' : preferida; }
+function marcaLogo(logos, v) { return logos.find(function (l) { return l.marcaEditora === v && l.arquivoEpub; }); }
+/* imagem da marca com versão para modo noturno (a branca aparece quando o leitor está em fundo escuro) */
+function marcaImgs(doc, logos, v, cls) {
+  var l = marcaLogo(logos, v); if (!l) return [];
+  var out = [el(doc, 'img', { 'class': cls + ' marca-clara', src: '../' + l.arquivoEpub, alt: cfg.editora.nome })];
+  var br = marcaLogo(logos, 'branca');
+  if (v !== 'branca' && br) out.push(el(doc, 'img', { 'class': cls + ' marca-escura', src: '../' + br.arquivoEpub, alt: cfg.editora.nome }));
+  return out;
+}
+/* carimba a marca na capa enviada pelos autores, escolhendo a versão pelo brilho da área */
+async function carimbarMarca(bytes, logos, escolha, posicao) {
+  var bm = await decodificarImagem(bytes, 'image/jpeg'), W = bm.width, H = bm.height;
+  var c = document.createElement('canvas'); c.width = W; c.height = H; var g = c.getContext('2d'); g.drawImage(bm, 0, 0);
+  var ref = marcaLogo(logos, 'cor') || marcaLogo(logos, 'pb') || marcaLogo(logos, 'branca'); if (!ref) return bytes;
+  var lw = Math.round(W * 0.24), lh = Math.round(lw / (ref.proporcao || 1.67)), mx = Math.round(W * 0.05), my = Math.round(H * 0.03);
+  var xs = [mx, Math.round((W - lw) / 2), W - mx - lw], cand = [];
+  if (posicao !== 'rodape') xs.forEach(function (x) { cand.push([x, my]); });
+  if (posicao !== 'topo') xs.forEach(function (x) { cand.push([x, H - my - lh]); });
+  var lin = function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); };
+  // escolhe a área mais calma (menor variação de brilho), para a marca não cobrir título, nomes ou ilustração
+  var melhor = null;
+  cand.forEach(function (p) {
+    var px = g.getImageData(p[0], p[1], lw, lh).data, soma = 0, q = 0, n = 0;
+    for (var i = 0; i < px.length; i += 16) { var l = 0.2126 * lin(px[i]) + 0.7152 * lin(px[i + 1]) + 0.0722 * lin(px[i + 2]); soma += l; q += l * l; n++; }
+    var media = soma / n, desvio = Math.sqrt(Math.max(0, q / n - media * media));
+    if (!melhor || desvio < melhor.desvio) melhor = { x: p[0], y: p[1], lum: media, desvio: desvio };
+  });
+  var v = varMarca(escolha, melhor.lum, 'cor'), l = marcaLogo(logos, v); if (!l || !l.dados) return bytes;
+  var im = await decodificarImagem(l.dados.bytes, l.dados.mime);
+  g.drawImage(im, melhor.x, melhor.y, lw, Math.round(lw * im.height / im.width));
+  var b = await new Promise(function (r) { c.toBlob(r, 'image/jpeg', 0.92); });
+  return new Uint8Array(await b.arrayBuffer());
+}
 async function logosDaObra() {
   var lista = [];
   var sel = Array.isArray(obra.logosObra) && obra.logosObra.length ? obra.logosObra : null;
@@ -2822,11 +2874,11 @@ async function logosDaObra() {
   }
   // marca da própria Editora (logomarca colorida para a folha de rosto, preta para o colofão)
   var mk = cfg.editora.marca || {};
-  for (var v of ['cor', 'pb']) {
+  for (var v of ['cor', 'pb', 'branca']) {
     if (!mk[v]) continue;
     var lm = { id: 'editora-' + v, sigla: cfg.editora.nome, nome: cfg.editora.nome, papel: '', arquivo: mk[v], autorizado: true, marcaEditora: v };
     var dm = await logoDados(lm);
-    if (dm) { lm.dados = dm; lm.arquivoEpub = 'img/logo-editora-' + v + '.' + (dm.mime === 'image/png' ? 'png' : dm.mime === 'image/svg+xml' ? 'svg' : 'jpg'); lista.push(lm); }
+    if (dm) { try { var bmm = await decodificarImagem(dm.bytes, dm.mime); lm.proporcao = bmm.width / bmm.height; } catch (e) {} lm.dados = dm; lm.arquivoEpub = 'img/logo-editora-' + v + '.' + (dm.mime === 'image/png' ? 'png' : dm.mime === 'image/svg+xml' ? 'svg' : 'jpg'); lista.push(lm); }
   }
   return lista;
 }
@@ -2973,7 +3025,7 @@ async function receberArquivo(file) {
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
-    if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
+    if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca, marcaEditora: mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}) }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
     await produzir();
   } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
@@ -3021,6 +3073,7 @@ var CSS_PAINEL = '\
 .ebm .logos-ed{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem}\
 .ebm .lg{border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:.7rem;display:grid;gap:.45rem}\
 .ebm .lg .vis{height:110px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}.ebm .lg .vis img{max-height:96px;max-width:90%}\
+.ebm .marca-ed{border:1px solid rgba(242,196,90,.35);border-radius:8px;padding:.8rem;margin:.6rem 0 1rem;display:grid;gap:.7rem}.ebm .marca-ed h4{margin:0;color:#F2C45A;font-size:.9rem}.ebm .marca-ed .vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem}.ebm .marca-ed .vis{height:90px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(242,196,90,.2)}.ebm .marca-ed .vis img{max-height:74px;max-width:86%}.ebm .marca-ed .lug{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.45rem .8rem}.ebm .marca-ed label{font-size:.74rem;display:grid;gap:.2rem}.ebm .marca-ed small{color:rgba(247,242,232,.65);font-size:.7rem;line-height:1.45}\
 .ebm .lg .falta{color:#fca5a5;font-size:.75rem;font-weight:700}.ebm .linha{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}\
 .ebm .acao{margin-top:.45rem;display:grid;gap:.35rem}.ebm .acao .linha{display:flex;gap:.35rem;flex-wrap:wrap}.ebm .acao .bt{font-size:.7rem;padding:.3rem .6rem;justify-self:start}.ebm .acao .feito{color:#86efac;font-size:.74rem}\
 .ebm .aviso-box{border-left:3px solid #E8A853;background:rgba(232,168,83,.08);padding:.6rem .8rem;font-size:.76rem;border-radius:4px;margin:.6rem 0;line-height:1.5}';
@@ -3084,7 +3137,7 @@ function montarUI(alvo) {
       '<label style="font-size:.78rem;display:flex;gap:.4rem;margin:.6rem 0"><input type="checkbox" data-c="regras.exigeAutorIndigena"> Exigir ao menos um autor indígena (regra do selo)</label>' +
       '<div class="acoes"><button class="bt pri" data-a="salvar-cfg">💾 Salvar na nuvem (todos os ADM)</button></div>' +
     '</div>' +
-    '<div class="pane" data-p="lg"><div class="aviso-box">Use somente os arquivos oficiais das marcas, obtidos nos manuais de identidade visual de cada instituição, e registre a autorização de uso. O auditor bloqueia a publicação enquanto faltar uma logomarca e aponta como grave a marca sem autorização registrada.</div><div class="logos-ed"></div>' +
+    '<div class="pane" data-p="lg"><div class="aviso-box">Use somente os arquivos oficiais das marcas, obtidos nos manuais de identidade visual de cada instituição, e registre a autorização de uso. O auditor bloqueia a publicação enquanto faltar uma logomarca e aponta como grave a marca sem autorização registrada.</div><div class="marca-ed"></div><div class="logos-ed"></div>' +
       '<div class="acoes"><button class="bt pri" data-a="salvar-lg">💾 Salvar logomarcas na nuvem</button></div></div>';
   alvo.appendChild(raiz);
   var Q = function (s) { return raiz.querySelector(s); }, QA = function (s) { return raiz.querySelectorAll(s); };
@@ -3189,6 +3242,7 @@ function montarUI(alvo) {
       lb.appendChild(cb); lb.appendChild(document.createTextNode(l.sigla + (l.rotulo ? ' (' + l.rotulo + ')' : '')));
       lo.appendChild(lb);
     });
+    if (ui.renderMarca) ui.renderMarca();
     var cm = Q('.capa-mini'); if (obra.capaPropria) { cm.src = obra.capaPropria; cm.hidden = false; } else cm.hidden = true;
     if (!obra.ctTexto) {
       var povos = pessoas(obra.autores).concat(pessoas(obra.organizadores)).filter(function (p) { return p.povo; }).map(function (p) { return p.povo; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -3199,7 +3253,55 @@ function montarUI(alvo) {
   ui.preencherCfg = function () {
     QA('[data-c]').forEach(function (x) { var v = getC(x.getAttribute('data-c')); if (x.type === 'checkbox') x.checked = !!v; else x.value = v == null ? '' : v; });
     Q('[data-conselho]').value = cfg.conselho.map(function (m) { return m.nome + (m.vinculo ? ' — ' + m.vinculo : ''); }).join('\n');
-    ui.renderLogos();
+    ui.renderLogos(); if (ui.renderMarca) ui.renderMarca();
+  };
+  /* marca da Editora: versões guardadas no site e escolha, livro a livro, de onde e como aplicá-la */
+  var MARCA_VERS = [['cor', 'Colorida', '#ffffff', 'Para fundos claros e coloridos'], ['pb', 'Preta', '#ffffff', 'Para impressão em uma cor e páginas internas'], ['branca', 'Branca', '#3b2418', 'Para fundos escuros e capas']];
+  ui.renderMarca = function () {
+    var box = Q('.marca-ed'); if (!box) return;
+    var mk = cfg.editora.marca || (cfg.editora.marca = {}), om = marcaCfgObra();
+    var opc = function (sel) { return [['auto', 'Automática, conforme o fundo'], ['cor', 'Colorida'], ['pb', 'Preta'], ['branca', 'Branca'], ['', 'Não usar']].map(function (o) { return '<option value="' + o[0] + '"' + (sel === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join(''); };
+    box.innerHTML = '<h4>Marca da ' + esc(cfg.editora.nome) + '</h4>' +
+      '<small>As três versões ficam guardadas no site e valem para todos os livros. Em “Automática”, o motor mede o fundo de cada lugar: usa a branca sobre fundos escuros e, sobre fundos claros, a colorida na folha de rosto e nas capas e a preta nas páginas internas. No EPUB, quando o leitor está no modo noturno, a marca troca sozinha para a versão branca.</small>' +
+      '<div class="vers">' + MARCA_VERS.map(function (v) { return '<div class="lg" data-v="' + v[0] + '"><div class="linha"><b style="color:#F2C45A">' + v[1] + '</b><span style="font-size:.68rem;color:rgba(247,242,232,.65)">' + v[3] + '</span></div><div class="vis" style="background:' + v[2] + '"></div><label>Substituir arquivo (PNG com fundo transparente) <input type="file" accept="image/png,image/svg+xml" data-mv="' + v[0] + '" style="font-size:.7rem"></label></div>'; }).join('') + '</div>' +
+      '<h4>Onde usar neste livro</h4><div class="lug">' + MARCA_LUGARES.map(function (l) { return '<label>' + l[1] + ' <select data-ml="' + l[0] + '">' + opc(om[l[0]]) + '</select></label>'; }).join('') +
+      '<label>Posição do carimbo na capa dos autores <select data-ml="capaPosicao">' + [['auto', 'Área mais livre da capa'], ['topo', 'Faixa de cima (área mais livre)'], ['rodape', 'Faixa de baixo (área mais livre)']].map(function (o) { return '<option value="' + o[0] + '"' + (om.capaPosicao === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label></div>' +
+      '<small>O carimbo na capa enviada pelos autores procura a área mais livre, mas só deve ser ligado em capas que tenham espaço para a marca. Confira o resultado na prévia antes de publicar. As mudanças valem ao clicar em Regerar.</small>' +
+      '<div class="linha"><label style="display:flex;gap:.4rem;align-items:center">Testar sobre a cor <input type="color" data-mt value="#7a2e1d"></label><div class="vis" data-mtv style="width:180px;height:70px"></div><small data-mtx></small></div>' +
+      '<div class="linha"><button class="bt" type="button" data-ma="padrao">Usar estas escolhas como padrão para novos livros</button><button class="bt" type="button" data-ma="restaurar">Restaurar o padrão</button></div>';
+    MARCA_VERS.forEach(function (v) {
+      var vis = box.querySelector('[data-v="' + v[0] + '"] .vis');
+      logoDados({ arquivo: mk[v[0]] }).then(function (x) { vis.innerHTML = x ? '<img alt="Marca ' + v[1].toLowerCase() + '" src="' + x.url + '">' : '<span class="falta">Versão não carregada</span>'; });
+    });
+    function testar() {
+      var cor = box.querySelector('[data-mt]').value, lum = lumHex(cor), v = varMarca('auto', lum, 'cor'), alvo = box.querySelector('[data-mtv]');
+      alvo.style.background = cor;
+      logoDados({ arquivo: mk[v] }).then(function (x) { alvo.innerHTML = x ? '<img alt="" src="' + x.url + '">' : ''; });
+      box.querySelector('[data-mtx]').textContent = 'Na escolha automática, sobre esta cor entra a versão ' + (v === 'branca' ? 'branca' : 'colorida (ou a preta nas páginas internas)') + '.';
+    }
+    box.querySelector('[data-mt]').addEventListener('input', testar); testar();
+    box.querySelectorAll('[data-ml]').forEach(function (s) { s.addEventListener('change', function () { obra.marcaEditora = marcaCfgObra(); obra.marcaEditora[s.getAttribute('data-ml')] = s.value; obraGuardar(); estado.pendentes = (estado.pendentes || 0) + 1; ui.pendentes(); }); });
+    box.querySelector('[data-ma="padrao"]').addEventListener('click', function () {
+      cfg.editora.marcaPadrao = marcaCfgObra(); cfgGuardarLocal();
+      if (ghOk()) cfgSalvarNuvem().then(function () { ui.msg('Padrão da marca salvo na nuvem para todos os ADM.', 'ok'); }, function (er) { ui.msg('Padrão guardado neste navegador. Nuvem: ' + er.message, 'err'); });
+      else ui.msg('Padrão guardado neste navegador. Entre como ADM para salvar na nuvem.', 'ok');
+    });
+    box.querySelector('[data-ma="restaurar"]').addEventListener('click', function () { obra.marcaEditora = mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}); obraGuardar(); ui.renderMarca(); estado.pendentes = (estado.pendentes || 0) + 1; ui.pendentes(); });
+    box.querySelectorAll('[data-mv]').forEach(function (inp) {
+      inp.addEventListener('change', function (e) {
+        var v = inp.getAttribute('data-mv'), f = e.target.files[0]; if (!f) return;
+        f.arrayBuffer().then(async function (ab) {
+          var bytes = new Uint8Array(ab), mime = f.type || 'image/png';
+          if (mime !== 'image/svg+xml') { var nz = await normalizarImagem(bytes, mime); if (!nz) { ui.msg('Formato de imagem não suportado.', 'err'); return; } if (nz.w && nz.w < 600) ui.msg('Atenção: a marca tem só ' + nz.w + ' px de largura; para impressão, prefira 1200 px ou mais.', 'err'); bytes = nz.bytes; mime = nz.mime; }
+          if (mime === 'image/jpeg') ui.msg('O arquivo não tem fundo transparente; a marca aparecerá dentro de um retângulo. Prefira PNG.', 'err');
+          var caminho = 'logos/editora-' + v + '.' + (mime === 'image/png' ? 'png' : mime === 'image/svg+xml' ? 'svg' : 'jpg');
+          delete _logoCache[mk[v]]; mk[v] = caminho; _logoCache[caminho] = { bytes: bytes, mime: mime, url: bytesParaDataUrl(bytes, mime) };
+          cfgGuardarLocal(); ui.renderMarca(); estado.pendentes = (estado.pendentes || 0) + 1; ui.pendentes();
+          if (ghOk()) ghPut('editora/' + caminho, bufParaB64(bytes), 'Editora: marca da Editora (' + v + ')').then(function () { return cfgSalvarNuvem(); }).then(function () { ui.msg('Marca ' + v + ' salva no site.', 'ok'); }, function (er) { ui.msg('Marca guardada nesta sessão. Nuvem: ' + er.message, 'err'); });
+          else ui.msg('Marca guardada nesta sessão. Entre como ADM para salvar no site.', 'err');
+        });
+      });
+    });
   };
   ui.renderLogos = function () {
     var box = Q('.logos-ed'); box.innerHTML = '';
@@ -3335,7 +3437,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

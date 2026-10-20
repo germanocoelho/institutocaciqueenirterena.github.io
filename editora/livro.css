@@ -252,3 +252,10 @@ p { orphans: 2; widows: 2; }
 /* régua de realização e apoio no verso da folha de rosto */
 .creditos .regua { margin: 0 0 1.4em; font-size: .85em; }
 .creditos .regua .papel { margin-top: 0; }
+
+/* marca da Editora: versão para modo noturno */
+img.marca-escura { display: none !important; }
+@media screen and (prefers-color-scheme: dark) { img.marca-clara { display: none !important; } img.marca-escura { display: inline-block !important; } }
+.falsa-rosto .f-marca { display: inline-block; width: 30%; max-width: 8em; height: auto; margin-top: 2.4em; }
+.creditos p.cr-marca-p { text-align: center; text-align-last: center; margin: 1.6em 0 0; }
+.creditos .cr-marca { display: inline-block; width: 26%; max-width: 7em; height: auto; }

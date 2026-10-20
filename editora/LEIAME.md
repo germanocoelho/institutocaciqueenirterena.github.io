@@ -53,6 +53,19 @@ Bibliotecas incluídas: JSZip (MIT) e mammoth.js (BSD-2). Fontes: Literata e Cin
 
   Com isso, o leitor pode ir à página N e citar o e-book pela mesma numeração do PDF.
 
+## Marca da Editora
+
+As três versões oficiais da marca ficam no site, em `editora/logos/`: `editora-cor.png` (colorida), `editora-pb.png` (preta) e `editora-branca.png` (branca), todas em PNG com fundo transparente. Para trocar uma versão, use a aba **Logomarcas** do painel: o arquivo novo é gravado no site e passa a valer para todos os livros.
+
+Na mesma aba, escolha **livro a livro** onde a marca entra e qual versão usar em cada lugar. Os lugares são a folha de rosto, a falsa folha de rosto, o verso da folha de rosto (créditos), o colofão, a capa gerada pela Editora, a capa enviada pelos autores (como carimbo) e a tela de senha do HTML de leitura. Para cada lugar há cinco opções: Automática, Colorida, Preta, Branca ou Não usar.
+
+- **Automática:** o motor mede o brilho do fundo. Sobre fundo escuro usa a branca. Sobre fundo claro usa a colorida na folha de rosto e nas capas, e a preta nas páginas internas.
+- **Modo noturno do EPUB:** nos leitores em modo noturno, a marca troca sozinha para a versão branca.
+- **PDF e HTML de leitura:** a página é sempre clara, então sai sempre a versão escolhida para fundo claro.
+- **Carimbo na capa dos autores:** fica desligado por padrão. Quando ligado, o motor procura a área mais calma da capa (no topo, no rodapé ou em qualquer dos dois) para não cobrir título, nomes ou ilustração. Confira o resultado na prévia antes de publicar.
+- **Padrão para novos livros:** o botão **Usar estas escolhas como padrão para novos livros** guarda a combinação atual. Cada livro novo começa com ela.
+- **Testar sobre a cor:** mostra qual versão a escolha automática usaria sobre qualquer cor.
+
 ## HTML de leitura e cópias controladas
 
 O botão **"HTML de leitura (cópia controlada)"** gera um arquivo único que abre em qualquer navegador, sem instalar nada e sem internet: fontes, imagens e ornamentos vêm embutidos.
