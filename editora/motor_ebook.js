@@ -149,13 +149,13 @@ function logoDados(l) {
 var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', isbnHtml: '', exemplares: [], cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
-  sinopse: '', notasRevisao: '', logosObra: [], marcaEditora: { rosto: 'auto', falsaRosto: '', creditos: '', colofao: 'auto', capa: 'auto', capaAutores: '', capaPosicao: 'auto', html: 'auto' }, licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
+  sinopse: '', notasRevisao: '', logosObra: [], traducoes: {}, marcaEditora: { rosto: 'auto', falsaRosto: '', creditos: '', colofao: 'auto', capa: 'auto', capaAutores: '', capaPosicao: 'auto', html: 'auto' }, licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
   numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
 var _origemIA = {};
 function obraCarregar() { try { var o = JSON.parse(localStorage.getItem(LS_OBRA) || 'null'); if (o) obra = mesclar(clone(OBRA_PADRAO), o); } catch (e) {} obra.correcoes = mesclar({ tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, obra.correcoes || {}); }
-function obraGuardar() { var o = clone(obra); if (o.capaPropria && o.capaPropria.length > 1500000) o.capaPropria = ''; try { localStorage.setItem(LS_OBRA, JSON.stringify(o)); } catch (e) {} }
+function obraGuardar() { var o = clone(obra); if (o.capaPropria && o.capaPropria.length > 1500000) o.capaPropria = ''; Object.keys(o.traducoes || {}).forEach(function (b) { var t = o.traducoes[b]; if (t && t.capa && t.capa.length > 1500000) t.capa = ''; }); try { localStorage.setItem(LS_OBRA, JSON.stringify(o)); } catch (e) {} }
 
 function pessoas(s) {
   return String(s || '').split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean).map(function (l) {
@@ -1837,7 +1837,7 @@ function gerarIndice(livro, termos) {
   });
   var sem = termos.length - entradas.length;
   if (sem) A.add('info', 'Índice', sem + ' termo(s) do índice não encontrados no texto e omitidos.', { norma: 'NBR 6034' });
-  return entradas.sort(function (a, b) { return N(a.termo).localeCompare(N(b.termo), 'pt'); });
+  return entradas.sort(function (a, b) { return N(a.termo).localeCompare(N(b.termo), lingBase()); });
 }
 
 /* ───────────────────────── 8. IA (Claude) ───────────────────────── */
@@ -1922,6 +1922,180 @@ function iaRevisao(secoes, aoAvancar) {
   return Promise.all([proximo(), proximo(), proximo()]).then(function () { return res; });
 }
 
+/* ───────────────────────── IDIOMAS DA EDIÇÃO (edições traduzidas) ─────────────────────────
+   Textos fixos das páginas editoriais (rosto, créditos, colofão, sumário, navegação, metadados).
+   T('texto em português', {var}) devolve o texto no idioma da edição em produção (LINGUA); em
+   português, devolve o próprio texto. Textos livres do editor (licença própria, ato do conselho,
+   declaração de conhecimentos tradicionais) são traduzidos na produção e chegam por TRAD_LIVRE. */
+var LINGUA = 'pt-BR', TRAD_LIVRE = {};
+var IDIOMAS = {
+  en: { nome: 'inglês', nomeProprio: 'English', variantes: [['en-US', 'Estados Unidos'], ['en-GB', 'Reino Unido']] },
+  fr: { nome: 'francês', nomeProprio: 'Français', variantes: [['fr-FR', 'França'], ['fr-CA', 'Canadá']] },
+  es: { nome: 'espanhol', nomeProprio: 'Español', variantes: [['es-419', 'América Latina'], ['es-ES', 'Espanha']] },
+  de: { nome: 'alemão', nomeProprio: 'Deutsch', variantes: [['de-DE', 'Alemanha']] }
+};
+function lingBase() { return String(LINGUA).slice(0, 2); }
+var I18N = {
+  en: {
+    'Capa': 'Cover', 'Falsa folha de rosto': 'Half-title page', 'Folha de rosto': 'Title page', 'Créditos e ficha catalográfica': 'Copyright page', 'Sumário': 'Contents', 'Colofão': 'Colophon',
+    'Licenças das fontes': 'Font licenses', 'Lista de ilustrações': 'List of illustrations', 'Lista de tabelas e quadros': 'List of tables and charts', 'Lista de abreviaturas e siglas': 'List of abbreviations and acronyms',
+    'Índice remissivo': 'Index', 'Pontos de referência': 'Landmarks', 'Início do texto': 'Start of text', 'Referências': 'References', 'Abertura': 'Opening', 'Ficha catalográfica': 'Cataloguing-in-Publication data', 'Sem título': 'Untitled',
+    'Capa do livro “{t}”{por}. {ed}.': 'Cover of the book “{t}”{por}. {ed}.', ', de {a}': ', by {a}', ', organização de {a}': ', edited by {a}',
+    '(organizadores)': '(editors)', '(organização)': '(editor)', 'Organização: {a}': 'Edited by {a}',
+    '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, the Indigenous-authorship publishing imprint of the {mant}.', ' Autoria indígena: {l}.': ' Indigenous authorship: {l}.',
+    'Conselho Editorial': 'Editorial Board', 'Em desenvolvimento.': 'In preparation.', 'Equipe editorial': 'Editorial team',
+    'Edição': 'Editing', 'Revisão': 'Proofreading', 'Projeto gráfico': 'Book design', 'Coordenação Editorial Digital': 'Digital Publishing Coordination', 'Tradução': 'Translation', 'Revisão da tradução': 'Translation review', 'Título original': 'Original title',
+    'Logomarcas institucionais reproduzidas com autorização: {l}.': 'Institutional logos reproduced with permission: {l}.', 'Autorização de uso das marcas institucionais ({l}): em desenvolvimento.': 'Permission to use institutional logos ({l}): pending.',
+    'Editora': 'Publisher', 'Logomarca: ': 'Logo: ', 'Selo: ': 'Imprint: ',
+    'Realização': 'Produced by', 'Coedição': 'Co-published by', 'Apoio institucional': 'Institutional support', 'Apoio': 'Support', 'Parceria': 'Partnership', 'Patrocínio': 'Sponsorship', 'Fomento': 'Funding',
+    'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'This book was published by {ed}, the publishing imprint of the {mant}, in {cid}, {uf}, Brazil, in {mes}.',
+    'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Set in Literata and Cinzel, typefaces released under the SIL Open Font License 1.1.',
+    'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Digital book in EPUB 3, edited and technically reviewed by the Publisher’s Digital Publishing Coordination in accordance with the standards of the Brazilian Association of Technical Standards (ABNT) and the EPUB accessibility guidelines.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'The spiral, the dotted line and the pottery band that adorn this edition were designed by the Publisher on the basis of the graphic language of Terena ceramics. They are original designs that do not reproduce the patterns belonging to particular families and clans, out of respect for the collective cultural heritage of the Terena people.',
+    'Licenças das fontes tipográficas': 'Typeface licenses', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Both are licensed under the SIL Open Font License, version 1.1, reproduced below.',
+    'cap.': 'ch.', 'Capítulo': 'Chapter', 'Parte': 'Part',
+    'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Reflowable digital book with a navigable table of contents, logical reading order, structured headings, interactive notes{alt} and text that readers can adjust. Produced by {ed}.', ', textos alternativos nas imagens': ', alternative text for images',
+    'Exemplar nº {n}': 'Copy no. {n}', 'Exemplar controlado nº {n}': 'Controlled copy no. {n}', 'Identificação deste arquivo': 'Identification of this file',
+    'Licenciado a {d} em {data}, para uso pessoal e intransferível.': 'Licensed to {d} on {data} for personal, non-transferable use.',
+    'Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)': 'HTML reading copy of the digital edition ISBN {i} (EPUB)', 'Cópia de leitura em HTML': 'HTML reading copy', '; edição em EPUB: ISBN {i}': '; EPUB edition: ISBN {i}',
+    'É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).': 'Reproducing, sharing or redistributing this file, in whole or in part, without the permission of the Publisher and the authors is prohibited (Brazilian Law No. 9,610/1998).',
+    ' Cada exemplar é numerado e registrado pela Editora.': ' Each copy is numbered and registered by the Publisher.',
+    'Senha de leitura': 'Reading password', 'Abrir o livro': 'Open the book', 'Senha incorreta.': 'Incorrect password.', 'Abrindo…': 'Opening…',
+    'Nota da tradução': 'Translator’s note',
+    'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'This edition is a translation of the original Brazilian Portuguese text, “{orig}”, published by {ed} in {ano}{isbn}.',
+    'NOTA_TRAD_JUR': 'International legal instruments are quoted in their official wording in this language wherever such wording exists. Brazilian statutes, bodies and legal categories, which have no exact equivalent in other legal systems, are translated consistently throughout the book; the corresponding Portuguese terms are listed under “Key terms” below.',
+    'NOTA_TRAD_IND': 'Words in Indigenous languages, the names of peoples and place names are kept in their original form. Bibliographic references are reproduced as in the original, following the Brazilian standard ABNT NBR 6023; quotations from Portuguese-language sources have been translated for this edition.',
+    'Termos-chave': 'Key terms', 'Original (português)': 'Original (Portuguese)', 'Nesta edição': 'In this edition',
+    'Disponível em:': 'Available at:', 'Acesso em:': 'Accessed on:'
+  },
+  fr: {
+    'Capa': 'Couverture', 'Falsa folha de rosto': 'Faux-titre', 'Folha de rosto': 'Page de titre', 'Créditos e ficha catalográfica': 'Mentions légales', 'Sumário': 'Table des matières', 'Colofão': 'Achevé d’éditer',
+    'Licenças das fontes': 'Licences des polices', 'Lista de ilustrações': 'Liste des illustrations', 'Lista de tabelas e quadros': 'Liste des tableaux et encadrés', 'Lista de abreviaturas e siglas': 'Liste des abréviations et sigles',
+    'Índice remissivo': 'Index', 'Pontos de referência': 'Repères', 'Início do texto': 'Début du texte', 'Referências': 'Références', 'Abertura': 'Ouverture', 'Ficha catalográfica': 'Notice de catalogage', 'Sem título': 'Sans titre',
+    'Capa do livro “{t}”{por}. {ed}.': 'Couverture du livre « {t} »{por}. {ed}.', ', de {a}': ', de {a}', ', organização de {a}': ', sous la direction de {a}',
+    '(organizadores)': '(sous la direction de)', '(organização)': '(sous la direction de)', 'Organização: {a}': 'Sous la direction de {a}',
+    '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, label éditorial consacré aux auteurs autochtones, rattaché à l’institution {mant}.', ' Autoria indígena: {l}.': ' Auteurs autochtones : {l}.',
+    'Conselho Editorial': 'Comité éditorial', 'Em desenvolvimento.': 'En cours de constitution.', 'Equipe editorial': 'Équipe éditoriale',
+    'Edição': 'Édition', 'Revisão': 'Révision', 'Projeto gráfico': 'Conception graphique', 'Coordenação Editorial Digital': 'Coordination éditoriale numérique', 'Tradução': 'Traduction', 'Revisão da tradução': 'Révision de la traduction', 'Título original': 'Titre original',
+    'Logomarcas institucionais reproduzidas com autorização: {l}.': 'Logos institutionnels reproduits avec autorisation : {l}.', 'Autorização de uso das marcas institucionais ({l}): em desenvolvimento.': 'Autorisation d’utilisation des logos institutionnels ({l}) : en cours.',
+    'Editora': 'Éditeur', 'Logomarca: ': 'Logo : ', 'Selo: ': 'Label : ',
+    'Realização': 'Réalisation', 'Coedição': 'Coédition', 'Apoio institucional': 'Soutien institutionnel', 'Apoio': 'Soutien', 'Parceria': 'Partenariat', 'Patrocínio': 'Mécénat', 'Fomento': 'Financement',
+    'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'Ce livre a été publié par {ed}, label éditorial rattaché à l’institution {mant}, à {cid} ({uf}, Brésil), en {mes}.',
+    'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Composé en Literata et Cinzel, polices sous licence libre (SIL Open Font License 1.1).',
+    'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Livre numérique au format EPUB 3, édité et révisé techniquement par la Coordination éditoriale numérique de l’éditeur, conformément aux normes de l’Association brésilienne de normes techniques (ABNT) et aux directives d’accessibilité EPUB.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La spirale, le pointillé et la frise de poterie qui ornent cette édition ont été dessinés par l’éditeur à partir du langage graphique de la céramique terena. Ce sont des tracés originaux, qui ne reproduisent pas les motifs propres aux familles et aux clans, par respect pour le patrimoine culturel collectif du peuple terena.',
+    'Licenças das fontes tipográficas': 'Licences des polices de caractères', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Toutes deux sont distribuées sous la SIL Open Font License, version 1.1, reproduite ci-dessous.',
+    'cap.': 'chap.', 'Capítulo': 'Chapitre', 'Parte': 'Partie',
+    'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Livre numérique recomposable, avec table des matières navigable, ordre de lecture logique, titres structurés, notes interactives{alt} et texte ajustable par le lecteur. Produit par {ed}.', ', textos alternativos nas imagens': ', textes alternatifs pour les images',
+    'Exemplar nº {n}': 'Exemplaire nº {n}', 'Exemplar controlado nº {n}': 'Exemplaire contrôlé nº {n}', 'Identificação deste arquivo': 'Identification de ce fichier',
+    'Licenciado a {d} em {data}, para uso pessoal e intransferível.': 'Licence accordée à {d} le {data}, pour un usage personnel et incessible.',
+    'Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)': 'Copie de lecture HTML de l’édition numérique ISBN {i} (EPUB)', 'Cópia de leitura em HTML': 'Copie de lecture HTML', '; edição em EPUB: ISBN {i}': ' ; édition EPUB : ISBN {i}',
+    'É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).': 'Toute reproduction, tout partage ou toute redistribution de ce fichier, en tout ou en partie, sans l’autorisation de l’éditeur et des auteurs est interdite (loi brésilienne nº 9.610/1998).',
+    ' Cada exemplar é numerado e registrado pela Editora.': ' Chaque exemplaire est numéroté et enregistré par l’éditeur.',
+    'Senha de leitura': 'Mot de passe de lecture', 'Abrir o livro': 'Ouvrir le livre', 'Senha incorreta.': 'Mot de passe incorrect.', 'Abrindo…': 'Ouverture…',
+    'Nota da tradução': 'Note de la traduction',
+    'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Cette édition est la traduction du texte original en portugais du Brésil, « {orig} », publié par {ed} en {ano}{isbn}.',
+    'NOTA_TRAD_JUR': 'Les instruments juridiques internationaux sont cités dans leur version officielle en français lorsqu’elle existe. Les lois, organes et catégories juridiques brésiliens, qui n’ont pas d’équivalent exact dans d’autres systèmes juridiques, sont traduits de manière constante dans tout l’ouvrage ; les termes portugais correspondants figurent ci-dessous, sous « Termes clés ».',
+    'NOTA_TRAD_IND': 'Les mots des langues autochtones, les noms des peuples et les toponymes sont conservés dans leur forme originale. Les références bibliographiques sont reproduites comme dans l’original, selon la norme brésilienne ABNT NBR 6023 ; les citations de sources en langue portugaise ont été traduites pour cette édition.',
+    'Termos-chave': 'Termes clés', 'Original (português)': 'Original (portugais)', 'Nesta edição': 'Dans cette édition',
+    'Disponível em:': 'Disponible sur :', 'Acesso em:': 'Consulté le :'
+  },
+  es: {
+    'Capa': 'Cubierta', 'Falsa folha de rosto': 'Anteportada', 'Folha de rosto': 'Portada', 'Créditos e ficha catalográfica': 'Página de créditos', 'Sumário': 'Índice', 'Colofão': 'Colofón',
+    'Licenças das fontes': 'Licencias de las fuentes', 'Lista de ilustrações': 'Lista de ilustraciones', 'Lista de tabelas e quadros': 'Lista de tablas y cuadros', 'Lista de abreviaturas e siglas': 'Lista de abreviaturas y siglas',
+    'Índice remissivo': 'Índice analítico', 'Pontos de referência': 'Puntos de referencia', 'Início do texto': 'Inicio del texto', 'Referências': 'Referencias', 'Abertura': 'Apertura', 'Ficha catalográfica': 'Ficha catalográfica', 'Sem título': 'Sin título',
+    'Capa do livro “{t}”{por}. {ed}.': 'Cubierta del libro «{t}»{por}. {ed}.', ', de {a}': ', de {a}', ', organização de {a}': ', edición a cargo de {a}',
+    '(organizadores)': '(coordinadores)', '(organização)': '(coordinación)', 'Organização: {a}': 'Coordinación: {a}',
+    '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, sello editorial de autoría indígena del {mant}.', ' Autoria indígena: {l}.': ' Autoría indígena: {l}.',
+    'Conselho Editorial': 'Consejo Editorial', 'Em desenvolvimento.': 'En proceso de conformación.', 'Equipe editorial': 'Equipo editorial',
+    'Edição': 'Edición', 'Revisão': 'Corrección', 'Projeto gráfico': 'Diseño gráfico', 'Coordenação Editorial Digital': 'Coordinación Editorial Digital', 'Tradução': 'Traducción', 'Revisão da tradução': 'Revisión de la traducción', 'Título original': 'Título original',
+    'Logomarcas institucionais reproduzidas com autorização: {l}.': 'Logotipos institucionales reproducidos con autorización: {l}.', 'Autorização de uso das marcas institucionais ({l}): em desenvolvimento.': 'Autorización de uso de los logotipos institucionales ({l}): en trámite.',
+    'Editora': 'Editorial', 'Logomarca: ': 'Logotipo: ', 'Selo: ': 'Sello: ',
+    'Realização': 'Realización', 'Coedição': 'Coedición', 'Apoio institucional': 'Apoyo institucional', 'Apoio': 'Apoyo', 'Parceria': 'Alianza', 'Patrocínio': 'Patrocinio', 'Fomento': 'Financiamiento',
+    'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'Este libro fue editado por {ed}, sello editorial del {mant}, en {cid}, {uf}, Brasil, en {mes}.',
+    'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Compuesto en Literata y Cinzel, fuentes de licencia libre (SIL Open Font License 1.1).',
+    'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Libro digital en EPUB 3, editado y revisado técnicamente por la Coordinación Editorial Digital de la editorial, conforme a las normas de la Asociación Brasileña de Normas Técnicas (ABNT) y a las directrices de accesibilidad EPUB.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La espiral, el punteado y la franja de la vasija que adornan esta edición fueron diseñados por la editorial a partir del lenguaje gráfico de la cerámica terena. Son trazos de autor, que no reproducen los grafismos propios de familias y clanes, en respeto al patrimonio cultural colectivo del pueblo terena.',
+    'Licenças das fontes tipográficas': 'Licencias de las fuentes tipográficas', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Ambas se distribuyen bajo la SIL Open Font License, versión 1.1, que se reproduce a continuación.',
+    'cap.': 'cap.', 'Capítulo': 'Capítulo', 'Parte': 'Parte',
+    'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Libro digital adaptable, con índice navegable, orden de lectura lógico, títulos estructurados, notas interactivas{alt} y texto ajustable por el lector. Producido por {ed}.', ', textos alternativos nas imagens': ', textos alternativos en las imágenes',
+    'Exemplar nº {n}': 'Ejemplar n.º {n}', 'Exemplar controlado nº {n}': 'Ejemplar controlado n.º {n}', 'Identificação deste arquivo': 'Identificación de este archivo',
+    'Licenciado a {d} em {data}, para uso pessoal e intransferível.': 'Licenciado a {d} el {data}, para uso personal e intransferible.',
+    'Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)': 'Copia de lectura en HTML de la edición digital ISBN {i} (EPUB)', 'Cópia de leitura em HTML': 'Copia de lectura en HTML', '; edição em EPUB: ISBN {i}': '; edición en EPUB: ISBN {i}',
+    'É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).': 'Se prohíbe la reproducción, la difusión y la redistribución de este archivo, total o parcial, sin autorización de la editorial y de los autores (Ley brasileña n.º 9.610/1998).',
+    ' Cada exemplar é numerado e registrado pela Editora.': ' Cada ejemplar está numerado y registrado por la editorial.',
+    'Senha de leitura': 'Contraseña de lectura', 'Abrir o livro': 'Abrir el libro', 'Senha incorreta.': 'Contraseña incorrecta.', 'Abrindo…': 'Abriendo…',
+    'Nota da tradução': 'Nota de la traducción',
+    'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Esta edición es la traducción del texto original en portugués de Brasil, «{orig}», publicado por {ed} en {ano}{isbn}.',
+    'NOTA_TRAD_JUR': 'Los instrumentos jurídicos internacionales se citan en su versión oficial en español cuando esta existe. Las leyes, los órganos y las categorías jurídicas brasileñas, que no tienen equivalente exacto en otros ordenamientos jurídicos, se traducen de manera uniforme en todo el libro; los términos portugueses correspondientes figuran a continuación, en «Términos clave».',
+    'NOTA_TRAD_IND': 'Las palabras en lenguas indígenas, los nombres de los pueblos y los topónimos se conservan en su forma original. Las referencias bibliográficas se reproducen como en el original, conforme a la norma brasileña ABNT NBR 6023; las citas de fuentes en portugués se han traducido para esta edición.',
+    'Termos-chave': 'Términos clave', 'Original (português)': 'Original (portugués)', 'Nesta edição': 'En esta edición',
+    'Disponível em:': 'Disponible en:', 'Acesso em:': 'Consultado el:'
+  },
+  de: {
+    'Capa': 'Umschlag', 'Falsa folha de rosto': 'Schmutztitel', 'Folha de rosto': 'Titelseite', 'Créditos e ficha catalográfica': 'Impressum', 'Sumário': 'Inhalt', 'Colofão': 'Kolophon',
+    'Licenças das fontes': 'Schriftlizenzen', 'Lista de ilustrações': 'Abbildungsverzeichnis', 'Lista de tabelas e quadros': 'Tabellen- und Übersichtenverzeichnis', 'Lista de abreviaturas e siglas': 'Abkürzungsverzeichnis',
+    'Índice remissivo': 'Register', 'Pontos de referência': 'Orientierungspunkte', 'Início do texto': 'Textbeginn', 'Referências': 'Literaturverzeichnis', 'Abertura': 'Eröffnung', 'Ficha catalográfica': 'Bibliografische Information', 'Sem título': 'Ohne Titel',
+    'Capa do livro “{t}”{por}. {ed}.': 'Umschlag des Buches „{t}“{por}. {ed}.', ', de {a}': ' von {a}', ', organização de {a}': ', herausgegeben von {a}',
+    '(organizadores)': '(Hrsg.)', '(organização)': '(Hrsg.)', 'Organização: {a}': 'Herausgegeben von {a}',
+    '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, Verlagsmarke für indigene Autorschaft der Einrichtung {mant}.', ' Autoria indígena: {l}.': ' Indigene Autorschaft: {l}.',
+    'Conselho Editorial': 'Herausgeberbeirat', 'Em desenvolvimento.': 'In Vorbereitung.', 'Equipe editorial': 'Redaktion',
+    'Edição': 'Lektorat', 'Revisão': 'Korrektorat', 'Projeto gráfico': 'Gestaltung', 'Coordenação Editorial Digital': 'Digitale Verlagskoordination', 'Tradução': 'Übersetzung', 'Revisão da tradução': 'Revision der Übersetzung', 'Título original': 'Originaltitel',
+    'Logomarcas institucionais reproduzidas com autorização: {l}.': 'Institutionelle Logos mit Genehmigung wiedergegeben: {l}.', 'Autorização de uso das marcas institucionais ({l}): em desenvolvimento.': 'Genehmigung zur Verwendung der institutionellen Logos ({l}): in Bearbeitung.',
+    'Editora': 'Verlag', 'Logomarca: ': 'Logo: ', 'Selo: ': 'Verlagsmarke: ',
+    'Realização': 'Realisierung', 'Coedição': 'Mitherausgabe', 'Apoio institucional': 'Institutionelle Unterstützung', 'Apoio': 'Unterstützung', 'Parceria': 'Partnerschaft', 'Patrocínio': 'Sponsoring', 'Fomento': 'Förderung',
+    'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'Dieses Buch wurde im {mes} von {ed}, der Verlagsmarke der Einrichtung {mant}, in {cid}, {uf}, Brasilien, herausgegeben.',
+    'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Gesetzt aus der Literata und der Cinzel, freien Schriften unter der SIL Open Font License 1.1.',
+    'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Digitales Buch im Format EPUB 3, herausgegeben und technisch geprüft von der Digitalen Verlagskoordination nach den Normen der Brasilianischen Vereinigung für Technische Normen (ABNT) und den EPUB-Richtlinien zur Barrierefreiheit.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'Die Spirale, die gepunktete Linie und das Gefäßband, die diese Ausgabe schmücken, hat der Verlag nach der Formensprache der Terena-Keramik entworfen. Es sind eigene Gestaltungen, die die Muster einzelner Familien und Clans nicht wiedergeben, aus Achtung vor dem kollektiven kulturellen Erbe des Volkes der Terena.',
+    'Licenças das fontes tipográficas': 'Schriftlizenzen', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Beide stehen unter der SIL Open Font License, Version 1.1, die nachfolgend wiedergegeben ist.',
+    'cap.': 'Kap.', 'Capítulo': 'Kapitel', 'Parte': 'Teil',
+    'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Digitales Buch mit umfließendem Text, navigierbarem Inhaltsverzeichnis, logischer Lesereihenfolge, strukturierten Überschriften, interaktiven Anmerkungen{alt} und anpassbarer Schrift. Herausgegeben von {ed}.', ', textos alternativos nas imagens': ', Alternativtexten für Abbildungen',
+    'Exemplar nº {n}': 'Exemplar Nr. {n}', 'Exemplar controlado nº {n}': 'Kontrolliertes Exemplar Nr. {n}', 'Identificação deste arquivo': 'Kennzeichnung dieser Datei',
+    'Licenciado a {d} em {data}, para uso pessoal e intransferível.': 'Lizenziert für {d} am {data} zur persönlichen, nicht übertragbaren Nutzung.',
+    'Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)': 'HTML-Lesekopie der digitalen Ausgabe ISBN {i} (EPUB)', 'Cópia de leitura em HTML': 'HTML-Lesekopie', '; edição em EPUB: ISBN {i}': '; EPUB-Ausgabe: ISBN {i}',
+    'É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).': 'Die Vervielfältigung, Weitergabe und Verbreitung dieser Datei, ganz oder teilweise, ist ohne Genehmigung des Verlags und der Autorinnen und Autoren untersagt (brasilianisches Gesetz Nr. 9.610/1998).',
+    ' Cada exemplar é numerado e registrado pela Editora.': ' Jedes Exemplar wird vom Verlag nummeriert und registriert.',
+    'Senha de leitura': 'Lesepasswort', 'Abrir o livro': 'Buch öffnen', 'Senha incorreta.': 'Falsches Passwort.', 'Abrindo…': 'Wird geöffnet…',
+    'Nota da tradução': 'Anmerkung zur Übersetzung',
+    'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Diese Ausgabe ist die Übersetzung des brasilianisch-portugiesischen Originals „{orig}“, erschienen bei {ed}, {ano}{isbn}.',
+    'NOTA_TRAD_JUR': 'Internationale Rechtsinstrumente werden in ihrer amtlichen deutschen Fassung zitiert, sofern eine solche vorliegt. Brasilianische Gesetze, Organe und Rechtsbegriffe, die in anderen Rechtsordnungen keine genaue Entsprechung haben, werden im gesamten Buch einheitlich übersetzt; die portugiesischen Originalbegriffe sind unten unter „Schlüsselbegriffe“ aufgeführt.',
+    'NOTA_TRAD_IND': 'Wörter aus indigenen Sprachen, Volksbezeichnungen und Ortsnamen werden in ihrer ursprünglichen Form beibehalten. Die Literaturangaben folgen wie im Original der brasilianischen Norm ABNT NBR 6023; Zitate aus portugiesischsprachigen Quellen wurden für diese Ausgabe übersetzt.',
+    'Termos-chave': 'Schlüsselbegriffe', 'Original (português)': 'Original (Portugiesisch)', 'Nesta edição': 'In dieser Ausgabe',
+    'Disponível em:': 'Verfügbar unter:', 'Acesso em:': 'Zugriff am:'
+  }
+};
+var LIC_I18N = {
+  en: { 'cc-by': 'Attribution 4.0 International (CC BY 4.0)', 'cc-by-sa': 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)', 'cc-by-nc': 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)', 'cc-by-nc-sa': 'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)', 'cc-by-nc-nd': 'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)', frase: 'This work is licensed under the Creative Commons {l} license.', todos: 'All rights reserved. No part of this work may be reproduced, stored or transmitted by any means without the prior written permission of the authors and the publisher (Brazilian Copyright Law, Law No. 9,610/1998).' },
+  fr: { 'cc-by': 'Attribution 4.0 International (CC BY 4.0)', 'cc-by-sa': 'Attribution - Partage dans les Mêmes Conditions 4.0 International (CC BY-SA 4.0)', 'cc-by-nc': 'Attribution - Pas d’Utilisation Commerciale 4.0 International (CC BY-NC 4.0)', 'cc-by-nc-sa': 'Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0)', 'cc-by-nc-nd': 'Attribution - Pas d’Utilisation Commerciale - Pas de Modification 4.0 International (CC BY-NC-ND 4.0)', frase: 'Cette œuvre est mise à disposition selon les termes de la licence Creative Commons {l}.', todos: 'Tous droits réservés. Aucune partie de cet ouvrage ne peut être reproduite, stockée ou transmise, par quelque moyen que ce soit, sans l’autorisation préalable et écrite des auteurs et de l’éditeur (loi brésilienne nº 9.610/1998 sur le droit d’auteur).' },
+  es: { 'cc-by': 'Atribución 4.0 Internacional (CC BY 4.0)', 'cc-by-sa': 'Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)', 'cc-by-nc': 'Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)', 'cc-by-nc-sa': 'Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)', 'cc-by-nc-nd': 'Atribución-NoComercial-SinDerivadas 4.0 Internacional (CC BY-NC-ND 4.0)', frase: 'Esta obra está bajo una licencia Creative Commons {l}.', todos: 'Todos los derechos reservados. Ninguna parte de esta obra puede ser reproducida, almacenada o transmitida por ningún medio sin la autorización previa y por escrito de los autores y de la editorial (Ley brasileña n.º 9.610/1998, de derechos de autor).' },
+  de: { 'cc-by': 'Namensnennung 4.0 International (CC BY 4.0)', 'cc-by-sa': 'Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-SA 4.0)', 'cc-by-nc': 'Namensnennung - Nicht kommerziell 4.0 International (CC BY-NC 4.0)', 'cc-by-nc-sa': 'Namensnennung - Nicht kommerziell - Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-NC-SA 4.0)', 'cc-by-nc-nd': 'Namensnennung - Nicht kommerziell - Keine Bearbeitungen 4.0 International (CC BY-NC-ND 4.0)', frase: 'Dieses Werk ist lizenziert unter der Creative-Commons-Lizenz {l}.', todos: 'Alle Rechte vorbehalten. Kein Teil dieses Werkes darf ohne vorherige schriftliche Genehmigung der Autorinnen und Autoren sowie des Verlags in irgendeiner Form vervielfältigt, gespeichert oder übertragen werden (brasilianisches Urheberrechtsgesetz, Gesetz Nr. 9.610/1998).' }
+};
+/* rótulos de ilustrações e tabelas (NBR 6029) no idioma da edição; Quadro e Tabela seguem distintos */
+var TIPOS_I18N = {
+  en: { Figura: 'Figure', Fotografia: 'Photograph', Imagem: 'Image', Mapa: 'Map', 'Gráfico': 'Graph', Quadro: 'Chart', Desenho: 'Drawing', 'Ilustração': 'Illustration', Esquema: 'Diagram', Fluxograma: 'Flowchart', Organograma: 'Organizational chart', 'Infográfico': 'Infographic', Prancha: 'Plate', Retrato: 'Portrait', Tabela: 'Table' },
+  fr: { Figura: 'Figure', Fotografia: 'Photographie', Imagem: 'Image', Mapa: 'Carte', 'Gráfico': 'Graphique', Quadro: 'Encadré', Desenho: 'Dessin', 'Ilustração': 'Illustration', Esquema: 'Schéma', Fluxograma: 'Logigramme', Organograma: 'Organigramme', 'Infográfico': 'Infographie', Prancha: 'Planche', Retrato: 'Portrait', Tabela: 'Tableau' },
+  es: { Figura: 'Figura', Fotografia: 'Fotografía', Imagem: 'Imagen', Mapa: 'Mapa', 'Gráfico': 'Gráfico', Quadro: 'Cuadro', Desenho: 'Dibujo', 'Ilustração': 'Ilustración', Esquema: 'Esquema', Fluxograma: 'Diagrama de flujo', Organograma: 'Organigrama', 'Infográfico': 'Infografía', Prancha: 'Lámina', Retrato: 'Retrato', Tabela: 'Tabla' },
+  de: { Figura: 'Abbildung', Fotografia: 'Fotografie', Imagem: 'Bild', Mapa: 'Karte', 'Gráfico': 'Diagramm', Quadro: 'Übersicht', Desenho: 'Zeichnung', 'Ilustração': 'Illustration', Esquema: 'Schema', Fluxograma: 'Flussdiagramm', Organograma: 'Organigramm', 'Infográfico': 'Infografik', Prancha: 'Tafel', Retrato: 'Porträt', Tabela: 'Tabelle' }
+};
+function T(k, v) {
+  var b = lingBase(), s = (b !== 'pt' && I18N[b] && I18N[b][k]) || k;
+  if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return x in v ? v[x] : m; });
+  return s;
+}
+function TL(s) { return (lingBase() !== 'pt' && TRAD_LIVRE[s]) || s; }
+function tipoT(t) { var b = lingBase(); return (b !== 'pt' && TIPOS_I18N[b] && TIPOS_I18N[b][t]) || t; }
+function edicaoT(n) {
+  n = String(n || '1').replace(/\D/g, '') || '1'; var b = lingBase(), k = parseInt(n, 10);
+  if (b === 'en') return n + (k % 100 >= 11 && k % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][k % 10] || 'th') + ' edition';
+  if (b === 'fr') return n + (k === 1 ? 're' : 'e') + ' édition';
+  if (b === 'es') return n + '.ª edición';
+  if (b === 'de') return n + '. Auflage';
+  return n + 'ª edição';
+}
+function mesAnoT(d) { return lingBase() === 'pt' ? MESES[d.getMonth()] + ' de ' + d.getFullYear() : new Intl.DateTimeFormat(LINGUA, { month: 'long', year: 'numeric' }).format(d); }
+function dataT(d) { return d.toLocaleDateString(lingBase() === 'pt' ? 'pt-BR' : LINGUA); }
+
 /* ───────────────────────── 9. ELEMENTOS EDITORIAIS ───────────────────────── */
 var ORNAMENTOS = ['vinheta.svg', 'espiral.svg', 'faixa.svg', 'pontos.svg', 'pontos-v.svg'];
 var FONTES_EPUB = ['literata-regular.woff', 'literata-italic.woff', 'literata-bold.woff', 'literata-bolditalic.woff', 'cinzel-regular.woff', 'cinzel-bold.woff'];
@@ -1953,7 +2127,7 @@ function losangos(g, cx, y) {
 }
 function retArred(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 async function gerarCapa(o, logos) {
-  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || 'Sem título' });
+  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || T('Sem título') });
   await fontesCanvas();
   var W = 1600, H = 2560, c = document.createElement('canvas'); c.width = W; c.height = H;
   var g = c.getContext('2d');
@@ -1994,7 +2168,7 @@ async function gerarCapa(o, logos) {
   var yA = 1820 - Math.max(0, linhaAut.length - 3) * 68;
   if (linhaAut.length > 6) linhaAut = linhaAut.slice(0, 5).concat(['e outros']);
   linhaAut.forEach(function (n, i) { g.fillText(n, W / 2, yA + i * 76); });
-  if (!nomes.length && orgs.length) { g.font = 'italic 400 40px "EB Literata", serif'; g.fillText(orgs.length > 1 ? '(organizadores)' : '(organização)', W / 2, yA + linhaAut.length * 76); }
+  if (!nomes.length && orgs.length) { g.font = 'italic 400 40px "EB Literata", serif'; g.fillText(orgs.length > 1 ? T('(organizadores)') : T('(organização)'), W / 2, yA + linhaAut.length * 76); }
   // régua de logomarcas
   g.fillStyle = '#F7F2E8'; g.fillRect(0, 2090, W, 360);
   var tiles = logos.filter(function (l) { return !l.marcaEditora; }).slice(0, 6), tw = 230, gap = 26, x0 = (W - (tiles.length * tw + (tiles.length - 1) * gap)) / 2;
@@ -2021,13 +2195,14 @@ function tituloCaso(t) {
     return w.split(/([\-‑])/).map(function (x) { return x.charAt(0).toUpperCase() + x.slice(1); }).join('');
   }).join('').replace(/\b(Ii|Iii|Iv|Vi|Vii|Viii|Ix|Xi|Xii)\b/g, function (r) { return r.toUpperCase(); });
 }
-function frase(lista) { return lista.length <= 1 ? (lista[0] || '') : lista.slice(0, -1).join(', ') + ' e ' + lista[lista.length - 1]; }
+function frase(lista) { return lista.length <= 1 ? (lista[0] || '') : lista.slice(0, -1).join(', ') + ({ en: ' and ', fr: ' et ', es: ' y ', de: ' und ' }[lingBase()] || ' e ') + lista[lista.length - 1]; }
 function fichaCatalografica(o, livro) {
   var aut = pessoas(o.autores), org = pessoas(o.organizadores);
   var entradaTitulo = !aut.length || aut.length > 3;
   var principal = entradaTitulo ? '' : nomeFicha(aut[0].nome);
   var resp = aut.length ? frase(aut.map(function (p) { return p.nome; })) : '';
   if (org.length) resp += (resp ? ' ; ' : '') + (org.length > 1 ? 'organizadores ' : 'organização ') + frase(org.map(function (p) { return p.nome; }));
+  if (o._traducao && o._traducao.tradutorInformado) resp += (resp ? ' ; ' : '') + 'tradução de ' + o._traducao.tradutorInformado;
   var titulo = o.titulo + ' [recurso eletrônico]' + (o.subtitulo ? ' : ' + o.subtitulo : '') + (resp ? ' / ' + resp : '') + '.';
   var ed = (o.edicao || '1').replace(/\D/g, '') || '1';
   var local = o.local || (cfg.editora.cidade + ', ' + cfg.editora.uf);
@@ -2051,12 +2226,12 @@ function regua(doc, logos) {
   logos.forEach(function (l) { if (papeis.indexOf(l.papel) < 0) papeis.push(l.papel); });
   papeis.forEach(function (p) {
     var grupo = el(doc, 'div', { 'class': 'grupo' }); div.appendChild(grupo);
-    grupo.appendChild(el(doc, 'p', { 'class': 'papel' }, [p]));
+    grupo.appendChild(el(doc, 'p', { 'class': 'papel' }, [T(p)]));
     var linha = el(doc, 'div', { 'class': 'logos' });
     logos.filter(function (l) { return l.papel === p; }).forEach(function (l) {
       var bg = /^#[0-9a-f]{3,8}$/i.test(l.fundo || '') ? l.fundo : '#ffffff';
       var cl = 'logo-tile' + (l.destaque ? ' grande' : '') + (l.proporcao > 1.6 ? ' larga' : '');
-      if (l.arquivoEpub) linha.appendChild(el(doc, 'span', { 'class': cl, style: 'background-color:' + bg }, [el(doc, 'img', { src: '../' + l.arquivoEpub, alt: 'Logomarca: ' + l.nome + ' (' + l.sigla + ')' + (l.rotulo ? ', ' + l.rotulo : '') })]));
+      if (l.arquivoEpub) linha.appendChild(el(doc, 'span', { 'class': cl, style: 'background-color:' + bg }, [el(doc, 'img', { src: '../' + l.arquivoEpub, alt: T('Logomarca: ') + l.nome + ' (' + l.sigla + ')' + (l.rotulo ? ', ' + l.rotulo : '') })]));
       else linha.appendChild(el(doc, 'span', { 'class': 'logo-tile texto', style: 'background-color:#f7f2e8;color:#3d1d08' }, [l.sigla]));
     });
     grupo.appendChild(linha);
@@ -2066,37 +2241,37 @@ function regua(doc, logos) {
 
 async function montarEditoriais(livro, o, logos) {
   var doc = livro.doc, A = livro.A, extras = [];
-  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || 'Sem título' });
+  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || T('Sem título') });
   var aut = pessoas(o.autores), org = pessoas(o.organizadores);
   var nomesAut = aut.map(function (p) { return p.nome; }), nomesOrg = org.map(function (p) { return p.nome; });
   function sec(tipo, et, role, titulo, cls) { return { tipo: tipo, def: { et: et, role: role, parte: 'front' }, id: tipo, titulo: titulo, cont: el(doc, 'div', cls ? { 'class': cls } : null), subtitulos: [], gerada: true }; }
 
   // capa
-  var capa = sec('capa', 'cover', '', 'Capa', 'capa');
-  capa.cont.appendChild(el(doc, 'img', { src: '../img/capa.jpg', alt: 'Capa do livro “' + o.titulo + (o.subtitulo ? ': ' + o.subtitulo : '') + '”' + (nomesAut.length ? ', de ' + frase(nomesAut) : nomesOrg.length ? ', organização de ' + frase(nomesOrg) : '') + '. ' + cfg.editora.nome + '.', role: 'doc-cover' }));
+  var capa = sec('capa', 'cover', '', T('Capa'), 'capa');
+  capa.cont.appendChild(el(doc, 'img', { src: '../img/capa.jpg', alt: T('Capa do livro “{t}”{por}. {ed}.', { t: o.titulo + (o.subtitulo ? ': ' + o.subtitulo : ''), por: nomesAut.length ? T(', de {a}', { a: frase(nomesAut) }) : nomesOrg.length ? T(', organização de {a}', { a: frase(nomesOrg) }) : '', ed: cfg.editora.nome }), role: 'doc-cover' }));
   extras.push(capa);
 
   // falsa folha de rosto
-  var falsa = sec('falsa-rosto', 'halftitlepage', '', 'Falsa folha de rosto', 'falsa-rosto');
+  var falsa = sec('falsa-rosto', 'halftitlepage', '', T('Falsa folha de rosto'), 'falsa-rosto');
   falsa.cont.appendChild(el(doc, 'p', null, [o.titulo]));
   var om = marcaCfgObra();
   marcaImgs(doc, logos, varMarca(om.falsaRosto, LUM_PAGINA, 'pb'), 'f-marca').forEach(function (n) { falsa.cont.appendChild(n); });
   extras.push(falsa);
 
   // folha de rosto
-  var rosto = sec('rosto', 'titlepage', '', 'Folha de rosto', 'rosto');
+  var rosto = sec('rosto', 'titlepage', '', T('Folha de rosto'), 'rosto');
   rosto.cont.appendChild(orn(doc, 'faixa', 'faixa'));
   if (nomesAut.length) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-autores' }, linhas(doc, nomesAut)));
-  else if (nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-autores' }, linhas(doc, nomesOrg).concat([el(doc, 'br'), (nomesOrg.length > 1 ? '(organizadores)' : '(organização)')])));
+  else if (nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-autores' }, linhas(doc, nomesOrg).concat([el(doc, 'br'), (nomesOrg.length > 1 ? T('(organizadores)') : T('(organização)'))])));
   rosto.cont.appendChild(el(doc, 'h1', { 'class': 'r-titulo' }, [o.titulo]));
   if (o.subtitulo) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-subtitulo' }, [o.subtitulo]));
-  if (nomesAut.length && nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', null, ['Organização: ' + frase(nomesOrg)]));
-  rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-edicao' }, [((o.edicao || '1').replace(/\D/g, '') || '1') + 'ª edição']));
+  if (nomesAut.length && nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', null, [T('Organização: {a}', { a: frase(nomesOrg) })]));
+  rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-edicao' }, [edicaoT(o.edicao)]));
   var imgsRosto = marcaImgs(doc, logos, varMarca(om.rosto, LUM_PAGINA, 'cor'), 'r-marca'), marcaCor = imgsRosto.length > 0;
   var selo = logos.find(function (l) { return l.id === 'icet' && l.arquivoEpub; });
   if (marcaCor) imgsRosto.forEach(function (n) { rosto.cont.appendChild(n); });
   else {
-    if (selo && !logos.some(function (l) { return l.destaque && l.arquivoEpub; })) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-selo', src: '../' + selo.arquivoEpub, alt: 'Selo: ' + cfg.editora.nome }));
+    if (selo && !logos.some(function (l) { return l.destaque && l.arquivoEpub; })) rosto.cont.appendChild(el(doc, 'img', { 'class': 'r-selo', src: '../' + selo.arquivoEpub, alt: T('Selo: ') + cfg.editora.nome }));
     rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-local' }, [cfg.editora.nome]));
   }
   rosto.cont.appendChild(el(doc, 'p', null, [(o.local || (cfg.editora.cidade + ', ' + cfg.editora.uf)), el(doc, 'br'), String(o.ano)]));
@@ -2104,7 +2279,7 @@ async function montarEditoriais(livro, o, logos) {
   extras.push(rosto);
 
   // verso da folha de rosto: créditos, conselho, ficha catalográfica
-  var cred = sec('creditos', 'copyright-page', '', 'Créditos e ficha catalográfica', 'creditos');
+  var cred = sec('creditos', 'copyright-page', '', T('Créditos e ficha catalográfica'), 'creditos');
   // com a marca da Editora na folha de rosto, a régua de realização e apoio abre o verso (créditos)
   if (marcaCor) cred.cont.appendChild(regua(doc, logos));
   var autoresTodos = nomesAut.length ? nomesAut : nomesOrg;
@@ -2116,31 +2291,34 @@ async function montarEditoriais(livro, o, logos) {
     'cc-by-nc-sa': 'Esta obra está licenciada sob a licença Creative Commons Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional (CC BY-NC-SA 4.0).',
     'cc-by-nc-nd': 'Esta obra está licenciada sob a licença Creative Commons Atribuição-NãoComercial-SemDerivações 4.0 Internacional (CC BY-NC-ND 4.0).'
   };
-  var licTxt = (o.direitosTexto || '').trim() ? o.direitosTexto.trim().replace(/^©\s*\d{4}\s*[^.]*\.\s*/, '') : (LIC[o.licenca] || LIC.todos);
+  var licTxt = (o.direitosTexto || '').trim() ? TL(o.direitosTexto.trim().replace(/^©\s*\d{4}\s*[^.]*\.\s*/, '')) : (LIC[o.licenca] || LIC.todos);
+  var LI = LIC_I18N[lingBase()];
+  if (LI && !(o.direitosTexto || '').trim()) licTxt = /^cc-/.test(o.licenca) && LI[o.licenca] ? LI.frase.replace('{l}', LI[o.licenca]) : LI.todos;
   livro.direitos = '© ' + o.ano + ' ' + frase(autoresTodos) + '. ' + licTxt;
   cred.cont.appendChild(el(doc, 'p', { 'class': 'direitos' }, ['© ' + o.ano + ' ' + frase(autoresTodos), el(doc, 'br'), licTxt]));
   var indig = aut.concat(org).filter(function (p) { return p.indigena; });
-  cred.cont.appendChild(el(doc, 'p', { 'class': 'selo-politica' }, [cfg.editora.nome + ', selo editorial de autoria indígena do ' + cfg.editora.mantenedora + '.' + (indig.length ? ' Autoria indígena: ' + frase(indig.map(function (p) { return p.nome + ' (' + p.povo + ')'; })) + '.' : '')]));
-  if (o.ctDeclaracao && o.ctTexto) cred.cont.appendChild(el(doc, 'p', null, [o.ctTexto]));
+  cred.cont.appendChild(el(doc, 'p', { 'class': 'selo-politica' }, [T('{ed}, selo editorial de autoria indígena do {mant}.', { ed: cfg.editora.nome, mant: cfg.editora.mantenedora }) + (indig.length ? T(' Autoria indígena: {l}.', { l: frase(indig.map(function (p) { return p.nome + ' (' + p.povo + ')'; })) }) : '')]));
+  if (o.ctDeclaracao && o.ctTexto) cred.cont.appendChild(el(doc, 'p', null, [TL(o.ctTexto)]));
   if (cfg.conselho.length) {
-    cred.cont.appendChild(el(doc, 'h2', null, ['Conselho Editorial']));
+    cred.cont.appendChild(el(doc, 'h2', null, [T('Conselho Editorial')]));
     var ul = el(doc, 'ul');
-    cfg.conselho.forEach(function (m) { ul.appendChild(el(doc, 'li', null, [m.nome + (m.vinculo ? ', ' + m.vinculo : '')])); });
+    cfg.conselho.forEach(function (m) { ul.appendChild(el(doc, 'li', null, [m.nome + (m.vinculo ? ', ' + TL(m.vinculo) : '')])); });
     cred.cont.appendChild(ul);
   } else if (cfg.editora.conselhoAto) {
-    cred.cont.appendChild(el(doc, 'h2', null, ['Conselho Editorial']));
-    cred.cont.appendChild(el(doc, 'p', null, ['Constituído e ' + cfg.editora.conselhoAto.replace(/^\s*/, '').replace(/\.?\s*$/, '.')]));
+    cred.cont.appendChild(el(doc, 'h2', null, [T('Conselho Editorial')]));
+    cred.cont.appendChild(el(doc, 'p', null, [TL('Constituído e ' + cfg.editora.conselhoAto.replace(/^\s*/, '').replace(/\.?\s*$/, '.'))]));
   } else if (o.emitirComPendencias) {
-    cred.cont.appendChild(el(doc, 'h2', null, ['Conselho Editorial']));
-    cred.cont.appendChild(el(doc, 'p', null, ['Em desenvolvimento.']));
+    cred.cont.appendChild(el(doc, 'h2', null, [T('Conselho Editorial')]));
+    cred.cont.appendChild(el(doc, 'p', null, [T('Em desenvolvimento.')]));
   }
-  var eq = cfg.equipe, linhasEq = [['Edição', eq.editor], ['Revisão', eq.revisao], ['Projeto gráfico', eq.projetoGrafico], ['Capa', eq.capa], ['Coordenação Editorial Digital', eq.diagramacao]].filter(function (x) { return x[1]; });
+  var eq = cfg.equipe, linhasEq = [['Edição', eq.editor], ['Revisão', eq.revisao], ['Projeto gráfico', eq.projetoGrafico], ['Capa', eq.capa], ['Coordenação Editorial Digital', eq.diagramacao]].concat(o._traducao ? [['Tradução', o._traducao.tradutor], ['Revisão da tradução', o._traducao.revisor]] : []).filter(function (x) { return x[1]; });
   if (linhasEq.length) {
-    cred.cont.appendChild(el(doc, 'h2', null, ['Equipe editorial']));
-    var ul2 = el(doc, 'ul'); linhasEq.forEach(function (x) { ul2.appendChild(el(doc, 'li', null, [x[0] + ': ' + x[1]])); }); cred.cont.appendChild(ul2);
+    cred.cont.appendChild(el(doc, 'h2', null, [T('Equipe editorial')]));
+    var ul2 = el(doc, 'ul'); linhasEq.forEach(function (x) { ul2.appendChild(el(doc, 'li', null, [T(x[0]) + ': ' + x[1]])); }); cred.cont.appendChild(ul2);
   }
   var f = fichaCatalografica(o, livro);
-  var ficha = el(doc, 'div', { 'class': 'ficha', role: 'region', 'aria-label': 'Ficha catalográfica' });
+  if (o._traducao) cred.cont.appendChild(el(doc, 'p', { 'class': 'titulo-original' }, [T('Título original') + ': ', el(doc, 'i', null, [o._traducao.tituloOriginal])]));
+  var ficha = el(doc, 'div', { 'class': 'ficha', role: 'region', 'aria-label': T('Ficha catalográfica') });
   ficha.appendChild(el(doc, 'p', { 'class': 'cip' }, ['Dados Internacionais de Catalogação na Publicação (CIP)']));
   var corpo = el(doc, 'div', { 'class': 'corpo' });
   if (f.cutter) corpo.appendChild(el(doc, 'span', { 'class': 'cutter' }, [f.cutter]));
@@ -2158,12 +2336,12 @@ async function montarEditoriais(livro, o, logos) {
   var parceiros = logos.filter(function (l) { return !l.marcaEditora; });
   var semAut = parceiros.filter(function (l) { return !l.autorizado; });
   var comAut = parceiros.filter(function (l) { return l.autorizado && l.arquivoEpub; }).map(function (l) { return l.sigla; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
-  if (comAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Logomarcas institucionais reproduzidas com autorização: ' + frase(comAut) + '.']));
-  if (o.emitirComPendencias && semAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, ['Autorização de uso das marcas institucionais (' + frase(semAut.map(function (l) { return l.sigla; }).filter(function (v, i, arr) { return arr.indexOf(v) === i; })) + '): em desenvolvimento.']));
+  if (comAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, [T('Logomarcas institucionais reproduzidas com autorização: {l}.', { l: frase(comAut) })]));
+  if (o.emitirComPendencias && semAut.length) cred.cont.appendChild(el(doc, 'p', { 'class': 'ficha-autoria' }, [T('Autorização de uso das marcas institucionais ({l}): em desenvolvimento.', { l: frase(semAut.map(function (l) { return l.sigla; }).filter(function (v, i, arr) { return arr.indexOf(v) === i; })) })]));
   var ed = cfg.editora;
   var contato = [ed.nome, ed.mantenedora, ed.endereco, (ed.cidade + ', ' + ed.uf), ed.email, ed.site].filter(Boolean);
   // contato da Editora: no colofão, junto da marca, quando houver marca; senão, no fim dos créditos
-  if (!marcaCor) { cred.cont.appendChild(el(doc, 'h2', null, ['Editora'])); contato.forEach(function (l) { cred.cont.appendChild(el(doc, 'p', null, [l])); }); }
+  if (!marcaCor) { cred.cont.appendChild(el(doc, 'h2', null, [T('Editora')])); contato.forEach(function (l) { cred.cont.appendChild(el(doc, 'p', null, [l])); }); }
   livro._contatoEditora = marcaCor ? contato : null;
   var imgsCred = marcaImgs(doc, logos, varMarca(om.creditos, LUM_PAGINA, 'pb'), 'cr-marca');
   if (imgsCred.length) { var pcm = el(doc, 'p', { 'class': 'cr-marca-p' }); imgsCred.forEach(function (n) { pcm.appendChild(n); }); cred.cont.appendChild(pcm); }
@@ -2181,37 +2359,37 @@ async function montarEditoriais(livro, o, logos) {
     s.cont.appendChild(ol); return s;
   }
   livro.listasGeradas = [];
-  if (livro.ilustracoes.length >= minimo) { var li = lista('lista-ilustracoes', 'loi', 'Lista de ilustrações', livro.ilustracoes.map(function (x) { return { alvo: x.id, texto: x.rotulo + sepRot() + x.titulo }; })); livro.listasGeradas.push(li); }
-  if (livro.tabelas.length >= minimo) { var lt = lista('lista-tabelas', 'lot', 'Lista de tabelas e quadros', livro.tabelas.map(function (x) { return { alvo: x.id, texto: x.rotulo + sepRot() + x.titulo }; })); livro.listasGeradas.push(lt); }
+  if (livro.ilustracoes.length >= minimo) { var li = lista('lista-ilustracoes', 'loi', T('Lista de ilustrações'), livro.ilustracoes.map(function (x) { return { alvo: x.id, texto: x.rotulo + sepRot() + x.titulo }; })); livro.listasGeradas.push(li); }
+  if (livro.tabelas.length >= minimo) { var lt = lista('lista-tabelas', 'lot', T('Lista de tabelas e quadros'), livro.tabelas.map(function (x) { return { alvo: x.id, texto: x.rotulo + sepRot() + x.titulo }; })); livro.listasGeradas.push(lt); }
   if (livro.siglas.length >= minimo) {
-    var ls = sec('lista-siglas', '', '', 'Lista de abreviaturas e siglas', 'lista');
-    ls.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, ['Lista de abreviaturas e siglas']));
+    var ls = sec('lista-siglas', '', '', T('Lista de abreviaturas e siglas'), 'lista');
+    ls.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, [T('Lista de abreviaturas e siglas')]));
     var dl = el(doc, 'dl');
     livro.siglas.forEach(function (x) { dl.appendChild(el(doc, 'dt', null, [el(doc, 'strong', null, [x.sigla])])); dl.appendChild(el(doc, 'dd', null, [x.nome])); });
     ls.cont.appendChild(dl); livro.listasGeradas.push(ls);
   }
 
   // sumário (NBR 6027)
-  var sum = sec('sumario', 'toc', 'doc-toc', 'Sumário');
+  var sum = sec('sumario', 'toc', 'doc-toc', T('Sumário'));
   livro.sumario = sum;
 
   // colofão e licenças
-  var col = { tipo: 'colofao', def: { et: 'colophon', role: 'doc-colophon', parte: 'back' }, id: 'colofao', titulo: 'Colofão', cont: el(doc, 'div', { 'class': 'colofao' }), subtitulos: [], gerada: true };
+  var col = { tipo: 'colofao', def: { et: 'colophon', role: 'doc-colophon', parte: 'back' }, id: 'colofao', titulo: T('Colofão'), cont: el(doc, 'div', { 'class': 'colofao' }), subtitulos: [], gerada: true };
   var d = new Date();
   var imgsCol = marcaImgs(doc, logos, varMarca(om.colofao, LUM_PAGINA, 'pb'), 'c-marca');
   if (imgsCol.length) imgsCol.forEach(function (n) { col.cont.appendChild(n); });
   else col.cont.appendChild(orn(doc, 'espiral', 'emblema'));
-  col.cont.appendChild(el(doc, 'p', null, ['Este livro foi editado pela ' + cfg.editora.nome + ', selo editorial do ' + cfg.editora.mantenedora + ', em ' + cfg.editora.cidade + ', ' + cfg.editora.uf + ', em ' + MESES[d.getMonth()] + ' de ' + d.getFullYear() + '.']));
-  col.cont.appendChild(el(doc, 'p', null, ['Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).']));
-  col.cont.appendChild(el(doc, 'p', null, ['Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.']));
-  col.cont.appendChild(el(doc, 'p', { 'class': 'arte' }, ['A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.']));
+  col.cont.appendChild(el(doc, 'p', null, [T('Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.', { ed: cfg.editora.nome, mant: cfg.editora.mantenedora, cid: cfg.editora.cidade, uf: cfg.editora.uf, mes: mesAnoT(d) })]));
+  col.cont.appendChild(el(doc, 'p', null, [T('Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).')]));
+  col.cont.appendChild(el(doc, 'p', null, [T('Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.')]));
+  col.cont.appendChild(el(doc, 'p', { 'class': 'arte' }, [T('A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.')]));
   if (livro._contatoEditora) col.cont.appendChild(el(doc, 'p', { 'class': 'c-contato' }, linhas(doc, livro._contatoEditora)));
-  col.cont.appendChild(el(doc, 'p', null, [el(doc, 'a', { href: 'licencas.xhtml' }, ['Licenças das fontes tipográficas'])]));
-  var lic = { tipo: 'licencas', def: { et: '', role: '', parte: 'back' }, id: 'licencas', titulo: 'Licenças das fontes', cont: el(doc, 'div', { 'class': 'licencas' }), subtitulos: [], gerada: true, naoLinear: true };
-  lic.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, ['Licenças das fontes']));
+  col.cont.appendChild(el(doc, 'p', null, [el(doc, 'a', { href: 'licencas.xhtml' }, [T('Licenças das fontes tipográficas')])]));
+  var lic = { tipo: 'licencas', def: { et: '', role: '', parte: 'back' }, id: 'licencas', titulo: T('Licenças das fontes'), cont: el(doc, 'div', { 'class': 'licencas' }), subtitulos: [], gerada: true, naoLinear: true };
+  lic.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, [T('Licenças das fontes')]));
   var ofl = '';
   try { ofl = await (await fetch(BASE + 'fontes/OFL-Literata.txt')).text(); } catch (e) {}
-  lic.cont.appendChild(el(doc, 'p', null, ['Literata, Copyright 2017 The Literata Project Authors (https://github.com/googlefonts/literata). Cinzel, Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel). Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.']));
+  lic.cont.appendChild(el(doc, 'p', null, ['Literata, Copyright 2017 The Literata Project Authors (https://github.com/googlefonts/literata). Cinzel, Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel). ' + T('Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.')]));
   if (ofl) lic.cont.appendChild(el(doc, 'pre', null, [ofl.replace(/^Copyright[^\n]*\n+/, '')]));
   return { capa: capa, falsa: falsa, rosto: rosto, creditos: cred, sumario: sum, colofao: col, licencas: lic };
 }
@@ -2220,7 +2398,7 @@ async function montarEditoriais(livro, o, logos) {
 var XML = '<?xml version="1.0" encoding="UTF-8"?>\n';
 function serial(no) { return new XMLSerializer().serializeToString(no).replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, ''); }
 function xhtml(titulo, corpoHtml, tipoBody) {
-  return XML + '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="pt-BR" lang="pt-BR">\n<head>\n<meta charset="UTF-8"/>\n<title>' + esc(titulo) + '</title>\n<link rel="stylesheet" type="text/css" href="../css/livro.css"/>\n</head>\n<body' + (tipoBody ? ' epub:type="' + tipoBody + '"' : '') + '>\n' + corpoHtml + '\n</body>\n</html>\n';
+  return XML + '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' + LINGUA + '" lang="' + LINGUA + '">\n<head>\n<meta charset="UTF-8"/>\n<title>' + esc(titulo) + '</title>\n<link rel="stylesheet" type="text/css" href="../css/livro.css"/>\n</head>\n<body' + (tipoBody ? ' epub:type="' + tipoBody + '"' : '') + '>\n' + corpoHtml + '\n</body>\n</html>\n';
 }
 function limparControles(s) { return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, ''); }
 
@@ -2260,7 +2438,7 @@ function montarSecaoHtml(livro, s) {
     var h1 = el(doc, 'h1', { id: 't-' + s.id });
     if (s.numero) h1.appendChild(el(doc, 'span', { 'class': 'indicativo' }, [s.numero]));
     h1.appendChild(doc.createTextNode(s.titulo));
-    if (s.tipo === 'abertura' && !s.tituloOrig) secEl.setAttribute('aria-label', 'Abertura');
+    if (s.tipo === 'abertura' && !s.tituloOrig) secEl.setAttribute('aria-label', T('Abertura'));
     else ab.appendChild(h1);
     ab.appendChild(orn(doc, 'pontos', 'pontilhado'));
     secEl.appendChild(ab);
@@ -2280,7 +2458,7 @@ function montarSecaoHtml(livro, s) {
 
 function preencherSumario(livro, ordem) {
   var doc = livro.doc, sum = livro.sumario;
-  sum.cont.appendChild(el(doc, 'h1', { id: 't-sumario', 'class': 'titulo-centro' }, ['Sumário']));
+  sum.cont.appendChild(el(doc, 'h1', { id: 't-sumario', 'class': 'titulo-centro' }, [T('Sumário')]));
   sum.cont.appendChild(orn(doc, 'pontos', 'pontilhado'));
   var ol = el(doc, 'ol'), olParte = null;
   ordem.forEach(function (s) {
@@ -2332,21 +2510,21 @@ function navXhtml(livro, ordem, landmarks) {
     }).join('\n') + '\n</ol>';
   }
   var visiveis = ordem.filter(function (s) { return !s.naoLinear && s.tipo !== 'capa'; });
-  var corpo = '<nav epub:type="toc" id="toc" role="doc-toc"><h1>Sumário</h1>\n' + itens(visiveis) + '</nav>\n';
-  corpo += '<nav epub:type="landmarks" id="landmarks" hidden=""><h2>Pontos de referência</h2><ol>' + landmarks.map(function (l) { return '<li><a epub:type="' + l[0] + '" href="text/' + l[1] + '">' + esc(l[2]) + '</a></li>'; }).join('') + '</ol></nav>';
-  return XML + '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="pt-BR" lang="pt-BR">\n<head><meta charset="UTF-8"/><title>Sumário</title><link rel="stylesheet" type="text/css" href="css/livro.css"/></head>\n<body>\n' + corpo + '\n</body>\n</html>\n';
+  var corpo = '<nav epub:type="toc" id="toc" role="doc-toc"><h1>' + T('Sumário') + '</h1>\n' + itens(visiveis) + '</nav>\n';
+  corpo += '<nav epub:type="landmarks" id="landmarks" hidden=""><h2>' + T('Pontos de referência') + '</h2><ol>' + landmarks.map(function (l) { return '<li><a epub:type="' + l[0] + '" href="text/' + l[1] + '">' + esc(l[2]) + '</a></li>'; }).join('') + '</ol></nav>';
+  return XML + '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' + LINGUA + '" lang="' + LINGUA + '">\n<head><meta charset="UTF-8"/><title>' + T('Sumário') + '</title><link rel="stylesheet" type="text/css" href="css/livro.css"/></head>\n<body>\n' + corpo + '\n</body>\n</html>\n';
 }
 function linhas(doc, nomes) { var out = []; nomes.forEach(function (n, i) { if (i) out.push(el(doc, 'br')); out.push(n); }); return out; }
 function rotuloNav(s) { return (s.numero ? s.numero + ' ' : '') + (s.rotulo ? s.rotulo + sepRot() : '') + s.titulo; }
 function ncx(livro, ordem, idPub, titulo) {
   var k = 0;
   var pontos = ordem.filter(function (s) { return !s.naoLinear; }).map(function (s) { k++; return '<navPoint id="np' + k + '" playOrder="' + k + '"><navLabel><text>' + esc(rotuloNav(s)) + '</text></navLabel><content src="text/' + s.arquivo + '"/></navPoint>'; }).join('\n');
-  return XML + '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="pt-BR">\n<head><meta name="dtb:uid" content="' + esc(idPub) + '"/><meta name="dtb:depth" content="1"/><meta name="dtb:totalPageCount" content="0"/><meta name="dtb:maxPageNumber" content="0"/></head>\n<docTitle><text>' + esc(titulo) + '</text></docTitle>\n<navMap>\n' + pontos + '\n</navMap>\n</ncx>\n';
+  return XML + '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="' + LINGUA + '">\n<head><meta name="dtb:uid" content="' + esc(idPub) + '"/><meta name="dtb:depth" content="1"/><meta name="dtb:totalPageCount" content="0"/><meta name="dtb:maxPageNumber" content="0"/></head>\n<docTitle><text>' + esc(titulo) + '</text></docTitle>\n<navMap>\n' + pontos + '\n</navMap>\n</ncx>\n';
 }
 
 async function empacotar(livro, o, logos, editoriais, opcoes) {
   var A = livro.A, doc = livro.doc;
-  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || 'Sem título' });
+  o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || T('Sem título') });
   var zip = new window.JSZip();
   zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
   zip.file('META-INF/container.xml', XML + '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>\n');
@@ -2388,7 +2566,7 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   var corpo = livro.secoes.filter(function (s) { return s.def.parte === 'body'; });
   var pos = livro.secoes.filter(function (s) { return s.def.parte === 'back'; });
   var indiceSec = null;
-  var ordem = [ed.capa, ed.falsa, ed.rosto, ed.creditos].concat(pre, livro.listasGeradas || [], [ed.sumario], aprPref, corpo, pos);
+  var ordem = [ed.capa, ed.falsa, ed.rosto, ed.creditos].concat(pre, livro.listasGeradas || [], [ed.sumario], ed.notaTraducao ? [ed.notaTraducao] : [], aprPref, corpo, pos);
   // nomes de arquivo
   var nCap = 0;
   ordem.forEach(function (s) { s.arquivo = (s.tipo === 'capitulo' || s.tipo === 'abertura') ? 'cap-' + pad(++nCap) + '.xhtml' : (s.gerada ? s.id : s.id.replace(/[^a-z0-9\-]/gi, '')) + '.xhtml'; });
@@ -2399,7 +2577,7 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
     if (termos.length) {
       var entradas = gerarIndice(livro, termos);
       if (entradas.length) {
-        indiceSec = { tipo: 'indice', def: { et: 'index', role: 'doc-index', parte: 'back', sum: true }, id: 'indice', titulo: 'Índice remissivo', cont: el(doc, 'div', { 'class': 'indice-remissivo' }), subtitulos: [], arquivo: 'indice.xhtml' };
+        indiceSec = { tipo: 'indice', def: { et: 'index', role: 'doc-index', parte: 'back', sum: true }, id: 'indice', titulo: T('Índice remissivo'), cont: el(doc, 'div', { 'class': 'indice-remissivo' }), subtitulos: [], arquivo: 'indice.xhtml' };
         var letraAt = '', ul = null;
         entradas.forEach(function (e) {
           var L = N(e.termo)[0] || '#';
@@ -2407,7 +2585,7 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
           var li = el(doc, 'li', null, [e.termo + ': ']);
           e.locais.forEach(function (lc, j) {
             if (j) li.appendChild(doc.createTextNode(', '));
-            var lab = lc.secao.numero ? 'cap. ' + lc.secao.numero : (lc.secao.rotulo ? lc.secao.rotulo.replace('Capítulo', 'cap.') : lc.secao.titulo.length > 28 ? lc.secao.titulo.slice(0, 26) + '…' : lc.secao.titulo);
+            var lab = lc.secao.numero ? T('cap.') + ' ' + lc.secao.numero : (lc.secao.rotulo ? lc.secao.rotulo.replace(T('Capítulo'), T('cap.')) : lc.secao.titulo.length > 28 ? lc.secao.titulo.slice(0, 26) + '…' : lc.secao.titulo);
             li.appendChild(el(doc, 'a', { href: lc.secao.arquivo + '#' + lc.id }, [lab]));
           });
           ul.appendChild(li);
@@ -2458,10 +2636,10 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   livro.ordem = ordem; livro.paginas = paginas;
 
   // nav, ncx, opf
-  var landmarks = [['cover', ed.capa.arquivo, 'Capa'], ['titlepage', ed.rosto.arquivo, 'Folha de rosto'], ['toc', ed.sumario.arquivo, 'Sumário']];
-  var primeiro = ordem.find(function (s) { return s.def.parte === 'body'; }); if (primeiro) landmarks.push(['bodymatter', primeiro.arquivo, 'Início do texto']);
-  var bib = ordem.find(function (s) { return s.tipo === 'referencias'; }); if (bib) landmarks.push(['bibliography', bib.arquivo, 'Referências']);
-  if (indiceSec) landmarks.push(['index', indiceSec.arquivo, 'Índice remissivo']);
+  var landmarks = [['cover', ed.capa.arquivo, T('Capa')], ['titlepage', ed.rosto.arquivo, T('Folha de rosto')], ['toc', ed.sumario.arquivo, T('Sumário')]];
+  var primeiro = ordem.find(function (s) { return s.def.parte === 'body'; }); if (primeiro) landmarks.push(['bodymatter', primeiro.arquivo, T('Início do texto')]);
+  var bib = ordem.find(function (s) { return s.tipo === 'referencias'; }); if (bib) landmarks.push(['bibliography', bib.arquivo, T('Referências')]);
+  if (indiceSec) landmarks.push(['index', indiceSec.arquivo, T('Índice remissivo')]);
   var idPub = isbnValido(o.isbn) ? 'urn:isbn:' + isbnLimpo(o.isbn) : 'urn:uuid:' + (livro.uuid || (livro.uuid = uuid()));
   add('nav.xhtml', navXhtml(livro, ordem, landmarks), 'application/xhtml+xml', 'nav', 'nav');
   add('toc.ncx', ncx(livro, ordem, idPub, o.titulo), 'application/x-dtbncx+xml', 'ncx');
@@ -2472,11 +2650,15 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   if (o.subtitulo) md.push('<dc:title id="subtitulo">' + esc(o.subtitulo) + '</dc:title>', '<meta refines="#subtitulo" property="title-type">subtitle</meta>');
   aut.forEach(function (p, i) { md.push('<dc:creator id="aut' + i + '">' + esc(p.nome) + '</dc:creator>', '<meta refines="#aut' + i + '" property="role" scheme="marc:relators">aut</meta>', '<meta refines="#aut' + i + '" property="file-as">' + esc(nomeFicha(p.nome)) + '</meta>'); });
   org.forEach(function (p, i) { md.push('<dc:creator id="org' + i + '">' + esc(p.nome) + '</dc:creator>', '<meta refines="#org' + i + '" property="role" scheme="marc:relators">edt</meta>', '<meta refines="#org' + i + '" property="file-as">' + esc(nomeFicha(p.nome)) + '</meta>'); });
-  md.push('<dc:language>pt-BR</dc:language>', '<dc:publisher>' + esc(cfg.editora.nome) + '</dc:publisher>', '<dc:date>' + esc(/^\d{4}$/.test(o.ano) ? o.ano : String(new Date().getFullYear())) + '</dc:date>');
+  md.push('<dc:language>' + LINGUA + '</dc:language>', '<dc:publisher>' + esc(cfg.editora.nome) + '</dc:publisher>', '<dc:date>' + esc(/^\d{4}$/.test(o.ano) ? o.ano : String(new Date().getFullYear())) + '</dc:date>');
   String(o.palavrasChave || '').split(/;|\n/).map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (k) { md.push('<dc:subject>' + esc(k) + '</dc:subject>'); });
   if (o.sinopse) md.push('<dc:description>' + esc(o.sinopse) + '</dc:description>');
   md.push('<dc:rights>' + esc(livro.direitos) + '</dc:rights>');
   if (isbnValido(o.isbnImpresso)) md.push('<dc:source>urn:isbn:' + isbnLimpo(o.isbnImpresso) + '</dc:source>');
+  if (o._traducao) {
+    if (isbnValido(o._traducao.isbnOriginal)) md.push('<dc:source>urn:isbn:' + isbnLimpo(o._traducao.isbnOriginal) + '</dc:source>');
+    if (o._traducao.tradutorInformado) md.push('<dc:contributor id="trl0">' + esc(o._traducao.tradutorInformado) + '</dc:contributor>', '<meta refines="#trl0" property="role" scheme="marc:relators">trl</meta>');
+  }
   md.push('<meta property="dcterms:modified">' + new Date().toISOString().replace(/\.\d+Z$/, 'Z') + '</meta>');
   if (o.serie) md.push('<meta property="belongs-to-collection" id="serie">' + esc(o.serie) + '</meta>', '<meta refines="#serie" property="collection-type">series</meta>');
   md.push('<meta name="cover" content="img-capa"/>');
@@ -2486,11 +2668,11 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   md.push('<meta property="schema:accessModeSufficient">textual' + (a11yGrave ? ',visual' : '') + '</meta>');
   ['tableOfContents', 'readingOrder', 'structuralNavigation', 'displayTransformability'].concat(a11yGrave ? [] : ['alternativeText']).concat(indiceSec ? ['index'] : []).concat(livro.tabelas.length ? ['table'] : []).forEach(function (f) { md.push('<meta property="schema:accessibilityFeature">' + f + '</meta>'); });
   md.push('<meta property="schema:accessibilityHazard">none</meta>');
-  md.push('<meta property="schema:accessibilitySummary">' + esc('Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas' + (a11yGrave ? '' : ', textos alternativos nas imagens') + ' e texto ajustável pelo leitor. Produzido pela ' + cfg.editora.nome + '.') + '</meta>');
+  md.push('<meta property="schema:accessibilitySummary">' + esc(T('Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.', { alt: a11yGrave ? '' : T(', textos alternativos nas imagens'), ed: cfg.editora.nome })) + '</meta>');
   if (!a11yGrave && !A.itens.some(function (x) { return x.cat === 'Técnico' && x.sev === 'bloqueante'; })) md.push('<meta property="dcterms:conformsTo">EPUB Accessibility 1.1 - WCAG 2.1 Level AA</meta>', '<meta property="a11y:certifiedBy">' + esc(cfg.editora.nome) + '</meta>');
   var man = manifesto.map(function (m) { return '<item id="' + m.id + '" href="' + esc(m.href) + '" media-type="' + m.mime + '"' + (m.props ? ' properties="' + m.props + '"' : '') + '/>'; }).join('\n    ');
   var spine = ordem.map(function (s) { return '<itemref idref="x-' + s.arquivo.replace(/\.xhtml$/, '').replace(/[^a-z0-9\-]/gi, '') + '"' + (s.naoLinear ? ' linear="no"' : '') + '/>'; }).join('\n    ');
-  var opf = XML + '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="pt-BR" dir="ltr">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    ' + md.join('\n    ') + '\n  </metadata>\n  <manifest>\n    ' + man + '\n  </manifest>\n  <spine toc="ncx">\n    ' + spine + '\n  </spine>\n</package>\n';
+  var opf = XML + '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="' + LINGUA + '" dir="ltr">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    ' + md.join('\n    ') + '\n  </metadata>\n  <manifest>\n    ' + man + '\n  </manifest>\n  <spine toc="ncx">\n    ' + spine + '\n  </spine>\n</package>\n';
   zip.file('OEBPS/content.opf', opf);
   var blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip', compression: 'DEFLATE', compressionOptions: { level: 9 } });
   livro.css = css;
@@ -2756,9 +2938,9 @@ function htmlImpressao(livro, logos, o, opc) {
       });
     }
     var id = String(p.s.arquivo || '').replace(/\.xhtml$/, '');
-    return '<div class="pg pg-' + p.s.tipo + '"' + (id ? ' id="pgf-' + id + '"' : '') + '>' + trocarImagensDados(hifenizarHtml(h), livro, logos) + '</div>';
+    return '<div class="pg pg-' + p.s.tipo + '"' + (id ? ' id="pgf-' + id + '"' : '') + '>' + trocarImagensDados(lingBase() === 'pt' ? hifenizarHtml(h) : h, livro, logos) + '</div>';
   }).join('\n');
-  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
+  return '<!DOCTYPE html><html lang="' + LINGUA + '"><head><meta charset="UTF-8"><title>' + esc(o.titulo) + '</title><style>' + css + '</style></head><body>' + corpo + '<script>document.fonts.ready.then(function(){' + AJUSTE_HIFENS_JS + 'setTimeout(function(){window.print();},400);});<\/script></body></html>';
 }
 
 /* ───────────────────────── 12b. HTML DE LEITURA (CÓPIA CONTROLADA) ─────────────────────────
@@ -2789,13 +2971,13 @@ async function htmlLeitura(livro, logos, o, opc) {
     h = h.split(u).join(bytesParaDataUrl(bytes, mime));
   }
   var isbnEpub = isbnValido(o.isbn) ? isbnFormatado(o.isbn) : '', isbnH = isbnValido(o.isbnHtml) ? isbnFormatado(o.isbnHtml) : '';
-  var ident = isbnH ? 'ISBN ' + isbnH + ' (HTML)' + (isbnEpub ? '; edição em EPUB: ISBN ' + isbnEpub : '') : (isbnEpub ? 'Cópia de leitura em HTML da edição digital ISBN ' + isbnEpub + ' (EPUB)' : 'Cópia de leitura em HTML');
+  var ident = isbnH ? 'ISBN ' + isbnH + ' (HTML)' + (isbnEpub ? T('; edição em EPUB: ISBN {i}', { i: isbnEpub }) : '') : (isbnEpub ? T('Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)', { i: isbnEpub }) : T('Cópia de leitura em HTML'));
   var ex = opc.exemplar ? String(opc.exemplar).padStart(3, '0') : '';
-  var barra = '<div class="barra"><span>' + esc(o.titulo) + (ex ? '<small>Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') + '</small>' : '<small>' + esc(ident) + '</small>') + '</span><a href="#pgf-sumario">Sumário</a></div>';
-  var aviso = '<div class="pg pg-exemplar"><section class="exemplar" aria-label="Identificação deste arquivo"><h2>' + (ex ? 'Exemplar controlado nº ' + ex : 'Identificação deste arquivo') + '</h2>' +
-    (ex ? '<p>Licenciado a <strong>' + esc(opc.destinatario || '') + '</strong> em ' + new Date().toLocaleDateString('pt-BR') + ', para uso pessoal e intransferível.</p>' : '') +
+  var barra = '<div class="barra"><span>' + esc(o.titulo) + (ex ? '<small>' + T('Exemplar nº {n}', { n: ex }) + ' · ' + esc(opc.destinatario || '') + '</small>' : '<small>' + esc(ident) + '</small>') + '</span><a href="#pgf-sumario">' + T('Sumário') + '</a></div>';
+  var aviso = '<div class="pg pg-exemplar"><section class="exemplar" aria-label="' + T('Identificação deste arquivo') + '"><h2>' + (ex ? T('Exemplar controlado nº {n}', { n: ex }) : T('Identificação deste arquivo')) + '</h2>' +
+    (ex ? '<p>' + T('Licenciado a {d} em {data}, para uso pessoal e intransferível.', { d: '<strong>' + esc(opc.destinatario || '') + '</strong>', data: dataT(new Date()) }) + '</p>' : '') +
     '<p>' + esc(ident) + '. ' + esc(cfg.editora.nome) + ', ' + esc(cfg.editora.cidade) + ', ' + esc(cfg.editora.uf) + ', ' + esc(o.ano || '') + '.</p>' +
-    '<p>É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).' + (ex ? ' Cada exemplar é numerado e registrado pela Editora.' : '') + '</p></section></div>';
+    '<p>' + T('É proibida a reprodução, o compartilhamento e a redistribuição deste arquivo, no todo ou em parte, sem autorização da Editora e dos autores (Lei n. 9.610/1998).') + (ex ? T(' Cada exemplar é numerado e registrado pela Editora.') : '') + '</p></section></div>';
   h = h.replace(/(<div class="pg pg-creditos"[\s\S]*?<\/div>\s*)(?=<div class="pg )/, '$1' + aviso);
   var meta = '<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="author" content="' + esc(cfg.editora.nome) + '">' +
     (isbnH ? '<meta name="dc.identifier" content="urn:isbn:' + isbnLimpo(o.isbnHtml) + '">' : '') + (isbnEpub ? '<meta name="dc.relation" content="urn:isbn:' + isbnLimpo(o.isbn) + '">' : '') + (ex ? '<meta name="exemplar" content="' + ex + '">' : '');
@@ -2808,15 +2990,528 @@ async function htmlLeitura(livro, logos, o, opc) {
   var chave = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sal, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
   var cif = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, chave, enc.encode(corpo)));
   var lH = marcaLogo(logos, varMarca(marcaCfgObra().html, LUM_PAGINA, 'cor'));
-  var trava = '<div class="cofre" role="main">' + (lH && lH.dados ? '<img src="' + bytesParaDataUrl(lH.dados.bytes, lH.dados.mime) + '" alt="' + esc(cfg.editora.nome) + '" style="width:12em;max-width:70%;height:auto;margin:0 auto 1.4em;display:block">' : '') + '<h1>' + esc(o.titulo) + '</h1><p>' + (ex ? 'Exemplar nº ' + ex + ' · ' + esc(opc.destinatario || '') : esc(cfg.editora.nome)) + '</p>' +
-    '<form id="abrir"><label for="senha">Senha de leitura</label><input id="senha" type="password" autocomplete="current-password" autofocus><button type="submit">Abrir o livro</button></form><p class="erro" id="erro" role="alert"></p>' +
+  var trava = '<div class="cofre" role="main">' + (lH && lH.dados ? '<img src="' + bytesParaDataUrl(lH.dados.bytes, lH.dados.mime) + '" alt="' + esc(cfg.editora.nome) + '" style="width:12em;max-width:70%;height:auto;margin:0 auto 1.4em;display:block">' : '') + '<h1>' + esc(o.titulo) + '</h1><p>' + (ex ? T('Exemplar nº {n}', { n: ex }) + ' · ' + esc(opc.destinatario || '') : esc(cfg.editora.nome)) + '</p>' +
+    '<form id="abrir"><label for="senha">' + T('Senha de leitura') + '</label><input id="senha" type="password" autocomplete="current-password" autofocus><button type="submit">' + T('Abrir o livro') + '</button></form><p class="erro" id="erro" role="alert"></p>' +
     '<p style="font-size:.8em;opacity:.75">' + esc(ident) + '</p></div>';
   var js = '(function(){var d=JSON.parse(document.getElementById("cofre-dados").textContent);function b(x){return Uint8Array.from(atob(x),function(c){return c.charCodeAt(0)})}' +
-    'document.getElementById("abrir").addEventListener("submit",function(e){e.preventDefault();var s=document.getElementById("senha").value,er=document.getElementById("erro");er.textContent="Abrindo…";' +
+    'document.getElementById("abrir").addEventListener("submit",function(e){e.preventDefault();var s=document.getElementById("senha").value,er=document.getElementById("erro");er.textContent=' + JSON.stringify(T('Abrindo…')) + ';' +
     'crypto.subtle.importKey("raw",new TextEncoder().encode(s),"PBKDF2",false,["deriveKey"]).then(function(k){return crypto.subtle.deriveKey({name:"PBKDF2",salt:b(d.s),iterations:d.n,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["decrypt"])})' +
-    '.then(function(k){return crypto.subtle.decrypt({name:"AES-GCM",iv:b(d.i)},k,b(d.c))}).then(function(t){document.body.innerHTML=new TextDecoder().decode(t);if(location.hash){var a=document.getElementById(location.hash.slice(1));if(a)a.scrollIntoView()}},function(){er.textContent="Senha incorreta."})})})();';
+    '.then(function(k){return crypto.subtle.decrypt({name:"AES-GCM",iv:b(d.i)},k,b(d.c))}).then(function(t){document.body.innerHTML=new TextDecoder().decode(t);if(location.hash){var a=document.getElementById(location.hash.slice(1));if(a)a.scrollIntoView()}},function(){er.textContent=' + JSON.stringify(T('Senha incorreta.')) + '})})})();';
   var dados = JSON.stringify({ s: bufParaB64(sal), i: bufParaB64(iv), n: ITER, c: bufParaB64(cif) });
   return h.slice(0, i) + trava + '<script type="application/json" id="cofre-dados">' + dados + '<\/script><script>' + js + '<\/script>' + h.slice(j);
+}
+
+/* ───────────────────────── 12c. TRADUÇÃO ESPECIALIZADA ─────────────────────────
+   Gera edições traduzidas (inglês, francês, espanhol, alemão) a partir do livro já processado em
+   português, com a mesma estrutura: capítulos, notas, tabelas, ilustrações, índice, sumário e páginas
+   editoriais. Etapas: (1) glossário terminológico pesquisado (instrumentos internacionais, órgãos,
+   categorias jurídicas brasileiras, etnônimos e termos indígenas, geografia), com fontes; (2) tradução
+   por segmentos, com a formatação preservada por marcas numeradas; (3) verificação automática de cada
+   segmento (marcas, números, chamadas autor-data, resíduo de português, extensão, travessões);
+   (4) revisão bilíngue independente; (5) composição da edição no idioma, com tipografia própria e nota
+   da tradução. A memória de tradução fica no navegador (IndexedDB) e pode ser exportada e reimportada
+   com as correções do revisor humano. */
+var TRAD_PADRAO = { variante: '', tradutor: '', revisor: '', isbn: '', isbnHtml: '', titulo: '', subtitulo: '', glossario: '', capa: '', glossarioIA: null };
+var NOME_LINGUA = { 'en-US': 'inglês (Estados Unidos)', 'en-GB': 'inglês (Reino Unido)', 'fr-FR': 'francês (França)', 'fr-CA': 'francês (Canadá)', 'es-419': 'espanhol (América Latina)', 'es-ES': 'espanhol (Espanha)', 'de-DE': 'alemão (Alemanha)' };
+var TRAD_USO = { entrada: 0, cache: 0, saida: 0, chamadas: 0, web: 0 };
+function tradCfg(b) { var t = (obra.traducoes || {})[b] || {}; var c = mesclar(clone(TRAD_PADRAO), t); if (!c.variante) c.variante = IDIOMAS[b].variantes[0][0]; return c; }
+function tradGuardar(b, campos) { obra.traducoes = obra.traducoes || {}; obra.traducoes[b] = mesclar(tradCfg(b), campos || {}); obraGuardar(); }
+function esperar(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+/* chamada ao Claude para a tradução: sistema em cache (o glossário se repete em todas as chamadas),
+   novas tentativas em sobrecarga, continuação de pause_turn quando há pesquisa na web */
+async function claudeTrad(p) {
+  var chave = chaveClaude(); if (!chave) throw new Error('sem chave do Claude configurada');
+  var corpo = {
+    model: 'claude-opus-5-5', max_tokens: p.maxTokens || 32000, fallbacks: 'default',
+    output_config: { effort: p.effort || 'high' },
+    system: [{ type: 'text', text: p.sistema, cache_control: { type: 'ephemeral' } }],
+    messages: [{ role: 'user', content: p.conteudo }]
+  };
+  if (p.schema) corpo.output_config.format = { type: 'json_schema', schema: p.schema };
+  if (p.web) corpo.tools = [{ type: 'web_search_20260209', name: 'web_search', max_uses: p.web }];
+  var acumulado = [], tent = 0, voltas = 0;
+  for (;;) {
+    var r;
+    try {
+      r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify(corpo)
+      });
+    } catch (e) { if (tent++ < 4) { await esperar(4000 * tent); continue; } throw e; }
+    var j = await r.json().catch(function () { return {}; });
+    if (!r.ok) {
+      if ((r.status === 429 || r.status === 529 || r.status >= 500) && tent++ < 5) { var ra = parseFloat(r.headers.get('retry-after')); await esperar(ra > 0 ? ra * 1000 : 5000 * Math.pow(2, tent - 1)); continue; }
+      var er = new Error((j && j.error && j.error.message) || ('HTTP ' + r.status)); er.status = r.status; throw er;
+    }
+    var u = j.usage || {};
+    TRAD_USO.entrada += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0); TRAD_USO.cache += u.cache_read_input_tokens || 0; TRAD_USO.saida += u.output_tokens || 0; TRAD_USO.chamadas++;
+    if (u.server_tool_use && u.server_tool_use.web_search_requests) TRAD_USO.web += u.server_tool_use.web_search_requests;
+    acumulado = acumulado.concat(j.content || []);
+    if (j.stop_reason === 'pause_turn' && voltas++ < 6) { corpo.messages = [corpo.messages[0], { role: 'assistant', content: acumulado }]; continue; }
+    if (j.stop_reason === 'refusal') throw new Error('pedido recusado pelo modelo');
+    if (j.stop_reason === 'max_tokens') throw new Error('resposta truncada');
+    var textos = acumulado.filter(function (x) { return x.type === 'text'; }).map(function (x) { return x.text; });
+    if (!textos.length) throw new Error('resposta vazia');
+    if (p.schema) return JSON.parse(textos[textos.length - 1]);
+    return textos.join('\n');
+  }
+}
+
+/* memória de tradução (IndexedDB): chave = idioma + resumo SHA-256 do segmento com suas marcas */
+var _tmDb = null;
+function tmAbrir() {
+  if (_tmDb) return _tmDb;
+  _tmDb = new Promise(function (ok) {
+    try { var r = indexedDB.open('icet_traducao', 1); r.onupgradeneeded = function () { r.result.createObjectStore('tm'); }; r.onsuccess = function () { ok(r.result); }; r.onerror = function () { ok(null); }; } catch (e) { ok(null); }
+  });
+  return _tmDb;
+}
+async function tmLer(chaves) {
+  var db = await tmAbrir(), out = {}; if (!db) return out;
+  await Promise.all(chaves.map(function (k) { return new Promise(function (ok) { try { var q = db.transaction('tm').objectStore('tm').get(k); q.onsuccess = function () { if (q.result) out[k] = q.result; ok(); }; q.onerror = function () { ok(); }; } catch (e) { ok(); } }); }));
+  return out;
+}
+async function tmGravar(pares) {
+  var db = await tmAbrir(); if (!db || !pares.length) return;
+  await new Promise(function (ok) { try { var tx = db.transaction('tm', 'readwrite'), st = tx.objectStore('tm'); pares.forEach(function (p) { st.put(p.v, p.k); }); tx.oncomplete = ok; tx.onerror = ok; } catch (e) { ok(); } });
+}
+async function resumoHash(s) { var b = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))); return Array.prototype.map.call(b.slice(0, 12), function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
+
+/* ── segmentação com marcas de formatação ── */
+var TRAD_BLOCO = /^(P|H[1-6]|LI|TD|TH|DT|DD|FIGCAPTION|CAPTION|BLOCKQUOTE|DIV|ASIDE|SECTION|NAV|UL|OL|DL|TABLE|THEAD|TBODY|TFOOT|TR|FIGURE|HR|HEADER|FOOTER|PRE)$/;
+var TRAD_FIXO = /^(PRE|CODE|SCRIPT|STYLE|SVG|MATH|IMG|KBD|SAMP|BR|WBR)$/;
+function tag(e) { return String(e.tagName || '').toUpperCase(); }
+function tradPular(e) { var l = e.getAttribute && e.getAttribute('lang'); return TRAD_FIXO.test(tag(e)) || (e.getAttribute && e.getAttribute('translate') === 'no') || (l && !/^pt/i.test(l)) || (e.classList && (e.classList.contains('ref') || e.classList.contains('rotulo-trad'))); }
+function temLetra(s) { return /[A-Za-zÀ-ÿ]/.test(s || ''); }
+function escMarc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function desescMarc(s) { return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'); }
+function paraMarcacao(e, mapa) {
+  var s = '';
+  Array.prototype.forEach.call(e.childNodes, function (n) {
+    if (n.nodeType === 3) { s += escMarc(n.nodeValue); return; }
+    if (n.nodeType !== 1) return;
+    // elementos sem palavras (chamadas de nota, âncoras, imagens) e trechos que não se traduzem ficam fixos
+    if (tradPular(n) || !temLetra(n.textContent)) { var kx = mapa.push({ n: n, fixo: true }); s += '<x' + kx + '/>'; return; }
+    var k = mapa.push({ n: n });
+    s += '<g' + k + '>' + paraMarcacao(n, mapa) + '</g' + k + '>';
+  });
+  return s;
+}
+/* reconstrói o conteúdo traduzido; devolve { frag } ou { erro } sem alterar o documento */
+function deMarcacao(marc, mapa, doc) {
+  var rx = /<(\/?)([gx])(\d+)(\/?)>/g, pilha = [{ no: doc.createDocumentFragment(), k: 0 }], usados = {}, m, ult = 0;
+  function texto(t) { if (t) pilha[pilha.length - 1].no.appendChild(doc.createTextNode(desescMarc(t))); }
+  while ((m = rx.exec(marc))) {
+    texto(marc.slice(ult, m.index)); ult = rx.lastIndex;
+    var k = +m[3], info = mapa[k - 1];
+    if (!info) return { erro: 'marca inexistente ' + m[0] };
+    if (m[2] === 'x') {
+      if (m[1] || !m[4] || !info.fixo) return { erro: 'marca malformada ' + m[0] };
+      if (usados[k]) return { erro: 'marca repetida ' + m[0] };
+      usados[k] = 1; pilha[pilha.length - 1].no.appendChild(info.n.cloneNode(true)); continue;
+    }
+    if (info.fixo || m[4]) return { erro: 'marca malformada ' + m[0] };
+    if (!m[1]) { if (usados[k]) return { erro: 'marca repetida ' + m[0] }; usados[k] = 1; pilha.push({ no: info.n.cloneNode(false), k: k }); }
+    else { var topo = pilha.pop(); if (!topo || topo.k !== k) return { erro: 'marcas cruzadas em ' + m[0] }; pilha[pilha.length - 1].no.appendChild(topo.no); }
+  }
+  texto(marc.slice(ult));
+  if (pilha.length !== 1) return { erro: 'marca não fechada' };
+  for (var i = 1; i <= mapa.length; i++) if (!usados[i]) return { erro: 'marca omitida ' + (mapa[i - 1].fixo ? '<x' + i + '/>' : '<g' + i + '>') };
+  return { frag: pilha[0].no };
+}
+function coletarSegmentos(raiz, doc, out, ctx) {
+  if (raiz.nodeType !== 1 || tradPular(raiz)) return;
+  var kids = Array.prototype.slice.call(raiz.childNodes);
+  var misto = kids.some(function (c) { return c.nodeType === 1 && TRAD_BLOCO.test(tag(c)); });
+  if (!misto) { if (temLetra(raiz.textContent)) out.push(segDeElemento(raiz, ctx)); return; }
+  var run = [];
+  function fechar() {
+    if (run.length && run.some(function (n) { return temLetra(n.textContent) && !(n.nodeType === 1 && tradPular(n)); })) {
+      var sp = doc.createElement('span'); sp.setAttribute('class', 'seg-t'); raiz.insertBefore(sp, run[0]);
+      run.forEach(function (n) { sp.appendChild(n); }); out.push(segDeElemento(sp, ctx));
+    }
+    run = [];
+  }
+  kids.forEach(function (c) { if (c.nodeType === 1 && TRAD_BLOCO.test(tag(c))) { fechar(); coletarSegmentos(c, doc, out, ctx); } else run.push(c); });
+  fechar();
+}
+function segDeElemento(e, ctx) { var mapa = []; return { el: e, mapa: mapa, src: paraMarcacao(e, mapa).replace(/\s+/g, ' ').trim(), secao: ctx.titulo, tipo: tag(e) === 'H1' || /^H[2-6]$/.test(tag(e)) ? 'titulo' : 'texto' }; }
+function segVirtual(texto, tipo, secao, aplicar) { return { src: escMarc(String(texto).replace(/\s+/g, ' ').trim()), mapa: [], tipo: tipo, secao: secao || '', aplicar: aplicar, virtual: true }; }
+
+/* rótulos de tabelas e ilustrações e conectivos das referências: tradução determinística */
+function protegerRotulos(livro, doc) {
+  var tipos = Object.keys(TIPOS_I18N.en).join('|');
+  var rx = new RegExp('^(\\s*)(' + tipos + ')\\s+(\\S+?)(\\.\\s|\\s–\\s|\\s-\\s|:\\s)');
+  livro.secoes.forEach(function (s) {
+    s.cont.querySelectorAll('caption,figcaption').forEach(function (c) {
+      var w = doc.createTreeWalker(c, NodeFilter.SHOW_TEXT, null), t;
+      while ((t = w.nextNode()) && !temLetra(t.nodeValue)) {}
+      if (!t) return;
+      var m = rx.exec(t.nodeValue); if (!m) return;
+      var sp = doc.createElement('span'); sp.setAttribute('class', 'rotulo-trad'); sp.textContent = m[1] + tipoT(m[2]) + ' ' + m[3] + m[4];
+      t.nodeValue = t.nodeValue.slice(m[0].length); t.parentNode.insertBefore(sp, t);
+    });
+  });
+  livro.ilustracoes.concat(livro.tabelas).forEach(function (x) { x.rotulo = String(x.rotulo || '').replace(/^(\S+)/, function (w) { return tipoT(w); }); });
+  livro.secoes.forEach(function (s) {
+    if (s.rotulo) s.rotulo = s.rotulo.replace(/^Capítulo\b/, T('Capítulo')).replace(/^Parte\b/, T('Parte'));
+  });
+}
+var MESES_ABREV = {
+  en: ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+  fr: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+  es: ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'],
+  de: ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.']
+};
+function conectivosReferencias(livro) {
+  var b = lingBase(), ms = MESES_ABREV[b], pt = ['jan', 'fev', 'mar', 'abr', 'maio', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  var rxMes = new RegExp('(' + T('Acesso em:').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*\\d{1,2}\\s+)(' + pt.join('|') + ')\\.?', 'g');
+  livro.secoes.forEach(function (s) {
+    s.cont.querySelectorAll('p.ref').forEach(function (p) {
+      var w = p.ownerDocument.createTreeWalker(p, NodeFilter.SHOW_TEXT, null), n;
+      while ((n = w.nextNode())) {
+        var v = n.nodeValue.replace(/Disponível em:/g, T('Disponível em:')).replace(/Acesso em:/g, T('Acesso em:'));
+        if (ms) v = v.replace(rxMes, function (m, a, mes) { return a + ms[pt.indexOf(mes)]; });
+        if (v !== n.nodeValue) n.nodeValue = v;
+      }
+    });
+  });
+}
+/* tipografia do idioma de chegada: aspas e espaços da pontuação francesa */
+function tipografiaIdioma(livro) {
+  var b = lingBase();
+  livro.secoes.forEach(function (s) {
+    var w = livro.doc.createTreeWalker(s.cont, NodeFilter.SHOW_TEXT, null), n, nos = [];
+    while ((n = w.nextNode())) nos.push(n);
+    nos.forEach(function (n) {
+      if (n.parentNode.closest('pre,code,p.ref,[lang]:not([lang^="pt"])')) return;
+      var v = n.nodeValue;
+      if (b === 'fr') v = v.replace(/“\s*/g, '«\u00A0').replace(/\s*”/g, '\u00A0»').replace(/([^\s\d])\s*([;!?])(?=\s|$|[»)\]])/g, '$1\u202F$2').replace(/([^\s\d:\/])\s*:(?=\s|$)/g, '$1\u00A0:');
+      else if (b === 'es') v = v.replace(/“/g, '«').replace(/”/g, '»');
+      else if (b === 'de') v = v.replace(/[“”]/g, function (c) { return c === '“' ? '„' : '“'; });
+      if (v !== n.nodeValue) n.nodeValue = v;
+    });
+  });
+}
+
+/* ── verificação automática de cada segmento traduzido ── */
+var PT_RESIDUO = /\b(não|também|são|então|você|pelo|pela|pelos|pelas|isso|aquilo|está|estão|têm|através|após|porém|contudo|entretanto|sobretudo|ainda|já|onde|quando|cujo|cuja)\b|ções\b|ção\b/gi;
+function numerosDe(s) { return (String(s).replace(/<[^>]+>/g, ' ').match(/\d+(?:[.,\u00A0\u202F ]\d{3})*(?:[.,]\d+)?/g) || []).map(function (x) { return x.replace(/[.,\u00A0\u202F ]/g, ''); }); }
+function citacoesDe(s) { var out = [], rx = /\b([A-ZÀ-Ý][A-ZÀ-Ý'’-]+(?:\s+[A-ZÀ-Ý][A-ZÀ-Ý'’-]+)*)(?=,\s*(?:\d{4}|s\.\s?d\.)|\s+et\s+al\.)/g, m; s = String(s).replace(/<[^>]+>/g, ''); while ((m = rx.exec(s))) if (m[1].length > 2) out.push(m[1]); return out; }
+function verificarSeg(seg, t) {
+  var prob = [];
+  if (!t || !t.trim()) return ['tradução vazia'];
+  if (!seg.virtual) { var r = deMarcacao(t, seg.mapa, seg.el.ownerDocument); if (r.erro) prob.push('formatação: ' + r.erro); }
+  var ns = numerosDe(seg.src), nt = numerosDe(t).slice();
+  var faltam = ns.filter(function (x) { var i = nt.indexOf(x); if (i >= 0) { nt.splice(i, 1); return false; } return true; });
+  if (faltam.length) prob.push('número ausente ou alterado: ' + faltam.slice(0, 4).join(', '));
+  var ct = desescMarc(t);
+  citacoesDe(seg.src).forEach(function (c) { if (ct.indexOf(c) < 0) prob.push('chamada autor-data alterada: ' + c); });
+  if (seg.tipo !== 'sigla') {
+    var palavras = ct.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length, res = (ct.replace(/\[[^\]]*\]/g, '').match(PT_RESIDUO) || []).length;
+    if (res >= 2 && res / Math.max(palavras, 1) > 0.05) prob.push('trecho aparentemente não traduzido (português remanescente)');
+  }
+  var ls = seg.src.replace(/<[^>]+>/g, '').length, lt = t.replace(/<[^>]+>/g, '').length;
+  if (ls > 60 && (lt / ls < 0.45 || lt / ls > 2.2)) prob.push('extensão desproporcional ao original (possível omissão ou acréscimo)');
+  if (/[—–]/.test(ct) && !/[—–]/.test(desescMarc(seg.src))) prob.push('travessão como pontuação');
+  return prob;
+}
+
+/* ── prompts ── */
+function sisGlossario(lng) {
+  return 'Você é terminólogo e pesquisador jurídico, com domínio de direito constitucional brasileiro, direito internacional dos direitos humanos, direito dos povos indígenas, propriedade intelectual, antropologia, etnologia indígena, história e geografia do Brasil. ' +
+    'Vai preparar o glossário obrigatório da tradução de um livro acadêmico do português do Brasil para ' + NOME_LINGUA[lng] + '.\n' +
+    'Para cada termo candidato, defina o equivalente que a tradução deve usar. Categorias: juridico (leis, institutos, tribunais, decisões, instrumentos internacionais), instituicao (órgãos, entidades, programas, conselhos), indigena (etnônimos, palavras em línguas indígenas, nomes de aldeias e terras indígenas), geografia (biomas, rios, regiões, unidades da federação), conceito (termos técnicos e acadêmicos), sigla.\n' +
+    'Decisões: "traduzir" (usar o equivalente), "manter" (fica como no original, p. ex. palavras em língua indígena, nomes de pessoas, aldeias e lugares), "manter-sigla" (a sigla fica no original e o nome por extenso é traduzido).\n' +
+    'Regras: (1) para tratados, convenções, declarações, relatórios e órgãos internacionais (ONU, OIT, OEA, Comissão e Corte Interamericana, UNESCO, OMPI, CDB) use a denominação oficial no idioma de chegada e confirme-a na web, de preferência em fontes oficiais (un.org, ohchr.org, ilo.org, oas.org, corteidh.or.cr, wipo.int, unesco.org, cbd.int); (2) para leis e órgãos brasileiros sem equivalente, adote a tradução descritiva mais usada na literatura jurídica e em documentos oficiais de organismos internacionais sobre o Brasil; (3) etnônimos seguem as convenções do idioma de chegada (maiúsculas, invariabilidade), sem tradução; (4) nunca invente denominação oficial: se não houver versão oficial, diga em "fonte" que é tradução descritiva; (5) informe a URL consultada em "fonte" quando pesquisar.\n' +
+    'Ao final da resposta, devolva um único bloco ```json``` com {"termos":[{"pt":"…","alvo":"…","categoria":"…","decisao":"…","fonte":"…"}]}, incluindo todos os termos candidatos que exigem decisão (pode omitir palavras comuns sem ambiguidade).';
+}
+function sisTraducao(lng, glossario) {
+  var b = lng.slice(0, 2);
+  var tipog = { en: 'aspas “ ” e ‘ ’; maiúsculas de título no estilo Chicago nos títulos', fr: 'aspas « » com espaço inseparável interno; espaço fino inseparável antes de ; ! ? e espaço inseparável antes de :; maiúscula só na primeira palavra dos títulos', es: 'comillas « » (e “ ” dentro delas); ¿ ? e ¡ !; maiúscula só na primeira palavra dos títulos', de: 'aspas „ “ e ‚ ‘; substantivos com maiúscula; ortografia reformada' }[b];
+  return 'Você é tradutor jurídico sênior, com o rigor de um tradutor público juramentado e especialização em direito constitucional, direito internacional dos direitos humanos, direito dos povos indígenas e propriedade intelectual, e em antropologia, etnologia indígena, história e geografia. ' +
+    'Traduz do português do Brasil para ' + NOME_LINGUA[lng] + ' um livro acadêmico de autoria indígena, com qualidade de publicação.\n\nPRINCÍPIOS\n' +
+    '1. Fidelidade integral: traduza tudo, sem omitir, resumir, acrescentar, explicar nem alterar o argumento. Preserve o registro, o tom e a voz dos autores, inclusive a primeira pessoa e as marcas de oralidade.\n' +
+    '2. Terminologia: o GLOSSÁRIO abaixo é obrigatório e deve ser seguido de forma idêntica em todo o livro. Termos marcados "manter" ficam como no original.\n' +
+    '3. Instrumentos e órgãos internacionais: use a denominação oficial e, ao citar ou parafrasear o texto de tratado, convenção, declaração ou decisão, a redação oficial no idioma de chegada quando a conhecer com segurança; se não houver versão oficial ou houver dúvida, traduza com fidelidade, sem inventar redação oficial.\n' +
+    '4. Direito brasileiro: traduza a denominação de leis, decretos, órgãos e institutos conforme o glossário; mantenha número e ano (ex.: Lei nº 6.001/1973 com o número no padrão do idioma). "art." e "inciso" seguem a forma usual do idioma jurídico de chegada.\n' +
+    '5. Nomes: não traduza nomes de pessoas, povos (etnônimos), aldeias, terras indígenas, rios e lugares; palavras em línguas indígenas ficam como no original. Siglas ficam no original.\n' +
+    '6. Citações e referências: mantenha intactas as chamadas autor-data (SILVA, 2020, p. 15), "et al.", "apud", "In:" e as chamadas de nota. Citações diretas de fontes em português são traduzidas. Se a citação reproduz texto publicado originalmente no idioma de chegada e você conhece com segurança a redação original exata, use-a.\n' +
+    '7. Números e datas: preserve todos os números em algarismos; adapte separadores e formato de datas às normas do idioma.\n' +
+    '8. Tipografia do idioma: ' + tipog + '. Não use travessão (— ou –) como pontuação: use vírgula, dois-pontos ou parênteses.\n' +
+    '9. Formatação: o texto traz marcas <gN>…</gN> (itálico, negrito, links, sobrescritos) e <xN/> (chamadas de nota, âncoras, rótulos e imagens, que não se traduzem). Reproduza TODAS as marcas, cada uma uma única vez e com o mesmo número, envolvendo as palavras correspondentes da tradução (a posição pode mudar conforme a sintaxe). Não crie marcas. Mantenha os escapes &amp; &lt; &gt;.\n' +
+    '10. Tipos de segmento: "titulo" (título de capítulo ou seção: sem ponto final, regras de maiúsculas do idioma; preserve a numeração inicial); "sigla" (nome por extenso de uma sigla: mantenha o nome oficial em português e acrescente a tradução entre colchetes, ex.: Fundação Nacional dos Povos Indígenas [tradução]); "indice" (termo de índice remissivo: use exatamente a forma empregada no corpo da tradução e no glossário); "meta" (título do livro, sinopse, palavras-chave e textos editoriais).\n' +
+    'Devolva somente o JSON pedido, com um item para cada id recebido.\n\nGLOSSÁRIO (português ⇒ ' + NOME_LINGUA[lng] + ')\n' + glossario;
+}
+function sisRevisao(lng, glossario) {
+  return 'Você é revisor sênior de tradução, falante nativo de ' + NOME_LINGUA[lng] + ', com especialização jurídica (direitos humanos, direito indígena, direito constitucional brasileiro, propriedade intelectual) e em antropologia, história e geografia. ' +
+    'Recebe pares (original em português do Brasil, tradução) de um livro acadêmico. Compare frase a frase e corrija apenas erros reais: sentido alterado, omissão ou acréscimo, termo jurídico ou técnico impreciso, desvio do glossário, falso cognato, número, data ou chamada autor-data alterados, etnônimo ou nome próprio indevidamente traduzido, gramática, ortografia, regência, concordância, tipografia do idioma, travessão usado como pontuação, marcas <gN>…</gN> e <xN/> perdidas, repetidas ou deslocadas. ' +
+    'Não reescreva por preferência de estilo. Para cada segmento que precise de correção, devolva a tradução completa já corrigida (com todas as marcas), o tipo, a gravidade e o motivo em português (até 160 caracteres). Segmentos corretos não aparecem na resposta.\n\nGLOSSÁRIO\n' + glossario;
+}
+var SCHEMA_TRAD = { type: 'object', additionalProperties: false, required: ['segmentos'], properties: { segmentos: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['id', 't'], properties: { id: { type: 'string' }, t: { type: 'string' } } } } } };
+var SCHEMA_REV = { type: 'object', additionalProperties: false, required: ['correcoes'], properties: { correcoes: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['id', 't', 'tipo', 'gravidade', 'motivo'], properties: { id: { type: 'string' }, t: { type: 'string' }, tipo: { type: 'string', enum: ['sentido', 'omissão', 'acréscimo', 'terminologia', 'glossário', 'número', 'citação', 'nome próprio', 'gramática', 'ortografia', 'tipografia', 'formatação', 'registro'] }, gravidade: { type: 'string', enum: ['alta', 'média', 'baixa'] }, motivo: { type: 'string' } } } } } };
+var SCHEMA_GLOS = { type: 'object', additionalProperties: false, required: ['termos'], properties: { termos: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['pt', 'alvo', 'categoria', 'decisao', 'fonte'], properties: { pt: { type: 'string' }, alvo: { type: 'string' }, categoria: { type: 'string' }, decisao: { type: 'string' }, fonte: { type: 'string' } } } } } };
+
+/* candidatos ao glossário: siglas, termos do índice, títulos, legislação, nomes institucionais, itálicos */
+function candidatosGlossario(livro, termosIndice) {
+  var cont = {}, ctx = {};
+  function add(t, c) { t = String(t || '').replace(/\s+/g, ' ').trim().replace(/[.,;:]$/, ''); if (t.length < 3 || t.length > 120) return; cont[t] = (cont[t] || 0) + 1; if (c && !ctx[t]) ctx[t] = c; }
+  (livro.siglas || []).forEach(function (x) { add(x.sigla + ' (' + x.nome + ')'); });
+  (termosIndice || []).forEach(function (t) { add(t); add(t); });
+  var rxLeg = /\b(?:Lei(?: Complementar)?|Decreto(?:-Lei)?|Portaria|Resolução|Instrução Normativa|Emenda Constitucional|Medida Provisória|Projeto de Lei|Convenção|Declaração|Pacto|Protocolo|Acordo|Tratado|Constituição|Estatuto|Código|Súmula|Recurso Extraordinário|Ação Direta|Arguição de Descumprimento|Opinião Consultiva|Caso)\b[^.;:()\n]{0,90}/g;
+  var rxInst = /\b(?:[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\wÀ-ÿ-]+(?:\s+(?:de|da|do|dos|das|e|para|sobre|em)\s+|\s+)){1,7}[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\wÀ-ÿ-]+/g;
+  livro.secoes.forEach(function (s) {
+    add(s.titulo);
+    s.cont.querySelectorAll('h2,h3,h4').forEach(function (h) { add(txt(h).replace(/^\d+(\.\d+)*\s*/, '')); });
+    s.cont.querySelectorAll('p:not(.ref),li,td,blockquote,aside').forEach(function (p) {
+      var t = txt(p), m;
+      while ((m = rxLeg.exec(t))) add(m[0], t.slice(Math.max(0, m.index - 60), m.index + 140));
+      while ((m = rxInst.exec(t))) if (m.index > 0 && !/[.!?]\s*$/.test(t.slice(0, m.index))) add(m[0], t.slice(Math.max(0, m.index - 60), m.index + 140));
+    });
+    s.cont.querySelectorAll('p:not(.ref) i, p:not(.ref) em, li i, li em').forEach(function (e) { var t = txt(e); if (t.split(/\s+/).length <= 5) add(t, txt(e.parentNode).slice(0, 160)); });
+  });
+  return Object.keys(cont).filter(function (t) { return cont[t] >= 2 || /^(Lei|Decreto|Convenção|Declaração|Constituição|Estatuto|Pacto|Protocolo|Caso|Opinião)/.test(t); })
+    .sort(function (a, b) { return cont[b] - cont[a]; }).slice(0, 480).map(function (t) { return { termo: t, n: cont[t], contexto: ctx[t] || '' }; });
+}
+function jsonDoTexto(t) {
+  var m = /```json\s*([\s\S]*?)```/i.exec(t) || /(\{[\s\S]*"termos"[\s\S]*\})\s*$/.exec(t);
+  if (!m) return null;
+  try { return JSON.parse(m[1]); } catch (e) { return null; }
+}
+async function montarGlossario(livro, lng, termosIndice, prog, relato) {
+  var cand = candidatosGlossario(livro, termosIndice), termos = [], web = 12;
+  for (var i = 0; i < cand.length; i += 120) {
+    var lote = cand.slice(i, i + 120);
+    prog('Glossário: pesquisa terminológica (' + Math.min(i + 120, cand.length) + '/' + cand.length + ' termos)');
+    var conteudo = 'Livro: ' + (obra.titulo || '') + (obra.subtitulo ? ': ' + obra.subtitulo : '') + '\nTermos candidatos (com frequência e contexto):\n' + lote.map(function (c) { return '- ' + c.termo + ' (' + c.n + '×)' + (c.contexto ? ' | contexto: ' + c.contexto.replace(/\s+/g, ' ') : ''); }).join('\n');
+    var r = null;
+    try {
+      var texto = await claudeTrad({ sistema: sisGlossario(lng), conteudo: conteudo, web: web, effort: 'high', maxTokens: 48000 });
+      r = jsonDoTexto(texto);
+      if (!r) r = await claudeTrad({ sistema: 'Converta a lista de termos do texto recebido para o JSON pedido, sem alterar nenhum valor.', conteudo: texto, schema: SCHEMA_GLOS, effort: 'low', maxTokens: 32000 });
+    } catch (e) {
+      if (web && (e.status === 400 || /web_search|tool/i.test(e.message))) { web = 0; relato.push('Pesquisa na web indisponível nesta conta da API; o glossário foi feito sem consulta online (' + e.message + ').'); i -= 120; continue; }
+      throw e;
+    }
+    (r && r.termos || []).forEach(function (x) { if (x && x.pt && x.alvo) termos.push(x); });
+  }
+  return termos;
+}
+function glossarioTexto(termosIA, editor) {
+  var linhas = [], vistos = {};
+  String(editor || '').split('\n').forEach(function (l) { var m = /^\s*(.+?)\s*(?:=|⇒|=>|->)\s*(.+?)\s*$/.exec(l); if (m) { vistos[m[1].toLowerCase()] = 1; linhas.push(m[1] + ' ⇒ ' + m[2] + ' [definido pela Editora]'); } });
+  (termosIA || []).forEach(function (x) { if (vistos[String(x.pt).toLowerCase()]) return; vistos[String(x.pt).toLowerCase()] = 1; linhas.push(x.pt + ' ⇒ ' + x.alvo + ' [' + x.categoria + '; ' + x.decisao + ']'); });
+  return linhas.join('\n');
+}
+
+/* tradução em lotes, com memória, verificação, nova tentativa e revisão bilíngue */
+async function traduzirSegmentos(segs, lng, glossario, prog, relato) {
+  var chaves = await Promise.all(segs.map(function (s) { return resumoHash(lng + '|' + s.tipo + '|' + s.src); }));
+  segs.forEach(function (s, i) { s.k = chaves[i]; s.id = 's' + (i + 1); });
+  var mem = await tmLer(chaves), novos = [];
+  segs.forEach(function (s) { var m = mem[s.k]; if (m && m.t && !verificarSeg(s, m.t).some(function (p) { return /formatação|vazia/.test(p); })) { s.t = m.t; s.origem = m.origem || 'memória'; s.revisado = !!m.revisado; } });
+  var pend = segs.filter(function (s) { return !s.t; });
+  relato.push(segs.length + ' segmentos; ' + (segs.length - pend.length) + ' recuperados da memória de tradução.');
+  var sis = sisTraducao(lng, glossario);
+  // lotes por seção, até ~5.000 caracteres
+  var lotes = [], atual = [], tam = 0;
+  pend.forEach(function (s) { if (atual.length && (tam + s.src.length > 5000 || atual.length >= 60 || atual[0].secao !== s.secao)) { lotes.push(atual); atual = []; tam = 0; } atual.push(s); tam += s.src.length; });
+  if (atual.length) lotes.push(atual);
+  var feitos = 0, idx = 0;
+  async function traduzLote(lote, aviso) {
+    var conteudo = JSON.stringify({ secao: lote[0].secao, observacao: aviso || undefined, segmentos: lote.map(function (s) { return { id: s.id, tipo: s.tipo, texto: s.src }; }) });
+    var r = await claudeTrad({ sistema: sis, conteudo: conteudo, schema: SCHEMA_TRAD, effort: 'high', maxTokens: 32000 });
+    var por = {}; (r.segmentos || []).forEach(function (x) { por[x.id] = x.t; });
+    lote.forEach(function (s) { if (por[s.id] != null) { s.t = por[s.id]; s.origem = 'tradução'; } });
+  }
+  async function trabalhador() {
+    while (idx < lotes.length) {
+      var lote = lotes[idx++];
+      try { await traduzLote(lote); } catch (e) { relato.push('Lote de “' + lote[0].secao + '”: ' + e.message + '; repetido em partes menores.'); for (var q = 0; q < lote.length; q += 8) { try { await traduzLote(lote.slice(q, q + 8)); } catch (e2) { relato.push('Falha persistente em “' + lote[0].secao + '”: ' + e2.message); } } }
+      feitos++; prog('Tradução: ' + feitos + '/' + lotes.length + ' lotes');
+    }
+  }
+  await Promise.all([trabalhador(), trabalhador(), trabalhador()]);
+  // verificação automática e nova tentativa individual, com o problema apontado
+  var falhos = segs.filter(function (s) { s.prob = verificarSeg(s, s.t); return s.prob.length; });
+  for (var f = 0; f < falhos.length; f++) {
+    var s = falhos[f]; prog('Verificação: corrigindo ' + (f + 1) + '/' + falhos.length + ' segmentos apontados');
+    try {
+      var ant = s.t;
+      await traduzLote([s], 'A tradução anterior deste segmento foi recusada pela verificação automática: ' + s.prob.join('; ') + '. Tradução recusada: ' + (ant || '(vazia)') + '. Refaça-a corrigindo esses pontos.');
+      var np = verificarSeg(s, s.t); if (np.length >= s.prob.length && ant && !verificarSeg(s, ant).some(function (p) { return /formatação|vazia/.test(p); })) { s.t = ant; } else s.prob = np;
+    } catch (e) {}
+    s.prob = verificarSeg(s, s.t);
+  }
+  // revisão bilíngue independente
+  var revisar = segs.filter(function (s) { return s.t && !s.revisado; }), rlotes = [], ra = [], rt = 0;
+  revisar.forEach(function (s) { if (ra.length && (rt + s.src.length > 6000 || ra.length >= 50)) { rlotes.push(ra); ra = []; rt = 0; } ra.push(s); rt += s.src.length; });
+  if (ra.length) rlotes.push(ra);
+  var sisR = sisRevisao(lng, glossario), ri = 0, rf = 0, correcoes = [];
+  async function revisor() {
+    while (ri < rlotes.length) {
+      var lote = rlotes[ri++];
+      try {
+        var r = await claudeTrad({ sistema: sisR, conteudo: JSON.stringify({ pares: lote.map(function (s) { return { id: s.id, tipo: s.tipo, original: s.src, traducao: s.t, verificacao: s.prob && s.prob.length ? s.prob : undefined }; }) }), schema: SCHEMA_REV, effort: 'high', maxTokens: 32000 });
+        var por = {}; lote.forEach(function (s) { por[s.id] = s; });
+        (r.correcoes || []).forEach(function (c) {
+          var s = por[c.id]; if (!s || !c.t || c.t === s.t) return;
+          var pn = verificarSeg(s, c.t);
+          if (pn.some(function (p) { return /formatação|vazia/.test(p); })) return;
+          correcoes.push({ seg: s, antes: s.t, depois: c.t, tipo: c.tipo, gravidade: c.gravidade, motivo: c.motivo });
+          s.t = c.t; s.prob = pn;
+        });
+        lote.forEach(function (s) { s.revisado = true; });
+      } catch (e) { relato.push('Revisão de um lote não concluída: ' + e.message); }
+      rf++; prog('Revisão bilíngue: ' + rf + '/' + rlotes.length + ' lotes');
+    }
+  }
+  await Promise.all([revisor(), revisor(), revisor()]);
+  await tmGravar(segs.filter(function (s) { return s.t; }).map(function (s) { return { k: s.k, v: { src: s.src, t: s.t, lng: lng, tipo: s.tipo, origem: s.origem === 'humano' ? 'humano' : 'ia', revisado: !!s.revisado, data: new Date().toISOString() } }; }));
+  return correcoes;
+}
+
+/* ── edição traduzida completa ── */
+async function traduzirEdicao(b, prog) {
+  var tc = tradCfg(b), lng = tc.variante, relato = [];
+  if (!estado.entrada) throw new Error('Envie o manuscrito e gere a edição em português primeiro.');
+  if (!chaveClaude()) throw new Error('Configure a chave do Claude no painel para traduzir.');
+  var antes = { u: clone(TRAD_USO) };
+  LINGUA = lng; TRAD_LIVRE = {};
+  try {
+    prog('Preparando o livro');
+    var opcoes = { numeracao: obra.numeracao, indice: obra.indice, dedicatoria: obra.dedicatoria, epigrafe: obra.epigrafe, correcoes: obra.correcoes, estiloCitacao: obra.estiloCitacao };
+    var livro = await processar(estado.entrada, opcoes, function () {});
+    await processarIlustracoes(livro);
+    (estado.titulosIA || []).forEach(function (x) { (livro.titulosAuto || []).forEach(function (y) { if (y.item.id === x.id) { y.no.nodeValue = x.t; y.item.titulo = x.t; } }); });
+    var doc = livro.doc;
+    protegerRotulos(livro, doc);
+    var termosIndice = String(obra.termosIndice || '').split(/\n|;/).concat(livro.termosIndice || []).map(function (t) { return t.trim(); }).filter(function (t, i, a) { return t && a.indexOf(t) === i; });
+    // glossário (reaproveitado entre execuções; refeito quando o editor pede)
+    var termosIA = tc.glossarioIA;
+    if (!termosIA || !termosIA.length) { termosIA = await montarGlossario(livro, lng, termosIndice, prog, relato); tradGuardar(b, { glossarioIA: termosIA }); }
+    var glossario = glossarioTexto(termosIA, tc.glossario) + '\n' + Object.keys(TIPOS_I18N[b]).map(function (k) { return k + ' ⇒ ' + TIPOS_I18N[b][k] + ' [rótulo de ilustração ou tabela]'; }).join('\n') + '\nFonte: ⇒ ' + ({ en: 'Source:', fr: 'Source :', es: 'Fuente:', de: 'Quelle:' }[b]) + '\nNota: ⇒ ' + ({ en: 'Note:', fr: 'Note :', es: 'Nota:', de: 'Anmerkung:' }[b]);
+    // segmentos do texto e da estrutura
+    var segs = [];
+    livro.secoes.forEach(function (s) {
+      if (s.titulo) segs.push(segVirtual(s.titulo, 'titulo', s.titulo, function (t) { s.titulo = t; }));
+      coletarSegmentos(s.cont, doc, segs, { titulo: s.titulo });
+    });
+    (livro.siglas || []).forEach(function (x) { segs.push(segVirtual(x.nome, 'sigla', 'Lista de siglas', function (t) { x.nome = t; })); });
+    var termosT = termosIndice.slice();
+    termosIndice.forEach(function (t, i) { segs.push(segVirtual(t, 'indice', 'Índice remissivo', function (v) { termosT[i] = v; })); });
+    var oT = clone(obra);
+    function meta(campo, valor, f) { if (valor && String(valor).trim()) segs.push(segVirtual(valor, 'meta', 'Dados da obra', f || function (t) { oT[campo] = t; })); }
+    if (!tc.titulo) meta('titulo', obra.titulo); if (!tc.subtitulo) meta('subtitulo', obra.subtitulo);
+    meta('sinopse', obra.sinopse);
+    String(obra.palavrasChave || '').split(/;|\n/).map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (k, i) { meta('pc', k, function (t) { (oT._pc = oT._pc || [])[i] = t; }); });
+    function livre(v) { if (v && String(v).trim()) meta('', v, function (t) { TRAD_LIVRE[v] = t; }); }
+    if (obra.ctDeclaracao) livre(obra.ctTexto);
+    if ((obra.direitosTexto || '').trim()) livre(obra.direitosTexto.trim().replace(/^©\s*\d{4}\s*[^.]*\.\s*/, ''));
+    if (cfg.editora.conselhoAto) livre('Constituído e ' + cfg.editora.conselhoAto.replace(/^\s*/, '').replace(/\.?\s*$/, '.'));
+    cfg.conselho.forEach(function (m) { livre(m.vinculo); });
+    var correcoes = await traduzirSegmentos(segs, lng, glossario, prog, relato);
+    // aplica ao documento
+    prog('Compondo a edição');
+    var naoAplicados = [];
+    segs.forEach(function (s) {
+      if (!s.t) { naoAplicados.push(s); return; }
+      if (s.virtual) { s.aplicar(desescMarc(s.t).replace(/<[^>]+>/g, '').trim()); return; }
+      var r = deMarcacao(s.t, s.mapa, doc);
+      if (r.erro) { naoAplicados.push(s); return; }
+      while (s.el.firstChild) s.el.removeChild(s.el.firstChild);
+      s.el.appendChild(r.frag);
+    });
+    livro.secoes.forEach(function (s) { s.cont.querySelectorAll('span.seg-t').forEach(function (sp) { while (sp.firstChild) sp.parentNode.insertBefore(sp.firstChild, sp); sp.remove(); }); });
+    conectivosReferencias(livro);
+    tipografiaIdioma(livro);
+    livro.secoes.forEach(function (s) {
+      s.subtitulos.forEach(function (x) { var h = s.cont.querySelector('#' + CSS.escape(x.id)); if (h) x.texto = txt(h).replace(/^\d+(\.\d+)*\s*/, ''); });
+    });
+    livro.ilustracoes.concat(livro.tabelas).forEach(function (x) {
+      var w = doc.getElementById(x.id) || (x.secao && x.secao.cont.querySelector('#' + CSS.escape(x.id))); if (!w) return;
+      var c = w.querySelector('caption,figcaption'); if (!c) return;
+      var cc = c.cloneNode(true); cc.querySelectorAll('.rotulo-trad').forEach(function (e) { e.remove(); }); x.titulo = txt(cc).trim();
+    });
+    livro.termosIndice = [];
+    // dados da edição traduzida
+    oT.titulo = tc.titulo || oT.titulo; oT.subtitulo = tc.subtitulo || (tc.titulo ? '' : oT.subtitulo);
+    oT.palavrasChave = (oT._pc || []).filter(Boolean).join('; '); delete oT._pc;
+    oT.termosIndice = termosT.join('\n');
+    oT.isbn = tc.isbn; oT.isbnHtml = tc.isbnHtml; oT.isbnImpresso = '';
+    oT.capaPropria = tc.capa || ''; oT.capaGerada = !tc.capa;
+    oT._traducao = { lingua: lng, tradutor: tc.tradutor || cfg.equipe.diagramacao || cfg.editora.nome, tradutorInformado: tc.tradutor, revisor: tc.revisor, tituloOriginal: obra.titulo + (obra.subtitulo ? ': ' + obra.subtitulo : ''), isbnOriginal: obra.isbn };
+    var logos = await logosDaObra();
+    auditarObra(oT, livro.A, logos);
+    var ed = await montarEditoriais(livro, oT, logos);
+    ed.notaTraducao = notaDaTraducao(livro, oT, termosIA, b);
+    var blob = await empacotar(livro, oT, logos, ed, opcoes);
+    // auditoria da tradução
+    var restantes = segs.filter(function (s) { return s.t && s.prob && s.prob.length; });
+    if (naoAplicados.length) livro.A.add('grave', 'Tradução', naoAplicados.length + ' segmento(s) ficaram em português por falha na tradução ou na formatação. Veja o relatório da tradução.', {});
+    if (restantes.length) livro.A.add('aviso', 'Tradução', restantes.length + ' segmento(s) com apontamento da verificação automática após a revisão. Confira no relatório da tradução.', {});
+    if (!tc.revisor) livro.A.add('grave', 'Tradução', 'Revisor humano da tradução não registrado. Antes de publicar, a tradução deve ser revista por profissional nativo do idioma, de preferência com formação jurídica; registre o nome em “Tradução”.', { sug: 'A tradução com fé pública (juramentada) só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial (Lei nº 14.195/2021).' });
+    if (isbnValido(tc.isbn) && isbnLimpo(tc.isbn) === isbnLimpo(obra.isbn)) livro.A.add('bloqueante', 'Tradução', 'A edição em ' + NOME_LINGUA[lng] + ' está com o mesmo ISBN da edição em português. Cada idioma e cada formato precisam de ISBN próprio.', { norma: 'ABNT NBR ISO 2108' });
+    acoesPadrao(livro.A);
+    var res = resumoAuditoria(livro.A, obra.emitirComPendencias);
+    var uso = { entrada: TRAD_USO.entrada - antes.u.entrada, cache: TRAD_USO.cache - antes.u.cache, saida: TRAD_USO.saida - antes.u.saida, chamadas: TRAD_USO.chamadas - antes.u.chamadas, web: TRAD_USO.web - antes.u.web };
+    var edicao = { b: b, lng: lng, livro: livro, logos: logos, o: oT, epub: blob, res: res, segs: segs, correcoes: correcoes, naoAplicados: naoAplicados, glossario: termosIA, relato: relato, uso: uso, data: new Date() };
+    edicao.relatorio = relatorioTraducao(edicao);
+    return edicao;
+  } finally { LINGUA = 'pt-BR'; }
+}
+function notaDaTraducao(livro, o, termosIA, b) {
+  var doc = livro.doc, s = { tipo: 'nota-traducao', def: { et: '', role: '', parte: 'front' }, id: 'nota-traducao', titulo: T('Nota da tradução'), cont: el(doc, 'div', { 'class': 'nota-traducao' }), subtitulos: [], gerada: true };
+  s.cont.appendChild(el(doc, 'h1', { 'class': 'titulo-centro' }, [T('Nota da tradução')]));
+  s.cont.appendChild(orn(doc, 'pontos', 'pontilhado'));
+  s.cont.appendChild(el(doc, 'p', null, [T('Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.', { orig: o._traducao.tituloOriginal, ed: cfg.editora.nome, ano: obra.ano, isbn: isbnValido(o._traducao.isbnOriginal) ? ' (ISBN ' + isbnFormatado(o._traducao.isbnOriginal) + ')' : '' })]));
+  s.cont.appendChild(el(doc, 'p', null, [T('NOTA_TRAD_JUR')]));
+  s.cont.appendChild(el(doc, 'p', null, [T('NOTA_TRAD_IND')]));
+  var chave = (termosIA || []).filter(function (x) { return /juridico|instituicao/.test(x.categoria) && /traduzir|manter-sigla/.test(x.decisao) && x.alvo && x.alvo !== x.pt; })
+    .sort(function (a, c) { return a.pt.localeCompare(c.pt, 'pt'); }).slice(0, 60);
+  if (chave.length) {
+    s.cont.appendChild(el(doc, 'h2', null, [T('Termos-chave')]));
+    var dl = el(doc, 'dl', { 'class': 'termos-chave' });
+    chave.forEach(function (x) { dl.appendChild(el(doc, 'dt', { lang: 'pt-BR' }, [x.pt])); dl.appendChild(el(doc, 'dd', null, [x.alvo])); });
+    s.cont.appendChild(dl);
+  }
+  return s;
+}
+function relatorioTraducao(ed) {
+  var e = function (x) { return esc(String(x == null ? '' : x)); };
+  var plano = function (m) { return e(desescMarc(String(m || '')).replace(/<\/?[gx]\d+\/?>/g, '')); };
+  var custo = (ed.uso.entrada * 4 + ed.uso.cache * 0.4 + ed.uso.saida * 20) / 1e6 + ed.uso.web * 0.01;
+  var pend = ed.segs.filter(function (s) { return s.prob && s.prob.length; });
+  var h = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório da tradução, ' + e(NOME_LINGUA[ed.lng]) + '</title><style>body{font:14px/1.5 Georgia,serif;max-width:70em;margin:2em auto;padding:0 1em;color:#2b1a10}h1{font-size:1.5em}h2{font-size:1.15em;margin-top:2em;border-bottom:1px solid #d9c5a8}table{border-collapse:collapse;width:100%;font-size:.92em}td,th{border:1px solid #e3d5bf;padding:.35em .5em;vertical-align:top;text-align:left}th{background:#f6eee0}.sev{font-weight:700;color:#9b1c1c}.ok{color:#2f6b2f}small{color:#6b5a48}</style></head><body>' +
+    '<h1>Relatório da tradução: ' + e(ed.o.titulo) + '</h1><p>Idioma: <strong>' + e(NOME_LINGUA[ed.lng]) + '</strong> · Gerado em ' + e(ed.data.toLocaleString('pt-BR')) + ' · Situação da edição: <strong>' + e(ed.res.status) + '</strong> (' + ed.res.pontos + '/100)</p>' +
+    '<p>Segmentos: ' + ed.segs.length + ' · Correções da revisão bilíngue: ' + ed.correcoes.length + ' · Com apontamento: ' + pend.length + ' · Não aplicados (ficaram em português): ' + ed.naoAplicados.length + '</p>' +
+    '<p><small>Consumo da API nesta execução: ' + ed.uso.chamadas + ' chamadas, ' + ed.uso.entrada.toLocaleString('pt-BR') + ' tokens de entrada, ' + ed.uso.cache.toLocaleString('pt-BR') + ' de cache, ' + ed.uso.saida.toLocaleString('pt-BR') + ' de saída, ' + ed.uso.web + ' pesquisas na web; custo estimado US$ ' + custo.toFixed(2) + '.</small></p>' +
+    '<p><small>Esta é uma tradução especializada de padrão editorial, com glossário pesquisado, verificação automática e revisão bilíngue. Não tem fé pública: a tradução juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial (Lei nº 14.195/2021). Antes de publicar, recomenda-se a revisão por profissional nativo do idioma; use a planilha bilíngue abaixo e a memória de tradução.</small></p>' +
+    (ed.relato.length ? '<h2>Registro do processo</h2><ul>' + ed.relato.map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>' : '') +
+    '<h2>Segmentos com apontamento</h2>' + (pend.length || ed.naoAplicados.length ? '<table><tr><th>Seção</th><th>Original</th><th>Tradução</th><th>Apontamento</th></tr>' + ed.naoAplicados.concat(pend).map(function (s) { return '<tr><td>' + e(s.secao) + '</td><td>' + plano(s.src) + '</td><td>' + plano(s.t) + '</td><td class="sev">' + e((s.prob || ['não aplicado']).join('; ') || 'não aplicado') + '</td></tr>'; }).join('') + '</table>' : '<p class="ok">Nenhum.</p>') +
+    '<h2>Correções da revisão bilíngue</h2>' + (ed.correcoes.length ? '<table><tr><th>Tipo</th><th>Original</th><th>Antes</th><th>Depois</th><th>Motivo</th></tr>' + ed.correcoes.map(function (c) { return '<tr><td>' + e(c.tipo) + '<br><small>' + e(c.gravidade) + '</small></td><td>' + plano(c.seg.src) + '</td><td>' + plano(c.antes) + '</td><td>' + plano(c.depois) + '</td><td>' + e(c.motivo) + '</td></tr>'; }).join('') + '</table>' : '<p>Nenhuma.</p>') +
+    '<h2>Glossário terminológico</h2><table><tr><th>Português</th><th>' + e(NOME_LINGUA[ed.lng]) + '</th><th>Categoria</th><th>Decisão</th><th>Fonte</th></tr>' + (ed.glossario || []).map(function (x) { return '<tr><td>' + e(x.pt) + '</td><td>' + e(x.alvo) + '</td><td>' + e(x.categoria) + '</td><td>' + e(x.decisao) + '</td><td>' + (/^https?:\/\//.test(x.fonte) ? '<a href="' + e(x.fonte) + '">' + e(x.fonte) + '</a>' : e(x.fonte)) + '</td></tr>'; }).join('') + '</table>' +
+    '<h2>Planilha bilíngue (para a revisão humana)</h2><table><tr><th>#</th><th>Seção</th><th>Original</th><th>Tradução</th></tr>' + ed.segs.map(function (s, i) { return '<tr><td>' + (i + 1) + '</td><td><small>' + e(s.secao) + '</small></td><td>' + plano(s.src) + '</td><td>' + plano(s.t) + '</td></tr>'; }).join('') + '</table></body></html>';
+  return h;
+}
+/* memória de tradução: exportação para o revisor humano e reimportação das correções */
+async function exportarMemoria(b) {
+  var db = await tmAbrir(), lista = []; if (!db) return lista;
+  await new Promise(function (ok) { var q = db.transaction('tm').objectStore('tm').openCursor(); q.onsuccess = function () { var c = q.result; if (!c) return ok(); if (String(c.value.lng || '').slice(0, 2) === b) lista.push({ k: c.key, tipo: c.value.tipo, original: desescMarc(c.value.src), traducao: desescMarc(c.value.t), origem: c.value.origem }); c.continue(); }; q.onerror = ok; });
+  return lista;
+}
+async function importarMemoria(lista) {
+  var db = await tmAbrir(); if (!db) return 0;
+  var atuais = await tmLer(lista.map(function (x) { return x.k; })), pares = [];
+  lista.forEach(function (x) { var a = atuais[x.k]; if (!a || !x.traducao) return; var t = escMarc(x.traducao).replace(/&lt;(\/?[gx]\d+\/?)&gt;/g, '<$1>'); if (t === a.t) return; pares.push({ k: x.k, v: Object.assign({}, a, { t: t, origem: 'humano', revisado: true, data: new Date().toISOString() }) }); });
+  await tmGravar(pares); return pares.length;
+}
+function estimarTraducao() {
+  var chars = 0; if (estado.livro && estado.livro.paginas) estado.livro.paginas.forEach(function (p) { chars += corpoDe(p.arq).replace(/<[^>]+>/g, '').length; });
+  var tok = chars / 3.6, entrada = tok * 2.2 + 12000 * (tok / 1800), saida = tok * 1.25 * 2.6;
+  return { chars: chars, usd: (entrada * 4 + saida * 20) / 1e6 };
 }
 
 /* ───────────────────────── 13. ORQUESTRAÇÃO ───────────────────────── */
@@ -2927,6 +3622,7 @@ async function produzir(opcoesExtras) {
     etapa('ilustracoes', 'rodando');
     await processarIlustracoes(livro);
     if (chaveClaude() && (livro.titulosAuto || []).length) { try { await iaTitulosTabelas(livro); } catch (e) { livro.A.add('info', 'Ilustrações', 'IA indisponível para títulos de tabela: ' + e.message, {}); } }
+    estado.titulosIA = (livro.titulosAuto || []).filter(function (x) { return x.ia; }).map(function (x) { return { id: x.item.id, t: x.no.nodeValue }; });
     registrarTitulosAuto(livro);
     metadadosAutomaticos(livro);
     etapa('ilustracoes', 'ok', livro.imagens.length + ' imagem(ns), ' + livro.tabelas.length + ' tabela(s)');
@@ -3074,6 +3770,7 @@ var CSS_PAINEL = '\
 .ebm .lg{border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:.7rem;display:grid;gap:.45rem}\
 .ebm .lg .vis{height:110px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}.ebm .lg .vis img{max-height:96px;max-width:90%}\
 .ebm .marca-ed{border:1px solid rgba(242,196,90,.35);border-radius:8px;padding:.8rem;margin:.6rem 0 1rem;display:grid;gap:.7rem}.ebm .marca-ed h4{margin:0;color:#F2C45A;font-size:.9rem}.ebm .marca-ed .vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem}.ebm .marca-ed .vis{height:90px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(242,196,90,.2)}.ebm .marca-ed .vis img{max-height:74px;max-width:86%}.ebm .marca-ed .lug{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.45rem .8rem}.ebm .marca-ed label{font-size:.74rem;display:grid;gap:.2rem}.ebm .marca-ed small{color:rgba(247,242,232,.65);font-size:.7rem;line-height:1.45}\
+.ebm .tr-idiomas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.8rem;margin:.6rem 0}.ebm .tr-card{border:1px solid rgba(242,196,90,.3);border-radius:8px;padding:.75rem;display:grid;gap:.45rem}.ebm .tr-card h4{margin:0;color:#F2C45A;font-size:.92rem;display:flex;gap:.5rem;align-items:center}.ebm .tr-card label{font-size:.72rem;display:grid;gap:.2rem}.ebm .tr-card input[type=text],.ebm .tr-card select,.ebm .tr-card textarea{font-size:.78rem}.ebm .tr-card textarea{min-height:4.5rem}.ebm .tr-res{border:1px solid rgba(242,196,90,.25);border-radius:8px;padding:.7rem;margin:.6rem 0}.ebm .tr-res b{color:#F2C45A}.ebm .tr-res .acoes{margin-top:.4rem}\
 .ebm .lg .falta{color:#fca5a5;font-size:.75rem;font-weight:700}.ebm .linha{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}\
 .ebm .acao{margin-top:.45rem;display:grid;gap:.35rem}.ebm .acao .linha{display:flex;gap:.35rem;flex-wrap:wrap}.ebm .acao .bt{font-size:.7rem;padding:.3rem .6rem;justify-self:start}.ebm .acao .feito{color:#86efac;font-size:.74rem}\
 .ebm .aviso-box{border-left:3px solid #E8A853;background:rgba(232,168,83,.08);padding:.6rem .8rem;font-size:.76rem;border-radius:4px;margin:.6rem 0;line-height:1.5}';
@@ -3086,7 +3783,7 @@ function montarUI(alvo) {
   raiz.innerHTML =
     '<h3>📚 ' + esc(cfg.editora.nome) + ' — Coordenação Editorial Digital</h3>' +
     '<p class="sub">Envie o manuscrito e a Coordenação Editorial Digital produz o livro digital completo, em EPUB 3, no padrão da Editora: capa, folha de rosto, créditos, conselho editorial, ficha catalográfica, sumário, normas da ABNT, notas, referências, índice e logomarcas. Ao final, faz uma auditoria rigorosa e entrega o relatório.</p>' +
-    '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button></div>' +
+    '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button><button class="tab" data-p="tr">Tradução</button></div>' +
     '<div class="pane on" data-p="prod">' +
       '<div class="drop" tabindex="0" role="button" aria-label="Enviar manuscrito"><b>Arraste o manuscrito aqui</b> ou clique para escolher<small>Word (.docx), LibreOffice (.odt), Markdown (.md), texto (.txt) ou HTML. Use os estilos de título do editor de texto para um resultado exato.</small><input type="file" accept=".docx,.odt,.md,.markdown,.txt,.html,.htm" hidden></div>' +
       '<div class="opc">' +
@@ -3138,7 +3835,13 @@ function montarUI(alvo) {
       '<div class="acoes"><button class="bt pri" data-a="salvar-cfg">💾 Salvar na nuvem (todos os ADM)</button></div>' +
     '</div>' +
     '<div class="pane" data-p="lg"><div class="aviso-box">Use somente os arquivos oficiais das marcas, obtidos nos manuais de identidade visual de cada instituição, e registre a autorização de uso. O auditor bloqueia a publicação enquanto faltar uma logomarca e aponta como grave a marca sem autorização registrada.</div><div class="marca-ed"></div><div class="logos-ed"></div>' +
-      '<div class="acoes"><button class="bt pri" data-a="salvar-lg">💾 Salvar logomarcas na nuvem</button></div></div>';
+      '<div class="acoes"><button class="bt pri" data-a="salvar-lg">💾 Salvar logomarcas na nuvem</button></div></div>' +
+    '<div class="pane" data-p="tr"><div class="aviso-box">Tradução especializada do livro já gerado em português para inglês, francês, espanhol e alemão, com a mesma estrutura e o mesmo projeto gráfico. ' +
+      'O motor monta um glossário jurídico, indígena e geográfico pesquisado em fontes oficiais, traduz com a formatação preservada, confere cada trecho (números, citações, notas, termos) e faz uma revisão bilíngue independente. ' +
+      'A tradução não tem fé pública: a juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial. Antes de publicar, registre o revisor nativo e o ISBN de cada edição.</div>' +
+      '<div class="tr-idiomas"></div>' +
+      '<div class="acoes"><button class="bt" data-a="tr-estimar">Estimar custo</button><button class="bt pri" data-a="tr-traduzir">🌐 Traduzir os idiomas marcados</button></div>' +
+      '<div class="tr-resultados"></div></div>';
   alvo.appendChild(raiz);
   var Q = function (s) { return raiz.querySelector(s); }, QA = function (s) { return raiz.querySelectorAll(s); };
 
@@ -3243,6 +3946,7 @@ function montarUI(alvo) {
       lo.appendChild(lb);
     });
     if (ui.renderMarca) ui.renderMarca();
+    if (ui.renderTraducao) ui.renderTraducao();
     var cm = Q('.capa-mini'); if (obra.capaPropria) { cm.src = obra.capaPropria; cm.hidden = false; } else cm.hidden = true;
     if (!obra.ctTexto) {
       var povos = pessoas(obra.autores).concat(pessoas(obra.organizadores)).filter(function (p) { return p.povo; }).map(function (p) { return p.povo; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -3303,6 +4007,89 @@ function montarUI(alvo) {
       });
     });
   };
+  /* tradução especializada: um cartão por idioma e o resultado de cada edição */
+  estado.traducoes = estado.traducoes || {};
+  ui.renderTraducao = function () {
+    var box = Q('.tr-idiomas'); if (!box) return; box.innerHTML = '';
+    Object.keys(IDIOMAS).forEach(function (b) {
+      var I = IDIOMAS[b], tc = tradCfg(b), d = document.createElement('div'); d.className = 'tr-card';
+      d.innerHTML = '<h4><input type="checkbox" data-tk="sel"' + (tc.sel ? ' checked' : '') + '> ' + esc(I.nomeProprio) + ' <small style="font-weight:400;color:rgba(247,242,232,.6)">(' + esc(I.nome) + ')</small></h4>' +
+        '<label>Variante <select data-tk="variante">' + I.variantes.map(function (v) { return '<option value="' + v[0] + '"' + (tc.variante === v[0] ? ' selected' : '') + '>' + v[1] + ' (' + v[0] + ')</option>'; }).join('') + '</select></label>' +
+        '<label>Título no idioma (opcional; em branco, o motor traduz) <input type="text" data-tk="titulo"></label>' +
+        '<label>Subtítulo no idioma (opcional) <input type="text" data-tk="subtitulo"></label>' +
+        '<label>Tradução (nome para os créditos; em branco, a Editora) <input type="text" data-tk="tradutor"></label>' +
+        '<label>Revisor nativo da tradução <input type="text" data-tk="revisor" placeholder="Nome e qualificação"></label>' +
+        '<label>ISBN desta edição (EPUB) <input type="text" data-tk="isbn"></label>' +
+        '<label>ISBN do HTML (opcional) <input type="text" data-tk="isbnHtml"></label>' +
+        '<label>Glossário da Editora (um por linha: termo em português = tradução obrigatória) <textarea data-tk="glossario" placeholder="Terra Indígena = Indigenous Land"></textarea></label>' +
+        '<label>Capa no idioma (opcional; em branco, capa gerada no idioma) <input type="file" accept="image/*" data-tk="capa"></label>' +
+        '<div class="linha"><small data-tk="info"></small><button class="bt" type="button" data-tk="refazer">Refazer o glossário</button></div>';
+      ['titulo', 'subtitulo', 'tradutor', 'revisor', 'isbn', 'isbnHtml', 'glossario'].forEach(function (k) { var x = d.querySelector('[data-tk="' + k + '"]'); x.value = tc[k] || ''; x.addEventListener('change', function () { var o = {}; o[k] = x.value.trim(); tradGuardar(b, o); }); });
+      d.querySelector('[data-tk="sel"]').addEventListener('change', function (e) { tradGuardar(b, { sel: e.target.checked }); });
+      d.querySelector('[data-tk="variante"]').addEventListener('change', function (e) { tradGuardar(b, { variante: e.target.value, glossarioIA: null }); ui.renderTraducao(); });
+      d.querySelector('[data-tk="capa"]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { tradGuardar(b, { capa: r.result }); ui.msg('Capa em ' + I.nome + ' guardada.', 'ok'); }; r.readAsDataURL(f); });
+      d.querySelector('[data-tk="refazer"]').addEventListener('click', function () { tradGuardar(b, { glossarioIA: null }); ui.renderTraducao(); ui.msg('O glossário em ' + I.nome + ' será pesquisado de novo na próxima tradução.', 'ok'); });
+      d.querySelector('[data-tk="info"]').textContent = (tc.glossarioIA && tc.glossarioIA.length ? 'Glossário pronto: ' + tc.glossarioIA.length + ' termos.' : 'Glossário ainda não pesquisado.') + (tc.capa ? ' Capa própria carregada.' : '');
+      box.appendChild(d);
+    });
+    ui.renderResultadosTrad();
+  };
+  ui.renderResultadosTrad = function () {
+    var box = Q('.tr-resultados'); if (!box) return; box.innerHTML = '';
+    Object.keys(estado.traducoes).forEach(function (b) {
+      var ed = estado.traducoes[b], d = document.createElement('div'); d.className = 'tr-res';
+      d.innerHTML = '<b>' + esc(IDIOMAS[b].nomeProprio) + '</b> · ' + esc(ed.o.titulo) + '<br><small>' + esc(ed.res.status) + ' · ' + ed.res.pontos + '/100 · ' + ed.segs.length + ' segmentos · ' + ed.correcoes.length + ' correções da revisão · ' + ed.segs.filter(function (s) { return s.prob && s.prob.length; }).length + ' com apontamento</small>' +
+        '<div class="acoes"><button class="bt" data-tr="epub">⬇ EPUB</button><button class="bt" data-tr="pdf">🖨 PDF</button><button class="bt" data-tr="html">⬇ HTML de leitura</button><button class="bt" data-tr="rel">📋 Relatório da tradução</button><button class="bt" data-tr="aud">📋 Auditoria</button><button class="bt" data-tr="mem">⬇ Memória de tradução</button><label class="bt" style="cursor:pointer">⬆ Importar correções<input type="file" accept="application/json" data-tr="imp" hidden></label></div>';
+      var nome = slug(ed.o.titulo || obra.titulo) + '-' + ed.lng;
+      d.querySelector('[data-tr="epub"]').addEventListener('click', function () { baixar(ed.epub, nome + '.epub'); });
+      d.querySelector('[data-tr="rel"]').addEventListener('click', function () { baixar(new Blob([ed.relatorio], { type: 'text/html' }), 'traducao-' + nome + '.html'); });
+      d.querySelector('[data-tr="aud"]').addEventListener('click', function () { var h; LINGUA = ed.lng; try { h = relatorioHtml(ed.livro, ed.o, ed.res, null); } finally { LINGUA = 'pt-BR'; } baixar(new Blob([h], { type: 'text/html' }), 'auditoria-' + nome + '.html'); });
+      d.querySelector('[data-tr="pdf"]').addEventListener('click', function () {
+        var w = window.open('', '_blank'); if (!w) { ui.msg('Permita janelas pop-up para gerar o PDF.', 'err'); return; }
+        LINGUA = ed.lng; try { w.document.open(); w.document.write(htmlImpressao(ed.livro, ed.logos, ed.o)); w.document.close(); } finally { LINGUA = 'pt-BR'; }
+      });
+      d.querySelector('[data-tr="html"]').addEventListener('click', function () {
+        var dest = prompt('Exemplar controlado: nome da pessoa ou instituição que receberá esta cópia.\n(Deixe em branco para uma cópia sem numeração nem senha.)', ''); if (dest === null) return;
+        dest = dest.trim(); var senha = '';
+        if (dest) { senha = prompt('Senha de leitura para este exemplar (mínimo de 8 caracteres).', '') || ''; if (senha.length < 8) { ui.msg('Senha muito curta: use ao menos 8 caracteres.', 'err'); return; } }
+        var tc = tradCfg(b), lista = Array.isArray(tc.exemplares) ? tc.exemplares : [];
+        var n = dest ? lista.reduce(function (mx, x) { return Math.max(mx, +x.n || 0); }, 0) + 1 : 0;
+        LINGUA = ed.lng;
+        var pr = htmlLeitura(ed.livro, ed.logos, ed.o, dest ? { exemplar: n, destinatario: dest, senha: senha } : {});
+        pr.then(function () { LINGUA = 'pt-BR'; }, function () { LINGUA = 'pt-BR'; });
+        pr.then(function (h) {
+          if (dest) { lista.push({ n: n, destinatario: dest, data: new Date().toISOString().slice(0, 10) }); tradGuardar(b, { exemplares: lista }); }
+          baixar(new Blob([h], { type: 'text/html' }), nome + (n ? '-exemplar-' + String(n).padStart(3, '0') : '') + '.html');
+        }, function (er) { ui.msg('Não foi possível gerar o HTML: ' + er.message, 'err'); });
+      });
+      d.querySelector('[data-tr="mem"]').addEventListener('click', function () { exportarMemoria(b).then(function (l) { baixar(new Blob([JSON.stringify({ idioma: ed.lng, obra: obra.titulo, instrucoes: 'Corrija apenas o campo traducao. Mantenha as marcas <gN>…</gN> e <xN/>. Depois importe este arquivo no painel e traduza de novo: os trechos corrigidos são usados sem nova chamada.', segmentos: l }, null, 1)], { type: 'application/json' }), 'memoria-traducao-' + nome + '.json'); }); });
+      d.querySelector('[data-tr="imp"]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; f.text().then(function (t) { var j = JSON.parse(t); return importarMemoria(j.segmentos || []); }).then(function (n) { ui.msg(n + ' segmento(s) corrigidos importados. Traduza de novo para aplicar.', 'ok'); }, function (er) { ui.msg('Arquivo inválido: ' + er.message, 'err'); }); });
+      box.appendChild(d);
+    });
+  };
+  Q('[data-a="tr-estimar"]').addEventListener('click', function () {
+    if (!estado.livro) { ui.msg('Gere primeiro a edição em português.', 'err'); return; }
+    var est = estimarTraducao(), sel = Object.keys(IDIOMAS).filter(function (b) { return tradCfg(b).sel; });
+    ui.msg('Texto com cerca de ' + Math.round(est.chars / 1000) + ' mil caracteres. Custo estimado da API: US$ ' + est.usd.toFixed(0) + ' por idioma' + (sel.length > 1 ? ', US$ ' + (est.usd * sel.length).toFixed(0) + ' para os ' + sel.length + ' idiomas marcados' : '') + ' (glossário, tradução e revisão). Novas execuções reaproveitam a memória de tradução.', 'ok');
+  });
+  Q('[data-a="tr-traduzir"]').addEventListener('click', async function () {
+    if (estado.rodando) return;
+    if (!estado.livro) { ui.msg('Gere primeiro a edição em português na aba Produção.', 'err'); return; }
+    var sel = Object.keys(IDIOMAS).filter(function (b) { return tradCfg(b).sel; });
+    if (!sel.length) { ui.msg('Marque ao menos um idioma.', 'err'); return; }
+    var est = estimarTraducao();
+    if (!confirm('Traduzir para ' + sel.map(function (b) { return IDIOMAS[b].nome; }).join(', ') + '?\nCusto estimado da API: cerca de US$ ' + (est.usd * sel.length).toFixed(0) + '. O processo pode levar de alguns minutos a mais de uma hora por idioma; mantenha esta página aberta.')) return;
+    estado.rodando = true; ui.travar(true);
+    try {
+      for (var i = 0; i < sel.length; i++) {
+        var b = sel[i];
+        var ed = await traduzirEdicao(b, function (m) { ui.msg(IDIOMAS[b].nomeProprio + ': ' + m + '…', ''); });
+        estado.traducoes[b] = ed; ui.renderTraducao();
+      }
+      ui.msg('Tradução concluída: ' + sel.map(function (b) { return IDIOMAS[b].nomeProprio + ' (' + estado.traducoes[b].res.status + ')'; }).join('; ') + '. Baixe as edições abaixo.', 'ok');
+    } catch (e) { console.error(e); ui.msg('Tradução interrompida: ' + e.message + '. O que já foi traduzido ficou na memória e será reaproveitado.', 'err'); }
+    finally { estado.rodando = false; ui.travar(false); }
+  });
   ui.renderLogos = function () {
     var box = Q('.logos-ed'); box.innerHTML = '';
     cfg.logos.forEach(function (l, i) {
@@ -3437,7 +4224,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, setLingua: function (l) { LINGUA = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

@@ -75,3 +75,55 @@ O botão **"HTML de leitura (cópia controlada)"** gera um arquivo único que ab
 - **Registro:** cada exemplar entra no projeto (`obra.exemplares`) e no relatório de auditoria.
 - **Senha:** envie-a à pessoa por um canal diferente do arquivo.
 - **ISBN:** cada formato distribuído separadamente tem ISBN próprio (ISO 2108). Enquanto a versão HTML não tiver número registrado na Agência Brasileira do ISBN, o arquivo se identifica como cópia de leitura da edição em EPUB. Ao registrar, informe o número em "ISBN da versão HTML", na aba "Dados da obra".
+
+## Tradução especializada (inglês, francês, espanhol e alemão)
+
+A aba **Tradução** gera, a partir do livro já produzido em português, edições completas nos quatro idiomas, com a mesma estrutura e o mesmo projeto gráfico: capítulos, notas, tabelas, ilustrações, siglas, índice remissivo, sumário, páginas editoriais, EPUB, PDF e HTML de leitura (inclusive exemplares controlados com senha).
+
+**Como usar**
+
+1. Gere a edição em português na aba Produção. A tradução parte do texto já corrigido pelo editor.
+2. Na aba Tradução, marque os idiomas e escolha a variante: en-US ou en-GB, fr-FR ou fr-CA, es-419 ou es-ES, de-DE.
+3. Para cada idioma, preencha:
+   - **Tradução:** nome que vai aos créditos.
+   - **Revisor nativo:** quem revisou a tradução.
+   - **ISBN próprio:** cada idioma e cada formato têm o seu.
+   - **Título e subtítulo no idioma:** opcionais; em branco, o motor traduz.
+   - **Glossário da Editora:** termos obrigatórios, um por linha (`Terra Indígena = Indigenous Land`).
+4. Clique em **Estimar custo** e depois em **Traduzir os idiomas marcados**. Mantenha a página aberta durante o processo.
+
+**O que o motor faz**
+
+- **Glossário pesquisado.** O motor reúne candidatos no livro: siglas, termos do índice, títulos, legislação, nomes de órgãos e palavras em itálico. O Claude, com pesquisa na web, define o equivalente de cada um e registra a fonte. A prioridade são as denominações oficiais de instrumentos e órgãos internacionais (ONU, OIT, OEA, Corte Interamericana, UNESCO, OMPI). Para leis e órgãos brasileiros sem equivalente, usa a tradução descritiva consagrada. Etnônimos e palavras em línguas indígenas ficam como no original. O glossário fica guardado no projeto; use **Refazer o glossário** para pesquisá-lo de novo.
+- **Tradução por segmentos.** A formatação vai em marcas numeradas: itálico, negrito, links, chamadas de nota, âncoras do índice e rótulos de tabela. O texto volta para o mesmo lugar do livro. Rótulos ("Table 2.1", "Chapter 3"), páginas editoriais e conectivos das referências ("Available at:", "Accessed on:") são traduzidos de forma fixa pelo motor. As referências bibliográficas ficam como no original (ABNT NBR 6023).
+- **Verificação automática de cada segmento:**
+  - todas as marcas presentes;
+  - números preservados (com os separadores do idioma);
+  - chamadas autor-data intactas;
+  - nenhum português remanescente;
+  - extensão compatível com o original;
+  - nenhum travessão como pontuação.
+  Segmento reprovado é refeito com o problema apontado.
+- **Revisão bilíngue independente.** Um segundo passe, com papel de revisor nativo especialista, compara original e tradução e corrige sentido, terminologia, gramática e tipografia. Correção que quebre a formatação é recusada.
+- **Tipografia do idioma.** Inglês usa “ ”. Francês usa « » e espaços inseparáveis antes de ; : ! ?. Espanhol usa « ». Alemão usa „ “. O hífen é o do próprio idioma, definido pelo atributo `lang`.
+- **Nota da tradução.** Página automática que descreve as convenções adotadas, com a lista de termos-chave jurídicos e institucionais (português e idioma da edição).
+
+**Resultados e controle de qualidade**
+
+- **Relatório da tradução**, com:
+  - o registro do processo;
+  - os segmentos com apontamento;
+  - as correções da revisão (antes e depois, com o motivo);
+  - o glossário com as fontes;
+  - a planilha bilíngue completa para a revisão humana;
+  - o consumo e o custo estimado da API.
+- **Auditoria da edição.** Aponta, além do que já se verifica em português:
+  - revisor humano não registrado;
+  - ISBN igual ao da edição em português;
+  - trechos que ficaram sem tradução.
+- **Memória de tradução.** Fica no navegador (IndexedDB). Use **Memória de tradução** para baixá-la e enviá-la ao revisor, que corrige o campo `traducao` mantendo as marcas. Depois use **Importar correções** e traduza de novo: os trechos corrigidos entram sem nova chamada à API.
+
+**Limites**
+
+- A tradução não tem fé pública. A tradução juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial (Lei nº 14.195/2021).
+- A ficha catalográfica (CIP) continua em português, com o título da edição traduzida. A ficha de cada edição deve ser elaborada pelo bibliotecário.
