@@ -2579,7 +2579,7 @@ var I18N = {
     'Nota da tradução': 'Translator’s note',
     'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'This edition is a translation of the original Brazilian Portuguese text, “{orig}”, published by {ed} in {ano}{isbn}.',
     'NOTA_TRAD_JUR': 'International legal instruments are quoted in their official wording in this language wherever such wording exists. Brazilian statutes, bodies and legal categories, which have no exact equivalent in other legal systems, are translated consistently throughout the book; the corresponding Portuguese terms are listed under “Key terms” below.',
-    'NOTA_TRAD_IND': 'Words in Indigenous languages, the names of peoples and place names are kept in their original form. Bibliographic references are reproduced as in the original, following the Brazilian standard ABNT NBR 6023; quotations from Portuguese-language sources have been translated for this edition.',
+    'NOTA_TRAD_IND': 'Words, expressions and quotations in Terena and other Indigenous languages are reproduced exactly as in the original; only the Portuguese explanations that accompany them have been translated. The names of peoples and places are kept in their original form. Bibliographic references are reproduced as in the original, following the Brazilian standard ABNT NBR 6023; quotations from Portuguese-language sources have been translated for this edition.',
     'Termos-chave': 'Key terms', 'Original (português)': 'Original (Portuguese)', 'Nesta edição': 'In this edition',
     'Disponível em:': 'Available at:', 'Acesso em:': 'Accessed on:'
   },
@@ -2598,7 +2598,7 @@ var I18N = {
     'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'Ce livre a été publié par {ed}, label éditorial rattaché à l’institution {mant}, à {cid} ({uf}, Brésil), en {mes}.',
     'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Composé en Literata et Cinzel, polices sous licence libre (SIL Open Font License 1.1).',
     'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Livre numérique au format EPUB 3, édité et révisé techniquement par la Coordination éditoriale numérique de l’éditeur, conformément aux normes de l’Association brésilienne de normes techniques (ABNT) et aux directives d’accessibilité EPUB.',
-    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La spirale, le pointillé et la frise de poterie qui ornent cette édition ont été dessinés par l’éditeur à partir du langage graphique de la céramique terena. Ce sont des tracés originaux, qui ne reproduisent pas les motifs propres aux familles et aux clans, par respect pour le patrimoine culturel collectif du peuple terena.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La spirale, le pointillé et la frise de poterie qui ornent cette édition ont été dessinés par l’éditeur à partir du langage graphique de la céramique Terena. Ce sont des tracés originaux, qui ne reproduisent pas les motifs propres aux familles et aux clans, par respect pour le patrimoine culturel collectif du peuple Terena.',
     'Licenças das fontes tipográficas': 'Licences des polices de caractères', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Toutes deux sont distribuées sous la SIL Open Font License, version 1.1, reproduite ci-dessous.',
     'cap.': 'chap.', 'Capítulo': 'Chapitre', 'Parte': 'Partie',
     'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Livre numérique recomposable, avec table des matières navigable, ordre de lecture logique, titres structurés, notes interactives{alt} et texte ajustable par le lecteur. Produit par {ed}.', ', textos alternativos nas imagens': ', textes alternatifs pour les images',
@@ -2611,7 +2611,7 @@ var I18N = {
     'Nota da tradução': 'Note de la traduction',
     'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Cette édition est la traduction du texte original en portugais du Brésil, « {orig} », publié par {ed} en {ano}{isbn}.',
     'NOTA_TRAD_JUR': 'Les instruments juridiques internationaux sont cités dans leur version officielle en français lorsqu’elle existe. Les lois, organes et catégories juridiques brésiliens, qui n’ont pas d’équivalent exact dans d’autres systèmes juridiques, sont traduits de manière constante dans tout l’ouvrage ; les termes portugais correspondants figurent ci-dessous, sous « Termes clés ».',
-    'NOTA_TRAD_IND': 'Les mots des langues autochtones, les noms des peuples et les toponymes sont conservés dans leur forme originale. Les références bibliographiques sont reproduites comme dans l’original, selon la norme brésilienne ABNT NBR 6023 ; les citations de sources en langue portugaise ont été traduites pour cette édition.',
+    'NOTA_TRAD_IND': 'Les mots, expressions et citations en terena et dans d’autres langues autochtones sont reproduits exactement comme dans l’original ; seules les explications en portugais qui les accompagnent ont été traduites. Les noms des peuples et des lieux sont conservés dans leur forme originale. Les références bibliographiques sont reproduites comme dans l’original, selon la norme brésilienne ABNT NBR 6023 ; les citations de sources en langue portugaise ont été traduites pour cette édition.',
     'Termos-chave': 'Termes clés', 'Original (português)': 'Original (portugais)', 'Nesta edição': 'Dans cette édition',
     'Disponível em:': 'Disponible sur :', 'Acesso em:': 'Consulté le :'
   },
@@ -2630,7 +2630,7 @@ var I18N = {
     'Este livro foi editado pela {ed}, selo editorial do {mant}, em {cid}, {uf}, em {mes}.': 'Este libro fue editado por {ed}, sello editorial del {mant}, en {cid}, {uf}, Brasil, en {mes}.',
     'Composto em Literata e Cinzel, fontes de licença livre (SIL Open Font License 1.1).': 'Compuesto en Literata y Cinzel, fuentes de licencia libre (SIL Open Font License 1.1).',
     'Livro digital em EPUB 3, editado e revisado tecnicamente pela Coordenação Editorial Digital da Editora, conforme as normas da ABNT e as diretrizes de acessibilidade EPUB.': 'Libro digital en EPUB 3, editado y revisado técnicamente por la Coordinación Editorial Digital de la editorial, conforme a las normas de la Asociación Brasileña de Normas Técnicas (ABNT) y a las directrices de accesibilidad EPUB.',
-    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La espiral, el punteado y la franja de la vasija que adornan esta edición fueron diseñados por la editorial a partir del lenguaje gráfico de la cerámica terena. Son trazos de autor, que no reproducen los grafismos propios de familias y clanes, en respeto al patrimonio cultural colectivo del pueblo terena.',
+    'A espiral, o pontilhado e a barra do pote que ornamentam esta edição foram desenhados pela Editora a partir da linguagem gráfica da cerâmica Terena. São traços autorais, que não reproduzem os grafismos próprios de famílias e clãs, em respeito ao patrimônio cultural coletivo do povo Terena.': 'La espiral, el punteado y la franja de la vasija que adornan esta edición fueron diseñados por la editorial a partir del lenguaje gráfico de la cerámica Terena. Son trazos de autor, que no reproducen los grafismos propios de familias y clanes, en respeto al patrimonio cultural colectivo del pueblo Terena.',
     'Licenças das fontes tipográficas': 'Licencias de las fuentes tipográficas', 'Ambas licenciadas sob a SIL Open Font License, versão 1.1, reproduzida a seguir.': 'Ambas se distribuyen bajo la SIL Open Font License, versión 1.1, que se reproduce a continuación.',
     'cap.': 'cap.', 'Capítulo': 'Capítulo', 'Parte': 'Parte',
     'Livro digital refluível com sumário navegável, ordem de leitura lógica, títulos estruturados, notas interativas{alt} e texto ajustável pelo leitor. Produzido pela {ed}.': 'Libro digital adaptable, con índice navegable, orden de lectura lógico, títulos estructurados, notas interactivas{alt} y texto ajustable por el lector. Producido por {ed}.', ', textos alternativos nas imagens': ', textos alternativos en las imágenes',
@@ -2643,7 +2643,7 @@ var I18N = {
     'Nota da tradução': 'Nota de la traducción',
     'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Esta edición es la traducción del texto original en portugués de Brasil, «{orig}», publicado por {ed} en {ano}{isbn}.',
     'NOTA_TRAD_JUR': 'Los instrumentos jurídicos internacionales se citan en su versión oficial en español cuando esta existe. Las leyes, los órganos y las categorías jurídicas brasileñas, que no tienen equivalente exacto en otros ordenamientos jurídicos, se traducen de manera uniforme en todo el libro; los términos portugueses correspondientes figuran a continuación, en «Términos clave».',
-    'NOTA_TRAD_IND': 'Las palabras en lenguas indígenas, los nombres de los pueblos y los topónimos se conservan en su forma original. Las referencias bibliográficas se reproducen como en el original, conforme a la norma brasileña ABNT NBR 6023; las citas de fuentes en portugués se han traducido para esta edición.',
+    'NOTA_TRAD_IND': 'Las palabras, expresiones y citas en terena y en otras lenguas indígenas se reproducen exactamente como en el original; solo se han traducido las explicaciones en portugués que las acompañan. Los nombres de los pueblos y de los lugares se conservan en su forma original. Las referencias bibliográficas se reproducen como en el original, conforme a la norma brasileña ABNT NBR 6023; las citas de fuentes en portugués se han traducido para esta edición.',
     'Termos-chave': 'Términos clave', 'Original (português)': 'Original (portugués)', 'Nesta edição': 'En esta edición',
     'Disponível em:': 'Disponible en:', 'Acesso em:': 'Consultado el:'
   },
@@ -2675,7 +2675,7 @@ var I18N = {
     'Nota da tradução': 'Anmerkung zur Übersetzung',
     'Esta edição é a tradução do texto original em português do Brasil, “{orig}”, publicado pela {ed} em {ano}{isbn}.': 'Diese Ausgabe ist die Übersetzung des brasilianisch-portugiesischen Originals „{orig}“, erschienen bei {ed}, {ano}{isbn}.',
     'NOTA_TRAD_JUR': 'Internationale Rechtsinstrumente werden in ihrer amtlichen deutschen Fassung zitiert, sofern eine solche vorliegt. Brasilianische Gesetze, Organe und Rechtsbegriffe, die in anderen Rechtsordnungen keine genaue Entsprechung haben, werden im gesamten Buch einheitlich übersetzt; die portugiesischen Originalbegriffe sind unten unter „Schlüsselbegriffe“ aufgeführt.',
-    'NOTA_TRAD_IND': 'Wörter aus indigenen Sprachen, Volksbezeichnungen und Ortsnamen werden in ihrer ursprünglichen Form beibehalten. Die Literaturangaben folgen wie im Original der brasilianischen Norm ABNT NBR 6023; Zitate aus portugiesischsprachigen Quellen wurden für diese Ausgabe übersetzt.',
+    'NOTA_TRAD_IND': 'Wörter, Ausdrücke und Zitate auf Terena und in anderen indigenen Sprachen werden genau wie im Original wiedergegeben; übersetzt wurden nur die portugiesischen Erläuterungen, die sie begleiten. Volksbezeichnungen und Ortsnamen bleiben in ihrer ursprünglichen Form. Die Literaturangaben folgen wie im Original der brasilianischen Norm ABNT NBR 6023; Zitate aus portugiesischsprachigen Quellen wurden für diese Ausgabe übersetzt.',
     'Termos-chave': 'Schlüsselbegriffe', 'Original (português)': 'Original (Portugiesisch)', 'Nesta edição': 'In dieser Ausgabe',
     'Disponível em:': 'Verfügbar unter:', 'Acesso em:': 'Zugriff am:'
   }
@@ -3815,6 +3815,7 @@ function tipografiaIdioma(livro) {
 }
 
 /* ── verificação automática de cada segmento traduzido ── */
+var TRAD_TERMOS_IND = [];   // expressões em línguas indígenas do livro (glossário: categoria indigena, decisão manter)
 var PT_RESIDUO = /\b(não|também|são|então|você|pelo|pela|pelos|pelas|isso|aquilo|está|estão|têm|através|após|porém|contudo|entretanto|sobretudo|ainda|já|onde|quando|cujo|cuja)\b|ções\b|ção\b/gi;
 function numerosDe(s) { return (String(s).replace(/<[^>]+>/g, ' ').match(/\d+(?:[.,\u00A0\u202F ]\d{3})*(?:[.,]\d+)?/g) || []).map(function (x) { return x.replace(/[.,\u00A0\u202F ]/g, ''); }); }
 function citacoesDe(s) { var out = [], rx = /\b([A-ZÀ-Ý][A-ZÀ-Ý'’-]+(?:\s+[A-ZÀ-Ý][A-ZÀ-Ý'’-]+)*)(?=,\s*(?:\d{4}|s\.\s?d\.)|\s+et\s+al\.)/g, m; s = String(s).replace(/<[^>]+>/g, ''); while ((m = rx.exec(s))) if (m[1].length > 2) out.push(m[1]); return out; }
@@ -3834,6 +3835,12 @@ function verificarSeg(seg, t) {
   var ls = seg.src.replace(/<[^>]+>/g, '').length, lt = t.replace(/<[^>]+>/g, '').length;
   if (ls > 60 && (lt / ls < 0.45 || lt / ls > 2.2)) prob.push('extensão desproporcional ao original (possível omissão ou acréscimo)');
   if (/[—–]/.test(ct) && !/[—–]/.test(desescMarc(seg.src))) prob.push('travessão como pontuação');
+  // palavras, expressões e citações em terena ou outra língua indígena: idênticas ao original, letra por letra
+  var sp = desescMarc(seg.src).replace(/<[^>]+>/g, ''), tp = ct.replace(/<[^>]+>/g, '');
+  TRAD_TERMOS_IND.forEach(function (termo) {
+    var rx = new RegExp('(^|[^\\p{L}])(' + termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?=$|[^\\p{L}])', 'giu'), m;
+    while ((m = rx.exec(sp))) { if (tp.indexOf(m[2]) < 0) { prob.push('expressão em língua indígena alterada ou traduzida: ' + m[2]); break; } }
+  });
   return prob;
 }
 
@@ -3843,7 +3850,7 @@ function sisGlossario(lng) {
     'Vai preparar o glossário obrigatório da tradução de um livro acadêmico do português do Brasil para ' + NOME_LINGUA[lng] + '.\n' +
     'Para cada termo candidato, defina o equivalente que a tradução deve usar. Categorias: juridico (leis, institutos, tribunais, decisões, instrumentos internacionais), instituicao (órgãos, entidades, programas, conselhos), indigena (etnônimos, palavras em línguas indígenas, nomes de aldeias e terras indígenas), geografia (biomas, rios, regiões, unidades da federação), conceito (termos técnicos e acadêmicos), sigla.\n' +
     'Decisões: "traduzir" (usar o equivalente), "manter" (fica como no original, p. ex. palavras em língua indígena, nomes de pessoas, aldeias e lugares), "manter-sigla" (a sigla fica no original e o nome por extenso é traduzido).\n' +
-    'Regras: (1) para tratados, convenções, declarações, relatórios e órgãos internacionais (ONU, OIT, OEA, Comissão e Corte Interamericana, UNESCO, OMPI, CDB) use a denominação oficial no idioma de chegada e confirme-a na web, de preferência em fontes oficiais (un.org, ohchr.org, ilo.org, oas.org, corteidh.or.cr, wipo.int, unesco.org, cbd.int); (2) para leis e órgãos brasileiros sem equivalente, adote a tradução descritiva mais usada na literatura jurídica e em documentos oficiais de organismos internacionais sobre o Brasil; (3) etnônimos seguem as convenções do idioma de chegada (maiúsculas, invariabilidade), sem tradução; (4) nunca invente denominação oficial: se não houver versão oficial, diga em "fonte" que é tradução descritiva; (5) informe a URL consultada em "fonte" quando pesquisar.\n' +
+    'Regras: (1) para tratados, convenções, declarações, relatórios e órgãos internacionais (ONU, OIT, OEA, Comissão e Corte Interamericana, UNESCO, OMPI, CDB) use a denominação oficial no idioma de chegada e confirme-a na web, de preferência em fontes oficiais (un.org, ohchr.org, ilo.org, oas.org, corteidh.or.cr, wipo.int, unesco.org, cbd.int); (2) para leis e órgãos brasileiros sem equivalente, adote a tradução descritiva mais usada na literatura jurídica e em documentos oficiais de organismos internacionais sobre o Brasil; (3) etnônimos ficam na forma do original (com maiúscula e sem flexão), e palavras, expressões e citações em terena, guarani ou outra língua indígena ficam idênticas ao original: classifique-as como categoria "indigena" e decisão "manter", com "alvo" igual ao original; (4) nunca invente denominação oficial: se não houver versão oficial, diga em "fonte" que é tradução descritiva; (5) informe a URL consultada em "fonte" quando pesquisar.\n' +
     'Ao final da resposta, devolva um único bloco ```json``` com {"termos":[{"pt":"…","alvo":"…","categoria":"…","decisao":"…","fonte":"…"}]}, incluindo todos os termos candidatos que exigem decisão (pode omitir palavras comuns sem ambiguidade).';
 }
 function sisTraducao(lng, glossario) {
@@ -3855,7 +3862,7 @@ function sisTraducao(lng, glossario) {
     '2. Terminologia: o GLOSSÁRIO abaixo é obrigatório e deve ser seguido de forma idêntica em todo o livro. Termos marcados "manter" ficam como no original.\n' +
     '3. Instrumentos e órgãos internacionais: use a denominação oficial e, ao citar ou parafrasear o texto de tratado, convenção, declaração ou decisão, a redação oficial no idioma de chegada quando a conhecer com segurança; se não houver versão oficial ou houver dúvida, traduza com fidelidade, sem inventar redação oficial.\n' +
     '4. Direito brasileiro: traduza a denominação de leis, decretos, órgãos e institutos conforme o glossário; mantenha número e ano (ex.: Lei nº 6.001/1973 com o número no padrão do idioma). "art." e "inciso" seguem a forma usual do idioma jurídico de chegada.\n' +
-    '5. Nomes: não traduza nomes de pessoas, povos (etnônimos), aldeias, terras indígenas, rios e lugares; palavras em línguas indígenas ficam como no original. Siglas ficam no original.\n' +
+    '5. Línguas indígenas e nomes: palavras, expressões, frases, cantos e citações em terena, guarani ou qualquer outra língua indígena são copiados EXATAMENTE como no original, letra por letra, com apóstrofos, acentos, til e maiúsculas, sem traduzir, adaptar, transliterar nem corrigir; quando o original traz ao lado a explicação em português (entre parênteses, após vírgula ou dois-pontos), traduza só essa explicação. Etnônimos (Terena, Guarani, Kaiowá…) ficam na forma do original, com maiúscula e sem flexão, em qualquer idioma. Não traduza nomes de pessoas, aldeias, terras indígenas, rios e lugares. Siglas ficam no original.\n' +
     '6. Citações e referências: mantenha intactas as chamadas autor-data (SILVA, 2020, p. 15), "et al.", "apud", "In:" e as chamadas de nota. Citações diretas de fontes em português são traduzidas. Se a citação reproduz texto publicado originalmente no idioma de chegada e você conhece com segurança a redação original exata, use-a.\n' +
     '7. Números e datas: preserve todos os números em algarismos; adapte separadores e formato de datas às normas do idioma.\n' +
     '8. Tipografia do idioma: ' + tipog + '. Não use travessão (— ou –) como pontuação: use vírgula, dois-pontos ou parênteses.\n' +
@@ -3865,7 +3872,7 @@ function sisTraducao(lng, glossario) {
 }
 function sisRevisao(lng, glossario) {
   return 'Você é revisor sênior de tradução, falante nativo de ' + NOME_LINGUA[lng] + ', com especialização jurídica (direitos humanos, direito indígena, direito constitucional brasileiro, propriedade intelectual) e em antropologia, história e geografia. ' +
-    'Recebe pares (original em português do Brasil, tradução) de um livro acadêmico. Compare frase a frase e corrija apenas erros reais: sentido alterado, omissão ou acréscimo, termo jurídico ou técnico impreciso, desvio do glossário, falso cognato, número, data ou chamada autor-data alterados, etnônimo ou nome próprio indevidamente traduzido, gramática, ortografia, regência, concordância, tipografia do idioma, travessão usado como pontuação, marcas <gN>…</gN> e <xN/> perdidas, repetidas ou deslocadas. ' +
+    'Recebe pares (original em português do Brasil, tradução) de um livro acadêmico. Compare frase a frase e corrija apenas erros reais: sentido alterado, omissão ou acréscimo, termo jurídico ou técnico impreciso, desvio do glossário, falso cognato, número, data ou chamada autor-data alterados, etnônimo, nome próprio ou expressão em língua indígena traduzidos ou alterados (devem ser idênticos ao original, letra por letra; só a explicação em português que os acompanha é traduzida), gramática, ortografia, regência, concordância, tipografia do idioma, travessão usado como pontuação, marcas <gN>…</gN> e <xN/> perdidas, repetidas ou deslocadas. ' +
     'Não reescreva por preferência de estilo. Para cada segmento que precise de correção, devolva a tradução completa já corrigida (com todas as marcas), o tipo, a gravidade e o motivo em português (até 160 caracteres). Segmentos corretos não aparecem na resposta.\n\nGLOSSÁRIO\n' + glossario;
 }
 var SCHEMA_TRAD = { type: 'object', additionalProperties: false, required: ['segmentos'], properties: { segmentos: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['id', 't'], properties: { id: { type: 'string' }, t: { type: 'string' } } } } } };
@@ -3889,6 +3896,11 @@ function candidatosGlossario(livro, termosIndice) {
       while ((m = rxInst.exec(t))) if (m.index > 0 && !/[.!?]\s*$/.test(t.slice(0, m.index))) add(m[0], t.slice(Math.max(0, m.index - 60), m.index + 140));
     });
     s.cont.querySelectorAll('p:not(.ref) i, p:not(.ref) em, li i, li em').forEach(function (e) { var t = txt(e); if (t.split(/\s+/).length <= 5) add(t, txt(e.parentNode).slice(0, 160)); });
+    // palavras com grafia de línguas indígenas (k, w, y, ỹ, ñ, apóstrofo interno), sozinhas ou em sequência
+    s.cont.querySelectorAll('p:not(.ref),li,td,blockquote,h2,h3,h4').forEach(function (p) {
+      var t = txt(p), rxInd = /(?:[A-Za-zÀ-ÿĩũẽỹ]*(?:[kwyỹĩũẽñ]|[a-zà-ÿ][’'][a-zà-ÿ])[A-Za-zÀ-ÿĩũẽỹ’'-]*)(?:\s+[A-Za-zÀ-ÿĩũẽỹ’'-]*(?:[kwyỹĩũẽñ]|[a-zà-ÿ][’'][a-zà-ÿ])[A-Za-zÀ-ÿĩũẽỹ’'-]*)*/gi, m;
+      while ((m = rxInd.exec(t))) { var w = m[0]; if (w.length >= 4 && !/^(d|n|l|D|N|L)[’']/.test(w)) { add(w, t.slice(Math.max(0, m.index - 60), m.index + 120)); add(w); } }
+    });
   });
   return Object.keys(cont).filter(function (t) { return cont[t] >= 2 || /^(Lei|Decreto|Convenção|Declaração|Constituição|Estatuto|Pacto|Protocolo|Caso|Opinião)/.test(t); })
     .sort(function (a, b) { return cont[b] - cont[a]; }).slice(0, 480).map(function (t) { return { termo: t, n: cont[t], contexto: ctx[t] || '' }; });
@@ -4013,6 +4025,10 @@ async function traduzirEdicao(b, prog) {
     // glossário (reaproveitado entre execuções; refeito quando o editor pede)
     var termosIA = tc.glossarioIA;
     if (!termosIA || !termosIA.length) { termosIA = await montarGlossario(livro, lng, termosIndice, prog, relato); tradGuardar(b, { glossarioIA: termosIA }); }
+    TRAD_TERMOS_IND = (termosIA || []).filter(function (x) { return /indigena/i.test(x.categoria) && /manter/i.test(x.decisao); }).map(function (x) { return String(x.pt).trim(); })
+      .concat(String(tc.glossario || '').split('\n').map(function (l) { var m = /^\s*(.+?)\s*=\s*(.+?)\s*$/.exec(l); return m && m[1] === m[2] ? m[1] : ''; }))
+      .filter(function (t, i, a) { return t && t.length >= 3 && a.indexOf(t) === i; });
+    if (TRAD_TERMOS_IND.length) relato.push(TRAD_TERMOS_IND.length + ' expressões em línguas indígenas protegidas (reproduzidas exatamente como no original): ' + TRAD_TERMOS_IND.slice(0, 12).join(', ') + (TRAD_TERMOS_IND.length > 12 ? '…' : '') + '.');
     var glossario = glossarioTexto(termosIA, tc.glossario) + '\n' + Object.keys(TIPOS_I18N[b]).map(function (k) { return k + ' ⇒ ' + TIPOS_I18N[b][k] + ' [rótulo de ilustração ou tabela]'; }).join('\n') + '\nFonte: ⇒ ' + ({ en: 'Source:', fr: 'Source :', es: 'Fuente:', de: 'Quelle:' }[b]) + '\nNota: ⇒ ' + ({ en: 'Note:', fr: 'Note :', es: 'Nota:', de: 'Anmerkung:' }[b]);
     // segmentos do texto e da estrutura
     var segs = [];
@@ -4082,7 +4098,7 @@ async function traduzirEdicao(b, prog) {
     var edicao = { b: b, lng: lng, livro: livro, logos: logos, o: oT, epub: blob, res: res, segs: segs, correcoes: correcoes, naoAplicados: naoAplicados, glossario: termosIA, relato: relato, uso: uso, data: new Date() };
     edicao.relatorio = relatorioTraducao(edicao);
     return edicao;
-  } finally { LINGUA = 'pt-BR'; }
+  } finally { LINGUA = 'pt-BR'; TRAD_TERMOS_IND = []; }
 }
 /* o índice remissivo é gerado procurando cada termo no texto traduzido: quando a tradução isolada do termo
    não coincide com a forma usada nos trechos, pede-se a forma exata empregada neles */
@@ -4695,7 +4711,7 @@ function montarUI(alvo) {
         '<label>Revisor nativo da tradução <input type="text" data-tk="revisor" placeholder="Nome e qualificação"></label>' +
         '<label>ISBN desta edição (EPUB) <input type="text" data-tk="isbn"></label>' +
         '<label>ISBN do HTML (opcional) <input type="text" data-tk="isbnHtml"></label>' +
-        '<label>Glossário da Editora (um por linha: termo em português = tradução obrigatória) <textarea data-tk="glossario" placeholder="Terra Indígena = Indigenous Land"></textarea></label>' +
+        '<label>Glossário da Editora (um por linha: termo em português = tradução obrigatória) <textarea data-tk="glossario" placeholder="Terra Indígena = Indigenous Land&#10;Kaxena Yunakalu = Kaxena Yunakalu (termo igual dos dois lados: fica sem tradução)"></textarea></label>' +
         '<label>Imagem da capa no idioma (opcional, JPG ou PNG; em branco, a capa é gerada no idioma). Não envie o livro aqui: use o passo 1 acima. <input type="file" accept="image/*" data-tk="capa"></label>' +
         '<div class="linha"><small data-tk="info"></small><button class="bt" type="button" data-tk="refazer">Refazer o glossário</button></div>';
       ['titulo', 'subtitulo', 'tradutor', 'revisor', 'isbn', 'isbnHtml', 'glossario'].forEach(function (k) {
@@ -4954,7 +4970,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar, admEntrou: admEntrou,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');
