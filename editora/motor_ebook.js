@@ -3043,7 +3043,10 @@ async function claudeTrad(p) {
     var j = await r.json().catch(function () { return {}; });
     if (!r.ok) {
       if ((r.status === 429 || r.status === 529 || r.status >= 500) && tent++ < 5) { var ra = parseFloat(r.headers.get('retry-after')); await esperar(ra > 0 ? ra * 1000 : 5000 * Math.pow(2, tent - 1)); continue; }
-      var er = new Error((j && j.error && j.error.message) || ('HTTP ' + r.status)); er.status = r.status; throw er;
+      var er = new Error((j && j.error && j.error.message) || ('HTTP ' + r.status)); er.status = r.status;
+      // chave inválida, sem permissão ou sem crédito: não adianta continuar os demais lotes
+      er.fatal = r.status === 401 || r.status === 403 || (r.status === 400 && /credit|billing|saldo|api key|x-api-key/i.test(er.message));
+      throw er;
     }
     var u = j.usage || {};
     TRAD_USO.entrada += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0); TRAD_USO.cache += u.cache_read_input_tokens || 0; TRAD_USO.saida += u.output_tokens || 0; TRAD_USO.chamadas++;
@@ -3320,16 +3323,18 @@ async function traduzirSegmentos(segs, lng, glossario, prog, relato) {
   pend.forEach(function (s) { if (atual.length && (tam + s.src.length > 5000 || atual.length >= 60 || atual[0].secao !== s.secao)) { lotes.push(atual); atual = []; tam = 0; } atual.push(s); tam += s.src.length; });
   if (atual.length) lotes.push(atual);
   var feitos = 0, idx = 0;
+  function memoria(lista) { return tmGravar(lista.filter(function (s) { return s.t && !verificarSeg(s, s.t).some(function (p) { return /formatação|vazia/.test(p); }); }).map(function (s) { return { k: s.k, v: { src: s.src, t: s.t, lng: lng, tipo: s.tipo, origem: s.origem === 'humano' ? 'humano' : 'ia', revisado: !!s.revisado, data: new Date().toISOString() } }; })); }
   async function traduzLote(lote, aviso) {
     var conteudo = JSON.stringify({ secao: lote[0].secao, observacao: aviso || undefined, segmentos: lote.map(function (s) { return { id: s.id, tipo: s.tipo, texto: s.src }; }) });
     var r = await claudeTrad({ sistema: sis, conteudo: conteudo, schema: SCHEMA_TRAD, effort: 'high', maxTokens: 32000 });
     var por = {}; (r.segmentos || []).forEach(function (x) { por[x.id] = x.t; });
     lote.forEach(function (s) { if (por[s.id] != null) { s.t = por[s.id]; s.origem = 'tradução'; } });
+    await memoria(lote);
   }
   async function trabalhador() {
     while (idx < lotes.length) {
       var lote = lotes[idx++];
-      try { await traduzLote(lote); } catch (e) { relato.push('Lote de “' + lote[0].secao + '”: ' + e.message + '; repetido em partes menores.'); for (var q = 0; q < lote.length; q += 8) { try { await traduzLote(lote.slice(q, q + 8)); } catch (e2) { relato.push('Falha persistente em “' + lote[0].secao + '”: ' + e2.message); } } }
+      try { await traduzLote(lote); } catch (e) { if (e.fatal) throw e; relato.push('Lote de “' + lote[0].secao + '”: ' + e.message + '; repetido em partes menores.'); for (var q = 0; q < lote.length; q += 8) { try { await traduzLote(lote.slice(q, q + 8)); } catch (e2) { if (e2.fatal) throw e2; relato.push('Falha persistente em “' + lote[0].secao + '”: ' + e2.message); } } }
       feitos++; prog('Tradução: ' + feitos + '/' + lotes.length + ' lotes');
     }
   }
@@ -3364,12 +3369,13 @@ async function traduzirSegmentos(segs, lng, glossario, prog, relato) {
           s.t = c.t; s.prob = pn;
         });
         lote.forEach(function (s) { s.revisado = true; });
-      } catch (e) { relato.push('Revisão de um lote não concluída: ' + e.message); }
+        await memoria(lote);
+      } catch (e) { if (e.fatal) throw e; relato.push('Revisão de um lote não concluída: ' + e.message); }
       rf++; prog('Revisão bilíngue: ' + rf + '/' + rlotes.length + ' lotes');
     }
   }
   await Promise.all([revisor(), revisor(), revisor()]);
-  await tmGravar(segs.filter(function (s) { return s.t; }).map(function (s) { return { k: s.k, v: { src: s.src, t: s.t, lng: lng, tipo: s.tipo, origem: s.origem === 'humano' ? 'humano' : 'ia', revisado: !!s.revisado, data: new Date().toISOString() } }; }));
+  await memoria(segs);
   return correcoes;
 }
 
@@ -3436,6 +3442,7 @@ async function traduzirEdicao(b, prog) {
       var cc = c.cloneNode(true); cc.querySelectorAll('.rotulo-trad').forEach(function (e) { e.remove(); }); x.titulo = txt(cc).trim();
     });
     livro.termosIndice = [];
+    await alinharIndice(livro, termosIndice, termosT, segs, lng, glossario, prog, relato);
     // dados da edição traduzida
     oT.titulo = tc.titulo || oT.titulo; oT.subtitulo = tc.subtitulo || (tc.titulo ? '' : oT.subtitulo);
     oT.palavrasChave = (oT._pc || []).filter(Boolean).join('; '); delete oT._pc;
@@ -3461,6 +3468,26 @@ async function traduzirEdicao(b, prog) {
     edicao.relatorio = relatorioTraducao(edicao);
     return edicao;
   } finally { LINGUA = 'pt-BR'; }
+}
+/* o índice remissivo é gerado procurando cada termo no texto traduzido: quando a tradução isolada do termo
+   não coincide com a forma usada nos trechos, pede-se a forma exata empregada neles */
+function textoTraduzido(livro) { return livro.secoes.filter(function (s) { return /^(capitulo|abertura|apresentacao|prefacio|posfacio|apendice|anexo|parte)$/.test(s.tipo); }).map(function (s) { var c = s.cont.cloneNode(true); c.querySelectorAll('h1,h2,h3,h4,h5,h6,aside,figcaption,caption,a,.referencias').forEach(function (e) { e.remove(); }); return c.textContent; }).join('\n'); }
+function termoNoTexto(termo, texto) { var sig = /^[A-Z0-9ÀÁÂÃÉÊÍÓÔÕÚÇ\/\-]{2,}$/.test(termo); return new RegExp('(^|[^\\p{L}\\p{N}])' + termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=$|[^\\p{L}\\p{N}])', sig ? 'u' : 'iu').test(texto); }
+async function alinharIndice(livro, termosPt, termosT, segs, lng, glossario, prog, relato) {
+  var texto = textoTraduzido(livro), faltam = [];
+  termosT.forEach(function (t, i) {
+    if (!t || termoNoTexto(t, texto)) return;
+    var rx = new RegExp(termosPt[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    var ex = segs.filter(function (s) { return s.tipo === 'texto' && s.t && rx.test(desescMarc(s.src)); }).slice(0, 3).map(function (s) { return { original: desescMarc(s.src).replace(/<\/?[gx]\d+\/?>/g, ''), traducao: desescMarc(s.t).replace(/<\/?[gx]\d+\/?>/g, '') }; });
+    if (ex.length) faltam.push({ i: i, pt: termosPt[i], proposto: t, trechos: ex });
+  });
+  if (!faltam.length) return;
+  prog('Índice: alinhando ' + faltam.length + ' termo(s) à forma usada no texto');
+  try {
+    var r = await claudeTrad({ sistema: 'Você ajusta os termos do índice remissivo de uma tradução para ' + NOME_LINGUA[lng] + '. Para cada termo, devolva a expressão exatamente como aparece nas traduções dos trechos fornecidos (mesmas palavras, sem flexão diferente), que corresponda ao termo em português. Se o termo não aparece em nenhum trecho traduzido, devolva o termo proposto sem mudança.\n\nGLOSSÁRIO\n' + glossario, conteudo: JSON.stringify({ termos: faltam.map(function (f) { return { id: String(f.i), termo_pt: f.pt, proposto: f.proposto, trechos: f.trechos }; }) }), schema: { type: 'object', additionalProperties: false, required: ['termos'], properties: { termos: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['id', 'termo'], properties: { id: { type: 'string' }, termo: { type: 'string' } } } } } }, effort: 'medium', maxTokens: 16000 });
+    var ok = 0; (r.termos || []).forEach(function (x) { var i = +x.id; if (x.termo && termoNoTexto(x.termo, texto)) { termosT[i] = x.termo; ok++; } });
+    relato.push('Índice remissivo: ' + ok + ' de ' + faltam.length + ' termo(s) alinhados à forma usada no texto traduzido.');
+  } catch (e) { if (e.fatal) throw e; relato.push('Alinhamento do índice não concluído: ' + e.message); }
 }
 function notaDaTraducao(livro, o, termosIA, b) {
   var doc = livro.doc, s = { tipo: 'nota-traducao', def: { et: '', role: '', parte: 'front' }, id: 'nota-traducao', titulo: T('Nota da tradução'), cont: el(doc, 'div', { 'class': 'nota-traducao' }), subtitulos: [], gerada: true };
