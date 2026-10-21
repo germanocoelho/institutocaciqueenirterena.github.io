@@ -48,11 +48,13 @@ O motor reconhece o formato pelo conteúdo do arquivo. Uma extensão errada (um 
 | LibreOffice .odt, .ott e ODT plano .fodt | Igual ao .odt; no .fodt, imagens embutidas não |
 | RTF | Estilos de título, itálico, negrito, tabelas, notas e imagens PNG/JPEG |
 | EPUB | Texto de cada capítulo, com imagens |
-| PDF com texto | Títulos pelo corpo de letra, negrito e numeração; itálicos pelo nome da fonte; notas de rodapé ligadas às chamadas; cabeçalhos, rodapés e números de página retirados; hifenização de fim de linha desfeita. Tabelas e imagens não |
+| PDF com texto | Títulos pelo corpo de letra, negrito e numeração; itálicos pelo nome da fonte; notas de rodapé ligadas às chamadas; cabeçalhos, rodapés e números de página retirados; hifenização de fim de linha desfeita; fotografias e figuras extraídas na posição em que aparecem (transparências sobre fundo branco). Tabelas chegam como texto |
 | PDF digitalizado e fotos das páginas (.jpg, .png, .webp, .gif, .bmp, .tif) | Transcrição fiel pelo Claude (visão), com títulos, itálicos, tabelas e notas; exige a chave da API |
 | Apple Pages | Lido pela prévia em PDF embutida no arquivo |
 | LaTeX .tex | Capítulos e seções, itálico, negrito, notas, citações, listas e tabelas |
 | Markdown, texto e HTML | Títulos de Markdown e HTML; no texto puro, títulos inferidos (CAPÍTULO N, seções conhecidas, numeração 1, 1.1) |
+
+Não há limite prático de tamanho: livros de centenas de páginas e com muitas imagens são lidos normalmente (testado com .docx de 127 MB e PDF de 65 MB); as imagens são reduzidas ao padrão EPUB (até 2000 px). Só arquivos acima de cerca de 2 GB, que o navegador não consegue abrir, são recusados.
 
 Nos formatos sem estilos (PDF, texto, .doc sem estilos), nada antes do primeiro título forte (Prefácio, Introdução, Capítulo 1…) vira título. Assim a folha de rosto e a ficha não viram capítulos, e as linhas do sumário do próprio manuscrito são ignoradas. O resultado mais exato continua sendo o .docx com os estilos Título 1, 2 e 3.
 

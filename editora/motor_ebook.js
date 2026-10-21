@@ -463,7 +463,7 @@ function estruturarTitulos(blocos) {
   });
   return blocos;
 }
-function htmlDeBlocos(blocos) { return blocos.map(function (b) { return b.titDoc ? '<p class="titulo-doc">' + b.h + '</p>' : b.nv ? '<h' + b.nv + '>' + b.h + '</h' + b.nv + '>' : b.cit ? '<blockquote><p>' + b.h + '</p></blockquote>' : '<p>' + b.h + '</p>'; }).join('\n'); }
+function htmlDeBlocos(blocos) { return blocos.map(function (b) { return b.fig ? '<p><img src="' + b.fig + '" alt="' + esc(b.alt || '') + '"></p>' : b.titDoc ? '<p class="titulo-doc">' + b.h + '</p>' : b.nv ? '<h' + b.nv + '>' + b.h + '</h' + b.nv + '>' : b.cit ? '<blockquote><p>' + b.h + '</p></blockquote>' : '<p>' + b.h + '</p>'; }).join('\n'); }
 function notasMammoth(notas) { return notas.length ? '<ol>' + notas.map(function (n, i) { return '<li id="footnote-' + (i + 1) + '"><p>' + n + '</p></li>'; }).join('') + '</ol>' : ''; }
 function refNota(k) { return '<sup><a href="#footnote-' + k + '" id="footnote-ref-' + k + '">[' + k + ']</a></sup>'; }
 
@@ -738,13 +738,17 @@ async function lerPdf(buf) {
   var pj = await pdfjs();
   var pdf = await pj.getDocument({ data: new Uint8Array(buf), isEvalSupported: false, disableFontFace: true, useSystemFonts: false }).promise;
   var meta = {}; try { var md = await pdf.getMetadata(); meta.titulo = (md.info && md.info.Title) || ''; meta.autor = (md.info && md.info.Author) || ''; } catch (e) {}
-  var pags = [], totalChars = 0;
+  var pags = [], totalChars = 0, nFiguras = 0;
   for (var pn = 1; pn <= pdf.numPages; pn++) {
     if (pn % 20 === 1 && ui.msg) ui.msg('Lendo o PDF: página ' + pn + ' de ' + pdf.numPages + '…');
     var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1 }), tc = await pg.getTextContent();
     // nomes reais das fontes (negrito e itálico) ficam disponíveis depois da lista de operações
-    var fontes = {};
-    try { await pg.getOperatorList(); Object.keys(tc.styles).forEach(function (fn) { try { var f = pg.commonObjs.get(fn); fontes[fn] = String((f && (f.name || f.loadedName)) || ''); } catch (e) {} }); } catch (e) {}
+    var fontes = {}, figuras = [];
+    try {
+      var ops = await pg.getOperatorList();
+      Object.keys(tc.styles).forEach(function (fn) { try { var f = pg.commonObjs.get(fn); fontes[fn] = String((f && (f.name || f.loadedName)) || ''); } catch (e) {} });
+      figuras = await imagensDaPagina(pj, pg, ops, vp, tc.items.reduce(function (n, it) { return n + (it.str || '').trim().length; }, 0));
+    } catch (e) {}
     var itens = tc.items.filter(function (it) { return it.str && it.str.trim(); }).map(function (it) {
       var t = it.transform, nf = fontes[it.fontName] || '';
       return { s: it.str, x: t[4], y: t[5], tam: Math.hypot(t[2], t[3]) || it.height || 10, w: it.width, it: /italic|oblique|-it\b|kursiv/i.test(nf) || Math.abs(t[2]) > 0.15 * Math.abs(t[3]), ng: /bold|black|heavy|semibold|-bd\b/i.test(nf) };
@@ -772,6 +776,8 @@ async function lerPdf(buf) {
       L.t = t.replace(/\s+/g, ' ').trim(); L.h = h.replace(/\s+/g, ' ').trim(); L.negrito = nChars && nNeg / nChars > 0.8;
       L.pag = pn; L.alturaPag = vp.height; L.larguraPag = vp.width; totalChars += L.t.length;
     });
+    // figuras entram como linhas especiais, na altura em que aparecem na página
+    figuras.forEach(function (f) { linhas.push({ fig: f.url, yb: f.topo, tam: 0, x0: f.x, x1: f.x + f.w, t: '[figura]', h: '', pag: pn, alturaPag: vp.height, larguraPag: vp.width, alt: f.alt }); nFiguras++; });
     pags.push(linhas.filter(function (L) { return L.t; }).sort(function (a, b) { return b.yb - a.yb; }));
   }
   if (totalChars < 80 * pdf.numPages) return transcreverPdf(pdf, meta);
@@ -779,9 +785,9 @@ async function lerPdf(buf) {
   var norm = function (t) { return t.replace(/\d+/g, '#').toLowerCase(); }, freq = {};
   pags.forEach(function (ls) { var vis = {}; ls.forEach(function (L) { if (L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1) { var k = norm(L.t); if (!vis[k]) { vis[k] = 1; freq[k] = (freq[k] || 0) + 1; } } }); });
   var rep = Object.keys(freq).filter(function (k) { return freq[k] >= Math.max(3, pdf.numPages * 0.25); });
-  pags = pags.map(function (ls) { return ls.filter(function (L) { var borda = L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1; return !(borda && (rep.indexOf(norm(L.t)) >= 0 || /^\s*[-–]?\s*\d{1,4}\s*[-–]?\s*$/.test(L.t))); }); });
+  pags = pags.map(function (ls) { return ls.filter(function (L) { if (L.fig) return true; var borda = L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1; return !(borda && (rep.indexOf(norm(L.t)) >= 0 || /^\s*[-–]?\s*\d{1,4}\s*[-–]?\s*$/.test(L.t))); }); });
   // corpo do texto (tamanho mais frequente) e tamanhos maiores, que viram níveis de título pela ordem
-  var hist = {}; pags.forEach(function (ls) { ls.forEach(function (L) { var k = Math.round(L.tam * 2) / 2; hist[k] = (hist[k] || 0) + L.t.length; }); });
+  var hist = {}; pags.forEach(function (ls) { ls.forEach(function (L) { if (L.fig) return; var k = Math.round(L.tam * 2) / 2; hist[k] = (hist[k] || 0) + L.t.length; }); });
   var corpoTam = +Object.keys(hist).sort(function (a, b) { return hist[b] - hist[a]; })[0] || 10;
   var grandes = Object.keys(hist).map(Number).filter(function (k) { return k >= corpoTam * 1.12 && hist[k] > 20; }).sort(function (a, b) { return b - a; });
   function nvFonte(tam) { var k = Math.round(tam * 2) / 2; if (k < corpoTam * 1.12) return 0; var i = grandes.indexOf(k); if (i < 0) i = grandes.filter(function (g) { return g > k; }).length; return Math.min(3, i + 1); }
@@ -792,12 +798,15 @@ async function lerPdf(buf) {
     var corpoLs = [], rod = [], emNota = false;
     var ultimaCorpo = ls.reduce(function (mn, L) { return L.tam >= corpoTam - 0.6 ? Math.min(mn, L.yb) : mn; }, 1e9);
     ls.forEach(function (L) {
+      if (L.fig) { corpoLs.push(L); return; }
       if (L.tam < corpoTam * 0.92 && L.yb < ultimaCorpo && L.yb < L.alturaPag * 0.45) { var m = /^(\u0001)?(\d{1,3})(\u0002)?\s*(.*)$/.exec(L.t); if (m && (m[1] || /^\d{1,3}\s/.test(L.t))) { rod.push({ n: m[2], t: m[4] }); emNota = true; return; } if (emNota) { rod[rod.length - 1].t += ' ' + L.t; return; } }
       corpoLs.push(L);
     });
     notasPag[ip] = rod;
     corpoLs.forEach(function (L, i) {
+      if (L.fig) { fecha(); blocos.push({ fig: L.fig, alt: L.alt, pag: ip, t: '', h: '' }); return; }
       var ant = i ? corpoLs[i - 1] : null, prox = corpoLs[i + 1], tit = 0;
+      if (ant && ant.fig) ant = null;
       var nf = L.t.length < 160 ? nvFonte(L.tam) : 0;
       // linha isolada, curta, que não chega à margem direita: candidata a título no corpo do texto
       var isolada = (!ant || ant.yb - L.yb > L.tam * 1.7) && (!prox || L.yb - prox.yb > L.tam * 1.5) && L.x1 < L.larguraPag * 0.8;
@@ -836,9 +845,43 @@ async function lerPdf(buf) {
     }).replace(/\u0003([^\u0004]*)\u0004/g, function (m, x) { return x.trim() ? '<em>' + x + '</em>' : x; }).replace(/[\u0001-\u0004]/g, '');
   });
   var soltas = Object.keys(notasPag).reduce(function (a, k) { return a + notasPag[k].filter(function (r) { return !r.usada; }).length; }, 0);
-  var avisos = ['PDF convertido pelo texto e pela posição das linhas: confira títulos, citações longas e notas. Imagens e tabelas do PDF não são importadas; para resultado exato, envie o .docx ou .odt original.'];
+  var avisos = ['PDF convertido pelo texto e pela posição das linhas: confira títulos, citações longas e notas. Tabelas do PDF chegam como texto; para resultado exato, envie o .docx ou .odt original.'];
+  if (nFiguras) avisos.push(nFiguras + ' figura(s) extraída(s) do PDF na posição em que aparecem; confira legendas e textos alternativos.');
   if (soltas) avisos.push(soltas + ' nota(s) de rodapé do PDF sem chamada reconhecida no texto.');
   return { html: htmlDeBlocos(blocos) + notasMammoth(notas), meta: meta, avisos: avisos };
+}
+/* imagens de uma página do PDF: segue a matriz de transformação das operações de desenho para saber onde cada
+   imagem está; ignora vinhetas e ícones pequenos e a imagem de fundo de páginas digitalizadas com texto por cima */
+async function imagensDaPagina(pj, pg, ops, vp, textoPag) {
+  var O = pj.OPS, pilha = [], ctm = [1, 0, 0, 1, 0, 0], out = [];
+  function mult(m, n) { return [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3], m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]]; }
+  for (var i = 0; i < ops.fnArray.length; i++) {
+    var fn = ops.fnArray[i], a = ops.argsArray[i];
+    if (fn === O.save) pilha.push(ctm.slice());
+    else if (fn === O.restore) ctm = pilha.pop() || [1, 0, 0, 1, 0, 0];
+    else if (fn === O.transform) ctm = mult(ctm, a);
+    else if (fn === O.paintImageXObject || fn === O.paintInlineImageXObject) {
+      var w = Math.hypot(ctm[0], ctm[1]), h = Math.hypot(ctm[2], ctm[3]), x = Math.min(ctm[4], ctm[4] + ctm[0] + ctm[2]), y = Math.min(ctm[5], ctm[5] + ctm[1] + ctm[3]);
+      // página inteira coberta por imagem: prancha de fotografia (entra) ou digitalização com texto por cima (não entra)
+      if (w < vp.width * 0.18 || h < 50 || (w > vp.width * 0.92 && h > vp.height * 0.85 && textoPag > 40)) continue;
+      var img = null;
+      try { img = fn === O.paintInlineImageXObject ? a[0] : await new Promise(function (ok) { var nm = a[0], obj = String(nm).indexOf('g_') === 0 ? pg.commonObjs : pg.objs; try { obj.get(nm, ok); } catch (e) { ok(null); } setTimeout(function () { ok(null); }, 45000); }); } catch (e) {}
+      if (!img || !img.width || img.width < 120) continue;
+      var cv = document.createElement('canvas'), esc = Math.min(1, 2000 / Math.max(img.width, img.height)); cv.width = Math.round(img.width * esc); cv.height = Math.round(img.height * esc);
+      var g = cv.getContext('2d');
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, cv.width, cv.height);   // transparência sobre o branco da página (o JPEG não tem canal alfa)
+      if (img.bitmap) g.drawImage(img.bitmap, 0, 0, cv.width, cv.height);
+      else if (img.data) {
+        var tmp = document.createElement('canvas'); tmp.width = img.width; tmp.height = img.height; var tg = tmp.getContext('2d'), id = tg.createImageData(img.width, img.height), n = img.width * img.height, src = img.data, dst = id.data;
+        if (src.length >= n * 4) dst.set(src.subarray(0, n * 4));
+        else if (src.length >= n * 3) for (var q = 0, r = 0; q < n; q++, r += 3) { dst[q * 4] = src[r]; dst[q * 4 + 1] = src[r + 1]; dst[q * 4 + 2] = src[r + 2]; dst[q * 4 + 3] = 255; }
+        else continue;
+        tg.putImageData(id, 0, 0); g.drawImage(tmp, 0, 0, cv.width, cv.height);
+      } else continue;
+      out.push({ url: cv.toDataURL('image/jpeg', 0.88), topo: y + h, x: x, w: w, alt: '' });
+    }
+  }
+  return out;
 }
 /* PDF digitalizado (sem texto) e imagens de páginas: transcrição pelo Claude com visão */
 async function transcreverPdf(pdf, meta) {
@@ -4400,8 +4443,11 @@ function aplicarMetaManuscrito(livro) {
 }
 async function receberArquivo(file) {
   if (!file) return;
-  if (file.size > 60 * 1024 * 1024) { ui.msg('Arquivo muito grande (máx. 60 MB).', 'err'); return; }
-  ui.msg('Lendo ' + file.name + '…');
+  // sem limite prático de tamanho: livros longos e com muitas imagens são o caso comum; as imagens são reduzidas
+  // ao padrão EPUB (até 2000 px) durante a produção. Só arquivos acima do que o navegador consegue abrir são recusados.
+  var mb = file.size / 1048576;
+  if (mb > 1900) { ui.msg('Arquivo de ' + Math.round(mb) + ' MB: acima do que o navegador consegue abrir (cerca de 2 GB). Reduza as imagens no Word (Arquivo > Compactar imagens) e envie de novo.', 'err'); return; }
+  ui.msg('Lendo ' + file.name + (mb > 60 ? ' (' + Math.round(mb) + ' MB; arquivos grandes levam alguns minutos, mantenha a página aberta)' : '') + '…');
   try {
     await libs();
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
