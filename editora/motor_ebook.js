@@ -4292,6 +4292,7 @@ async function produzir(opcoesExtras) {
     etapa('auditoria', res.b ? 'erro' : res.g ? 'aviso' : 'ok', res.status + ' · ' + res.pontos + '/100');
     ui.resultado(livro, res);
     ui.msg('E-book gerado. ' + res.status + '.', res.b ? 'err' : 'ok');
+    if (ui.renderTraducao) ui.renderTraducao();
     if (chaveClaude() && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
   } catch (e) {
     console.error(e);
@@ -4406,7 +4407,7 @@ var CSS_PAINEL = '\
 .ebm .lg{border:1px solid rgba(242,196,90,.2);border-radius:8px;padding:.7rem;display:grid;gap:.45rem}\
 .ebm .lg .vis{height:110px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}.ebm .lg .vis img{max-height:96px;max-width:90%}\
 .ebm .marca-ed{border:1px solid rgba(242,196,90,.35);border-radius:8px;padding:.8rem;margin:.6rem 0 1rem;display:grid;gap:.7rem}.ebm .marca-ed h4{margin:0;color:#F2C45A;font-size:.9rem}.ebm .marca-ed .vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem}.ebm .marca-ed .vis{height:90px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(242,196,90,.2)}.ebm .marca-ed .vis img{max-height:74px;max-width:86%}.ebm .marca-ed .lug{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.45rem .8rem}.ebm .marca-ed label{font-size:.74rem;display:grid;gap:.2rem}.ebm .marca-ed small{color:rgba(247,242,232,.65);font-size:.7rem;line-height:1.45}\
-.ebm .tr-idiomas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.8rem;margin:.6rem 0}.ebm .tr-card{border:1px solid rgba(242,196,90,.3);border-radius:8px;padding:.75rem;display:grid;gap:.45rem}.ebm .tr-card h4{margin:0;color:#F2C45A;font-size:.92rem;display:flex;gap:.5rem;align-items:center}.ebm .tr-card label{font-size:.72rem;display:grid;gap:.2rem}.ebm .tr-card input[type=text],.ebm .tr-card select,.ebm .tr-card textarea{font-size:.78rem}.ebm .tr-card textarea{min-height:4.5rem}.ebm .tr-res{border:1px solid rgba(242,196,90,.25);border-radius:8px;padding:.7rem;margin:.6rem 0}.ebm .tr-res b{color:#F2C45A}.ebm .tr-res .acoes{margin-top:.4rem}\
+.ebm .tr-idiomas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.8rem;margin:.6rem 0}.ebm .tr-card{border:1px solid rgba(242,196,90,.3);border-radius:8px;padding:.75rem;display:grid;gap:.45rem}.ebm .tr-card h4{margin:0;color:#F2C45A;font-size:.92rem;display:flex;gap:.5rem;align-items:center}.ebm .tr-card label{font-size:.72rem;display:grid;gap:.2rem}.ebm .tr-card input[type=text],.ebm .tr-card select,.ebm .tr-card textarea{font-size:.78rem}.ebm .tr-card textarea{min-height:4.5rem}.ebm .tr-res{border:1px solid rgba(242,196,90,.25);border-radius:8px;padding:.7rem;margin:.6rem 0}.ebm .tr-passos{border:1px solid rgba(242,196,90,.45);border-radius:8px;padding:.7rem .8rem;margin:.6rem 0;display:grid;gap:.45rem}.ebm .tr-passos .passo{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;font-size:.8rem}.ebm .tr-passos .ok{color:#86efac}.ebm .tr-passos .falta{color:#fca5a5;font-weight:700}.ebm .tr-passos .bt{font-size:.75rem}.ebm .tr-res b{color:#F2C45A}.ebm .tr-res .acoes{margin-top:.4rem}\
 .ebm .lg .falta{color:#fca5a5;font-size:.75rem;font-weight:700}.ebm .linha{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}\
 .ebm .acao{margin-top:.45rem;display:grid;gap:.35rem}.ebm .acao .linha{display:flex;gap:.35rem;flex-wrap:wrap}.ebm .acao .bt{font-size:.7rem;padding:.3rem .6rem;justify-self:start}.ebm .acao .feito{color:#86efac;font-size:.74rem}\
 .ebm .aviso-box{border-left:3px solid #E8A853;background:rgba(232,168,83,.08);padding:.6rem .8rem;font-size:.76rem;border-radius:4px;margin:.6rem 0;line-height:1.5}';
@@ -4475,6 +4476,7 @@ function montarUI(alvo) {
     '<div class="pane" data-p="tr"><div class="aviso-box">Tradução especializada do livro já gerado em português para inglês, francês, espanhol e alemão, com a mesma estrutura e o mesmo projeto gráfico. ' +
       'O motor monta um glossário jurídico, indígena e geográfico pesquisado em fontes oficiais, traduz com a formatação preservada, confere cada trecho (números, citações, notas, termos) e faz uma revisão bilíngue independente. ' +
       'A tradução não tem fé pública: a juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial. Antes de publicar, registre o revisor nativo e o ISBN de cada edição.</div>' +
+      '<div class="tr-passos"></div>' +
       '<div class="tr-chave linha"></div>' +
       '<div class="acoes"><button class="bt" data-a="tr-preencher">✨ Preencher os campos automaticamente</button></div>' +
       '<div class="tr-idiomas"></div>' +
@@ -4661,7 +4663,7 @@ function montarUI(alvo) {
         '<label>ISBN desta edição (EPUB) <input type="text" data-tk="isbn"></label>' +
         '<label>ISBN do HTML (opcional) <input type="text" data-tk="isbnHtml"></label>' +
         '<label>Glossário da Editora (um por linha: termo em português = tradução obrigatória) <textarea data-tk="glossario" placeholder="Terra Indígena = Indigenous Land"></textarea></label>' +
-        '<label>Capa no idioma (opcional; em branco, capa gerada no idioma) <input type="file" accept="image/*" data-tk="capa"></label>' +
+        '<label>Imagem da capa no idioma (opcional, JPG ou PNG; em branco, a capa é gerada no idioma). Não envie o livro aqui: use o passo 1 acima. <input type="file" accept="image/*" data-tk="capa"></label>' +
         '<div class="linha"><small data-tk="info"></small><button class="bt" type="button" data-tk="refazer">Refazer o glossário</button></div>';
       ['titulo', 'subtitulo', 'tradutor', 'revisor', 'isbn', 'isbnHtml', 'glossario'].forEach(function (k) {
         var x = d.querySelector('[data-tk="' + k + '"]'); x.value = tc[k] || '';
@@ -4670,9 +4672,10 @@ function montarUI(alvo) {
       });
       d.querySelector('[data-tk="revisor"]').placeholder = 'Nome e qualificação (não é preenchido automaticamente)';
       d.querySelector('[data-tk="isbn"]').placeholder = 'Registro próprio na Agência Brasileira do ISBN';
-      d.querySelector('[data-tk="sel"]').addEventListener('change', function (e) { tradGuardar(b, { sel: e.target.checked }); });
+      d.querySelector('[data-tk="sel"]').addEventListener('change', function (e) { tradGuardar(b, { sel: e.target.checked }); ui.renderTraducao(); });
       d.querySelector('[data-tk="variante"]').addEventListener('change', function (e) { tradGuardar(b, { variante: e.target.value, glossarioIA: null }); ui.renderTraducao(); });
-      d.querySelector('[data-tk="capa"]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { tradGuardar(b, { capa: r.result }); ui.msg('Capa em ' + I.nome + ' guardada.', 'ok'); }; r.readAsDataURL(f); });
+      d.querySelector('[data-tk="capa"]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return;
+        if (!/^image\//.test(f.type)) { e.target.value = ''; ui.msg('“' + f.name + '” não é uma imagem de capa: parece ser o livro. Ele foi enviado como livro a traduzir (passo 1).', 'ok'); ui.enviarLivroTraducao(f); return; } var r = new FileReader(); r.onload = function () { tradGuardar(b, { capa: r.result }); ui.msg('Capa em ' + I.nome + ' guardada.', 'ok'); }; r.readAsDataURL(f); });
       d.querySelector('[data-tk="refazer"]').addEventListener('click', function () { tradGuardar(b, { glossarioIA: null }); ui.renderTraducao(); ui.msg('O glossário em ' + I.nome + ' será pesquisado de novo na próxima tradução.', 'ok'); });
       d.querySelector('[data-tk="info"]').textContent = (tc.glossarioIA && tc.glossarioIA.length ? 'Glossário pronto: ' + tc.glossarioIA.length + ' termos.' : 'Glossário ainda não pesquisado.') + (tc.capa ? ' Capa própria carregada.' : '');
       box.appendChild(d);
@@ -4719,7 +4722,28 @@ function montarUI(alvo) {
       '<input type="password" data-tc="chave" placeholder="' + (tem ? 'Trocar a chave (sk-ant-…)' : 'Cole aqui a chave da API (sk-ant-…)') + '" style="font-size:.75rem;min-width:16rem" autocomplete="off"><button class="bt" type="button" data-tc="salvar">Guardar chave</button>';
     box.querySelector('[data-tc="salvar"]').addEventListener('click', function () { var v = box.querySelector('[data-tc="chave"]').value.trim(); if (!/^sk-ant-/.test(v)) { ui.msg('A chave da API do Claude começa com “sk-ant-”.', 'err'); return; } try { localStorage.setItem('trad_claude_key', v); } catch (e) {} renderChave(); ui.msg('Chave guardada só neste navegador.', 'ok'); });
   }
-  var _rt = ui.renderTraducao; ui.renderTraducao = function () { renderChave(); _rt(); };
+  /* passo a passo visível: o que já está pronto e o que falta para traduzir */
+  function renderPassos() {
+    var box = Q('.tr-passos'); if (!box) return;
+    var livroOk = !!(estado.entrada && estado.livro && estado.epub), lendo = estado.rodando && !estado.livro;
+    var chaveOk = !!chaveClaude(), sel = Object.keys(IDIOMAS).filter(function (b) { return tradCfg(b).sel; });
+    box.innerHTML =
+      '<div class="passo"><b>1.</b> Livro a traduzir: ' + (livroOk ? '<span class="ok">✓ ' + esc((estado.arquivo && estado.arquivo.name) || obra.titulo || 'carregado') + ' (' + esc(obra.titulo || '') + ')</span>' : lendo ? '<span>lendo e preparando o livro…</span>' : '<span class="falta">falta enviar o livro</span>') +
+        ' <label class="bt" style="cursor:pointer">📄 ' + (livroOk ? 'Trocar o livro' : 'Enviar o livro (qualquer formato)') + '<input type="file" data-tp="livro" hidden></label></div>' +
+      '<div class="passo"><b>2.</b> Chave da API do Claude: ' + (chaveOk ? '<span class="ok">✓ configurada</span>' : '<span class="falta">falta guardar a chave (campo logo abaixo)</span>') + '</div>' +
+      '<div class="passo"><b>3.</b> Idiomas: ' + (sel.length ? '<span class="ok">✓ ' + sel.map(function (b) { return IDIOMAS[b].nomeProprio; }).join(', ') + '</span>' : '<span class="falta">marque ao menos um idioma</span>') + '</div>' +
+      '<div class="passo"><b>4.</b> ' + (livroOk && chaveOk && sel.length ? '<span class="ok">Tudo pronto: clique em “🌐 Traduzir os idiomas marcados”, no fim da aba.</span>' : '<span>Depois dos passos acima, clique em “🌐 Traduzir os idiomas marcados”, no fim da aba.</span>') + '</div>';
+    box.querySelector('[data-tp="livro"]').addEventListener('change', function (e) { enviarLivro(e.target.files[0]); });
+  }
+  function enviarLivro(f) {
+    if (!f) return;
+    if (estado.rodando) { ui.msg('Aguarde: há uma produção em andamento.', 'err'); return; }
+    ui.msg('Lendo ' + f.name + ' e gerando a edição em português, base da tradução…');
+    receberArquivo(f).then(function () { ui.renderTraducao(); });
+    setTimeout(renderPassos, 50);
+  }
+  ui.enviarLivroTraducao = enviarLivro;
+  var _rt = ui.renderTraducao; ui.renderTraducao = function () { renderPassos(); renderChave(); _rt(); };
   async function preencher(forcar) {
     if (!estado.livro) { ui.msg('Envie o manuscrito na aba Produção: os campos são preenchidos a partir do livro gerado.', 'err'); return; }
     if (!chaveClaude()) { ui.msg('Guarde a chave da API do Claude acima para o preenchimento automático.', 'err'); return; }
