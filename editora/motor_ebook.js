@@ -2423,6 +2423,39 @@ function gerarIndice(livro, termos) {
 }
 
 /* ───────────────────────── 8. IA (Claude) ───────────────────────── */
+/* chave da API guardada no site, cifrada com a senha do ADM (PBKDF2-SHA-256, 600 mil iterações, AES-GCM 256),
+   como o token do GitHub: só é decifrada, no navegador, quando o ADM entra com a senha; a senha fica apenas na
+   memória da página e serve para cifrar a chave quando ela é trocada */
+var _senhaAdm = '';
+async function cifrarSegredo(texto, senha) {
+  var sal = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), it = 600000;
+  var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey']);
+  var k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sal, iterations: it, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+  var c = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, new TextEncoder().encode(texto)));
+  return { s: bufParaB64(sal), iv: bufParaB64(iv), c: bufParaB64(c), it: it };
+}
+async function decifrarSegredo(o, senha) {
+  try {
+    var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey']);
+    var k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64ParaBytes(o.s), iterations: o.it, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ParaBytes(o.iv) }, k, b64ParaBytes(o.c)));
+  } catch (e) { return ''; }
+}
+async function admEntrou(senha) {
+  _senhaAdm = senha;
+  try {
+    var rem = await fetch(BASE + 'config.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : {}; });
+    var cif = (rem && rem.claudeCifrada) || cfg.claudeCifrada;
+    if (cif) { var k = await decifrarSegredo(cif, senha); if (k) { try { localStorage.setItem('trad_claude_key', k); } catch (e) {} cfg.claudeCifrada = cif; } }
+  } catch (e) {}
+  if (ui.renderTraducao) ui.renderTraducao();
+}
+async function guardarChaveNoSite(chave) {
+  if (!_senhaAdm || !ghOk()) return false;
+  cfg.claudeCifrada = await cifrarSegredo(chave, _senhaAdm);
+  await cfgSalvarNuvem();
+  return true;
+}
 function chaveClaude() {
   try { if (window.TRAD_AUTO && window.TRAD_AUTO.chaveClaude) { var k = window.TRAD_AUTO.chaveClaude(); if (k) return k; } } catch (e) {}
   try {
@@ -4718,9 +4751,18 @@ function montarUI(alvo) {
   function renderChave() {
     var box = Q('.tr-chave'); if (!box) return;
     var tem = !!chaveClaude();
-    box.innerHTML = '<span style="font-size:.78rem">' + (tem ? '✓ Chave da API do Claude configurada neste navegador.' : '⚠ Falta a chave da API do Claude neste navegador.') + '</span>' +
+    var noSite = !!cfg.claudeCifrada;
+    box.innerHTML = '<span style="font-size:.78rem">' + (tem ? '✓ Chave da API do Claude configurada' + (noSite ? ' e guardada no site (entra sozinha a cada login do ADM).' : ' neste navegador.') : noSite ? '⚠ A chave está guardada no site: entre como ADM com a senha para liberá-la.' : '⚠ Falta a chave da API do Claude (guarde uma vez; ela fica no site).') + '</span>' +
       '<input type="password" data-tc="chave" placeholder="' + (tem ? 'Trocar a chave (sk-ant-…)' : 'Cole aqui a chave da API (sk-ant-…)') + '" style="font-size:.75rem;min-width:16rem" autocomplete="off"><button class="bt" type="button" data-tc="salvar">Guardar chave</button>';
-    box.querySelector('[data-tc="salvar"]').addEventListener('click', function () { var v = box.querySelector('[data-tc="chave"]').value.trim(); if (!/^sk-ant-/.test(v)) { ui.msg('A chave da API do Claude começa com “sk-ant-”.', 'err'); return; } try { localStorage.setItem('trad_claude_key', v); } catch (e) {} renderChave(); ui.msg('Chave guardada só neste navegador.', 'ok'); });
+    box.querySelector('[data-tc="salvar"]').addEventListener('click', function () {
+      var v = box.querySelector('[data-tc="chave"]').value.trim(); if (!/^sk-ant-/.test(v)) { ui.msg('A chave da API do Claude começa com “sk-ant-”.', 'err'); return; }
+      try { localStorage.setItem('trad_claude_key', v); } catch (e) {}
+      ui.msg('Guardando a chave no site, cifrada com a senha do ADM…');
+      guardarChaveNoSite(v).then(function (ok) {
+        ui.renderTraducao();
+        ui.msg(ok ? 'Chave guardada no site, cifrada com a senha do ADM. Ela entra sozinha sempre que o ADM fizer login, em qualquer computador.' : 'Chave guardada neste navegador. Para guardá-la no site e não precisar digitar de novo em outro computador, saia e entre de novo como ADM e guarde a chave mais uma vez.', 'ok');
+      }, function (er) { ui.renderTraducao(); ui.msg('Chave guardada neste navegador; não foi possível gravar no site: ' + er.message, 'err'); });
+    });
   }
   /* passo a passo visível: o que já está pronto e o que falta para traduzir */
   function renderPassos() {
@@ -4910,9 +4952,9 @@ function iniciar(alvo) {
   cfgCarregar().then(function () { montarUI(alvo); });
 }
 window.EBOOK_ICET = {
-  versao: VERSAO, iniciar: iniciar,
+  versao: VERSAO, iniciar: iniciar, admEntrou: admEntrou,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, setLingua: function (l) { LINGUA = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

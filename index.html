@@ -4238,7 +4238,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <div id="editora-ebook-motor"></div>
   </div>
 </section>
-<script src="editora/motor_ebook.js?v=20261021d" defer></script>
+<script src="editora/motor_ebook.js?v=20261021e" defer></script>
 
 
 <!-- ADM MODAL -->
@@ -4421,6 +4421,7 @@ function loginAdm(){
   abrirTokenGH(pw).then(function(ok){
     if(ok){
       document.body.classList.add('adm-on');
+      if(window.EBOOK_ICET && EBOOK_ICET.admEntrou) EBOOK_ICET.admEntrou(pw);
       fecharAdm(); notif('✅ ADM ativado - edite qualquer elemento','ok');
     } else {
       document.getElementById('adm-msg').textContent='Senha incorreta.';
