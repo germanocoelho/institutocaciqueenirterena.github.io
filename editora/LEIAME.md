@@ -37,6 +37,27 @@ Painel no ADM do site do ICET (seção “Editora Cacique Enir Terena”, visív
 
 Bibliotecas incluídas: JSZip (MIT) e mammoth.js (BSD-2). Fontes: Literata e Cinzel (SIL OFL 1.1).
 
+## Formatos de manuscrito aceitos
+
+O motor reconhece o formato pelo conteúdo do arquivo. Uma extensão errada (um .docx salvo como .doc, por exemplo) não atrapalha.
+
+| Formato | Como é lido |
+|---|---|
+| Word .docx, .docm, .dotx | Estilos de título, itálicos, notas, tabelas e imagens (resultado exato) |
+| Word 97-2003 .doc | Estilos de título reais do Word, itálico, negrito, sobrescrito, tabelas e notas de rodapé; imagens não |
+| LibreOffice .odt, .ott e ODT plano .fodt | Igual ao .odt; no .fodt, imagens embutidas não |
+| RTF | Estilos de título, itálico, negrito, tabelas, notas e imagens PNG/JPEG |
+| EPUB | Texto de cada capítulo, com imagens |
+| PDF com texto | Títulos pelo corpo de letra, negrito e numeração; itálicos pelo nome da fonte; notas de rodapé ligadas às chamadas; cabeçalhos, rodapés e números de página retirados; hifenização de fim de linha desfeita. Tabelas e imagens não |
+| PDF digitalizado e fotos das páginas (.jpg, .png, .webp, .gif, .bmp, .tif) | Transcrição fiel pelo Claude (visão), com títulos, itálicos, tabelas e notas; exige a chave da API |
+| Apple Pages | Lido pela prévia em PDF embutida no arquivo |
+| LaTeX .tex | Capítulos e seções, itálico, negrito, notas, citações, listas e tabelas |
+| Markdown, texto e HTML | Títulos de Markdown e HTML; no texto puro, títulos inferidos (CAPÍTULO N, seções conhecidas, numeração 1, 1.1) |
+
+Nos formatos sem estilos (PDF, texto, .doc sem estilos), nada antes do primeiro título forte (Prefácio, Introdução, Capítulo 1…) vira título. Assim a folha de rosto e a ficha não viram capítulos, e as linhas do sumário do próprio manuscrito são ignoradas. O resultado mais exato continua sendo o .docx com os estilos Título 1, 2 e 3.
+
+O leitor de PDF usa o PDF.js 4.10 (licença Apache 2.0, em `lib/`), com execução de código das fontes desativada.
+
 ## Paginação (PDF e EPUB)
 
 - **PDF:** o fólio (número da página) sai no rodapé, contado desde a capa, para coincidir com o número de página do leitor de PDF. Capa, falsa folha de rosto, folha de rosto, créditos, dedicatória e epígrafe não exibem fólio.

@@ -263,7 +263,7 @@ function lerOdt(buf) {
             else if (ln === 'note') { var corpo = c.getElementsByTagNameNS(NS.text, 'note-body')[0]; notas.push(corpo ? blocos(corpo) : ''); var k = notas.length; out += '<sup><a href="#footnote-' + k + '" id="footnote-ref-' + k + '">[' + k + ']</a></sup>'; }
             else if (ln === 'frame') {
               var im = c.getElementsByTagNameNS(NS.draw, 'image')[0];
-              if (im) { var href = im.getAttributeNS(NS.xlink, 'href'); var t = c.getElementsByTagNameNS(NS.svg, 'title')[0], d = c.getElementsByTagNameNS(NS.svg, 'desc')[0]; imgs.push(href); out += '<img data-odt="' + esc(href) + '" alt="' + esc(txt(d) || txt(t)) + '"/>'; }
+              if (im) { var href = im.getAttributeNS(NS.xlink, 'href'); var t = c.getElementsByTagNameNS(NS.svg, 'title')[0], d = c.getElementsByTagNameNS(NS.svg, 'desc')[0]; if (href) imgs.push(href); out += '<img data-odt="' + esc(href) + '" alt="' + esc(txt(d) || txt(t)) + '"/>'; }
               else out += inl(c);
             }
             else if (/^(bookmark|bookmark-start|bookmark-end|soft-page-break|annotation|annotation-end|reference-mark|sequence-decls)$/.test(ln)) { /* ignora */ }
@@ -366,16 +366,598 @@ function decodificarTexto(buf) {
   try { return new TextDecoder('utf-8', { fatal: true }).decode(u); } catch (e) { return new TextDecoder('windows-1252').decode(u); }
 }
 function lerArquivo(file) {
-  var ext = (file.name.split('.').pop() || '').toLowerCase();
-  return file.arrayBuffer().then(function (buf) {
-    if (ext === 'docx') return lerDocx(buf);
-    if (ext === 'odt') return lerOdt(buf);
-    if (ext === 'doc' || ext === 'rtf' || ext === 'pdf' || ext === 'pages') throw new Error('Formato .' + ext + ' não é aceito como manuscrito. Salve o arquivo como .docx (Word) ou .odt (LibreOffice) e envie de novo.');
-    var t = decodificarTexto(buf);
-    if (ext === 'md' || ext === 'markdown') return lerMd(t);
-    if (ext === 'html' || ext === 'htm' || ext === 'xhtml') return lerHtml(t);
-    return lerTxt(t);
+  return file.arrayBuffer().then(function (buf) { return lerBytes(buf, file.name); });
+}
+/* ───────────────────────── 1b. OUTROS FORMATOS DE MANUSCRITO ─────────────────────────
+   O tipo é reconhecido pelo conteúdo (assinatura do arquivo), não só pela extensão: .docx, .docm,
+   .dotx, .odt, .ott, .fodt, .doc (Word 97-2003), .rtf, .pdf (com texto ou digitalizado), .epub, .pages,
+   .tex, .md, .txt, .html e imagens de páginas (.jpg, .png, .webp, .gif, .bmp, .tif). PDF digitalizado e
+   imagens são transcritos pelo Claude (visão), quando há chave configurada. */
+function assinatura(u) {
+  var h = function (i) { return u[i]; }, ini = String.fromCharCode.apply(null, u.subarray(0, Math.min(u.length, 64)));
+  if (h(0) === 0x50 && h(1) === 0x4B) return 'zip';
+  if (/^%PDF-/.test(ini)) return 'pdf';
+  if (/^\{\\rtf/.test(ini)) return 'rtf';
+  if (h(0) === 0xD0 && h(1) === 0xCF && h(2) === 0x11 && h(3) === 0xE0) return 'cfb';
+  if (h(0) === 0xFF && h(1) === 0xD8) return 'jpeg';
+  if (h(0) === 0x89 && ini.slice(1, 4) === 'PNG') return 'png';
+  if (/^GIF8/.test(ini)) return 'gif';
+  if (/^RIFF....WEBP/.test(ini)) return 'webp';
+  if (/^BM/.test(ini) && u.length > 54) return 'bmp';
+  if (/^(II\*\0|MM\0\*)/.test(ini)) return 'tiff';
+  return '';
+}
+async function lerZip(buf, nome) {
+  var z = await window.JSZip.loadAsync(buf);
+  if (z.file('word/document.xml')) return lerDocx(buf);
+  var mt = z.file('mimetype') ? (await z.file('mimetype').async('string')).trim() : '';
+  if (/epub/.test(mt) || z.file('META-INF/container.xml') && !z.file('content.xml')) return lerEpub(z);
+  if (z.file('content.xml')) return lerOdt(buf);
+  // Apple Pages: o pacote traz uma prévia em PDF do documento inteiro
+  var prev = z.file('QuickLook/Preview.pdf') || z.file('preview.pdf') || z.file(/Preview\.pdf$/i)[0];
+  if (prev && prev.async) { var r = await lerPdf(await prev.async('arraybuffer')); r.avisos.push('Arquivo do Pages lido pela prévia em PDF embutida: estilos de título e notas podem não ser reconhecidos. Para resultado exato, exporte do Pages em Word (.docx).'); return r; }
+  if (/\.pages$/i.test(nome)) throw new Error('Este arquivo do Pages não traz prévia em PDF. No Pages, use Arquivo > Exportar para > Word (.docx) e envie o .docx.');
+  var docs = z.file(/\.(docx|odt|md|txt|html?|rtf|tex)$/i);
+  if (docs.length === 1) return lerBytes(await docs[0].async('arraybuffer'), docs[0].name);
+  throw new Error('Arquivo compactado sem manuscrito reconhecível' + (docs.length > 1 ? ' (há ' + docs.length + ' documentos; envie um de cada vez)' : '') + '.');
+}
+async function lerEpub(z) {
+  var cont = await z.file('META-INF/container.xml').async('string');
+  var opfPath = (/full-path="([^"]+)"/.exec(cont) || [])[1]; if (!opfPath) throw new Error('EPUB sem arquivo OPF.');
+  var base = opfPath.replace(/[^\/]*$/, ''), opf = new DOMParser().parseFromString(await z.file(opfPath).async('string'), 'application/xml');
+  var man = {}; Array.prototype.forEach.call(opf.getElementsByTagName('item'), function (it) { man[it.getAttribute('id')] = it; });
+  function resolver(dir, href) { var p = (dir + href).split('/'), out = []; p.forEach(function (x) { if (x === '..') out.pop(); else if (x !== '.' && x !== '') out.push(x); }); return out.join('/'); }
+  var partes = [];
+  for (var ir of Array.prototype.slice.call(opf.getElementsByTagName('itemref'))) {
+    var it = man[ir.getAttribute('idref')]; if (!it || /nav/.test(it.getAttribute('properties') || '')) continue;
+    var href = resolver(base, decodeURIComponent(it.getAttribute('href'))), f = z.file(href); if (!f) continue;
+    var d = new DOMParser().parseFromString(await f.async('string'), /xhtml|xml/.test(it.getAttribute('media-type') || '') ? 'application/xhtml+xml' : 'text/html');
+    if (d.getElementsByTagName('parsererror').length) d = new DOMParser().parseFromString(await f.async('string'), 'text/html');
+    var corpo = d.body || d.getElementsByTagName('body')[0]; if (!corpo) continue;
+    var dir = href.replace(/[^\/]*$/, '');
+    for (var im of Array.prototype.slice.call(corpo.querySelectorAll('img,image'))) {
+      var src = im.getAttribute('src') || im.getAttribute('xlink:href') || im.getAttribute('href'); if (!src || /^data:/.test(src)) continue;
+      var fi = z.file(resolver(dir, decodeURIComponent(src))); if (!fi) continue;
+      var ext = (src.split('.').pop() || '').toLowerCase(), mime = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml', webp: 'image/webp' }[ext] || 'image/jpeg';
+      var n = d.createElement('img'); n.setAttribute('src', 'data:' + mime + ';base64,' + await fi.async('base64')); n.setAttribute('alt', im.getAttribute('alt') || ''); im.parentNode.replaceChild(n, im);
+    }
+    partes.push(corpo.innerHTML);
+  }
+  var DC = 'http://purl.org/dc/elements/1.1/', t = opf.getElementsByTagNameNS(DC, 'title')[0], c = opf.getElementsByTagNameNS(DC, 'creator')[0];
+  return { html: partes.join('\n'), meta: { titulo: t ? txt(t) : '', autor: c ? txt(c) : '' }, avisos: ['EPUB convertido a partir do texto de cada capítulo; confira títulos e notas.'] };
+}
+async function lerFodt(texto) {
+  var z = new window.JSZip(); z.file('content.xml', texto); z.file('styles.xml', texto); z.file('meta.xml', texto);
+  var r = await lerOdt(await z.generateAsync({ type: 'arraybuffer' }));
+  if (/<office:binary-data/.test(texto)) r.avisos.push('Imagens embutidas no ODT plano (.fodt) não foram importadas; envie-as em .odt ou .docx.');
+  return r;
+}
+
+/* títulos inferidos em textos sem estilos (PDF, .doc sem estilos, texto puro) */
+var RX_SECAO_CONHECIDA = /^(introdu[cç][aã]o|conclus[aã]o|considera[cç][oõ]es finais|refer[eê]ncias( bibliogr[aá]ficas)?|bibliografia|agradecimentos|apresenta[cç][aã]o|pref[aá]cio|posf[aá]cio|resumo|abstract|ap[eê]ndices?|anexos?|gloss[aá]rio|lista de [a-zçãéêíóú ]+|sobre (os|as|o|a) autor(es|as|a)?)\s*$/i;
+function classeTitulo(t) {
+  t = String(t || '').replace(/\s+/g, ' ').trim(); if (t.length < 3 || t.length > 150) return null;
+  if (/(\.{3,}|…{2,}|\s{3,})\s*\d{1,4}$|,\s*p\.\s*\d+\s*$/.test(t)) return null;   // linha de sumário
+  if (/^(cap[ií]tulo|parte)\s+([\dIVXLC]+|[a-zçãéêíóú]+)\b/i.test(t) && t.length < 140) return { nv: 1, forte: 1, cap: 1 };
+  if (RX_SECAO_CONHECIDA.test(t)) return { nv: 1, forte: 1 };
+  if (/^notas( d[oa]s? .{1,60})?$/i.test(t)) return { num: 1 };   // notas ao fim do capítulo: seção do capítulo
+  if (/[.;,:!?]$/.test(t)) return null;
+  var m = /^(\d{1,2})((?:\.\d{1,2}){0,3})\.?\s+[A-ZÀ-Ý]/.exec(t);
+  if (m && t.length < 120) return { num: 1 + (m[2] ? m[2].split('.').length - 1 : 0) };
+  if (t === t.toUpperCase() && /[A-ZÀ-Ý]{3}/.test(t) && t.length < 90 && t.split(/\s+/).length <= 12 && !/\d{3,}/.test(t)) return { caps: 1 };
+  return null;
+}
+function nivelTitulo(t) { var c = classeTitulo(t); return c ? (c.nv || c.num || 1) : 0; }
+/* aplica as classes a uma sequência de blocos {t (texto), c (classe ou null), nvFonte (nível pelo corpo de letra)}:
+   nada vira título antes do primeiro título forte (folha de rosto, ficha); seções numeradas descem um nível
+   quando o livro tem capítulos */
+function estruturarTitulos(blocos) {
+  var temCap = blocos.some(function (b) { return b.c && b.c.cap; }), ini = blocos.findIndex(function (b) { return (b.c && b.c.forte) || b.nvFonte === 1; });
+  if (ini < 0) ini = blocos.findIndex(function (b) { return b.c || b.nvFonte; });
+  blocos.forEach(function (b, i) {
+    b.nv = 0; if (i < ini) return;
+    if (b.c && b.c.nv) b.nv = b.c.nv;
+    else if (b.nvFonte) b.nv = b.nvFonte;
+    else if (b.c && b.c.num) b.nv = Math.min(3, b.c.num + (temCap ? 1 : 0));
+    else if (b.c && b.c.caps) b.nv = temCap ? 2 : 1;
   });
+  return blocos;
+}
+function htmlDeBlocos(blocos) { return blocos.map(function (b) { return b.titDoc ? '<p class="titulo-doc">' + b.h + '</p>' : b.nv ? '<h' + b.nv + '>' + b.h + '</h' + b.nv + '>' : b.cit ? '<blockquote><p>' + b.h + '</p></blockquote>' : '<p>' + b.h + '</p>'; }).join('\n'); }
+function notasMammoth(notas) { return notas.length ? '<ol>' + notas.map(function (n, i) { return '<li id="footnote-' + (i + 1) + '"><p>' + n + '</p></li>'; }).join('') + '</ol>' : ''; }
+function refNota(k) { return '<sup><a href="#footnote-' + k + '" id="footnote-ref-' + k + '">[' + k + ']</a></sup>'; }
+
+/* ── RTF ── */
+function lerRtf(s) {
+  var i = 0, n = s.length, st = { b: 0, i: 0, sup: 0, uc: 1, dest: '', skip: 0 }, pilha = [];
+  var paras = [], para = [], estilos = {}, pEstilo = -1, pNivel = -1, intbl = 0, notas = [], notaAtual = null, linhaTab = [], celula = [], tabela = [], meta = {}, imagens = 0;
+  var dec = new TextDecoder('windows-1252'), estiloNome = '', estiloNum = -1, campoInfo = '', pictHex = '', pictTipo = '';
+  var IGNORAR = /^(fonttbl|colortbl|filetbl|revtbl|rsidtbl|listtable|listoverridetable|generator|xmlnstbl|themedata|colorschememapping|datastore|latentstyles|pgdsctbl|header|headerl|headerr|headerf|footer|footerl|footerr|footerf|ftnsep|ftnsepc|ftncn|aftnsep|aftnsepc|aftncn|pntext|listtext|fldinst|bkmkstart|bkmkend|nonshppict|objdata|xe|tc|mmathPr|userprops|docvar|protusertbl|wgrffmtfilter|operator|template|company|keywords|comment|doccomm|hlinkbase|nonesttables|annotation|atnid|atnauthor|atrfstart|atrfend|atndate|atnref|shpinst|sp|sn|sv|panose|falt|fname|datafield)$/;
+  function emitir(t) {
+    if (st.skip || !t) return;
+    if (st.dest === 'stylesheet') { estiloNome += t; return; }
+    if (st.dest === 'info') { campoInfo += t; return; }
+    if (st.dest === 'pict') { pictHex += t.replace(/[^0-9a-fA-F]/g, ''); return; }
+    (notaAtual ? notaAtual.para : para).push({ t: t, b: st.b, i: st.i, sup: st.sup });
+  }
+  function runsHtml(runs) {
+    var h = '', a = { b: 0, i: 0, sup: 0 };
+    function fecha() { if (a.sup) h += '</sup>'; if (a.i) h += '</em>'; if (a.b) h += '</strong>'; a = { b: 0, i: 0, sup: 0 }; }
+    runs.forEach(function (r) {
+      if (r.html) { fecha(); h += r.html; return; }
+      if (r.b !== a.b || r.i !== a.i || r.sup !== a.sup) { fecha(); if (r.b) h += '<strong>'; if (r.i) h += '<em>'; if (r.sup) h += '<sup>'; a = { b: r.b, i: r.i, sup: r.sup }; }
+      h += esc(r.t);
+    });
+    fecha(); return h.replace(/\s+/g, ' ').trim();
+  }
+  function fimPara() {
+    if (notaAtual) { var hn = runsHtml(notaAtual.para); if (hn) notaAtual.partes.push(hn); notaAtual.para = []; return; }
+    var h = runsHtml(para); para = [];
+    if (intbl) { celula.push(h); return; }
+    fecharTabela();
+    if (!h) return;
+    var nome = (estilos[pEstilo] || '').toLowerCase(), m = /(heading|t[ií]tulo|überschrift|titre)\s*(\d)/.exec(nome), nv = m ? +m[2] : (pNivel >= 0 && pNivel < 6 ? pNivel + 1 : 0);
+    if (!nv && /^(title|t[ií]tulo)$/.test(nome)) { paras.push('<p class="titulo-doc">' + h + '</p>'); return; }
+    if (nv) paras.push('<h' + Math.min(nv, 6) + '>' + h + '</h' + Math.min(nv, 6) + '>');
+    else if (/quote|cita[cç][aã]o|citation/.test(nome)) paras.push('<blockquote><p>' + h + '</p></blockquote>');
+    else paras.push('<p>' + h + '</p>');
+  }
+  function fecharTabela() { if (tabela.length) { paras.push('<table>' + tabela.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>'); tabela = []; } }
+  function palavra(w, p) {
+    if (st.dest === 'pict') { if (/^(pngblip|jpegblip)$/.test(w)) pictTipo = w === 'pngblip' ? 'image/png' : 'image/jpeg'; return; }
+    switch (w) {
+      case 'par': case 'sect': fimPara(); break;
+      case 'line': emitir('\n'); break;
+      case 'tab': emitir(' '); break;
+      case 'page': fimPara(); break;
+      case 'pard': pEstilo = -1; pNivel = -1; intbl = 0; break;
+      case 'intbl': intbl = 1; break;
+      case 'cell': fimParaCelula(); break;
+      case 'row': if (celula.length || linhaTab.length) { if (celula.length) linhaTab.push(celula.join('<br>')); } if (linhaTab.length) tabela.push(linhaTab); linhaTab = []; celula = []; break;
+      case 's': if (st.dest === 'stylesheet') estiloNum = p; else pEstilo = p; break;
+      case 'outlinelevel': pNivel = p; break;
+      case 'b': st.b = p === 0 ? 0 : 1; break;
+      case 'i': st.i = p === 0 ? 0 : 1; break;
+      case 'super': case 'up': st.sup = p === 0 ? 0 : 1; break;
+      case 'nosupersub': case 'sub': st.sup = 0; break;
+      case 'plain': st.b = 0; st.i = 0; st.sup = 0; break;
+      case 'uc': st.uc = p; break;
+      case 'u': emitir(String.fromCharCode(p < 0 ? p + 65536 : p)); i = pularFallback(i, st.uc); break;
+      case 'emdash': emitir('—'); break; case 'endash': emitir('–'); break;
+      case 'lquote': emitir('‘'); break; case 'rquote': emitir('’'); break; case 'ldblquote': emitir('“'); break; case 'rdblquote': emitir('”'); break;
+      case 'bullet': emitir('•'); break; case '~': emitir(' '); break; case '_': emitir('-'); break;
+      case 'chftn': break;
+    }
+  }
+  function fimParaCelula() { var h = runsHtml(para); para = []; celula.push(h); linhaTab.push(celula.filter(Boolean).join('<br>')); celula = []; }
+  function pularFallback(k, quant) { for (var q = 0; q < quant && k < n; q++) { if (s[k] === '\\' && s[k + 1] === "'") k += 4; else if (s[k] === '\\' || s[k] === '{' || s[k] === '}') break; else k++; } return k; }
+  while (i < n) {
+    var c = s[i];
+    if (c === '{') { pilha.push(Object.assign({}, st, { notaAntes: notaAtual })); i++; if (s[i] === '\\' && s[i + 1] === '*') { st.skip = 1; i += 2; } continue; }
+    if (c === '}') {
+      var saindo = st;
+      if (saindo.dest === 'stylesheet' && estiloNum >= 0 && pilha.length && pilha[pilha.length - 1].dest === 'stylesheet') { estilos[estiloNum] = estiloNome.replace(/;.*$/, '').trim(); estiloNome = ''; estiloNum = -1; }
+      if (saindo.dest === 'pict' && pictHex && pictTipo && !(pilha.length && pilha[pilha.length - 1].dest === 'pict')) { var bytes = new Uint8Array(pictHex.length / 2); for (var k = 0; k < bytes.length; k++) bytes[k] = parseInt(pictHex.substr(k * 2, 2), 16); para.push({ html: '<img src="data:' + pictTipo + ';base64,' + bufParaB64(bytes) + '" alt="">' }); imagens++; pictHex = ''; pictTipo = ''; }
+      if (saindo.dest && saindo.dest.indexOf('info:') === 0 && !(pilha.length && pilha[pilha.length - 1].dest === saindo.dest)) { meta[saindo.dest.slice(5)] = campoInfo.trim(); campoInfo = ''; }
+      if (saindo.dest === 'footnote' && !(pilha.length && pilha[pilha.length - 1].dest === 'footnote')) { var hn = runsHtml(notaAtual.para); if (hn) notaAtual.partes.push(hn); notas[notaAtual.k - 1] = notaAtual.partes.join('</p><p>'); notaAtual = null; }
+      st = pilha.pop() || st; i++; continue;
+    }
+    if (c === '\\') {
+      var d = s[i + 1];
+      if (d === "'") { emitir(dec.decode(new Uint8Array([parseInt(s.substr(i + 2, 2), 16)]))); i += 4; continue; }
+      if (d === '\\' || d === '{' || d === '}') { emitir(d); i += 2; continue; }
+      if (d === '~' || d === '_' || d === '-') { if (d !== '-') palavra(d, null); i += 2; continue; }
+      if (d === '\n' || d === '\r') { fimPara(); i += 2; continue; }
+      var m = /^([a-zA-Z]+)(-?\d+)? ?/.exec(s.slice(i + 1, i + 40));
+      if (!m) { i += 2; continue; }
+      var w = m[1], p = m[2] != null ? parseInt(m[2], 10) : null; i += 1 + m[0].length;
+      if (w === 'stylesheet') { st.dest = 'stylesheet'; continue; }
+      if (w === 'info') { st.dest = 'info'; continue; }
+      if (st.dest === 'info' && /^(title|author|subject)$/.test(w)) { st.dest = 'info:' + w; campoInfo = ''; continue; }
+      if (w === 'pict') { st.dest = 'pict'; continue; }
+      if (w === 'footnote') { st.dest = 'footnote'; var k2 = notas.length + 1; notas.push(''); para.push({ html: refNota(k2) }); notaAtual = { k: k2, para: [], partes: [] }; continue; }
+      if (IGNORAR.test(w)) { st.skip = 1; continue; }
+      if (w === 'fldrslt') { st.skip = 0; continue; }
+      palavra(w, p); continue;
+    }
+    if (c === '\r' || c === '\n') { i++; continue; }
+    var j = i; while (j < n && s[j] !== '\\' && s[j] !== '{' && s[j] !== '}' && s[j] !== '\r' && s[j] !== '\n') j++;
+    emitir(s.slice(i, j)); i = j;
+  }
+  fimPara(); fecharTabela();
+  var avisos = []; if (imagens) avisos.push(imagens + ' imagem(ns) importada(s) do RTF.');
+  return { html: paras.join('\n') + notasMammoth(notas), meta: { titulo: meta.title || '', autor: meta.author || '' }, avisos: avisos };
+}
+
+/* ── Word 97-2003 (.doc): contêiner OLE (CFB) e tabela de peças do texto ── */
+function lerCfb(u8) {
+  var dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), FIM = 0xFFFFFFFA;
+  var ssz = 1 << dv.getUint16(30, true), mssz = 1 << dv.getUint16(32, true);
+  var dirIni = dv.getUint32(48, true), corte = dv.getUint32(56, true), mfIni = dv.getUint32(60, true), nMf = dv.getUint32(64, true), difIni = dv.getUint32(68, true), nDif = dv.getUint32(72, true);
+  function off(sec) { return (sec + 1) * ssz; }
+  var fatSecs = [], k, sec;
+  for (k = 0; k < 109; k++) { sec = dv.getUint32(76 + 4 * k, true); if (sec < FIM) fatSecs.push(sec); }
+  for (var d = difIni, j = 0; j < nDif && d < FIM; j++) { var o = off(d); for (k = 0; k < ssz / 4 - 1; k++) { sec = dv.getUint32(o + 4 * k, true); if (sec < FIM) fatSecs.push(sec); } d = dv.getUint32(o + ssz - 4, true); }
+  var fat = []; fatSecs.forEach(function (s) { var o = off(s); for (var q = 0; q < ssz / 4; q++) fat.push(dv.getUint32(o + 4 * q, true)); });
+  function cadeia(ini, tab) { var out = [], s = ini, g = 0; while (s < FIM && g++ < 4e6) { out.push(s); s = tab[s]; } return out; }
+  function lerCadeia(ini, tam) { var secs = cadeia(ini, fat), b = new Uint8Array(secs.length * ssz); secs.forEach(function (s, x) { b.set(u8.subarray(off(s), off(s) + ssz), x * ssz); }); return tam != null ? b.subarray(0, tam) : b; }
+  var dir = lerCadeia(dirIni), ent = [];
+  for (var p = 0; p + 128 <= dir.length; p += 128) {
+    var dd = new DataView(dir.buffer, dir.byteOffset + p, 128), nl = dd.getUint16(64, true), nome = '';
+    for (var c = 0; c < nl / 2 - 1; c++) nome += String.fromCharCode(dd.getUint16(c * 2, true));
+    ent.push({ nome: nome, tipo: dir[p + 66], ini: dd.getUint32(116, true), tam: dd.getUint32(120, true) });
+  }
+  var mini = ent[0] ? lerCadeia(ent[0].ini, ent[0].tam) : new Uint8Array(0), minifat = [];
+  if (nMf) { var mf = lerCadeia(mfIni), mdv = new DataView(mf.buffer, mf.byteOffset, mf.byteLength); for (k = 0; k < mf.length / 4; k++) minifat.push(mdv.getUint32(k * 4, true)); }
+  return {
+    stream: function (nome) {
+      var e = ent.find(function (x) { return x.nome === nome && x.tipo === 2; }); if (!e) return null;
+      if (e.tam < corte) { var secs = cadeia(e.ini, minifat), b = new Uint8Array(secs.length * mssz); secs.forEach(function (s, x) { b.set(mini.subarray(s * mssz, (s + 1) * mssz), x * mssz); }); return b.subarray(0, e.tam); }
+      return lerCadeia(e.ini, e.tam);
+    }
+  };
+}
+function lerDoc(buf) {
+  var cfb = lerCfb(new Uint8Array(buf)), wd = cfb.stream('WordDocument');
+  if (!wd) throw new Error('Arquivo .doc sem o conteúdo do Word (talvez seja de outro programa). Salve-o como .docx e envie de novo.');
+  var dv = new DataView(wd.buffer, wd.byteOffset, wd.byteLength), u16 = function (b, o) { return b[o] | b[o + 1] << 8; }, u32 = function (b, o) { return (b[o] | b[o + 1] << 8 | b[o + 2] << 16 | b[o + 3] << 24) >>> 0; };
+  if (dv.getUint16(0, true) !== 0xA5EC) throw new Error('Formato do Word anterior ao Word 97. Abra no Word ou no LibreOffice e salve como .docx.');
+  var flags = dv.getUint16(0x0A, true);
+  if (flags & 0x0100) throw new Error('O arquivo .doc está protegido por senha. Retire a senha no Word e envie de novo.');
+  var tab = cfb.stream(flags & 0x0200 ? '1Table' : '0Table'); if (!tab) throw new Error('Arquivo .doc incompleto (sem tabela de texto).');
+  var F = function (o) { return dv.getUint32(o, true); };
+  var ccpText = dv.getInt32(0x4C, true), ccpFtn = dv.getInt32(0x50, true);
+  // tabela de peças: posição de cada trecho do texto no arquivo
+  var clx = tab.subarray(F(0x01A2), F(0x01A2) + F(0x01A6)), p = 0;
+  while (clx[p] === 0x01) p += 3 + u16(clx, p + 1);
+  if (clx[p] !== 0x02) throw new Error('Não foi possível ler o texto deste .doc. Salve-o como .docx e envie de novo.');
+  var lcb = u32(clx, p + 1), plc = clx.subarray(p + 5, p + 5 + lcb), np = (lcb - 4) / 12, cps = [], pfc = [], pcomp = [], partes = [];
+  var dec1252 = new TextDecoder('windows-1252'), dec16 = new TextDecoder('utf-16le');
+  for (var k = 0; k <= np; k++) cps.push(u32(plc, 4 * k));
+  for (k = 0; k < np; k++) {
+    var fc = u32(plc, 4 * (np + 1) + 8 * k + 2), len = cps[k + 1] - cps[k], comp = !!(fc & 0x40000000);
+    pcomp.push(comp); pfc.push(comp ? (fc & 0x3FFFFFFF) / 2 : fc);
+    partes.push(comp ? dec1252.decode(wd.subarray(pfc[k], pfc[k] + len)) : dec16.decode(wd.subarray(fc, fc + 2 * len)));
+  }
+  var texto = partes.join('');
+  function fcDe(cp) { var a = 0, b = np - 1; while (a < b) { var m = (a + b + 1) >> 1; if (cps[m] <= cp) a = m; else b = m - 1; } return pcomp[a] ? pfc[a] + (cp - cps[a]) : pfc[a] + 2 * (cp - cps[a]); }
+  // propriedades: sprm e seus operandos
+  function sprms(g) {
+    var out = {}, i = 0;
+    while (i + 2 <= g.length) {
+      var s = u16(g, i), spra = s >> 13, tam = [1, 1, 2, 4, 2, 2, -1, 3][spra], op = i + 2;
+      if (tam < 0) { if (s === 0xD608 || s === 0xD606) { tam = u16(g, i + 2) + 1; op = i + 2; } else { tam = g[i + 2]; op = i + 3; } }
+      out[s] = tam === 4 ? u32(g, op) : tam === 2 ? u16(g, op) : g[op]; i = op + tam;
+    }
+    return out;
+  }
+  function lerBte(fcPlc, lcbPlc, tipo) {
+    var runs = []; if (!lcbPlc) return runs;
+    var pl = tab.subarray(fcPlc, fcPlc + lcbPlc), n = (lcbPlc - 4) / 8;
+    for (var j = 0; j < n; j++) {
+      var pn = u32(pl, 4 * (n + 1) + 4 * j) & 0x3FFFFF, pg = wd.subarray(pn * 512, pn * 512 + 512); if (pg.length < 512) continue;
+      var crun = pg[511];
+      for (var r = 0; r < crun; r++) {
+        var ini = u32(pg, 4 * r), fim = u32(pg, 4 * (r + 1)), info = { ini: ini, fim: fim, s: {} };
+        if (tipo === 'pap') {
+          var bo = pg[4 * (crun + 1) + 13 * r] * 2;
+          if (bo) { var cb = pg[bo], g, base; if (cb) { base = bo + 1; g = pg.subarray(base, base + 2 * cb - 1); } else { cb = pg[bo + 1]; base = bo + 2; g = pg.subarray(base, base + 2 * cb); } info.istd = u16(g, 0); info.s = sprms(g.subarray(2)); }
+        } else {
+          var off = pg[4 * (crun + 1) + r] * 2;
+          if (off) info.s = sprms(pg.subarray(off + 1, off + 1 + pg[off]));
+        }
+        runs.push(info);
+      }
+    }
+    return runs.sort(function (a, b) { return a.ini - b.ini; });
+  }
+  function achar(runs, fc) { var a = 0, b = runs.length - 1, r = null; while (a <= b) { var m = (a + b) >> 1; if (runs[m].ini <= fc) { r = runs[m]; a = m + 1; } else b = m - 1; } return r && fc < r.fim ? r : null; }
+  var pap = lerBte(F(0x0102), F(0x0106), 'pap'), chp = lerBte(F(0x00FA), F(0x00FE), 'chp');
+  // folha de estilos: identificador interno (sti) e nome de cada estilo
+  var estilos = [];
+  try {
+    var st = tab.subarray(F(0x00A2), F(0x00A2) + F(0x00A6)), cbStshi = u16(st, 0), cstd = u16(st, 2), cbBase = u16(st, 4), q = 2 + cbStshi;
+    for (var e = 0; e < cstd && q + 2 <= st.length; e++) {
+      var cbStd = u16(st, q); if (!cbStd) { estilos.push(null); q += 2; continue; }
+      var sd = st.subarray(q + 2, q + 2 + cbStd), sti = u16(sd, 0) & 0x0FFF, cch = u16(sd, cbBase), nome = '';
+      for (var c = 0; c < cch && cbBase + 2 + 2 * c + 1 < sd.length; c++) nome += String.fromCharCode(u16(sd, cbBase + 2 + 2 * c));
+      estilos.push({ sti: sti, nome: nome }); q += 2 + cbStd;
+    }
+  } catch (er) {}
+  function ligado(v) { return v === 1 || v === 0x81; }
+  // percorre o texto montando parágrafos, tabelas e notas com itálico, negrito e sobrescrito
+  function percorrer(ini, fim, aoParagrafo) {
+    var runs = [], campo = [];
+    for (var cp = ini; cp < fim; cp++) {
+      var ch = texto[cp];
+      if (ch === '\x13') { campo.push(0); continue; }
+      if (ch === '\x14') { if (campo.length) campo[campo.length - 1] = 1; continue; }
+      if (ch === '\x15') { campo.pop(); continue; }
+      if (campo.some(function (x) { return x === 0; })) continue;
+      if (ch === '\r' || ch === '\x07' || ch === '\x0c') { aoParagrafo(runs, achar(pap, fcDe(cp)), ch); runs = []; continue; }
+      if (ch === '\x02') { runs.push({ nota: 1 }); continue; }
+      if (/[\x00\x01\x03\x04\x05\x08]/.test(ch)) continue;
+      var t = ch === '\x0b' ? '\n' : ch === '\x1e' ? '-' : ch === '\x1f' ? '' : ch === '\t' ? ' ' : ch; if (!t) continue;
+      var cr = achar(chp, fcDe(cp)), s = cr ? cr.s : {};
+      var fmt = { b: ligado(s[0x0835]) ? 1 : 0, i: ligado(s[0x0836]) ? 1 : 0, sup: s[0x2A48] === 1 ? 1 : 0 };
+      var ult = runs[runs.length - 1];
+      if (ult && !ult.nota && ult.b === fmt.b && ult.i === fmt.i && ult.sup === fmt.sup) ult.t += t; else { fmt.t = t; runs.push(fmt); }
+    }
+    if (runs.length) aoParagrafo(runs, null, '\r');
+  }
+  var kNota = 0;
+  function html(runs) {
+    return runs.map(function (r) {
+      if (r.nota) { kNota++; return refNota(kNota); }
+      var h = esc(r.t).replace(/\n/g, '<br>'); if (!h.trim()) return h;
+      if (r.sup) h = '<sup>' + h + '</sup>'; if (r.i) h = '<em>' + h + '</em>'; if (r.b) h = '<strong>' + h + '</strong>'; return h;
+    }).join('').replace(/\s+/g, ' ').replace(/<\/(em|strong)>\s*<\1>/g, ' ').trim();
+  }
+  var paras = [], linha = [], celula = [], tabela = [], comEstilo = 0;
+  function fechaTabela() { if (tabela.length) { paras.push('<table>' + tabela.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>'); tabela = []; } }
+  percorrer(0, ccpText, function (runs, pr, fimCh) {
+    var s = pr ? pr.s : {}, emTab = s[0x2416] || s[0x6649] > 0, fimLinha = s[0x2417] || s[0x664A];
+    var h = html(runs);
+    if (emTab) {
+      if (fimLinha && fimCh === '\x07') { if (celula.length) { linha.push(celula.join('<br>')); celula = []; } if (linha.length) tabela.push(linha); linha = []; return; }
+      if (h) celula.push(h);
+      if (fimCh === '\x07') { linha.push(celula.join('<br>')); celula = []; }
+      return;
+    }
+    fechaTabela();
+    if (!h) return;
+    var est = pr && estilos[pr.istd], nv = 0;
+    if (est && est.sti >= 1 && est.sti <= 9) nv = est.sti;
+    else if (est && /(heading|t[ií]tulo|überschrift|titre)\s*(\d)/i.test(est.nome)) nv = +/(\d)/.exec(est.nome)[1];
+    else if (s[0x2640] != null && s[0x2640] < 9) nv = s[0x2640] + 1;
+    if (est && est.sti !== 0) comEstilo++;
+    if (est && (est.sti === 62 || /^(title|t[ií]tulo)$/i.test(est.nome))) { paras.push('<p class="titulo-doc">' + h + '</p>'); return; }
+    if (nv) { nv = Math.min(nv, 6); paras.push('<h' + nv + '>' + h + '</h' + nv + '>'); return; }
+    if (est && /quote|cita[cç][aã]o|citation|zitat/i.test(est.nome)) { paras.push('<blockquote><p>' + h + '</p></blockquote>'); return; }
+    paras.push('<p>' + h + '</p>');
+  });
+  fechaTabela();
+  // notas de rodapé: o subdocumento de notas começa cada nota com a marca \x02
+  var notas = [], kAntes = kNota; kNota = 0;
+  percorrer(ccpText, ccpText + ccpFtn, function (runs) {
+    var novo = runs.length && runs[0].nota; if (novo) runs = runs.slice(1);
+    var h = html(runs); kNota = 0;
+    if (novo || !notas.length) notas.push(h); else if (h) notas[notas.length - 1] += '</p><p>' + h;
+  });
+  var semEstilos = !paras.some(function (x) { return /^<h\d/.test(x); });
+  if (semEstilos) { var bl = paras.map(function (x) { var m = /^<p>(.*)<\/p>$/.exec(x); return m ? { h: m[1], c: classeTitulo(m[1].replace(/<[^>]+>/g, '')), bruto: x } : { bruto: x }; }); estruturarTitulos(bl); paras = bl.map(function (b) { return b.nv ? '<h' + b.nv + '>' + b.h + '</h' + b.nv + '>' : b.bruto; }); }
+  var avisos = semEstilos ? ['O .doc não usa estilos de título: os títulos foram inferidos pelo formato das linhas. Confira a estrutura ou aplique os estilos Título 1, 2 e 3 no Word.'] : [];
+  if (!/<img/.test(paras.join('')) && cfb.stream('Data')) avisos.push('Imagens do .doc não são importadas; para incluí-las, salve como .docx.');
+  return { html: paras.join('\n') + notasMammoth(notas.slice(0, kAntes)), meta: {}, avisos: avisos };
+}
+
+/* ── PDF: texto com títulos por corpo de letra, notas de rodapé e junção de linhas e páginas ── */
+var _pdfjs = null;
+function pdfjs() { if (!_pdfjs) _pdfjs = import(BASE + 'lib/pdf.min.mjs').then(function (m) { m.GlobalWorkerOptions.workerSrc = BASE + 'lib/pdf.worker.min.mjs'; return m; }).catch(function (e) { _pdfjs = null; throw e; }); return _pdfjs; }
+async function lerPdf(buf) {
+  var pj = await pdfjs();
+  var pdf = await pj.getDocument({ data: new Uint8Array(buf), isEvalSupported: false, disableFontFace: true, useSystemFonts: false }).promise;
+  var meta = {}; try { var md = await pdf.getMetadata(); meta.titulo = (md.info && md.info.Title) || ''; meta.autor = (md.info && md.info.Author) || ''; } catch (e) {}
+  var pags = [], totalChars = 0;
+  for (var pn = 1; pn <= pdf.numPages; pn++) {
+    if (pn % 20 === 1 && ui.msg) ui.msg('Lendo o PDF: página ' + pn + ' de ' + pdf.numPages + '…');
+    var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1 }), tc = await pg.getTextContent();
+    // nomes reais das fontes (negrito e itálico) ficam disponíveis depois da lista de operações
+    var fontes = {};
+    try { await pg.getOperatorList(); Object.keys(tc.styles).forEach(function (fn) { try { var f = pg.commonObjs.get(fn); fontes[fn] = String((f && (f.name || f.loadedName)) || ''); } catch (e) {} }); } catch (e) {}
+    var itens = tc.items.filter(function (it) { return it.str && it.str.trim(); }).map(function (it) {
+      var t = it.transform, nf = fontes[it.fontName] || '';
+      return { s: it.str, x: t[4], y: t[5], tam: Math.hypot(t[2], t[3]) || it.height || 10, w: it.width, it: /italic|oblique|-it\b|kursiv/i.test(nf) || Math.abs(t[2]) > 0.15 * Math.abs(t[3]), ng: /bold|black|heavy|semibold|-bd\b/i.test(nf) };
+    });
+    itens.sort(function (a, b) { return Math.abs(b.y - a.y) > 2 ? b.y - a.y : a.x - b.x; });
+    var linhas = [];
+    itens.forEach(function (it) {
+      var L = linhas.find(function (l) { return Math.abs(l.yb - it.y) < Math.max(2, l.tam * 0.45) || (it.tam < l.tam * 0.85 && it.y > l.yb && it.y - l.yb < l.tam * 0.6); });
+      if (!L) { L = { yb: it.y, tam: it.tam, x0: it.x, x1: it.x + it.w, itens: [] }; linhas.push(L); }
+      L.itens.push(it); if (it.tam > L.tam && Math.abs(it.y - L.yb) < 2) { L.tam = it.tam; L.yb = it.y; } L.x0 = Math.min(L.x0, it.x); L.x1 = Math.max(L.x1, it.x + it.w);
+    });
+    linhas.forEach(function (L) {
+      L.itens.sort(function (a, b) { return a.x - b.x; });
+      var t = '', h = '', fimAnt = null, emIt = false, nChars = 0, nNeg = 0;
+      L.itens.forEach(function (it) {
+        var sup = it.tam < L.tam * 0.8 && it.y > L.yb + L.tam * 0.15 && /^\d{1,3}$/.test(it.s.trim());
+        var sep = fimAnt != null && it.x - fimAnt > L.tam * 0.18 && !/\s$/.test(t) && !/^\s/.test(it.s) ? ' ' : '';
+        var s = sup ? '\u0001' + it.s.trim() + '\u0002' : it.s;
+        t += sep + s; fimAnt = it.x + it.w;
+        if (!sup) { nChars += it.s.length; if (it.ng) nNeg += it.s.length; }
+        var piece = esc(s); if (!sup && it.it !== emIt) { piece = (it.it ? '\u0003' : '\u0004') + piece; emIt = it.it; }
+        h += (sep ? ' ' : '') + piece;
+      });
+      if (emIt) h += '\u0004';
+      L.t = t.replace(/\s+/g, ' ').trim(); L.h = h.replace(/\s+/g, ' ').trim(); L.negrito = nChars && nNeg / nChars > 0.8;
+      L.pag = pn; L.alturaPag = vp.height; L.larguraPag = vp.width; totalChars += L.t.length;
+    });
+    pags.push(linhas.filter(function (L) { return L.t; }).sort(function (a, b) { return b.yb - a.yb; }));
+  }
+  if (totalChars < 80 * pdf.numPages) return transcreverPdf(pdf, meta);
+  // cabeçalhos e rodapés repetidos e números de página
+  var norm = function (t) { return t.replace(/\d+/g, '#').toLowerCase(); }, freq = {};
+  pags.forEach(function (ls) { var vis = {}; ls.forEach(function (L) { if (L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1) { var k = norm(L.t); if (!vis[k]) { vis[k] = 1; freq[k] = (freq[k] || 0) + 1; } } }); });
+  var rep = Object.keys(freq).filter(function (k) { return freq[k] >= Math.max(3, pdf.numPages * 0.25); });
+  pags = pags.map(function (ls) { return ls.filter(function (L) { var borda = L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1; return !(borda && (rep.indexOf(norm(L.t)) >= 0 || /^\s*[-–]?\s*\d{1,4}\s*[-–]?\s*$/.test(L.t))); }); });
+  // corpo do texto (tamanho mais frequente) e tamanhos maiores, que viram níveis de título pela ordem
+  var hist = {}; pags.forEach(function (ls) { ls.forEach(function (L) { var k = Math.round(L.tam * 2) / 2; hist[k] = (hist[k] || 0) + L.t.length; }); });
+  var corpoTam = +Object.keys(hist).sort(function (a, b) { return hist[b] - hist[a]; })[0] || 10;
+  var grandes = Object.keys(hist).map(Number).filter(function (k) { return k >= corpoTam * 1.12 && hist[k] > 20; }).sort(function (a, b) { return b - a; });
+  function nvFonte(tam) { var k = Math.round(tam * 2) / 2; if (k < corpoTam * 1.12) return 0; var i = grandes.indexOf(k); if (i < 0) i = grandes.filter(function (g) { return g > k; }).length; return Math.min(3, i + 1); }
+  var margem = Math.min.apply(null, pags.reduce(function (a, ls) { return a.concat(ls.filter(function (L) { return Math.abs(L.tam - corpoTam) < 0.6; }).map(function (L) { return L.x0; })); }, [1e9]));
+  var blocos = [], notasPag = {}, atual = null, zona = true;
+  function fecha() { if (atual) { blocos.push(atual); atual = null; } }
+  pags.forEach(function (ls, ip) {
+    var corpoLs = [], rod = [], emNota = false;
+    var ultimaCorpo = ls.reduce(function (mn, L) { return L.tam >= corpoTam - 0.6 ? Math.min(mn, L.yb) : mn; }, 1e9);
+    ls.forEach(function (L) {
+      if (L.tam < corpoTam * 0.92 && L.yb < ultimaCorpo && L.yb < L.alturaPag * 0.45) { var m = /^(\u0001)?(\d{1,3})(\u0002)?\s*(.*)$/.exec(L.t); if (m && (m[1] || /^\d{1,3}\s/.test(L.t))) { rod.push({ n: m[2], t: m[4] }); emNota = true; return; } if (emNota) { rod[rod.length - 1].t += ' ' + L.t; return; } }
+      corpoLs.push(L);
+    });
+    notasPag[ip] = rod;
+    corpoLs.forEach(function (L, i) {
+      var ant = i ? corpoLs[i - 1] : null, prox = corpoLs[i + 1], tit = 0;
+      var nf = L.t.length < 160 ? nvFonte(L.tam) : 0;
+      // linha isolada, curta, que não chega à margem direita: candidata a título no corpo do texto
+      var isolada = (!ant || ant.yb - L.yb > L.tam * 1.7) && (!prox || L.yb - prox.yb > L.tam * 1.5) && L.x1 < L.larguraPag * 0.8;
+      var c = (nf || isolada || L.negrito) ? classeTitulo(L.t) : null;
+      if (nf || (c && (isolada || L.negrito))) tit = 1;
+      if (zona && c && c.forte) zona = false;
+      if (tit) {
+        // título de várias linhas: mesma fonte e linhas próximas
+        if (!zona && atual && atual.tit && Math.abs(atual.tam - L.tam) < 0.6 && ant && ant.yb - L.yb < L.tam * 2.2 && !(c && c.cap)) { atual.t += ' ' + L.t; atual.h += ' ' + L.h; return; }
+        fecha(); atual = { tit: 1, t: L.t, h: L.h, tam: L.tam, nvFonte: nf, pag: ip }; return;
+      }
+      var novoPar = !atual || atual.tit || (ant && ant.yb - L.yb > corpoTam * 1.75) || (L.x0 > margem + corpoTam * 0.8 && L.x0 < margem + corpoTam * 4) || (ant && ant.x1 < ant.larguraPag * 0.72 && /[.!?:”"»)]$/.test(ant.t));
+      if (!ant && atual && !atual.tit) novoPar = /[.!?:”"»]$/.test(atual.t) && /^[A-ZÀ-Ý“"«(—–-]/.test(L.t);
+      if (zona && ant && L.x1 < L.larguraPag * 0.8 && ant.x1 < ant.larguraPag * 0.8) novoPar = true;
+      if (novoPar) { fecha(); atual = { t: L.t, h: L.h, pag: ip, cit: L.x0 > margem + corpoTam * 2 && L.tam < corpoTam * 0.97 }; }
+      else if (/[A-Za-zÀ-ÿ]-$/.test(atual.t) && /^[a-zà-ÿ]/.test(L.t)) { atual.t = atual.t.slice(0, -1) + L.t; atual.h = atual.h.replace(/-(\u0004?)$/, '$1') + L.h; }
+      else { atual.t += ' ' + L.t; atual.h += ' ' + L.h; }
+    });
+  });
+  fecha();
+  blocos.forEach(function (b) { if (b.tit) b.c = classeTitulo(b.t) || (b.nvFonte ? {} : null); });
+  estruturarTitulos(blocos);
+  var iForte = blocos.findIndex(function (b) { return b.nv; }), noRosto = blocos.slice(0, iForte < 0 ? 0 : iForte).filter(function (b) { return b.tam; });
+  if (noRosto.length) {
+    // o título é o bloco de maior corpo seguido de um bloco de outro corpo (subtítulo); nomes de autores no mesmo corpo vêm em sequência
+    var mx = Math.max.apply(null, noRosto.map(function (b) { return b.tam; })), cand = noRosto.filter(function (b) { return Math.abs(b.tam - mx) < 0.6; });
+    var tituloB = cand.find(function (b) { var j = blocos.indexOf(b), nx = blocos[j + 1]; return !nx || !nx.tam || Math.abs(nx.tam - mx) >= 0.6; }) || cand[0];
+    tituloB.titDoc = 1; if (!meta.titulo) meta.titulo = tituloB.t;
+  }
+  // chamadas de nota: número sobrescrito ligado à nota da mesma página (ou da seguinte)
+  var notas = [], kNota = 0;
+  blocos.forEach(function (b) {
+    b.h = b.h.replace(/\u0001(\d{1,3})\u0002/g, function (m, num) {
+      for (var d = 0; d <= 1; d++) { var lista = notasPag[b.pag + d] || [], x = lista.find(function (r) { return r.n === num && !r.usada; }); if (x) { x.usada = true; notas.push(esc(x.t.replace(/[\u0001-\u0004]/g, ''))); kNota++; return refNota(kNota); } }
+      return '<sup>' + num + '</sup>';
+    }).replace(/\u0003([^\u0004]*)\u0004/g, function (m, x) { return x.trim() ? '<em>' + x + '</em>' : x; }).replace(/[\u0001-\u0004]/g, '');
+  });
+  var soltas = Object.keys(notasPag).reduce(function (a, k) { return a + notasPag[k].filter(function (r) { return !r.usada; }).length; }, 0);
+  var avisos = ['PDF convertido pelo texto e pela posição das linhas: confira títulos, citações longas e notas. Imagens e tabelas do PDF não são importadas; para resultado exato, envie o .docx ou .odt original.'];
+  if (soltas) avisos.push(soltas + ' nota(s) de rodapé do PDF sem chamada reconhecida no texto.');
+  return { html: htmlDeBlocos(blocos) + notasMammoth(notas), meta: meta, avisos: avisos };
+}
+/* PDF digitalizado (sem texto) e imagens de páginas: transcrição pelo Claude com visão */
+async function transcreverPdf(pdf, meta) {
+  if (!chaveClaude()) throw new Error('Este PDF é digitalizado (sem texto selecionável). Configure a chave do Claude na aba Tradução para transcrevê-lo, ou envie o arquivo original em Word.');
+  var imgs = [];
+  for (var pn = 1; pn <= pdf.numPages; pn++) {
+    var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1.7 }), cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+    await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    imgs.push({ mime: 'image/jpeg', b64: cv.toDataURL('image/jpeg', 0.82).split(',')[1] });
+    if (ui.msg) ui.msg('Preparando a página ' + pn + ' de ' + pdf.numPages + ' do PDF digitalizado…');
+  }
+  var r = await transcreverPaginas(imgs); r.meta = Object.assign(meta || {}, r.meta); return r;
+}
+async function lerImagem(buf, mime) {
+  if (!chaveClaude()) throw new Error('Para transcrever imagens de páginas, configure a chave do Claude na aba Tradução.');
+  var u = new Uint8Array(buf);
+  if (!/^image\/(jpeg|png|gif|webp)$/.test(mime)) { var nz = await normalizarImagem(u, mime); if (!nz) throw new Error('Formato de imagem não suportado; envie em JPG ou PNG.'); u = nz.bytes; mime = nz.mime; }
+  return transcreverPaginas([{ mime: mime, b64: bufParaB64(u) }]);
+}
+async function transcreverPaginas(imgs) {
+  var schema = { type: 'object', additionalProperties: false, required: ['html', 'notas'], properties: { html: { type: 'string' }, notas: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['n', 'texto'], properties: { n: { type: 'string' }, texto: { type: 'string' } } } } } };
+  var sis = 'Você transcreve páginas de manuscritos e livros para uma editora acadêmica, com fidelidade absoluta: copie o texto exatamente como está, sem corrigir, resumir, traduzir nem completar. ' +
+    'Devolva HTML simples: <h1> para títulos de capítulo, <h2> e <h3> para seções, <p> para parágrafos (una as linhas quebradas e as palavras hifenizadas no fim da linha), <blockquote><p> para citações recuadas, <em> e <strong> para itálico e negrito, <ul>/<ol>/<li> para listas e <table> para tabelas. ' +
+    'Omita cabeçalhos e rodapés repetidos e números de página. Chamadas de nota no texto: escreva [[nota:N]] no lugar exato do número sobrescrito; o texto das notas de rodapé vai em "notas", com o mesmo N. Trechos ilegíveis: [ilegível].';
+  var html = [], notas = [], k = 0;
+  for (var i = 0; i < imgs.length; i += 3) {
+    if (ui.msg) ui.msg('Transcrevendo páginas ' + (i + 1) + ' a ' + Math.min(i + 3, imgs.length) + ' de ' + imgs.length + '…');
+    var cont = imgs.slice(i, i + 3).map(function (im) { return { type: 'image', source: { type: 'base64', media_type: im.mime, data: im.b64 } }; });
+    cont.push({ type: 'text', text: 'Transcreva estas páginas, na ordem.' });
+    var r = await claudeTrad({ sistema: sis, conteudo: cont, schema: schema, effort: 'medium', maxTokens: 32000 });
+    var mapa = {}; (r.notas || []).forEach(function (x) { notas.push(x.texto); k++; mapa[x.n] = k; });
+    html.push(String(r.html || '').replace(/\[\[nota:([^\]]+)\]\]/g, function (m, n) { return mapa[n] ? refNota(mapa[n]) : ''; }));
+  }
+  return { html: html.join('\n') + notasMammoth(notas.map(esc)), meta: {}, avisos: ['Texto transcrito de imagens pelo Claude: confira com o original, sobretudo nomes próprios, números e palavras em línguas indígenas.'] };
+}
+
+/* ── LaTeX ── */
+function lerTex(s) {
+  s = s.replace(/(^|[^\\])%.*$/gm, '$1');
+  var meta = {}, mt = /\\title\{([^}]*)\}/.exec(s), ma = /\\author\{([^}]*)\}/.exec(s);
+  if (mt) meta.titulo = mt[1].replace(/\\\\/g, ' ').trim(); if (ma) meta.autor = ma[1].replace(/\\(and|\\)/g, ',').trim();
+  var b = /\\begin\{document\}([\s\S]*?)\\end\{document\}/.exec(s); if (b) s = b[1];
+  var temCap = /\\chapter\*?\{/.test(s), niveis = temCap ? { part: 1, chapter: 1, section: 2, subsection: 3, subsubsection: 4 } : { part: 1, section: 1, subsection: 2, subsubsection: 3 };
+  var notas = [];
+  function arg(t, i) { if (t[i] !== '{') return null; var d = 0, j = i; for (; j < t.length; j++) { if (t[j] === '\\') { j++; continue; } if (t[j] === '{') d++; else if (t[j] === '}' && --d === 0) break; } return { v: t.slice(i + 1, j), fim: j + 1 }; }
+  var ACENTO = { "'": { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú', A: 'Á', E: 'É', I: 'Í', O: 'Ó', U: 'Ú' }, '`': { a: 'à', A: 'À' }, '^': { a: 'â', e: 'ê', o: 'ô', A: 'Â', E: 'Ê', O: 'Ô' }, '~': { a: 'ã', o: 'õ', n: 'ñ', A: 'Ã', O: 'Õ' }, '"': { u: 'ü', U: 'Ü' }, c: { c: 'ç', C: 'Ç' } };
+  function conv(t) {
+    var out = '', i = 0;
+    while (i < t.length) {
+      var c = t[i];
+      if (c === '\\') {
+        var m = /^\\([a-zA-Z]+\*?|.)/.exec(t.slice(i)), w = m[1]; i += m[0].length;
+        if (ACENTO[w] || (w === 'c' && t[i] === '{')) { var a = arg(t, i), ch = a ? a.v : t[i]; i = a ? a.fim : i + 1; out += (ACENTO[w] && ACENTO[w][ch]) || ch; continue; }
+        if (/^(emph|textit|textsl)$/.test(w)) { var x = arg(t, i); if (x) { out += '<em>' + conv(x.v) + '</em>'; i = x.fim; } continue; }
+        if (w === 'textbf') { var y = arg(t, i); if (y) { out += '<strong>' + conv(y.v) + '</strong>'; i = y.fim; } continue; }
+        if (w === 'footnote') { var f = arg(t, i); if (f) { notas.push(conv(f.v)); out += refNota(notas.length); i = f.fim; } continue; }
+        var nv = niveis[w.replace('*', '')]; if (nv) { if (t[i] === '[') i = t.indexOf(']', i) + 1; var h = arg(t, i); if (h) { out += '\n\n<h' + nv + '>' + conv(h.v) + '</h' + nv + '>\n\n'; i = h.fim; } continue; }
+        if (/^(cite|citep|citet)$/.test(w)) { if (t[i] === '[') i = t.indexOf(']', i) + 1; var ct = arg(t, i); if (ct) { out += '[' + ct.v + ']'; i = ct.fim; } continue; }
+        if (/^(label|ref|eqref|pageref|vspace|hspace|includegraphics|bibliographystyle|bibliography|newcommand|renewcommand|usepackage|setlength|addcontentsline)\*?$/.test(w)) { while (t[i] === '[' || t[i] === '{') { var q = t[i] === '[' ? { fim: t.indexOf(']', i) + 1 } : arg(t, i); i = q.fim; } continue; }
+        if (w === 'begin' && /^\{(tabular\*?|tabularx|longtable|longtabu|tabu)\}/.test(t.slice(i))) {
+          var amb = /^\{([^}]+)\}/.exec(t.slice(i))[1], fimT = t.indexOf('\\end{' + amb + '}', i), corpoT = t.slice(i + amb.length + 2, fimT < 0 ? t.length : fimT);
+          i = fimT < 0 ? t.length : fimT + amb.length + 6;
+          var mEsp = /^\s*(\[[^\]]*\])?\s*/.exec(corpoT), gEsp = corpoT[mEsp[0].length] === '{' ? arg(corpoT, mEsp[0].length) : null; if (gEsp) corpoT = corpoT.slice(gEsp.fim);
+          if (/^tabular(\*|x)$/.test(amb)) corpoT = corpoT.replace(/^\s*\{[^{}]*(\{[^{}]*\}[^{}]*)*\}/, '');
+          corpoT = corpoT.replace(/\\begin\{minipage\}(\[[^\]]*\])*\{[^{}]*\}|\\end\{minipage\}|\\noalign\{\}|\\(raggedright|raggedleft|centering)\b/g, '');
+          var leg = '';
+          corpoT = corpoT.replace(/\\caption\*?\{((?:[^{}]|\{[^{}]*\})*)\}\s*(\\\\)?/, function (m, c) { leg = c; return ''; });
+          corpoT = corpoT.replace(/\\(toprule|midrule|bottomrule|hline|endhead|endfirsthead|endfoot|endlastfoot|cline\{[^}]*\}|tabularnewline)/g, '\\\\');
+          var linhasT = corpoT.split(/\\\\(?:\[[^\]]*\])?/).map(function (r) { return r.trim(); }).filter(Boolean), vistas = {};
+          var trs = linhasT.filter(function (r) { var k = r.replace(/\s+/g, ' '); if (vistas[k]) return false; vistas[k] = 1; return true; }).map(function (r) { return '<tr>' + r.split(/(?<!\\)&/).map(function (c) { return '<td>' + conv(c.replace(/\\(multicolumn|multirow)\{[^}]*\}\{[^}]*\}/g, '')).trim() + '</td>'; }).join('') + '</tr>'; });
+          out += '\n\n' + (leg ? '<p>' + conv(leg) + '</p>\n\n' : '') + '<table>' + trs.join('') + '</table>\n\n'; continue;
+        }
+        if (w === 'caption') { var cap = arg(t, i); if (cap) { out += '\n\n<p>' + conv(cap.v) + '</p>\n\n'; i = cap.fim; } continue; }
+        if (w === 'begin' || w === 'end') { var e = arg(t, i); i = e.fim; var tag = { quote: 'blockquote', quotation: 'blockquote', itemize: 'ul', enumerate: 'ol' }[e.v]; if (tag) out += w === 'begin' ? '\n\n<' + tag + '>' + (tag === 'blockquote' ? '<p>' : '') : (tag === 'blockquote' ? '</p>' : '') + '</' + tag + '>\n\n'; continue; }
+        if (w === 'item') { out += '<li>'; continue; }
+        if (w === '\\' || w === 'newline') { out += '<br>'; continue; }
+        if (/^[%&$#_{}]$/.test(w)) { out += esc(w); continue; }
+        if (w === ' ' || w === ',') { out += ' '; continue; }
+        if (/^(ldots|dots)$/.test(w)) { out += '…'; continue; }
+        continue;
+      }
+      if (c === '{' || c === '}') { i++; continue; }
+      if (c === '~') { out += ' '; i++; continue; }
+      if (t.substr(i, 3) === '---') { out += '—'; i += 3; continue; }
+      if (t.substr(i, 2) === '--') { out += '–'; i += 2; continue; }
+      if (t.substr(i, 2) === '``') { out += '“'; i += 2; continue; }
+      if (t.substr(i, 2) === "''") { out += '”'; i += 2; continue; }
+      out += c === '<' ? '&lt;' : c === '&' ? '' : c; i++;
+    }
+    return out;
+  }
+  var corpo = conv(s).replace(/<li>/g, '</li><li>').replace(/<(ul|ol)>\s*<\/li>/g, '<$1>').replace(/<\/(ul|ol)>/g, '</li></$1>');
+  var html = corpo.split(/\n\s*\n+/).map(function (b) { b = b.trim(); if (!b) return ''; return /^<(h\d|ul|ol|blockquote|table|p>|\/)/.test(b) ? b : '<p>' + b.replace(/\s*\n\s*/g, ' ') + '</p>'; }).join('\n');
+  return { html: html + notasMammoth(notas), meta: meta, avisos: ['LaTeX convertido: fórmulas, figuras e bibliografia BibTeX não são importadas; confira títulos e tabelas.'] };
+}
+
+/* leitura pelo conteúdo, com a extensão como apoio */
+async function lerBytes(buf, nome) {
+  var u = new Uint8Array(buf), ext = (String(nome).split('.').pop() || '').toLowerCase(), tipo = assinatura(u);
+  if (tipo === 'zip') { await libs(); return lerZip(buf, nome); }
+  if (tipo === 'pdf') return lerPdf(buf);
+  if (tipo === 'cfb') return lerDoc(buf);
+  if (/^(jpeg|png|gif|webp|bmp|tiff)$/.test(tipo)) return lerImagem(buf, 'image/' + tipo);
+  if (/^(heic|heif|avif)$/.test(ext)) return lerImagem(buf, 'image/' + ext);
+  var t = decodificarTexto(buf);
+  if (tipo === 'rtf') return lerRtf(t);
+  if (ext === 'fodt' || /<office:document[\s>]/.test(t.slice(0, 4000))) { await libs(); return lerFodt(t); }
+  if (ext === 'md' || ext === 'markdown') return lerMd(t);
+  if (ext === 'tex' || ext === 'latex' || /\\documentclass|\\begin\{document\}/.test(t.slice(0, 20000))) return lerTex(t);
+  if (/^(html|htm|xhtml|xml)$/.test(ext) || /^\s*(<!doctype html|<html|<\?xml[^>]*>\s*<html)/i.test(t.slice(0, 500))) return lerHtml(t);
+  if (/[\x00-\x08\x0e-\x1a]/.test(t.slice(0, 2000))) throw new Error('Formato não reconhecido (.' + ext + '). Envie em Word, LibreOffice, PDF, RTF, EPUB, texto ou imagem das páginas.');
+  return lerTxtComTitulos(t);
+}
+/* texto puro: títulos inferidos pelo formato das linhas (CAPÍTULO 1, 1.2 Seção, linhas em maiúsculas) */
+function lerTxtComTitulos(texto) {
+  var r = lerTxt(texto), d = new DOMParser().parseFromString('<body>' + r.html + '</body>', 'text/html');
+  var bl = Array.prototype.map.call(d.body.children, function (p) { return { h: p.innerHTML, c: classeTitulo(p.textContent) }; });
+  r.html = htmlDeBlocos(estruturarTitulos(bl));
+  return r;
 }
 
 /* ───────────────────────── 2. LIMPEZA E ESTRUTURA ───────────────────────── */
@@ -3839,7 +4421,7 @@ function montarUI(alvo) {
     '<p class="sub">Envie o manuscrito e a Coordenação Editorial Digital produz o livro digital completo, em EPUB 3, no padrão da Editora: capa, folha de rosto, créditos, conselho editorial, ficha catalográfica, sumário, normas da ABNT, notas, referências, índice e logomarcas. Ao final, faz uma auditoria rigorosa e entrega o relatório.</p>' +
     '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button><button class="tab" data-p="tr">Tradução</button></div>' +
     '<div class="pane on" data-p="prod">' +
-      '<div class="drop" tabindex="0" role="button" aria-label="Enviar manuscrito"><b>Arraste o manuscrito aqui</b> ou clique para escolher<small>Word (.docx), LibreOffice (.odt), Markdown (.md), texto (.txt) ou HTML. Use os estilos de título do editor de texto para um resultado exato.</small><input type="file" accept=".docx,.odt,.md,.markdown,.txt,.html,.htm" hidden></div>' +
+      '<div class="drop" tabindex="0" role="button" aria-label="Enviar manuscrito"><b>Arraste o manuscrito aqui</b> ou clique para escolher<small>Qualquer formato: Word (.docx, .doc), LibreOffice (.odt, .fodt), PDF (inclusive digitalizado), RTF, EPUB, Pages, LaTeX, Markdown, texto, HTML ou fotos das páginas. O .docx com estilos de título dá o resultado mais exato.</small><input type="file" hidden></div>' +
       '<div class="opc">' +
         '<label>Numeração <select data-o="numeracao"><option value="auto">Automática</option><option value="abnt">Progressiva ABNT (1, 1.1, 1.1.1)</option><option value="capitulo">Capítulo 1, 2, 3</option><option value="nenhuma">Sem numeração</option></select></label>' +
         '<label>Listas <select data-o="listas"><option value="auto">Automáticas (3+ itens)</option><option value="sempre">Sempre</option><option value="nunca">Nunca</option></select></label>' +
