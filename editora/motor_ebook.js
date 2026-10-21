@@ -3014,7 +3014,7 @@ async function htmlLeitura(livro, logos, o, opc) {
 var TRAD_PADRAO = { variante: '', tradutor: '', revisor: '', isbn: '', isbnHtml: '', titulo: '', subtitulo: '', glossario: '', capa: '', glossarioIA: null };
 var NOME_LINGUA = { 'en-US': 'inglês (Estados Unidos)', 'en-GB': 'inglês (Reino Unido)', 'fr-FR': 'francês (França)', 'fr-CA': 'francês (Canadá)', 'es-419': 'espanhol (América Latina)', 'es-ES': 'espanhol (Espanha)', 'de-DE': 'alemão (Alemanha)' };
 var TRAD_USO = { entrada: 0, cache: 0, saida: 0, chamadas: 0, web: 0 };
-function tradCfg(b) { var t = (obra.traducoes || {})[b] || {}; var c = mesclar(clone(TRAD_PADRAO), t); if (!c.variante) c.variante = IDIOMAS[b].variantes[0][0]; return c; }
+function tradCfg(b) { var t = (obra.traducoes || {})[b] || {}; var c = mesclar(clone(TRAD_PADRAO), t); if (!c.variante) c.variante = IDIOMAS[b].variantes[0][0]; if (t.sel === undefined) c.sel = b === 'en'; if (!Array.isArray(c.sugeridos)) c.sugeridos = []; return c; }
 function tradGuardar(b, campos) { obra.traducoes = obra.traducoes || {}; obra.traducoes[b] = mesclar(tradCfg(b), campos || {}); obraGuardar(); }
 function esperar(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
@@ -3535,6 +3535,32 @@ async function importarMemoria(lista) {
   lista.forEach(function (x) { var a = atuais[x.k]; if (!a || !x.traducao) return; var t = escMarc(x.traducao).replace(/&lt;(\/?[gx]\d+\/?)&gt;/g, '<$1>'); if (t === a.t) return; pares.push({ k: x.k, v: Object.assign({}, a, { t: t, origem: 'humano', revisado: true, data: new Date().toISOString() }) }); });
   await tmGravar(pares); return pares.length;
 }
+/* preenche os campos da aba Tradução a partir da obra: título e subtítulo em cada idioma e um glossário
+   inicial com os termos jurídicos, institucionais e indígenas centrais do livro (só denominações seguras).
+   Revisor e ISBN não são preenchidos: dependem de pessoa e de registro na Agência Brasileira do ISBN. */
+async function sugerirTraducao(forcar) {
+  var livro = estado.livro; if (!livro || !chaveClaude()) return 0;
+  var precisa = Object.keys(IDIOMAS).filter(function (b) { var t = tradCfg(b); return forcar || !t.titulo || !t.glossario || !t.tradutor; });
+  if (!precisa.length) return 0;
+  var titulos = (livro.ordem || livro.secoes || []).filter(function (s) { return !s.gerada && s.titulo; }).map(function (s) { return (s.rotulo ? s.rotulo + ': ' : '') + s.titulo; }).slice(0, 80);
+  var dados = { titulo: obra.titulo, subtitulo: obra.subtitulo, sinopse: obra.sinopse, palavrasChave: obra.palavrasChave, siglas: (livro.siglas || []).map(function (x) { return x.sigla + ' = ' + x.nome; }), termosIndice: String(obra.termosIndice || '').split(/\n|;/).map(function (x) { return x.trim(); }).filter(Boolean), capitulos: titulos };
+  var schema = { type: 'object', additionalProperties: false, required: ['idiomas'], properties: { idiomas: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['codigo', 'titulo', 'subtitulo', 'glossario'], properties: { codigo: { type: 'string', enum: ['en', 'fr', 'es', 'de'] }, titulo: { type: 'string' }, subtitulo: { type: 'string' }, glossario: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['pt', 'alvo'], properties: { pt: { type: 'string' }, alvo: { type: 'string' } } } } } } } } };
+  var sis = 'Você é tradutor jurídico sênior e editor de obras acadêmicas sobre povos indígenas, direitos humanos, propriedade intelectual e geografia. Para cada idioma pedido (variantes: ' + precisa.map(function (b) { return tradCfg(b).variante; }).join(', ') + '), proponha: ' +
+    '(1) o título e o subtítulo da edição traduzida, fiéis ao original e idiomáticos, com as regras de maiúsculas do idioma; (2) um glossário inicial de 20 a 40 termos centrais do livro (instrumentos e órgãos internacionais, leis e órgãos brasileiros, categorias jurídicas, conceitos-chave), ' +
+    'apenas com equivalentes de que tenha certeza: denominações oficiais (ONU, OIT, OEA, Corte Interamericana, OMPI, UNESCO) ou traduções descritivas consagradas. Não inclua nomes de pessoas nem etnônimos, que não se traduzem. Use os termos em português exatamente como aparecem nos dados.';
+  var r = await claudeTrad({ sistema: sis, conteudo: 'Idiomas: ' + precisa.join(', ') + '\n' + JSON.stringify(dados), schema: schema, effort: 'medium', maxTokens: 16000 });
+  var n = 0;
+  (r.idiomas || []).forEach(function (x) {
+    if (precisa.indexOf(x.codigo) < 0) return;
+    var t = tradCfg(x.codigo), novo = {}, sug = t.sugeridos.slice();
+    function pre(c, v) { if (v && (forcar || !t[c])) { novo[c] = v; if (sug.indexOf(c) < 0) sug.push(c); n++; } }
+    pre('titulo', x.titulo); pre('subtitulo', x.subtitulo);
+    pre('glossario', (x.glossario || []).filter(function (g) { return g.pt && g.alvo; }).map(function (g) { return g.pt + ' = ' + g.alvo; }).join('\n'));
+    if (!t.tradutor) novo.tradutor = cfg.equipe.diagramacao || cfg.editora.nome;
+    novo.sugeridos = sug; tradGuardar(x.codigo, novo);
+  });
+  return n;
+}
 function estimarTraducao() {
   var chars = 0; if (estado.livro && estado.livro.paginas) estado.livro.paginas.forEach(function (p) { chars += corpoDe(p.arq).replace(/<[^>]+>/g, '').length; });
   var tok = chars / 3.6, entrada = tok * 2.2 + 12000 * (tok / 1800), saida = tok * 1.25 * 2.6;
@@ -3684,6 +3710,7 @@ async function produzir(opcoesExtras) {
     etapa('auditoria', res.b ? 'erro' : res.g ? 'aviso' : 'ok', res.status + ' · ' + res.pontos + '/100');
     ui.resultado(livro, res);
     ui.msg('E-book gerado. ' + res.status + '.', res.b ? 'err' : 'ok');
+    if (chaveClaude() && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
   } catch (e) {
     console.error(e);
     ui.msg('Erro na produção: ' + e.message, 'err');
@@ -3866,8 +3893,11 @@ function montarUI(alvo) {
     '<div class="pane" data-p="tr"><div class="aviso-box">Tradução especializada do livro já gerado em português para inglês, francês, espanhol e alemão, com a mesma estrutura e o mesmo projeto gráfico. ' +
       'O motor monta um glossário jurídico, indígena e geográfico pesquisado em fontes oficiais, traduz com a formatação preservada, confere cada trecho (números, citações, notas, termos) e faz uma revisão bilíngue independente. ' +
       'A tradução não tem fé pública: a juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial. Antes de publicar, registre o revisor nativo e o ISBN de cada edição.</div>' +
+      '<div class="tr-chave linha"></div>' +
+      '<div class="acoes"><button class="bt" data-a="tr-preencher">✨ Preencher os campos automaticamente</button></div>' +
       '<div class="tr-idiomas"></div>' +
       '<div class="acoes"><button class="bt" data-a="tr-estimar">Estimar custo</button><button class="bt pri" data-a="tr-traduzir">🌐 Traduzir os idiomas marcados</button></div>' +
+      '<div class="msg tr-msg" role="status" aria-live="polite"></div>' +
       '<div class="tr-resultados"></div></div>';
   alvo.appendChild(raiz);
   var Q = function (s) { return raiz.querySelector(s); }, QA = function (s) { return raiz.querySelectorAll(s); };
@@ -3951,7 +3981,7 @@ function montarUI(alvo) {
   }
   selPg.addEventListener('change', function () { mostrarPg(+selPg.value); });
 
-  ui.msg = function (m, t) { var e = Q('.msg'); e.textContent = m; e.className = 'msg' + (t ? ' ' + t : ''); };
+  ui.msg = function (m, t) { QA('.msg').forEach(function (e) { e.textContent = m; e.className = 'msg' + (e.classList.contains('tr-msg') ? ' tr-msg' : '') + (t ? ' ' + t : ''); }); };
   ui.travar = function (s) { QA('.acoes .bt').forEach(function (b) { if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
@@ -4051,7 +4081,13 @@ function montarUI(alvo) {
         '<label>Glossário da Editora (um por linha: termo em português = tradução obrigatória) <textarea data-tk="glossario" placeholder="Terra Indígena = Indigenous Land"></textarea></label>' +
         '<label>Capa no idioma (opcional; em branco, capa gerada no idioma) <input type="file" accept="image/*" data-tk="capa"></label>' +
         '<div class="linha"><small data-tk="info"></small><button class="bt" type="button" data-tk="refazer">Refazer o glossário</button></div>';
-      ['titulo', 'subtitulo', 'tradutor', 'revisor', 'isbn', 'isbnHtml', 'glossario'].forEach(function (k) { var x = d.querySelector('[data-tk="' + k + '"]'); x.value = tc[k] || ''; x.addEventListener('change', function () { var o = {}; o[k] = x.value.trim(); tradGuardar(b, o); }); });
+      ['titulo', 'subtitulo', 'tradutor', 'revisor', 'isbn', 'isbnHtml', 'glossario'].forEach(function (k) {
+        var x = d.querySelector('[data-tk="' + k + '"]'); x.value = tc[k] || '';
+        if (tc.sugeridos.indexOf(k) >= 0 && tc[k]) { var m = document.createElement('small'); m.textContent = '✨ preenchido automaticamente: revise'; m.style.color = '#F2C45A'; x.parentNode.insertBefore(m, x); }
+        x.addEventListener('change', function () { var o = {}; o[k] = x.value.trim(); o.sugeridos = tradCfg(b).sugeridos.filter(function (c) { return c !== k; }); tradGuardar(b, o); });
+      });
+      d.querySelector('[data-tk="revisor"]').placeholder = 'Nome e qualificação (não é preenchido automaticamente)';
+      d.querySelector('[data-tk="isbn"]').placeholder = 'Registro próprio na Agência Brasileira do ISBN';
       d.querySelector('[data-tk="sel"]').addEventListener('change', function (e) { tradGuardar(b, { sel: e.target.checked }); });
       d.querySelector('[data-tk="variante"]').addEventListener('change', function (e) { tradGuardar(b, { variante: e.target.value, glossarioIA: null }); ui.renderTraducao(); });
       d.querySelector('[data-tk="capa"]').addEventListener('change', function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { tradGuardar(b, { capa: r.result }); ui.msg('Capa em ' + I.nome + ' guardada.', 'ok'); }; r.readAsDataURL(f); });
@@ -4094,16 +4130,35 @@ function montarUI(alvo) {
       box.appendChild(d);
     });
   };
+  function renderChave() {
+    var box = Q('.tr-chave'); if (!box) return;
+    var tem = !!chaveClaude();
+    box.innerHTML = '<span style="font-size:.78rem">' + (tem ? '✓ Chave da API do Claude configurada neste navegador.' : '⚠ Falta a chave da API do Claude neste navegador.') + '</span>' +
+      '<input type="password" data-tc="chave" placeholder="' + (tem ? 'Trocar a chave (sk-ant-…)' : 'Cole aqui a chave da API (sk-ant-…)') + '" style="font-size:.75rem;min-width:16rem" autocomplete="off"><button class="bt" type="button" data-tc="salvar">Guardar chave</button>';
+    box.querySelector('[data-tc="salvar"]').addEventListener('click', function () { var v = box.querySelector('[data-tc="chave"]').value.trim(); if (!/^sk-ant-/.test(v)) { ui.msg('A chave da API do Claude começa com “sk-ant-”.', 'err'); return; } try { localStorage.setItem('trad_claude_key', v); } catch (e) {} renderChave(); ui.msg('Chave guardada só neste navegador.', 'ok'); });
+  }
+  var _rt = ui.renderTraducao; ui.renderTraducao = function () { renderChave(); _rt(); };
+  async function preencher(forcar) {
+    if (!estado.livro) { ui.msg('Envie o manuscrito na aba Produção: os campos são preenchidos a partir do livro gerado.', 'err'); return; }
+    if (!chaveClaude()) { ui.msg('Guarde a chave da API do Claude acima para o preenchimento automático.', 'err'); return; }
+    ui.msg('Preenchendo os campos da tradução a partir do livro…');
+    try { var n = await sugerirTraducao(forcar); ui.renderTraducao(); ui.msg(n ? 'Campos preenchidos automaticamente nos quatro idiomas. Revise-os; o revisor e o ISBN dependem de você.' : 'Os campos já estavam preenchidos.', 'ok'); }
+    catch (e) { ui.msg('Não foi possível preencher: ' + e.message, 'err'); }
+  }
+  ui.preencherTraducao = preencher;
+  Q('[data-a="tr-preencher"]').addEventListener('click', function () { preencher(true); });
   Q('[data-a="tr-estimar"]').addEventListener('click', function () {
     if (!estado.livro) { ui.msg('Gere primeiro a edição em português.', 'err'); return; }
     var est = estimarTraducao(), sel = Object.keys(IDIOMAS).filter(function (b) { return tradCfg(b).sel; });
     ui.msg('Texto com cerca de ' + Math.round(est.chars / 1000) + ' mil caracteres. Custo estimado da API: US$ ' + est.usd.toFixed(0) + ' por idioma' + (sel.length > 1 ? ', US$ ' + (est.usd * sel.length).toFixed(0) + ' para os ' + sel.length + ' idiomas marcados' : '') + ' (glossário, tradução e revisão). Novas execuções reaproveitam a memória de tradução.', 'ok');
   });
   Q('[data-a="tr-traduzir"]').addEventListener('click', async function () {
-    if (estado.rodando) return;
-    if (!estado.livro) { ui.msg('Gere primeiro a edição em português na aba Produção.', 'err'); return; }
+    if (estado.rodando) { ui.msg('Aguarde: há uma produção em andamento.', 'err'); return; }
+    if (!estado.entrada) { ui.msg('Envie o manuscrito (.docx) na aba Produção. Se abriu um projeto salvo, envie também o manuscrito dele.', 'err'); return; }
+    if (!chaveClaude()) { ui.msg('Guarde a chave da API do Claude no campo acima desta aba.', 'err'); var c = Q('[data-tc="chave"]'); if (c) c.focus(); return; }
     var sel = Object.keys(IDIOMAS).filter(function (b) { return tradCfg(b).sel; });
     if (!sel.length) { ui.msg('Marque ao menos um idioma.', 'err'); return; }
+    if (!estado.livro || !estado.epub) { ui.msg('Gerando primeiro a edição em português…'); await produzir(); if (!estado.epub) { ui.msg('A edição em português não foi gerada; veja a aba Produção.', 'err'); return; } }
     var est = estimarTraducao();
     if (!confirm('Traduzir para ' + sel.map(function (b) { return IDIOMAS[b].nome; }).join(', ') + '?\nCusto estimado da API: cerca de US$ ' + (est.usd * sel.length).toFixed(0) + '. O processo pode levar de alguns minutos a mais de uma hora por idioma; mantenha esta página aberta.')) return;
     estado.rodando = true; ui.travar(true);
