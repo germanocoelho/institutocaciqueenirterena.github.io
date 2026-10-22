@@ -2507,27 +2507,70 @@ function chaveClaude() {
   } catch (e) {}
   return '';
 }
-function claude(sistema, conteudo, schema, maxTokens) {
-  var chave = chaveClaude();
-  if (!chave) return Promise.reject(new Error('sem chave'));
+/* Chamadas à API do Claude: toda chamada tem prazo (a produção nunca fica parada à espera de uma
+   resposta que não vem), é repetida em falhas passageiras e, diante de chave inválida, falta de
+   crédito ou interrupção pelo editor, a IA é desligada até o fim da produção, que segue sem ela. */
+var IA = { fora: '', ctrl: [], semResposta: 0, escala: 1 };
+function iaReset() { IA.fora = ''; IA.ctrl = []; IA.semResposta = 0; }
+function iaParar(motivo) {
+  if (!IA.fora) IA.fora = motivo || 'interrompida';
+  IA.ctrl.slice().forEach(function (c) { try { c.abort(); } catch (e) {} });
+  IA.ctrl = [];
+}
+function erroApi(status, msg) {
+  var er = new Error(msg || ('HTTP ' + status)); er.status = status;
+  if (status === 401 || /x-api-key|api key|authentication/i.test(er.message)) { er.fatal = true; er.message = 'chave da API inválida ou revogada (gere outra no Console da Anthropic)'; }
+  else if (/credit|billing|saldo|balance/i.test(er.message)) { er.fatal = true; er.message = 'sem crédito na conta da API (adicione crédito no Console da Anthropic)'; }
+  else if (status === 403) { er.fatal = true; er.message = 'a chave da API não tem permissão para este uso'; }
+  return er;
+}
+function fetchApi(corpo, chave, prazoMs) {
+  if (IA.fora) { var e0 = new Error(IA.fora); e0.fatal = true; return Promise.reject(e0); }
+  var ctrl = new AbortController(), venceu = false;
+  IA.ctrl.push(ctrl);
+  prazoMs = prazoMs * (IA.escala || 1);
+  var t = setTimeout(function () { venceu = true; ctrl.abort(); }, prazoMs);
   return fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
+    method: 'POST', signal: ctrl.signal,
     headers: { 'Content-Type': 'application/json', 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-opus-5-5', max_tokens: maxTokens || 16000, fallbacks: 'default',
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: schema } },
-      system: sistema, messages: [{ role: 'user', content: conteudo }]
+    body: JSON.stringify(corpo)
+  }).then(function (r) { IA.semResposta = 0; return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; }); })
+    .catch(function (e) {
+      if (venceu) {
+        // duas chamadas seguidas sem resposta: a IA está fora do ar ou a conexão caiu; a produção segue sem ela
+        if (++IA.semResposta >= 2) { iaParar('a IA não está respondendo (conexão ou serviço indisponível)'); var eh = new Error(IA.fora); eh.fatal = true; throw eh; }
+        var et = new Error('a IA não respondeu em ' + Math.round(prazoMs / 1000) + ' s'); et.temporario = true; throw et;
+      }
+      if (IA.fora) { var ef = new Error(IA.fora); ef.fatal = true; throw ef; }
+      e.temporario = true; throw e;
     })
-  }).then(function (r) {
-    return r.json().then(function (j) {
-      if (!r.ok) throw new Error((j && j.error && j.error.message) || ('HTTP ' + r.status));
-      if (j.stop_reason === 'refusal') throw new Error('pedido recusado pelo modelo');
-      if (j.stop_reason === 'max_tokens') throw new Error('resposta truncada');
-      var b = (j.content || []).filter(function (x) { return x.type === 'text'; })[0];
-      if (!b) throw new Error('resposta vazia');
-      return JSON.parse(b.text);
-    });
-  });
+    .finally(function () { clearTimeout(t); IA.ctrl = IA.ctrl.filter(function (c) { return c !== ctrl; }); });
+}
+async function claude(sistema, conteudo, schema, maxTokens) {
+  var chave = chaveClaude();
+  if (!chave) throw new Error('sem chave');
+  var corpo = {
+    model: 'claude-opus-5-5', max_tokens: maxTokens || 16000, fallbacks: 'default',
+    output_config: { effort: 'low', format: { type: 'json_schema', schema: schema } },
+    system: sistema, messages: [{ role: 'user', content: conteudo }]
+  };
+  for (var tent = 0; ; tent++) {
+    var x;
+    try { x = await fetchApi(corpo, chave, 180000); }
+    catch (e) { if (e.temporario && tent < 2) { await esperar(3000 * (tent + 1)); continue; } throw e; }
+    var r = x.r, j = x.j;
+    if (!r.ok) {
+      if ((r.status === 429 || r.status === 529 || r.status >= 500) && tent < 2) { var ra = parseFloat(r.headers.get('retry-after')); await esperar(ra > 0 ? ra * 1000 : 5000 * (tent + 1)); continue; }
+      var er = erroApi(r.status, j && j.error && j.error.message);
+      if (er.fatal) iaParar(er.message);
+      throw er;
+    }
+    if (j.stop_reason === 'refusal') throw new Error('pedido recusado pelo modelo');
+    if (j.stop_reason === 'max_tokens') throw new Error('resposta truncada');
+    var b = (j.content || []).filter(function (c) { return c.type === 'text'; })[0];
+    if (!b) throw new Error('resposta vazia');
+    return JSON.parse(b.text);
+  }
 }
 function iaMetadados(entrada, texto) {
   var schema = {
@@ -3690,20 +3733,15 @@ async function claudeTrad(p) {
   if (p.web) corpo.tools = [{ type: 'web_search_20260209', name: 'web_search', max_uses: p.web }];
   var acumulado = [], tent = 0, voltas = 0;
   for (;;) {
-    var r;
-    try {
-      r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-        body: JSON.stringify(corpo)
-      });
-    } catch (e) { if (tent++ < 4) { await esperar(4000 * tent); continue; } throw e; }
-    var j = await r.json().catch(function () { return {}; });
+    var x;
+    try { x = await fetchApi(corpo, chave, 600000); }
+    catch (e) { if (e.temporario && tent++ < 4) { await esperar(4000 * tent); continue; } throw e; }
+    var r = x.r, j = x.j;
     if (!r.ok) {
       if ((r.status === 429 || r.status === 529 || r.status >= 500) && tent++ < 5) { var ra = parseFloat(r.headers.get('retry-after')); await esperar(ra > 0 ? ra * 1000 : 5000 * Math.pow(2, tent - 1)); continue; }
-      var er = new Error((j && j.error && j.error.message) || ('HTTP ' + r.status)); er.status = r.status;
       // chave inválida, sem permissão ou sem crédito: não adianta continuar os demais lotes
-      er.fatal = r.status === 401 || r.status === 403 || (r.status === 400 && /credit|billing|saldo|api key|x-api-key/i.test(er.message));
+      var er = erroApi(r.status, j && j.error && j.error.message);
+      if (er.fatal) iaParar(er.message);
       throw er;
     }
     var u = j.usage || {};
@@ -4307,7 +4345,7 @@ async function logosDaObra() {
 async function produzir(opcoesExtras) {
   if (estado.rodando) return;
   if (!estado.entrada) { ui.msg('Envie um manuscrito primeiro.', 'err'); return; }
-  estado.rodando = true; ui.travar(true);
+  estado.rodando = true; iaReset(); ui.travar(true);
   var etapa = ui.etapa;
   try {
     ui.limparEtapas();
@@ -4319,7 +4357,8 @@ async function produzir(opcoesExtras) {
       if (!obra.subtitulo && estado.entrada.meta.subtitulo) obra.subtitulo = estado.entrada.meta.subtitulo;
     }
     if (chaveClaude() && precisaMeta && !estado.metaIAFeita) {
-      etapa('ia-meta', 'rodando');
+      etapa('ia-meta', 'rodando', 'aguardando a IA…');
+      var t0Meta = Date.now(), relMeta = setInterval(function () { etapa('ia-meta', 'rodando', 'aguardando a IA (' + Math.round((Date.now() - t0Meta) / 1000) + ' s)'); }, 1000);
       try {
         var dtmp = new DOMParser().parseFromString('<body>' + estado.entrada.html + '</body>', 'text/html');
         var r = await iaMetadados(estado.entrada, txt(dtmp.body));
@@ -4332,7 +4371,8 @@ async function produzir(opcoesExtras) {
         if (r.cddSugerida) estado.cddSugerida = r.cddSugerida;
         estado.metaIAFeita = true;
         etapa('ia-meta', 'ok', Object.keys(_origemIA).length + ' campo(s) sugeridos');
-      } catch (e) { etapa('ia-meta', 'aviso', 'IA indisponível: ' + e.message); }
+      } catch (e) { clearInterval(relMeta); etapa('ia-meta', 'aviso', 'IA indisponível: ' + e.message); }
+      clearInterval(relMeta);
       ui.preencherForm();
     } else etapa('ia-meta', chaveClaude() ? 'pulado' : 'pulado', chaveClaude() ? 'dados já preenchidos' : 'sem chave do Claude configurada');
     if (!obra.titulo && estado.entrada.meta && estado.entrada.meta.titulo) obra.titulo = estado.entrada.meta.titulo;
@@ -4360,7 +4400,7 @@ async function produzir(opcoesExtras) {
       revisao = await iaRevisao(livro.secoes, function (f, t) { etapa('ia-revisao', 'rodando', f + '/' + t + ' trechos'); });
       var ok = revisao.filter(function (r) { return !r.erro; });
       ok.forEach(function (r) { if (r.trecho === r.correcao || (obra.correcoes.textos || []).some(function (c) { return c.de === r.trecho; })) return; livro.A.add('aviso', 'Revisão', '“' + r.trecho + '” → “' + r.correcao + '” (' + r.tipo + ')', { onde: r.secao, sug: r.explicacao, acao: { tipo: 'texto', de: r.trecho, para: r.correcao } }); });
-      etapa('ia-revisao', revisao.some(function (r) { return r.erro; }) ? 'aviso' : 'ok', ok.length + ' sugestão(ões)');
+      etapa('ia-revisao', revisao.some(function (r) { return r.erro; }) ? 'aviso' : 'ok', ok.length + ' sugestão(ões)' + (IA.fora ? '; IA desligada: ' + IA.fora : ''));
     } else etapa('ia-revisao', 'pulado', obra.revisaoIA ? 'sem chave do Claude configurada' : 'desligada');
     estado.revisao = revisao;
 
@@ -4385,7 +4425,7 @@ async function produzir(opcoesExtras) {
     ui.resultado(livro, res);
     ui.msg('E-book gerado. ' + res.status + '.', res.b ? 'err' : 'ok');
     if (ui.renderTraducao) ui.renderTraducao();
-    if (chaveClaude() && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
+    if (chaveClaude() && !IA.fora && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
   } catch (e) {
     console.error(e);
     ui.msg('Erro na produção: ' + e.message, 'err');
@@ -4528,7 +4568,7 @@ function montarUI(alvo) {
         '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
-      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
+      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="sem-ia" type="button" hidden title="Interrompe as etapas de IA em andamento; o livro é gerado sem elas">⏭ Continuar sem IA</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
       '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
@@ -4615,6 +4655,7 @@ function montarUI(alvo) {
 
   // ações
   Q('[data-a="regerar"]').addEventListener('click', function () { produzir(); });
+  Q('[data-a="sem-ia"]').addEventListener('click', function () { iaParar('interrompida pelo editor'); this.disabled = true; ui.msg('Etapas de IA interrompidas; o livro segue sendo gerado sem elas…'); });
   Q('[data-a="proj-salvar"]').addEventListener('click', function () {
     var pj = { tipo: 'projeto-editora-cacique-enir-terena', versao: VERSAO, salvo: new Date().toISOString(), obra: obra };
     baixar(new Blob([JSON.stringify(pj, null, 2)], { type: 'application/json' }), 'projeto-' + slug(obra.titulo || 'livro') + '.json');
@@ -4661,7 +4702,7 @@ function montarUI(alvo) {
   selPg.addEventListener('change', function () { mostrarPg(+selPg.value); });
 
   ui.msg = function (m, t) { QA('.msg').forEach(function (e) { e.textContent = m; e.className = 'msg' + (e.classList.contains('tr-msg') ? ' tr-msg' : '') + (t ? ' ' + t : ''); }); };
-  ui.travar = function (s) { QA('.acoes .bt').forEach(function (b) { if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
+  ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
     var li = raiz.querySelector('.etapas [data-e="' + id + '"]'); if (!li) return;
@@ -4852,8 +4893,8 @@ function montarUI(alvo) {
     if (!estado.livro) { ui.msg('Envie o manuscrito na aba Produção: os campos são preenchidos a partir do livro gerado.', 'err'); return; }
     if (!chaveClaude()) { ui.msg('Guarde a chave da API do Claude acima para o preenchimento automático.', 'err'); return; }
     ui.msg('Preenchendo os campos da tradução a partir do livro…');
-    try { var n = await sugerirTraducao(forcar); ui.renderTraducao(); ui.msg(n ? 'Campos preenchidos automaticamente nos quatro idiomas. Revise-os; o revisor e o ISBN dependem de você.' : 'Os campos já estavam preenchidos.', 'ok'); }
-    catch (e) { ui.msg('Não foi possível preencher: ' + e.message, 'err'); }
+    try { var n = await sugerirTraducao(forcar); ui.renderTraducao(); if (forcar || n) ui.msg(n ? 'Campos preenchidos automaticamente nos quatro idiomas. Revise-os; o revisor e o ISBN dependem de você.' : 'Os campos já estavam preenchidos.', 'ok'); }
+    catch (e) { if (forcar) ui.msg('Não foi possível preencher: ' + e.message, 'err'); else console.warn('Preenchimento automático da tradução: ' + e.message); }
   }
   ui.preencherTraducao = preencher;
   Q('[data-a="tr-preencher"]').addEventListener('click', function () { preencher(true); });
@@ -4871,7 +4912,7 @@ function montarUI(alvo) {
     if (!estado.livro || !estado.epub) { ui.msg('Gerando primeiro a edição em português…'); await produzir(); if (!estado.epub) { ui.msg('A edição em português não foi gerada; veja a aba Produção.', 'err'); return; } }
     var est = estimarTraducao();
     if (!confirm('Traduzir para ' + sel.map(function (b) { return IDIOMAS[b].nome; }).join(', ') + '?\nCusto estimado da API: cerca de US$ ' + (est.usd * sel.length).toFixed(0) + '. O processo pode levar de alguns minutos a mais de uma hora por idioma; mantenha esta página aberta.')) return;
-    estado.rodando = true; ui.travar(true);
+    estado.rodando = true; iaReset(); ui.travar(true);
     try {
       for (var i = 0; i < sel.length; i++) {
         var b = sel[i];
@@ -5016,7 +5057,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar, admEntrou: admEntrou,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg, ia: IA, iaParar: iaParar }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

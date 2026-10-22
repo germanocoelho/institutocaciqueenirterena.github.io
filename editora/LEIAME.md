@@ -37,6 +37,10 @@ Painel no ADM do site do ICET (seção “Editora Cacique Enir Terena”, visív
 
 Bibliotecas incluídas: JSZip (MIT) e mammoth.js (BSD-2). Fontes: Literata e Cinzel (SIL OFL 1.1).
 
+## Etapas de IA (metadados, revisão e tradução)
+
+Quando a chave da API do Claude está guardada, a produção usa a IA para sugerir metadados, títulos de tabelas e a revisão linguística. Cada chamada tem prazo: se a IA não responde, a chamada é repetida uma vez e, se continuar sem resposta, as etapas de IA são desligadas e o livro é gerado sem elas. O mesmo acontece, já na primeira resposta, com chave inválida ou conta sem crédito, e o motivo aparece na lista de etapas. Durante a produção, o botão **Continuar sem IA** interrompe as etapas de IA a qualquer momento.
+
 ## Formatos de manuscrito aceitos
 
 O motor reconhece o formato pelo conteúdo do arquivo. Uma extensão errada (um .docx salvo como .doc, por exemplo) não atrapalha.
