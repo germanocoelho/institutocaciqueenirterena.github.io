@@ -4955,7 +4955,7 @@ function renderNoticias(){
     card.innerHTML='<div class="nc-cat">'+(window.ICET_pick?window.ICET_pick(n,'cat'):n.cat)+'</div>'
       +'<div class="nc-data">'+n.data+'</div>'
       +'<div class="nc-fonte">'+n.fonte+'</div>'
-      +'<div class="nc-ti">'+(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo)+'</div>'
+      +'<div class="nc-ti">'+(/^https?:\/\//i.test(n.link||'')?'<a href="'+n.link+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">'+(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo)+'</a>':(window.ICET_pick?window.ICET_pick(n,'titulo'):n.titulo))+'</div>'
       +(n.desc?'<div class="nc-de">'+(window.ICET_pick?window.ICET_pick(n,'desc'):n.desc)+'</div>':'')
       +(window.NT_botaoMidia?window.NT_botaoMidia(n):(n.link?'<a href="'+n.link+'" target="_blank" rel="noopener" class="nc-link">'+(window.ICET_L?window.ICET_L('btn_lernot'):'Ler notícia ↗')+'</a>':''))
       +(isCustom?'<button class="nc-del btn-sm" data-nc-trad="'+n.id+'" title="Traduzir">🌐</button><button class="nc-del btn-sm del" data-nc-del="'+n.id+'">✕</button>':'');
