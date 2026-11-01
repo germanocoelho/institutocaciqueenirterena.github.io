@@ -2069,6 +2069,27 @@ body:has(#nt-modal:not([hidden])) #org-topo{display:none}
 }
 
 .org-detalhe:not(.aberto){max-height:360px; overflow:hidden; -webkit-mask-image:linear-gradient(#000 60%,transparent); mask-image:linear-gradient(#000 60%,transparent)}
+
+/* cartões do fim da página */
+.org-cartoes{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.4rem; max-width:1200px; margin:0 auto; padding:3rem 2rem 4rem}
+.org-cartoes > section.org-cartao{padding:2rem 1.8rem !important; margin:0 !important; border:1px solid rgba(242,196,90,.22); border-radius:18px; background:rgba(255,255,255,.025) !important; min-height:0 !important; overflow:hidden; position:relative}
+.org-cartoes > section.org-cartao .container{max-width:none !important; padding:0 !important; width:auto !important}
+.org-cartoes > section.org-cartao .grafismo-bg{opacity:.25}
+.org-cartoes > section.org-cartao .sec-title{font-size:clamp(1.25rem,2.2vw,1.6rem) !important}
+.org-cartoes > section.org-cartao.aberto{grid-column:1 / -1}
+.org-cartoes > section.org-cartao:not(.aberto) .org-cart-oculto{display:none !important}
+#depoimentos.org-cartao:not(.aberto) .dep-grid.org-cart-oculto{display:grid !important}
+#depoimentos.org-cartao:not(.aberto) .dep-grid .dep-card:nth-child(n+2){display:none !important}
+.org-cartoes .contato-grid{grid-template-columns:1fr !important}
+.org-cartoes .aberto .contato-grid{grid-template-columns:1fr 1fr !important}
+.org-cartoes .dep-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important}
+.org-cartoes .comenda-grid .cal-vazio{padding:1rem !important; min-height:0 !important}
+.org-cart-bt{margin-top:1.2rem}
+@media(max-width:860px){
+  .org-cartoes{grid-template-columns:1fr; padding:2rem 1.1rem 3rem; gap:1rem}
+  .org-cartoes > section.org-cartao{padding:1.5rem 1.2rem !important}
+  .org-cartoes .aberto .contato-grid{grid-template-columns:1fr !important}
+}
 </style>
 <script>
 /* ===== Tradução automática (português -> inglês, espanhol e francês) =====
@@ -8611,6 +8632,10 @@ else setTimeout(iniciar, 0);
     videos:    {pt:'Ver todos os vídeos', en:'See all videos', es:'Ver todos los videos', fr:'Voir toutes les vidéos'},
     topo:      {pt:'Voltar ao topo', en:'Back to top', es:'Volver arriba', fr:'Retour en haut'},
     detalhes:  {pt:'Ver todos os detalhes do case', en:'See all case details', es:'Ver todos los detalles del caso', fr:'Voir tous les détails du cas'},
+    mapa:      {pt:'Ver o mapa', en:'View the map', es:'Ver el mapa', fr:'Voir la carte'},
+    deps:      {pt:'Ver todos os depoimentos', en:'See all testimonials', es:'Ver todos los testimonios', fr:'Voir tous les témoignages'},
+    acervo:    {pt:'Abrir o acervo', en:'Open the archive', es:'Abrir el archivo', fr:'Ouvrir les archives'},
+    agraciados:{pt:'Ver agraciados', en:'See honorees', es:'Ver galardonados', fr:'Voir les lauréats'},
     cases:     {pt:'Escolha um case', en:'Choose a case', es:'Elija un caso', fr:'Choisissez un cas'}
   };
   function lg(){ try{ return (window.ICET_getLang ? window.ICET_getLang() : localStorage.getItem('icet_lang')) || 'pt'; }catch(e){ return 'pt'; } }
@@ -8764,6 +8789,36 @@ else setTimeout(iniciar, 0);
     });
   }
 
+
+  /* ---------- 8. Seções curtas do fim viram cartões lado a lado (a Loja continua em destaque) ---------- */
+  function cartoes(){
+    var loja = document.getElementById('loja'); if (!loja || document.querySelector('.org-cartoes')) return;
+    var def = [
+      ['contato', 'mapa', function(sec){ return sec.querySelectorAll('.mapa'); }],
+      ['depoimentos', 'deps', function(sec){ return sec.querySelectorAll('.dep-grid'); }],
+      ['comenda', 'agraciados', function(sec){ var g = sec.querySelector('.comenda-grid'); return (g && !g.querySelector('.cal-vazio')) ? [g] : []; }],
+      ['acervo', 'acervo', function(sec){ return sec.querySelectorAll('.acervo-tabs, .acervo-painel, .container > *:not(.eyebrow):not(.sec-title):not(.divider):not(.sec-lead):not(.adm-panel)'); }]
+    ];
+    var caixa = document.createElement('div'); caixa.className = 'org-cartoes';
+    loja.parentNode.insertBefore(caixa, loja.nextSibling);
+    var porId = {};
+    def.forEach(function(d){
+      var sec = document.getElementById(d[0]); if (!sec) return;
+      caixa.appendChild(sec); sec.classList.add('org-cartao'); porId[d[0]] = sec;
+      var ocultar = [].slice.call(d[2](sec));
+      if (!ocultar.length) return;
+      ocultar.forEach(function(el){ el.classList.add('org-cart-oculto'); });
+      var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'org-mais org-cart-bt'; bt.setAttribute('aria-expanded','false');
+      rotular(bt, function(){ return sec.classList.contains('aberto') ? t('menos') : t(d[1]); });
+      bt.addEventListener('click', function(){ var ab = sec.classList.toggle('aberto'); bt.setAttribute('aria-expanded', ab ? 'true' : 'false'); atualizarRotulos(); sec.scrollIntoView({block:'start'}); });
+      var cont = sec.querySelector('.container') || sec; cont.appendChild(bt);
+    });
+    document.querySelectorAll('.divisor-terena').forEach(function(dv){ var n = dv.nextElementSibling; if (n && (n.classList.contains('divisor-terena') || n === caixa)) dv.style.display = 'none'; });
+    function abrirPorHash(id){ var sec = porId[id]; if (sec && !sec.classList.contains('aberto')) { var bt = sec.querySelector('.org-cart-bt'); if (bt) bt.click(); } }
+    document.addEventListener('click', function(e){ var a = e.target.closest && e.target.closest('a[href^="#"]'); if (a) abrirPorHash(a.getAttribute('href').slice(1)); }, true);
+    window.addEventListener('hashchange', function(){ abrirPorHash(location.hash.slice(1)); });
+    if (location.hash) abrirPorHash(location.hash.slice(1));
+  }
   function iniciar(){
     dobrar('enir', ['enir_p3','enir_p4','enir_p5'], '.enir-bio', 'leia');
     dobrar('instituto', ['instituto_p3','instituto_p4','instituto_p5'], null, 'leiaInst');
@@ -8785,6 +8840,7 @@ else setTimeout(iniciar, 0);
     limitar('gal-grid', 8, 6, 'fotos');
     limitar('vid-grid', 6, 3, 'videos');
     casesEmAbas();
+    cartoes();
     voltarTopo();
     menuAtivo();
     leituraCelular(); setTimeout(leituraCelular, 2500);
