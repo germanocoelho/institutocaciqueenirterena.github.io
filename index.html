@@ -8040,6 +8040,8 @@ window.NT_cartoesRelease = function(){
 };
 window.NT_botaoMidia = function(n){
   MIDIA[n.id] = n;
+  var ext = urlSegura(n.link);
+  if (/^https?:/i.test(ext)) return '<a class="nc-ler" href="' + esc(ext) + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">📰 ' + esc(u('ler_midia', {v: n.fonte || ''})) + ' ↗</a>';
   return '<button type="button" class="nc-ler" data-nt-midia="' + esc(n.id) + '">📰 ' + esc(u('ler')) + '</button>';
 };
 
