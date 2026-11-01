@@ -1818,6 +1818,41 @@ body.adm-ok .si-btn[onclick*="siEnviarEPublicar"] {
   #tecnologia-social-icet [style*="rgba(255,255,255,.04)"]{ transition:none !important; }
 }
 
+
+/* ══ CONSULTORIAS ══ */
+#consultorias{background:var(--k2)}
+.cons-grid{display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:2.4rem;align-items:start;margin-top:2rem}
+.cons-capa{margin:0;background:var(--k3);border:1px solid var(--brd2);border-radius:14px;padding:.8rem;box-shadow:var(--shadow)}
+.cons-capa img{width:100%;display:block;border-radius:8px}
+.cons-capa figcaption{font-family:'Inter',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ou);text-align:center;margin-top:.7rem}
+.cons-texto h3{font-family:'Cinzel',serif;color:var(--ou);font-size:1.3rem;margin:0 0 .8rem}
+.cons-texto p{color:var(--cr2);line-height:1.75;margin:0 0 1rem;font-size:1rem}
+.cons-texto strong{color:var(--ou)}
+.cons-resp{background:rgba(139,58,15,.16);border-left:3px solid var(--ou);padding:.9rem 1.1rem;border-radius:0 10px 10px 0;font-size:.92rem !important}
+.cons-logos img{height:54px;border-radius:8px;margin-top:.4rem}
+.cons-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2.4rem 0 2rem}
+.cons-nums div{background:var(--k3);border:1px solid var(--brd2);border-radius:12px;padding:1.1rem 1rem;text-align:center}
+.cons-nums b{display:block;font-family:'Cinzel',serif;font-size:2.4rem;color:var(--ou);line-height:1}
+.cons-nums span{display:block;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--tx2);margin-top:.45rem}
+.cons-sub{font-family:'Cinzel',serif;color:var(--cr);font-size:1.2rem;margin:2rem 0 1rem}
+.cons-planos{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.cons-planos span{display:flex;align-items:center;gap:.8rem;background:var(--k3);border:1px solid var(--brd);border-radius:12px;padding:.8rem 1rem}
+.cons-planos i{font-style:normal;flex:none;width:38px;height:38px;border-radius:50%;background:var(--r);color:var(--cr);font-family:'Cinzel',serif;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.cons-planos em{font-style:normal;color:var(--cr2);font-family:'Inter',sans-serif;font-size:.9rem}
+.cons-tabs{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem}
+.cons-tab{background:transparent;border:1px solid var(--brd2);color:var(--cr2);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.04em;padding:.6rem 1.2rem;border-radius:999px;transition:.2s}
+.cons-tab:hover,.cons-tab.on{border-color:var(--ou);color:var(--ou);background:rgba(139,58,15,.2)}
+.cons-painel{display:none;background:var(--k3);border:1px solid var(--brd2);border-radius:14px;padding:1.2rem}
+.cons-painel.on{display:block}
+.cons-painel-topo{display:flex;gap:1.2rem;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:1rem}
+.cons-painel-topo p{flex:1 1 320px;margin:0;color:var(--cr2);line-height:1.6;font-size:.95rem}
+.cons-btns{display:flex;gap:.6rem;flex-wrap:wrap}
+.cons-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;text-decoration:none;padding:.6rem 1.1rem;border-radius:8px;background:var(--ou);color:var(--k);white-space:nowrap}
+.cons-btn-g{background:transparent;color:var(--ou);border:1px solid var(--ou)}
+.cons-visor{border-radius:10px;overflow:hidden;background:#2a2016;height:70vh;min-height:420px}
+.cons-visor iframe{width:100%;height:100%;border:0;display:block}
+.cons-nota{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--tx3);margin-top:1rem;text-align:center}
+@media(max-width:820px){.cons-grid{grid-template-columns:1fr}.cons-capa{max-width:320px;margin:0 auto}.cons-nums{grid-template-columns:repeat(2,1fr)}.cons-planos{grid-template-columns:1fr}.cons-visor{height:60vh}}
 </style>
 <style id="icet-gal-ajuste">.gal-item:nth-child(4n+1){aspect-ratio:auto}</style>
 <style id="nt-estilo">
@@ -2098,7 +2133,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <li><a href="#oreka" onclick="closeMenu()" data-i18n="nav_oreka">OREKA</a></li>
     <li><a href="#ceramica" onclick="closeMenu()" data-i18n="nav_ceramica">Cerâmica</a></li>
     <li><a href="#diretoria" onclick="closeMenu()" data-i18n="nav_diretoria">Diretoria</a></li>
-    <li></li>
+    <li><a href="#consultorias" onclick="closeMenu()" data-i18n="nav_consultorias">Consultorias</a></li>
     <li><a href="#noticias" onclick="closeMenu()" data-i18n="nav_noticias">Notícias</a></li>
     <li><a href="#calendario" onclick="closeMenu()" data-i18n="nav_calendario">Agenda</a></li>
     <li><a href="#galeria" onclick="closeMenu()" data-i18n="nav_galeria">Galeria</a></li>
@@ -2716,6 +2751,65 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
   <article class="nt-art" id="nt-art"></article>
 </div>
 <div class="nt-lb" id="nt-lb" role="dialog" aria-modal="true" hidden><button type="button" id="nt-lb-x" aria-label="Fechar">&times;</button><img id="nt-lb-img" alt=""><p id="nt-lb-leg"></p></div>
+<!-- ══ CONSULTORIAS ══ -->
+<section id="consultorias">
+  <div class="container">
+    <span class="eyebrow" data-i18n="cons_eyb">Consultorias do ICET</span>
+    <h2 class="sec-title" data-i18n="cons_t">Programa Integrado de Políticas para os Povos Indígenas</h2>
+    <div class="divider"></div>
+    <p class="sec-lead" data-i18n="cons_l">Consultoria técnica realizada pelo ICET para o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS), aprovada por aclamação pelas lideranças indígenas em 31 de outubro de 2026.</p>
+
+    <div class="cons-grid">
+      <figure class="cons-capa reveal"><img src="imgs/galeria/programa-integrado-01-capa.jpg" alt="Capa do resumo executivo do Programa Integrado" loading="lazy"><figcaption data-i18n="cons_cliente">Cliente: FOCAMS | 2027 a 2030</figcaption></figure>
+      <div class="cons-texto reveal">
+        <h3 data-i18n="cons_oque_t">O que é o trabalho</h3>
+        <p data-i18n-html="cons_p1">O <strong>Programa Integrado</strong> reúne seis planos nacionais de políticas públicas para os povos indígenas, dirigidos ao governo federal para o mandato de 2027 a 2030. A pedido do FOCAMS, o ICET transformou as demandas das comunidades de Mato Grosso do Sul em propostas que os ministérios e órgãos federais podem executar.</p>
+        <p data-i18n="cons_p2">Cada plano segue o mesmo método: diagnóstico com dados oficiais, base legal, ações, responsáveis no governo federal, metas até 2030, medidas para os primeiros 100 dias, riscos a evitar e minutas de decretos e projetos de lei. O Programa organiza programas federais que já existem e não cria cargos.</p>
+        <p data-i18n-html="cons_p3">Em 31 de outubro de 2026, em reunião convocada pelo FOCAMS em Campo Grande, <strong>32 lideranças, caciques e instituições indígenas</strong> de todo o estado aprovaram o Programa por unanimidade e por aclamação. O próximo passo é o envio às instituições indígenas que ainda não participaram e, depois, à Presidência da República e aos ministérios.</p>
+        <p class="cons-resp" data-i18n-html="cons_resp"><strong>Responsáveis pela consultoria:</strong> Maria Auxiliadora Bezerra, presidente do ICET (consultoria institucional técnica), e Germano Coelho Ramos Rocha-Silva, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação.</p>
+        <div class="cons-logos"><img src="imgs/logo_nav.jpg" alt="ICET" onerror="this.style.display='none'"></div>
+      </div>
+    </div>
+
+    <div class="cons-nums reveal">
+      <div><b>6</b><span data-i18n="cons_n1">planos nacionais</span></div>
+      <div><b>61</b><span data-i18n="cons_n2">áreas de ação</span></div>
+      <div><b>155</b><span data-i18n="cons_n3">metas verificáveis</span></div>
+      <div><b>32</b><span data-i18n="cons_n4">lideranças e instituições na aprovação</span></div>
+    </div>
+
+    <h3 class="cons-sub reveal" data-i18n="cons_planos_t">Os seis planos</h3>
+    <div class="cons-planos reveal">
+      <span><i>I</i><em data-i18n="cons_pl1">Saúde dos povos indígenas</em></span>
+      <span><i>II</i><em data-i18n="cons_pl2">Educação escolar indígena</em></span>
+      <span><i>III</i><em data-i18n="cons_pl3">Conhecimentos tradicionais</em></span>
+      <span><i>IV</i><em data-i18n="cons_pl4">Empreendedorismo indígena</em></span>
+      <span><i>V</i><em data-i18n="cons_pl5">Produção agropecuária cooperativa</em></span>
+      <span><i>VI</i><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
+    </div>
+
+    <h3 class="cons-sub reveal" data-i18n="cons_docs_t">Documentos: versão mais atual</h3>
+    <div class="cons-tabs" role="tablist">
+      <button class="cons-tab on" data-cons="res" data-i18n="cons_tab_res">Resumo executivo</button>
+      <button class="cons-tab" data-cons="apr" data-i18n="cons_tab_apr">Apresentação</button>
+      <button class="cons-tab" data-cons="int" data-i18n="cons_tab_int">Programa completo</button>
+    </div>
+      <div class="cons-painel on" id="cons-res">
+        <div class="cons-painel-topo"><p data-i18n="cons_res_d">Resumo ilustrado do Programa, em 8 páginas e capa: o que é, o que cada plano propõe, metas, órgãos federais envolvidos e próximos passos. Versão de 31 de outubro de 2026.</p><div class="cons-btns"><a class="cons-btn" href="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf" target="_blank" rel="noopener" data-i18n="cons_abrir">Abrir em nova aba</a><a class="cons-btn cons-btn-g" href="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf" download data-i18n="cons_baixar">Baixar PDF</a></div></div>
+        <div class="cons-visor"><iframe data-src="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf#view=FitH" title="Resumo executivo" loading="lazy"></iframe></div>
+      </div>
+      <div class="cons-painel" id="cons-apr">
+        <div class="cons-painel-topo"><p data-i18n="cons_apr_d">Apresentação de 13 slides para as lideranças e os anciãos, com linguagem simples, um slide para cada plano e perguntas para a roda de conversa. Disponível em PDF e em PowerPoint editável.</p><div class="cons-btns"><a class="cons-btn" href="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf" target="_blank" rel="noopener" data-i18n="cons_abrir">Abrir em nova aba</a><a class="cons-btn cons-btn-g" href="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf" download data-i18n="cons_baixar">Baixar PDF</a><a class="cons-btn cons-btn-g" href="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pptx" download data-i18n="cons_baixar_pptx">Baixar PowerPoint</a></div></div>
+        <div class="cons-visor"><iframe data-src="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf#view=FitH" title="Apresentação" loading="lazy"></iframe></div>
+      </div>
+      <div class="cons-painel" id="cons-int">
+        <div class="cons-painel-topo"><p data-i18n="cons_int_d">Texto integral do Programa, com resumo executivo e os seis planos completos, incluindo diagnósticos, metas, cronogramas e minutas de atos normativos (217 páginas).</p><div class="cons-btns"><a class="cons-btn" href="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf" target="_blank" rel="noopener" data-i18n="cons_abrir">Abrir em nova aba</a><a class="cons-btn cons-btn-g" href="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf" download data-i18n="cons_baixar">Baixar PDF</a></div></div>
+        <div class="cons-visor"><iframe data-src="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf#view=FitH" title="Programa completo" loading="lazy"></iframe></div>
+      </div>
+    <p class="cons-nota" data-i18n="cons_nota">Documentos públicos do FOCAMS, elaborados com consultoria técnica do ICET. Podem ser compartilhados citando a fonte.</p>
+  </div>
+</section>
+
 <section id="noticias">
   <div class="grafismo-bg"></div>
   <div class="container">
@@ -6034,6 +6128,38 @@ document.addEventListener('DOMContentLoaded',function(){
       nav_loja:        {pt:'Loja', es:'Tienda',            en:'Store',              fr:'Boutique'},
       nav_acervo:      {pt:'Acervo', es:'Acervo',          en:'Archive',            fr:'Archives'},
       nav_depoimentos: {pt:'Depoimentos', es:'Testimonios',     en:'Testimonials',       fr:'Témoignages'},
+      nav_consultorias: {pt:'Consultorias', es:'Consultorías', en:'Consulting', fr:'Conseil'},
+      cons_eyb: {pt:'Consultorias do ICET', es:'Consultorías del ICET', en:'ICET consulting', fr:'Missions de conseil de l’ICET'},
+      cons_t: {pt:'Programa Integrado de Políticas para os Povos Indígenas', es:'Programa Integrado de Políticas para los Pueblos Indígenas', en:'Integrated Program of Policies for Indigenous Peoples', fr:'Programme intégré de politiques pour les peuples autochtones'},
+      cons_l: {pt:'Consultoria técnica realizada pelo ICET para o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS), aprovada por aclamação pelas lideranças indígenas em 31 de outubro de 2026.', es:'Consultoría técnica realizada por el ICET para el Foro de los Caciques de Mato Grosso do Sul (FOCAMS), aprobada por aclamación por los liderazgos indígenas el 31 de octubre de 2026.', en:'Technical consultancy carried out by ICET for the Forum of Chiefs of Mato Grosso do Sul (FOCAMS), approved by acclamation by Indigenous leaders on October 31, 2026.', fr:'Mission de conseil technique réalisée par l’ICET pour le Forum des caciques du Mato Grosso do Sul (FOCAMS), approuvée par acclamation par les dirigeants autochtones le 31 octobre 2026.'},
+      cons_cliente: {pt:'Cliente: FOCAMS | 2027 a 2030', es:'Cliente: FOCAMS | 2027 a 2030', en:'Client: FOCAMS | 2027–2030', fr:'Client : FOCAMS | 2027-2030'},
+      cons_oque_t: {pt:'O que é o trabalho', es:'En qué consiste el trabajo', en:'What the work is', fr:'En quoi consiste le travail'},
+      cons_p1: {pt:'O <strong>Programa Integrado</strong> reúne seis planos nacionais de políticas públicas para os povos indígenas, dirigidos ao governo federal para o mandato de 2027 a 2030. A pedido do FOCAMS, o ICET transformou as demandas das comunidades de Mato Grosso do Sul em propostas que os ministérios e órgãos federais podem executar.', es:'El <strong>Programa Integrado</strong> reúne seis planes nacionales de políticas públicas para los pueblos indígenas, dirigidos al gobierno federal para el mandato 2027 a 2030. A pedido del FOCAMS, el ICET transformó las demandas de las comunidades de Mato Grosso do Sul en propuestas que los ministerios y órganos federales pueden ejecutar.', en:'The <strong>Integrated Program</strong> brings together six national public policy plans for Indigenous peoples, addressed to the federal government for the 2027–2030 term. At the request of FOCAMS, ICET turned the demands of Mato Grosso do Sul’s communities into proposals that federal ministries and agencies can carry out.', fr:'Le <strong>Programme intégré</strong> réunit six plans nationaux de politiques publiques pour les peuples autochtones, adressés au gouvernement fédéral pour le mandat 2027-2030. À la demande du FOCAMS, l’ICET a transformé les demandes des communautés du Mato Grosso do Sul en propositions que les ministères et organismes fédéraux peuvent mettre en œuvre.'},
+      cons_p2: {pt:'Cada plano segue o mesmo método: diagnóstico com dados oficiais, base legal, ações, responsáveis no governo federal, metas até 2030, medidas para os primeiros 100 dias, riscos a evitar e minutas de decretos e projetos de lei. O Programa organiza programas federais que já existem e não cria cargos.', es:'Cada plan sigue el mismo método: diagnóstico con datos oficiales, base legal, acciones, responsables en el gobierno federal, metas hasta 2030, medidas para los primeros 100 días, riesgos a evitar y borradores de decretos y proyectos de ley. El Programa organiza programas federales que ya existen y no crea cargos.', en:'Each plan follows the same method: a diagnosis based on official data, the legal basis, actions, the responsible federal bodies, targets through 2030, measures for the first 100 days, risks to avoid and draft decrees and bills. The Program builds on federal programs that already exist and creates no new posts.', fr:'Chaque plan suit la même méthode : diagnostic fondé sur des données officielles, base juridique, actions, organismes fédéraux responsables, objectifs jusqu’en 2030, mesures pour les 100 premiers jours, risques à éviter et projets de décrets et de lois. Le Programme s’appuie sur des programmes fédéraux existants et ne crée aucun poste.'},
+      cons_p3: {pt:'Em 31 de outubro de 2026, em reunião convocada pelo FOCAMS em Campo Grande, <strong>32 lideranças, caciques e instituições indígenas</strong> de todo o estado aprovaram o Programa por unanimidade e por aclamação. O próximo passo é o envio às instituições indígenas que ainda não participaram e, depois, à Presidência da República e aos ministérios.', es:'El 31 de octubre de 2026, en una reunión convocada por el FOCAMS en Campo Grande, <strong>32 liderazgos, caciques e instituciones indígenas</strong> de todo el estado aprobaron el Programa por unanimidad y por aclamación. El próximo paso es el envío a las instituciones indígenas que aún no participaron y, después, a la Presidencia de la República y a los ministerios.', en:'On October 31, 2026, at a meeting called by FOCAMS in Campo Grande, <strong>32 Indigenous leaders, chiefs and institutions</strong> from across the state approved the Program unanimously and by acclamation. The next step is to send it to the Indigenous institutions that have not yet taken part and then to the Presidency of the Republic and the ministries.', fr:'Le 31 octobre 2026, lors d’une réunion convoquée par le FOCAMS à Campo Grande, <strong>32 dirigeants, caciques et institutions autochtones</strong> de tout l’État ont approuvé le Programme à l’unanimité et par acclamation. La prochaine étape est l’envoi aux institutions autochtones qui n’ont pas encore participé, puis à la Présidence de la République et aux ministères.'},
+      cons_resp: {pt:'<strong>Responsáveis pela consultoria:</strong> Maria Auxiliadora Bezerra, presidente do ICET (consultoria institucional técnica), e Germano Coelho Ramos Rocha-Silva, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação.', es:'<strong>Responsables de la consultoría:</strong> Maria Auxiliadora Bezerra, presidenta del ICET (consultoría institucional técnica), y Germano Coelho Ramos Rocha-Silva, indígena terena, secretario general del ICET y magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación.', en:'<strong>Consultancy leads:</strong> Maria Auxiliadora Bezerra, ICET president (technical institutional consultancy), and Germano Coelho Ramos Rocha-Silva, a Terena Indigenous man, ICET secretary-general and holder of a master’s degree in Intellectual Property and Technology Transfer for Innovation.', fr:'<strong>Responsables de la mission :</strong> Maria Auxiliadora Bezerra, présidente de l’ICET (conseil institutionnel technique), et Germano Coelho Ramos Rocha-Silva, autochtone terena, secrétaire général de l’ICET et titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation.'},
+      cons_n1: {pt:'planos nacionais', es:'planes nacionales', en:'national plans', fr:'plans nationaux'},
+      cons_n2: {pt:'áreas de ação', es:'áreas de acción', en:'areas of action', fr:'domaines d’action'},
+      cons_n3: {pt:'metas verificáveis', es:'metas verificables', en:'verifiable targets', fr:'objectifs vérifiables'},
+      cons_n4: {pt:'lideranças e instituições na aprovação', es:'liderazgos e instituciones en la aprobación', en:'leaders and institutions at the approval', fr:'dirigeants et institutions lors de l’approbation'},
+      cons_planos_t: {pt:'Os seis planos', es:'Los seis planes', en:'The six plans', fr:'Les six plans'},
+      cons_pl1: {pt:'Saúde dos povos indígenas', es:'Salud de los pueblos indígenas', en:'Health of Indigenous peoples', fr:'Santé des peuples autochtones'},
+      cons_pl2: {pt:'Educação escolar indígena', es:'Educación escolar indígena', en:'Indigenous school education', fr:'Éducation scolaire autochtone'},
+      cons_pl3: {pt:'Conhecimentos tradicionais', es:'Conocimientos tradicionales', en:'Traditional knowledge', fr:'Savoirs traditionnels'},
+      cons_pl4: {pt:'Empreendedorismo indígena', es:'Emprendimiento indígena', en:'Indigenous entrepreneurship', fr:'Entrepreneuriat autochtone'},
+      cons_pl5: {pt:'Produção agropecuária cooperativa', es:'Producción agropecuaria cooperativa', en:'Cooperative agricultural production', fr:'Production agricole coopérative'},
+      cons_pl6: {pt:'Mineração em terras indígenas', es:'Minería en tierras indígenas', en:'Mining on Indigenous lands', fr:'Mines sur les terres autochtones'},
+      cons_docs_t: {pt:'Documentos: versão mais atual', es:'Documentos: versión más actual', en:'Documents: latest version', fr:'Documents : version la plus récente'},
+      cons_tab_res: {pt:'Resumo executivo', es:'Resumen ejecutivo', en:'Executive summary', fr:'Résumé exécutif'},
+      cons_tab_apr: {pt:'Apresentação', es:'Presentación', en:'Presentation', fr:'Présentation'},
+      cons_tab_int: {pt:'Programa completo', es:'Programa completo', en:'Full Program', fr:'Programme complet'},
+      cons_res_d: {pt:'Resumo ilustrado do Programa, em 8 páginas e capa: o que é, o que cada plano propõe, metas, órgãos federais envolvidos e próximos passos. Versão de 31 de outubro de 2026.', es:'Resumen ilustrado del Programa, en 8 páginas y portada: qué es, qué propone cada plan, metas, órganos federales involucrados y próximos pasos. Versión del 31 de octubre de 2026.', en:'Illustrated summary of the Program, 8 pages plus cover: what it is, what each plan proposes, targets, federal bodies involved and next steps. Version of October 31, 2026.', fr:'Résumé illustré du Programme, en 8 pages et une couverture : ce qu’il est, ce que propose chaque plan, objectifs, organismes fédéraux concernés et prochaines étapes. Version du 31 octobre 2026.'},
+      cons_apr_d: {pt:'Apresentação de 13 slides para as lideranças e os anciãos, com linguagem simples, um slide para cada plano e perguntas para a roda de conversa. Disponível em PDF e em PowerPoint editável.', es:'Presentación de 13 diapositivas para los liderazgos y los ancianos, con lenguaje sencillo, una diapositiva para cada plan y preguntas para la ronda de conversación. Disponible en PDF y en PowerPoint editable.', en:'A 13-slide presentation for leaders and elders, in plain language, with one slide per plan and questions for the talking circle. Available as a PDF and as an editable PowerPoint file.', fr:'Présentation de 13 diapositives pour les dirigeants et les anciens, en langage simple, avec une diapositive par plan et des questions pour le cercle de parole. Disponible en PDF et en PowerPoint modifiable.'},
+      cons_int_d: {pt:'Texto integral do Programa, com resumo executivo e os seis planos completos, incluindo diagnósticos, metas, cronogramas e minutas de atos normativos (217 páginas).', es:'Texto completo del Programa, con resumen ejecutivo y los seis planes completos, incluidos diagnósticos, metas, cronogramas y borradores de actos normativos (217 páginas).', en:'Full text of the Program, with the executive summary and the six complete plans, including diagnoses, targets, timelines and draft regulations (217 pages).', fr:'Texte intégral du Programme, avec le résumé exécutif et les six plans complets, y compris diagnostics, objectifs, calendriers et projets d’actes normatifs (217 pages).'},
+      cons_abrir: {pt:'Abrir em nova aba', es:'Abrir en una nueva pestaña', en:'Open in a new tab', fr:'Ouvrir dans un nouvel onglet'},
+      cons_baixar: {pt:'Baixar PDF', es:'Descargar PDF', en:'Download PDF', fr:'Télécharger le PDF'},
+      cons_baixar_pptx: {pt:'Baixar PowerPoint', es:'Descargar PowerPoint', en:'Download PowerPoint', fr:'Télécharger le PowerPoint'},
+      cons_nota: {pt:'Documentos públicos do FOCAMS, elaborados com consultoria técnica do ICET. Podem ser compartilhados citando a fonte.', es:'Documentos públicos del FOCAMS, elaborados con consultoría técnica del ICET. Pueden compartirse citando la fuente.', en:'Public FOCAMS documents, prepared with ICET technical consultancy. They may be shared with credit to the source.', fr:'Documents publics du FOCAMS, élaborés avec le conseil technique de l’ICET. Ils peuvent être partagés en citant la source.'},
       nav_comenda:     {pt:'Comenda', es:'Distinción',         en:'Honour',             fr:'Distinction'},
       nav_contato:     {pt:'Contato', es:'Contacto',         en:'Contact',            fr:'Contact'},
       nav_adm:         {pt:'⚙ ADM', es:'⚙ ADM',           en:'⚙ ADMIN',            fr:'⚙ ADMIN'},
@@ -8308,6 +8434,23 @@ window.I18N_SITE = {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(iniciar, 0); });
 else setTimeout(iniciar, 0);
+})();
+</script>
+<script>
+/* Consultorias: abas de documentos (o PDF só carrega quando a aba é aberta) */
+(function(){
+  var tabs = document.querySelectorAll('.cons-tab');
+  function carregar(p){ var f = p && p.querySelector('iframe[data-src]'); if (f && !f.getAttribute('src')) f.setAttribute('src', f.getAttribute('data-src')); }
+  tabs.forEach(function(b){ b.addEventListener('click', function(){
+    tabs.forEach(function(x){ x.classList.toggle('on', x === b); });
+    document.querySelectorAll('.cons-painel').forEach(function(p){ p.classList.toggle('on', p.id === 'cons-' + b.getAttribute('data-cons')); });
+    carregar(document.getElementById('cons-' + b.getAttribute('data-cons')));
+  }); });
+  var sec = document.getElementById('consultorias');
+  if (sec && 'IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ carregar(document.querySelector('.cons-painel.on')); io.disconnect(); } }); }, {rootMargin:'300px'});
+    io.observe(sec);
+  } else carregar(document.querySelector('.cons-painel.on'));
 })();
 </script>
 </body>
