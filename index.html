@@ -2012,6 +2012,63 @@ body.adm-on .adm-fab{display:block}
   .hero-logo{width:min(120px,30vw); margin-bottom:1rem}
   #lang-switch.lang-no-menu.aberto{right:3.4rem; top:.6rem}
 }
+
+/* ══ ETAPAS 2 e 3: organização da página ══ */
+section:not(.org-aberta) .org-dobra{display:none !important}
+.org-mais{display:inline-flex; align-items:center; gap:.5rem; margin:1.2rem 0 .4rem; padding:.7rem 1.4rem; border-radius:999px; border:1px solid var(--ou,#F2C45A); background:transparent; color:var(--ou,#F2C45A); font-family:'Inter',sans-serif; font-size:.78rem; font-weight:700; letter-spacing:.05em; cursor:pointer; transition:background .2s,color .2s; min-height:44px}
+.org-mais:hover{background:var(--ou,#F2C45A); color:#1a120a}
+.org-mais::after{content:"▾"; font-size:.7rem}
+section.org-aberta > * .org-mais::after, .org-mais[aria-expanded="true"]::after, .org-bio-aberta .org-bio-bt::after{content:"▴"}
+.org-ver{display:flex; margin:1.8rem auto 0}
+.org-ver[hidden]{display:none}
+.org-oculto{display:none !important}
+.org-bio:not(.org-bio-aberta) .dir-bio{display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden}
+.org-bio-bt{margin:.6rem 0 0; padding:.5rem 1rem; min-height:40px; font-size:.72rem}
+.org-cases{margin-top:2rem}
+.org-cases-dica{display:block; font-family:'Inter',sans-serif; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ou,#F2C45A); margin-bottom:.7rem; opacity:.85}
+.org-cases-abas{display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.6rem; padding-bottom:1rem; border-bottom:1px solid rgba(242,196,90,.2)}
+.org-case-aba{padding:.7rem 1.4rem; min-height:44px; border-radius:999px; border:1px solid rgba(242,196,90,.4); background:rgba(242,196,90,.05); color:#F5EBD8; font-family:'Inter',sans-serif; font-weight:700; font-size:.82rem; letter-spacing:.06em; cursor:pointer; transition:.2s}
+.org-case-aba:hover{border-color:var(--ou,#F2C45A)}
+.org-case-aba.on{background:linear-gradient(135deg,#C45A28,#E8A853); color:#1a120a; border-color:transparent}
+.org-case{display:none}
+.org-case.on{display:block; animation:orgEntra .35s ease}
+@keyframes orgEntra{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+#org-topo{position:fixed; right:18px; bottom:18px; z-index:9980; width:46px; height:46px; border-radius:50%; border:1px solid rgba(242,196,90,.5); background:rgba(20,14,7,.85); color:#F2C45A; font-size:1.2rem; cursor:pointer; opacity:0; pointer-events:none; transform:translateY(10px); transition:.25s; backdrop-filter:blur(6px); box-shadow:0 6px 20px rgba(0,0,0,.4)}
+#org-topo.on{opacity:1; pointer-events:auto; transform:none}
+#org-topo:hover{background:#F2C45A; color:#1a120a}
+body.adm-on #org-topo{bottom:5.6rem}
+body:has(#nt-modal:not([hidden])) #org-topo{display:none}
+.nav-links a.org-ativo, .nav-g-btn.org-ativo{color:var(--ou) !important}
+.nav-g-btn.org-ativo{box-shadow:inset 0 -2px 0 var(--ou)}
+@media(max-width:860px){ .nav-g-btn.org-ativo{box-shadow:none} }
+@media (prefers-reduced-motion:reduce){ .org-case.on{animation:none} #org-topo{transition:none} }
+
+@media(max-width:860px){
+  #enir .enir-foto-wrap{max-width:230px; margin:0 auto}
+  #ms .povos-grid{grid-template-columns:1fr 1fr !important; gap:.7rem !important}
+  #ms .povo-card{padding:1rem .9rem !important}
+  #consultorias .cons-capa{display:none}
+  #diretoria .dir-foto-wrap{max-width:200px; margin:0 auto}
+  #tecnologia-social-icet .ts-holofote{padding:1rem .8rem !important}
+  #tecnologia-social-icet .ts-holofote [data-i18n$="d"]{display:none}
+  #tecnologia-social-icet div[style*="minmax(250px"]{grid-template-columns:1fr 1fr !important; gap:.6rem !important}
+}
+@media(max-width:380px){ #ms .povos-grid{grid-template-columns:1fr !important} }
+
+@media(max-width:860px){
+  #gal-grid{display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:.5rem !important; columns:auto !important; width:100% !important}
+  #gal-grid .gal-item{height:auto !important}
+  #gal-grid .gal-item img{height:150px !important; object-fit:cover}
+  #gal-grid .gal-item:not(.org-oculto){display:flex !important; flex-direction:column; background:rgba(255,255,255,.03); width:auto !important; min-width:0; margin:0 !important; aspect-ratio:auto !important; grid-row:auto !important; grid-column:auto !important}
+  #gal-grid .gal-item img{height:130px !important; width:100% !important; max-width:none !important; object-fit:cover !important}
+  #gal-grid .gal-over{position:static !important; opacity:1 !important; background:none !important; padding:.45rem .5rem .6rem !important; height:auto !important; transform:none !important; display:block !important}
+  #gal-grid .gal-leg{font-size:.66rem !important; line-height:1.4 !important; text-align:left !important}
+  #gal-indice{display:none !important}
+  #consultorias [class*="cons-planos"], #consultorias .cons-pls{grid-template-columns:1fr 1fr !important}
+  .cons-movel .cons-capa-movel img{width:min(56vw,230px) !important}
+}
+
+.org-detalhe:not(.aberto){max-height:360px; overflow:hidden; -webkit-mask-image:linear-gradient(#000 60%,transparent); mask-image:linear-gradient(#000 60%,transparent)}
 </style>
 <script>
 /* ===== Tradução automática (português -> inglês, espanhol e francês) =====
@@ -8535,6 +8592,206 @@ else setTimeout(iniciar, 0);
     var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ carregar(document.querySelector('.cons-painel.on')); io.disconnect(); } }); }, {rootMargin:'300px'});
     io.observe(sec);
   } else carregar(document.querySelector('.cons-painel.on'));
+})();
+</script>
+<script>
+/* ===== Organização da página (etapas 2 e 3)
+   Nada é apagado: textos longos ficam dobrados com "Leia mais", listas mostram as primeiras
+   e oferecem "Ver todas", os cases da Tecnologia Social viram abas. Inclui "voltar ao topo",
+   menu que acende conforme a seção e leitura mais confortável no celular. ===== */
+(function(){
+  var T = {
+    leia:      {pt:'Leia a história completa', en:'Read the full story', es:'Lea la historia completa', fr:'Lire l’histoire complète'},
+    leiaInst:  {pt:'Conheça a trajetória completa', en:'Read the full background', es:'Conozca la trayectoria completa', fr:'Découvrir tout le parcours'},
+    mais:      {pt:'Leia mais', en:'Read more', es:'Leer más', fr:'Lire la suite'},
+    menos:     {pt:'Mostrar menos', en:'Show less', es:'Mostrar menos', fr:'Afficher moins'},
+    bio:       {pt:'Ler biografia completa', en:'Read full biography', es:'Leer biografía completa', fr:'Lire la biographie complète'},
+    noticias:  {pt:'Ver todas as notícias', en:'See all news', es:'Ver todas las noticias', fr:'Voir toutes les actualités'},
+    fotos:     {pt:'Ver todas as fotos', en:'See all photos', es:'Ver todas las fotos', fr:'Voir toutes les photos'},
+    videos:    {pt:'Ver todos os vídeos', en:'See all videos', es:'Ver todos los videos', fr:'Voir toutes les vidéos'},
+    topo:      {pt:'Voltar ao topo', en:'Back to top', es:'Volver arriba', fr:'Retour en haut'},
+    detalhes:  {pt:'Ver todos os detalhes do case', en:'See all case details', es:'Ver todos los detalles del caso', fr:'Voir tous les détails du cas'},
+    cases:     {pt:'Escolha um case', en:'Choose a case', es:'Elija un caso', fr:'Choisissez un cas'}
+  };
+  function lg(){ try{ return (window.ICET_getLang ? window.ICET_getLang() : localStorage.getItem('icet_lang')) || 'pt'; }catch(e){ return 'pt'; } }
+  function t(k){ var e = T[k]; return e ? (e[lg()] || e.pt) : k; }
+  var movel = function(){ return window.matchMedia && matchMedia('(max-width: 860px)').matches; };
+  var rotulos = [];   // [elemento, funcao que devolve o texto]
+  function rotular(el, fn){ rotulos.push([el, fn]); el.textContent = fn(); }
+  function atualizarRotulos(){ rotulos.forEach(function(r){ if (document.body.contains(r[0])) r[0].textContent = r[1](); }); }
+
+  /* ---------- 1. Textos longos com "Leia mais" ---------- */
+  function dobrar(secId, chaves, depoisDe, rotuloK){
+    var sec = document.getElementById(secId); if (!sec) return;
+    var itens = chaves.map(function(k){ return sec.querySelector('[data-i18n-html="'+k+'"],[data-i18n="'+k+'"]'); }).filter(Boolean);
+    if (!itens.length) return;
+    itens.forEach(function(el){ el.classList.add('org-dobra'); });
+    var ref = depoisDe ? sec.querySelector(depoisDe) : itens[itens.length-1];
+    var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'org-mais';
+    bt.setAttribute('aria-expanded','false');
+    rotular(bt, function(){ return sec.classList.contains('org-aberta') ? t('menos') : t(rotuloK); });
+    bt.addEventListener('click', function(){
+      var ab = sec.classList.toggle('org-aberta'); bt.setAttribute('aria-expanded', ab ? 'true' : 'false'); atualizarRotulos();
+      if (!ab) itens[0].scrollIntoView({block:'center'});
+    });
+    ref.parentNode.insertBefore(bt, ref.nextSibling);
+  }
+
+  /* ---------- 2. Listas: mostra as primeiras e oferece "Ver todas" ---------- */
+  function limitar(gridId, nDesk, nCel, rotuloK){
+    var grid = document.getElementById(gridId); if (!grid) return;
+    var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'org-mais org-ver';
+    grid.parentNode.insertBefore(bt, grid.nextSibling);
+    var aberto = false;
+    function aplicar(){
+      var filhos = [].filter.call(grid.children, function(c){ return !c.classList.contains('vazio'); });
+      var n = movel() ? nCel : nDesk;
+      filhos.forEach(function(c, i){ c.classList.toggle('org-oculto', !aberto && i >= n); });
+      bt.hidden = filhos.length <= n;
+      bt.textContent = aberto ? t('menos') : t(rotuloK) + ' (' + filhos.length + ')';
+    }
+    rotulos.push([bt, function(){ aplicar(); return bt.textContent; }]);
+    bt.addEventListener('click', function(){ aberto = !aberto; aplicar(); if (!aberto) grid.scrollIntoView({block:'start'}); });
+    new MutationObserver(aplicar).observe(grid, {childList:true});
+    window.addEventListener('resize', aplicar);
+    aplicar();
+  }
+
+  /* ---------- 3. Biografias da Diretoria ---------- */
+  function biografias(){
+    var grid = document.getElementById('dir-grid'); if (!grid) return;
+    function aplicar(){
+      grid.querySelectorAll('.dir-card').forEach(function(card){
+        var bio = card.querySelector('.dir-bio'); if (!bio || card.querySelector('.org-bio-bt')) return;
+        card.classList.add('org-bio');
+        if (bio.scrollHeight <= bio.clientHeight + 4) { card.classList.remove('org-bio'); return; }
+        var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'org-mais org-bio-bt';
+        rotular(bt, function(){ return card.classList.contains('org-bio-aberta') ? t('menos') : t('bio'); });
+        bt.addEventListener('click', function(){ card.classList.toggle('org-bio-aberta'); atualizarRotulos(); });
+        bio.parentNode.insertBefore(bt, bio.nextSibling);
+      });
+    }
+    new MutationObserver(function(){ setTimeout(aplicar, 50); }).observe(grid, {childList:true});
+    setTimeout(aplicar, 300);
+  }
+
+  /* ---------- 4. Cases da Tecnologia Social em abas ---------- */
+  function casesEmAbas(){
+    var sec = document.getElementById('tecnologia-social-icet'); if (!sec) return;
+    var wrap = sec.querySelector('.wrap'); if (!wrap || wrap.querySelector('.org-cases')) return;
+    var def = [['ts_case_titulo','CMDDI'],['ts_coopims_titulo','COOPIMS'],['ts_unip_titulo','UNIPBRAS'],['ts_focams_titulo','FOCAMS']];
+    var filhos = [].slice.call(wrap.children);
+    var inicios = def.map(function(d){
+      var h = wrap.querySelector('h3[data-i18n="'+d[0]+'"]'); if (!h) return -1;
+      var bloco = h; while (bloco.parentElement !== wrap) bloco = bloco.parentElement;
+      var i = filhos.indexOf(bloco);
+      var ant = filhos[i-1];   // faixa "Segunda frente", "Terceira frente"...
+      if (ant && /_eyb$/.test(ant.getAttribute('data-i18n') || '')) i--;
+      return i;
+    });
+    if (inicios.indexOf(-1) >= 0) return;
+    // o último case termina antes do bloco "Desenvolvido em parceria com"
+    var fimUltimo = filhos.length;
+    for (var k = inicios[3]; k < filhos.length; k++) { if (/PARCERIA|PARTNERSHIP|ASOCIACI|PARTENARIAT/i.test(filhos[k].innerText || '') && k > inicios[3] + 2) { fimUltimo = k; break; } }
+    var caixa = document.createElement('div'); caixa.className = 'org-cases';
+    var barra = document.createElement('div'); barra.className = 'org-cases-abas'; barra.setAttribute('role','tablist');
+    var dica = document.createElement('span'); dica.className = 'org-cases-dica'; rotular(dica, function(){ return t('cases'); });
+    caixa.appendChild(dica); caixa.appendChild(barra);
+    wrap.insertBefore(caixa, filhos[inicios[0]]);
+    def.forEach(function(d, n){
+      var ini = inicios[n], fim = n < 3 ? inicios[n+1] : fimUltimo;
+      var painel = document.createElement('div'); painel.className = 'org-case' + (n === 0 ? ' on' : ''); painel.setAttribute('role','tabpanel');
+      for (var k = ini; k < fim; k++) { var el = filhos[k]; if (el.offsetHeight <= 2 && !el.children.length) { el.style.display = 'none'; } painel.appendChild(el); }
+      caixa.appendChild(painel);
+      var comLista = [].filter.call(painel.children, function(c){ return c.querySelector && c.querySelector('ul'); });
+      var det = comLista[comLista.length-1];
+      if (det){
+        det.classList.add('org-detalhe');
+        var bd = document.createElement('button'); bd.type = 'button'; bd.className = 'org-mais org-det-bt'; bd.setAttribute('aria-expanded','false');
+        rotular(bd, function(){ return det.classList.contains('aberto') ? t('menos') : t('detalhes'); });
+        bd.addEventListener('click', function(){ var ab = det.classList.toggle('aberto'); bd.setAttribute('aria-expanded', ab ? 'true' : 'false'); atualizarRotulos(); if (!ab) det.scrollIntoView({block:'start'}); });
+        det.parentNode.insertBefore(bd, det.nextSibling);
+      }
+      var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'org-case-aba' + (n === 0 ? ' on' : ''); ab.setAttribute('role','tab');
+      ab.setAttribute('aria-selected', n === 0 ? 'true' : 'false'); ab.textContent = d[1];
+      ab.addEventListener('click', function(){
+        caixa.querySelectorAll('.org-case-aba').forEach(function(b){ b.classList.toggle('on', b === ab); b.setAttribute('aria-selected', b === ab ? 'true' : 'false'); });
+        caixa.querySelectorAll('.org-case').forEach(function(p, m){ p.classList.toggle('on', m === n); });
+        if (caixa.getBoundingClientRect().top < 0) caixa.scrollIntoView({block:'start'});
+      });
+      barra.appendChild(ab);
+    });
+  }
+
+  /* ---------- 5. Voltar ao topo ---------- */
+  function voltarTopo(){
+    var bt = document.createElement('button'); bt.type = 'button'; bt.id = 'org-topo'; bt.innerHTML = '<span aria-hidden="true">↑</span>';
+    function aria(){ bt.setAttribute('aria-label', t('topo')); bt.title = t('topo'); }
+    aria(); rotulos.push([bt, function(){ aria(); return bt.textContent; }]);
+    bt.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+    document.body.appendChild(bt);
+    var vis = false;
+    window.addEventListener('scroll', function(){ var v = window.scrollY > window.innerHeight * 1.5; if (v !== vis){ vis = v; bt.classList.toggle('on', v); } }, {passive:true});
+  }
+
+  /* ---------- 6. Menu acende conforme a seção ---------- */
+  function menuAtivo(){
+    if (!('IntersectionObserver' in window)) return;
+    var mapa = {};
+    document.querySelectorAll('#nav-links a[href^="#"]').forEach(function(a){
+      var id = a.getAttribute('href').slice(1); if (!id) return;
+      var grupo = a.closest('.nav-grupo');
+      mapa[id] = {a:a, alvo: grupo ? grupo.querySelector('.nav-g-btn') : a};
+    });
+    var atual = null;
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        var m = mapa[e.target.id]; if (!m) return;
+        if (atual) { atual.a.classList.remove('org-ativo'); atual.alvo.classList.remove('org-ativo'); }
+        m.a.classList.add('org-ativo'); m.alvo.classList.add('org-ativo'); atual = m;
+      });
+    }, {rootMargin:'-45% 0px -50% 0px'});
+    Object.keys(mapa).forEach(function(id){ var s = document.getElementById(id); if (s) io.observe(s); });
+  }
+
+  /* ---------- 7. Celular: texto justificado vira alinhado à esquerda ---------- */
+  function leituraCelular(){
+    if (!movel()) return;
+    document.querySelectorAll('main p, section p, section li, section div').forEach(function(el){
+      if (el.children.length > 6) return;
+      if (getComputedStyle(el).textAlign === 'justify') el.style.textAlign = 'left';
+    });
+  }
+
+  function iniciar(){
+    dobrar('enir', ['enir_p3','enir_p4','enir_p5'], '.enir-bio', 'leia');
+    dobrar('instituto', ['instituto_p3','instituto_p4','instituto_p5'], null, 'leiaInst');
+    dobrar('consultorias', ['cons_p2','cons_p3'], null, 'mais');
+    dobrar('tecnologia-social-icet', ['ts_p2','ts_p3'], null, 'mais');
+    dobrar('ceramica', ['cer_terr_d','cer_urb_d'], '.ceramica-contextos', 'mais');
+    var cer = document.getElementById('ceramica');
+    if (cer) cer.querySelectorAll('.ref-box').forEach(function(r){ r.classList.add('org-dobra'); });
+    var inst = document.getElementById('instituto');
+    if (inst){
+      inst.querySelectorAll('.parceiros-wrap').forEach(function(x){ x.classList.add('org-dobra'); });
+      var pil = inst.querySelector('.pilares'); if (pil && pil.nextElementSibling) pil.nextElementSibling.classList.add('org-dobra');
+    }
+    var enir = document.getElementById('enir');
+    if (enir) enir.querySelectorAll('.marco').forEach(function(m, i){ if (i >= 5) m.classList.add('org-dobra'); });
+    if (enir) enir.querySelectorAll('.fontes-box').forEach(function(f){ f.classList.add('org-dobra'); });
+    biografias();
+    limitar('nc-grid', 6, 4, 'noticias');
+    limitar('gal-grid', 8, 6, 'fotos');
+    limitar('vid-grid', 6, 3, 'videos');
+    casesEmAbas();
+    voltarTopo();
+    menuAtivo();
+    leituraCelular(); setTimeout(leituraCelular, 2500);
+    new MutationObserver(function(){ atualizarRotulos(); }).observe(document.documentElement, {attributes:true, attributeFilter:['lang']});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(iniciar, 400); });
+  else setTimeout(iniciar, 400);
 })();
 </script>
 </body>
