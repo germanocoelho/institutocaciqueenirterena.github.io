@@ -8,7 +8,7 @@
 var DIR = 'editora/acervo/', CAT = DIR + 'catalogo.cifrado.json', ARQ = DIR + 'arquivos/';
 var SITUACOES = ['em produção', 'em avaliação pelo conselho', 'aprovada', 'publicada', 'suspensa', 'esgotada', 'retirada de circulação'];
 var FORMATOS = [['epub', 'EPUB'], ['pdf', 'PDF'], ['html', 'HTML de leitura'], ['impresso', 'Impresso']];
-var TIPOS_VERSAO = [['lancamento', 'Lançamento da edição'], ['correcao', 'Correção (sem mudança de conteúdo)'], ['reimpressao', 'Reimpressão'], ['atualizacao', 'Atualização de arquivo (mesmo conteúdo)']];
+var TIPOS_VERSAO = [['preparacao', 'Preparação (arquivada antes do ISBN)'], ['lancamento', 'Lançamento da edição'], ['correcao', 'Correção (sem mudança de conteúdo)'], ['reimpressao', 'Reimpressão'], ['atualizacao', 'Atualização de arquivo (mesmo conteúdo)']];
 var FINALIDADES = ['venda', 'doação', 'cortesia', 'autor(a)', 'avaliação/parecer', 'depósito legal', 'imprensa', 'biblioteca', 'arquivo da editora', 'outra'];
 var I = function () { return window.EBOOK_ICET && window.EBOOK_ICET._interno; };
 var st = { cat: null, sha: null, chave: null, envelope: null, raiz: null, vista: 'titulos', obraId: null, carregando: false };
@@ -182,6 +182,7 @@ function pendencias(o) {
   }
   if (!ed.aprovacao || !ed.aprovacao.data) p.push('aprovação do conselho');
   if (!ed.versoes.length || !verVigente(ed).arquivos.length) p.push('arquivos da versão');
+  else if (ed.versoes.every(function (v) { return v.tipo === 'preparacao'; })) p.push('lançamento: ao receber o ISBN, regerar com o número e registrar a versão ' + ed.n + '.0');
   return p;
 }
 function vTitulos() {
@@ -280,8 +281,10 @@ function novaObra(d) {
   return { id: novoCodigo(), titulo: d.titulo || '', subtitulo: d.subtitulo || '', autores: d.autores || [], organizadores: d.organizadores || [], situacao: d.situacao || 'em produção', serie: d.serie || '', idioma: d.idioma || 'pt-BR', cdd: d.cdd || '', cdu: d.cdu || '', assuntos: d.assuntos || [], sinopse: d.sinopse || '', obs: d.obs || '', criada: hoje(), edicoes: [novaEdicao(1)] };
 }
 function proximaVersao(ed, tipo) {
-  if (!ed.versoes.length) return ed.n + '.0';
-  var ult = ed.versoes[ed.versoes.length - 1].v.split('.'), menor = +ult[1] || 0;
+  var prep = ed.versoes.filter(function (x) { return x.tipo === 'preparacao'; }), pub = ed.versoes.filter(function (x) { return x.tipo !== 'preparacao'; });
+  if (tipo === 'preparacao') return ed.n + '.0-p' + (prep.length + 1);
+  if (!pub.length) return ed.n + '.0';
+  var ult = pub[pub.length - 1].v.split('.'), menor = +ult[1] || 0;
   return ed.n + '.' + (menor + 1);
 }
 async function criarVersao(o, ed, tipo, notas, responsavel, arquivos) {
