@@ -154,3 +154,17 @@ A aba **Tradução** gera, a partir do livro já produzido em português, ediç�
 
 - A tradução não tem fé pública. A tradução juramentada só pode ser feita e assinada por tradutor e intérprete público matriculado em Junta Comercial (Lei nº 14.195/2021).
 - A ficha catalográfica (CIP) continua em português, com o título da edição traduzida. A ficha de cada edição deve ser elaborada pelo bibliotecário.
+
+## Acervo da Editora (aba 📚 Acervo)
+
+Controle dos livros publicados, como numa editora de e-books: títulos, edições, versões, ISBN, exemplares numerados e os arquivos de cada versão.
+
+- **Sigilo**: o repositório do site é público. Por isso o catálogo (`editora/acervo/catalogo.cifrado.json`) e os arquivos (`editora/acervo/arquivos/*.bin`) são gravados cifrados (AES-GCM 256). Só abrem com a senha do ADM. Se a senha do ADM for trocada, use **🔑 Reproteger com a senha anterior** uma vez.
+- **Títulos**: cada título recebe um código sequencial (ECET-0001, ECET-0002…), situação (em produção, em avaliação, aprovada, publicada, suspensa, esgotada, retirada) e lista de pendências: ISBN, aprovação do conselho, data de publicação, depósito legal na Biblioteca Nacional (Lei 10.994/2004, prazo de 30 dias) e arquivos.
+- **Edições**: nova edição é conteúdo alterado (revista, ampliada) e exige novo ISBN para cada formato e nova aprovação. Cada edição guarda aprovação, depósito legal, registro de direitos autorais, ISBN por formato (EPUB, PDF, HTML, impresso), tiragem e preço.
+- **Versões**: dentro da edição, 1.0 é o lançamento; 1.1, 1.2… são correções, reimpressões ou atualizações de arquivo, com o mesmo ISBN. Cada versão guarda os arquivos com a impressão digital SHA-256, conferida a cada download. Uma versão é a vigente.
+- **ISBN**: lote de números recebidos da Agência Brasileira do ISBN, com validação do dígito verificador. Um ISBN nunca é atribuído a dois formatos ou edições, e um ISBN cancelado não volta a ser usado.
+- **Exemplares numerados**: numeração sequencial por edição, com destinatário, contato, finalidade, formato e versão. Com o livro aberto no motor, **🎫 Emitir exemplar** gera o HTML de leitura numerado e protegido por senha e guarda uma cópia no acervo. Exemplar cancelado mantém o número, que não é reutilizado.
+- **Do motor para o acervo**: depois de gerar o livro, **📚 Registrar no acervo** (aba Produção) guarda EPUB, relatório e projeto como nova versão. O projeto pode ser reaberto no motor pelo botão “abrir no motor”.
+- **Importar e exportar**: pacote `.zip` com `acervo.json` e os arquivos; catálogo, exemplares e ISBN em CSV; catálogo completo em JSON.
+- **Histórico**: toda ação fica registrada com data e hora.

@@ -19,7 +19,7 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.0';
+var VERSAO = '1.1';
 var LS_OBRA = 'icet_ebook_obra', LS_CFG = 'icet_editora_cfg';
 var XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
@@ -2492,6 +2492,7 @@ async function admEntrou(senha) {
     if (cif) { var k = await decifrarSegredo(cif, senha); if (k) { try { localStorage.setItem('trad_claude_key', k); } catch (e) {} cfg.claudeCifrada = cif; } }
   } catch (e) {}
   if (ui.renderTraducao) ui.renderTraducao();
+  if (window.ACERVO_ICET) window.ACERVO_ICET.senhaPronta();
 }
 async function guardarChaveNoSite(chave) {
   if (!_senhaAdm || !ghOk()) return false;
@@ -4555,7 +4556,7 @@ function montarUI(alvo) {
   raiz.innerHTML =
     '<h3>📚 ' + esc(cfg.editora.nome) + ' — Coordenação Editorial Digital</h3>' +
     '<p class="sub">Envie o manuscrito e a Coordenação Editorial Digital produz o livro digital completo, em EPUB 3, no padrão da Editora: capa, folha de rosto, créditos, conselho editorial, ficha catalográfica, sumário, normas da ABNT, notas, referências, índice e logomarcas. Ao final, faz uma auditoria rigorosa e entrega o relatório.</p>' +
-    '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button><button class="tab" data-p="tr">Tradução</button></div>' +
+    '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button><button class="tab" data-p="tr">Tradução</button><button class="tab" data-p="ac">📚 Acervo</button></div>' +
     '<div class="pane on" data-p="prod">' +
       '<div class="drop" tabindex="0" role="button" aria-label="Enviar manuscrito"><b>Arraste o manuscrito aqui</b> ou clique para escolher<small>Qualquer formato: Word (.docx, .doc), LibreOffice (.odt, .fodt), PDF (inclusive digitalizado), RTF, EPUB, Pages, LaTeX, Markdown, texto, HTML ou fotos das páginas. O .docx com estilos de título dá o resultado mais exato.</small><input type="file" hidden></div>' +
       '<div class="opc">' +
@@ -4568,7 +4569,7 @@ function montarUI(alvo) {
         '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
-      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="sem-ia" type="button" hidden title="Interrompe as etapas de IA em andamento; o livro é gerado sem elas">⏭ Continuar sem IA</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
+      '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="sem-ia" type="button" hidden title="Interrompe as etapas de IA em andamento; o livro é gerado sem elas">⏭ Continuar sem IA</button><button class="bt" data-a="acervo" disabled title="Guarda EPUB, relatório e projeto como nova versão no Acervo da Editora">📚 Registrar no acervo</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
       '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
@@ -4617,7 +4618,8 @@ function montarUI(alvo) {
       '<div class="tr-idiomas"></div>' +
       '<div class="acoes"><button class="bt" data-a="tr-estimar">Estimar custo</button><button class="bt pri" data-a="tr-traduzir">🌐 Traduzir os idiomas marcados</button></div>' +
       '<div class="msg tr-msg" role="status" aria-live="polite"></div>' +
-      '<div class="tr-resultados"></div></div>';
+      '<div class="tr-resultados"></div></div>' +
+    '<div class="pane" data-p="ac"><div class="acervo-raiz"></div></div>';
   alvo.appendChild(raiz);
   var Q = function (s) { return raiz.querySelector(s); }, QA = function (s) { return raiz.querySelectorAll(s); };
 
@@ -4629,7 +4631,10 @@ function montarUI(alvo) {
   function setC(c, v) { var p = c.split('.'), o = cfg; for (var i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = v; }
 
   // abas
-  QA('.tab').forEach(function (b) { b.addEventListener('click', function () { QA('.tab').forEach(function (x) { x.classList.toggle('on', x === b); }); QA('.pane').forEach(function (p) { p.classList.toggle('on', p.getAttribute('data-p') === b.getAttribute('data-p')); }); }); });
+  QA('.tab').forEach(function (b) { b.addEventListener('click', function () { QA('.tab').forEach(function (x) { x.classList.toggle('on', x === b); }); QA('.pane').forEach(function (p) { p.classList.toggle('on', p.getAttribute('data-p') === b.getAttribute('data-p')); }); if (b.getAttribute('data-p') === 'ac') abrirAcervo(); }); });
+  var _acervoAberto = false;
+  function abrirAcervo() { if (!window.ACERVO_ICET) { ui.msg('O módulo do acervo não carregou; recarregue a página.', 'err'); return; } ACERVO_ICET.montar(Q('.acervo-raiz')); if (!_acervoAberto) { _acervoAberto = true; ACERVO_ICET.abrir(); } }
+  ui.irAcervo = function () { var t = raiz.querySelector('.tab[data-p="ac"]'); if (t) t.click(); };
 
   // envio do manuscrito
   var drop = Q('.drop'), inp = drop.querySelector('input');
@@ -4674,6 +4679,7 @@ function montarUI(alvo) {
   Q('[data-a="regerar2"]').addEventListener('click', function () { if (!estado.entrada) { ui.msg('Envie o manuscrito na aba Produção.', 'err'); return; } QA('.tab')[0].click(); produzir(); });
   Q('[data-a="epub"]').addEventListener('click', function () { if (estado.epub) baixar(estado.epub, slug(obra.titulo) + '.epub'); });
   Q('[data-a="rel"]').addEventListener('click', function () { if (estado.relatorio) baixar(new Blob([estado.relatorio], { type: 'text/html' }), 'auditoria-' + slug(obra.titulo) + '.html'); });
+  Q('[data-a="acervo"]').addEventListener('click', function () { if (!estado.epub || !window.ACERVO_ICET) return; ui.irAcervo(); ACERVO_ICET.registrarMotor(); });
   Q('[data-a="html"]').addEventListener('click', function () {
     if (!estado.livro) return;
     var dest = prompt('Exemplar controlado: nome da pessoa ou instituição que receberá esta cópia.\n(Deixe em branco para uma cópia sem numeração nem senha.)', '');
@@ -4702,7 +4708,7 @@ function montarUI(alvo) {
   selPg.addEventListener('change', function () { mostrarPg(+selPg.value); });
 
   ui.msg = function (m, t) { QA('.msg').forEach(function (e) { e.textContent = m; e.className = 'msg' + (e.classList.contains('tr-msg') ? ' tr-msg' : '') + (t ? ' ' + t : ''); }); };
-  ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
+  ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html|acervo)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
     var li = raiz.querySelector('.etapas [data-e="' + id + '"]'); if (!li) return;
@@ -5057,7 +5063,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar, admEntrou: admEntrou,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg, ia: IA, iaParar: iaParar }
+  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, senhaAdm: function () { return _senhaAdm; }, bufParaB64: bufParaB64, baixar: baixar, slug: slug, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg, ia: IA, iaParar: iaParar }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');
