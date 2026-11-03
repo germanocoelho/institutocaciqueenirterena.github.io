@@ -68,24 +68,6 @@
       "arquivo": "logos/focams.jpg",
       "fundo": "#ffffff",
       "autorizado": false
-    },
-    {
-      "id": "ifms",
-      "sigla": "IFMS",
-      "nome": "Instituto Federal de Educação, Ciência e Tecnologia de Mato Grosso do Sul",
-      "papel": "Parceria",
-      "arquivo": "",
-      "fundo": "#ffffff",
-      "autorizado": false
-    },
-    {
-      "id": "mpms",
-      "sigla": "MPMS",
-      "nome": "Ministério Público do Estado de Mato Grosso do Sul",
-      "papel": "Parceria",
-      "arquivo": "",
-      "fundo": "#ffffff",
-      "autorizado": false
     }
   ],
   "claudeCifrada": {
@@ -94,5 +76,5 @@
     "c": "KrFxtDTEH8FRJZPLZ4TARWZ/On6j88L6tMCcUShsI03GTUU10Eb0E02BVlwkBEmGg+F9wzK4VxgrYql+AFX2MWJNF+xGut9VZj2L7fPyQ2Kbmrvqi5MDfI7xh5NmF1IEabnG6bDf8BIGclh4KBuPgPCN3Na8m1xqivg=",
     "it": 600000
   },
-  "_t": 1793735099545
+  "_t": 1793735247825
 }
