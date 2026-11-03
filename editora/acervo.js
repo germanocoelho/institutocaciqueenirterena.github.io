@@ -230,10 +230,10 @@ function vEdicao(o, ed) {
   }).join('') + '</table>' : '<p class="mut">Nenhuma versão registrada.</p>';
   // exemplares
   var ativos = ed.exemplares.filter(function (x) { return x.situacao !== 'cancelado'; }).length;
-  h += '<h4 style="margin-top:.8rem">Exemplares numerados <small class="mut">' + ativos + ' ativo(s) · próximo nº ' + n3(proxEx(ed)) + '</small> <button class="bt mini" data-ac="emitir" data-n="' + ed.n + '">🎫 Emitir exemplar</button></h4>';
+  h += '<h4 style="margin-top:.8rem">Exemplares numerados <small class="mut">' + ativos + ' ativo(s) · próximo nº ' + n3(proxEx(ed)) + '</small> <button class="bt mini" data-ac="emitir" data-n="' + ed.n + '">🎫 Emitir exemplar</button>' + (fonteMotor(ed) ? '<button class="bt mini" data-ac="carregar-motor" data-n="' + ed.n + '" title="Abre no motor o livro arquivado nesta edição (projeto e manuscrito)">⚙ Carregar no motor</button>' : '') + '</h4>';
   h += ed.exemplares.length ? '<table><tr><th>Nº</th><th>Destinatário</th><th>Finalidade</th><th>Formato · versão</th><th>Data</th><th>Situação</th><th></th></tr>' + ed.exemplares.slice().reverse().map(function (x) {
     return '<tr><td><b>' + n3(x.n) + '</b></td><td>' + esc(x.destinatario) + (x.contato ? '<br><small class="mut">' + esc(x.contato) + '</small>' : '') + '</td><td>' + esc(x.finalidade || '') + '</td><td>' + esc(x.formato || '') + (x.versao ? ' · v' + esc(x.versao) : '') + '</td><td>' + dataBr(x.data) + '</td><td>' + esc(x.situacao || 'ativo') + (x.motivo ? '<br><small class="mut">' + esc(x.motivo) + '</small>' : '') + '</td><td>' +
-      (x.arquivo ? '<a href="#" data-ac="baixar" data-arq="' + x.arquivo.id + '">⬇</a> ' : '') + (x.situacao !== 'cancelado' ? '<button class="bt mini" data-ac="cancelar-ex" data-n="' + ed.n + '" data-x="' + x.n + '">cancelar</button>' : '') + '</td></tr>';
+      (x.arquivo ? '<a href="#" data-ac="baixar" data-arq="' + x.arquivo.id + '" title="Baixar o arquivo deste exemplar">⬇</a> ' : '') + (x.senha ? '<button class="bt mini" data-ac="ver-senha" data-n="' + ed.n + '" data-x="' + x.n + '" title="Mostrar a senha de leitura">🔑</button> ' : (x.formato === 'HTML' ? '<button class="bt mini" data-ac="reg-senha" data-n="' + ed.n + '" data-x="' + x.n + '">registrar senha</button> ' : '')) + (x.situacao !== 'cancelado' ? '<button class="bt mini" data-ac="cancelar-ex" data-n="' + ed.n + '" data-x="' + x.n + '">cancelar</button>' : '') + '</td></tr>';
   }).join('') + '</table>' : '<p class="mut">Nenhum exemplar emitido nesta edição.</p>';
   return h + '</div>';
 }
@@ -365,6 +365,13 @@ async function acao(ac, b) {
       I().setObra(pj.obra); msg('Projeto aberto no motor. Vá à aba Produção e envie o mesmo manuscrito para regerar.', 'ok'); return;
     }
     case 'emitir': return emitir(o, ed);
+    case 'ver-senha': { var xs = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); log('senha consultada', o.id, ord(ed.n) + ' ed. nº ' + n3(xs.n)); salvar('Acervo: consulta de senha').catch(function () {});
+      return dialogo('Senha do exemplar nº ' + n3(xs.n), '<p style="grid-column:1/-1">' + esc(xs.destinatario) + '</p><label>Senha de leitura<input type="text" readonly value="' + esc(xs.senha) + '" onclick="this.select()"></label><p class="mut" style="grid-column:1/-1">A consulta fica registrada no histórico.</p>', function () {}); }
+    case 'reg-senha': return dialogo('Registrar a senha do exemplar nº ' + n3(b.getAttribute('data-x')), '<label>Senha de leitura<input type="text" data-k="senha" autocomplete="off"></label>', async function (v) {
+      var xr = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); if ((v.senha || '').length < 8) throw new Error('Senha muito curta.');
+      xr.senha = v.senha; log('senha registrada', o.id, ord(ed.n) + ' ed. nº ' + n3(xr.n)); await salvar('Acervo: senha de exemplar'); desenhar();
+    });
+    case 'carregar-motor': await carregarNoMotor(o, ed); return msg('Livro carregado no motor (aba Produção). Agora é possível emitir exemplares em HTML.', 'ok');
     case 'cancelar-ex': return dialogo('Cancelar exemplar nº ' + n3(b.getAttribute('data-x')), '<p class="mut" style="grid-column:1/-1">O número fica registrado como cancelado e nunca é reutilizado.</p>' + campoF('Motivo', 'motivo', ''), async function (v) {
       var x = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); x.situacao = 'cancelado'; x.motivo = v.motivo; x.cancelado = hoje();
       log('exemplar cancelado', o.id, ord(ed.n) + ' ed. nº ' + n3(x.n) + (v.motivo ? ': ' + v.motivo : '')); await salvar('Acervo: exemplar cancelado'); desenhar();
@@ -391,32 +398,64 @@ function isb(f) { return f && f.isbn ? isbnFmt(f.isbn) : ''; }
 function acharArquivo(id) { var r = null; st.cat.obras.forEach(function (o) { o.edicoes.forEach(function (ed) { ed.versoes.forEach(function (v) { v.arquivos.forEach(function (a) { if (a.id === id) r = a; }); }); ed.exemplares.forEach(function (x) { if (x.arquivo && x.arquivo.id === id) r = x.arquivo; }); }); }); return r; }
 function csv(nome, linhasCsv) { var t = '﻿' + linhasCsv.map(function (l) { return l.map(function (c) { c = String(c == null ? '' : c); return /[";\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(';'); }).join('\r\n'); baixar(new Blob([t], { type: 'text/csv;charset=utf-8' }), nome); }
 
-/* emissão de exemplar numerado: gera o HTML controlado quando o livro está carregado no motor */
+/* emissão de exemplar numerado: o livro arquivado (projeto + manuscrito da versão) é carregado no motor e o HTML
+   numerado e protegido por senha é gerado; a senha fica guardada no catálogo cifrado */
+function gerarSenha() { var A = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = crypto.getRandomValues(new Uint8Array(12)), t = ''; for (var i = 0; i < 12; i++) t += A[r[i] % A.length] + (i % 4 === 3 && i < 11 ? '-' : ''); return t; }
+function fonteMotor(ed) {
+  var vs = ed.versoes.slice().sort(function (a, b) { return (b.vigente ? 1 : 0) - (a.vigente ? 1 : 0); });
+  for (var i = 0; i < vs.length; i++) {
+    var pj = vs[i].arquivos.find(function (a) { return a.formato === 'Projeto'; }), ms = vs[i].arquivos.find(function (a) { return a.formato === 'Manuscrito' || /\.(docx|doc|odt|rtf)$/i.test(a.nome); });
+    if (pj && ms) return { versao: vs[i], projeto: pj, manuscrito: ms };
+  }
+  return null;
+}
+function livroNoMotor(o, ed) {
+  var mot = I() && I().estado; if (!mot || !mot.livro || mot.rodando) return false;
+  if (st.motorObra === o.id + '|' + ed.n) return true;
+  var t = I().obra && I().obra().titulo; return !!(t && t.trim().toLowerCase() === o.titulo.trim().toLowerCase());
+}
+async function carregarNoMotor(o, ed) {
+  var f = fonteMotor(ed); if (!f) throw new Error('Esta edição não tem projeto (.json) e manuscrito arquivados numa mesma versão. Inclua-os com “＋ arquivo”.');
+  msg('Carregando o livro arquivado no motor (versão ' + f.versao.v + '); pode levar alguns minutos…');
+  var pj = JSON.parse(new TextDecoder().decode(await decifrar(await ghLerBytes(ARQ + f.projeto.id + '.bin'))));
+  var ms = await decifrar(await ghLerBytes(ARQ + f.manuscrito.id + '.bin'));
+  var ob = pj.obra || pj; ob.revisaoIA = false; // a emissão reproduz o texto aprovado, sem nova revisão
+  I().setObra(ob);
+  await I().receberArquivo(new File([ms], ob._arquivo || f.manuscrito.nome));
+  if (!I().estado.livro) throw new Error('o motor não conseguiu montar o livro; veja a aba Produção');
+  st.motorObra = o.id + '|' + ed.n;
+}
 function emitir(o, ed) {
-  var mot = I() && I().estado, titMot = I() && I().obra && I().obra().titulo, livroCarregado = !!(mot && mot.livro && titMot && titMot.trim().toLowerCase() === o.titulo.trim().toLowerCase());
-  var v = verVigente(ed);
+  var noMotor = livroNoMotor(o, ed), fonte = fonteMotor(ed), v = verVigente(ed);
+  var opHtml = noMotor ? 'HTML de leitura com senha (livro já aberto no motor)' : fonte ? 'HTML de leitura com senha (carrega o livro arquivado)' : '';
   dialogo('Emitir exemplar nº ' + n3(proxEx(ed)) + ' · ' + ord(ed.n) + ' edição', campoF('Destinatário (pessoa ou instituição)', 'dest', '') + campoF('Contato (e-mail ou telefone)', 'contato', '') + campoF('Finalidade', 'fin', 'doação', 'sel', FINALIDADES) +
-    campoF('Formato', 'formato', livroCarregado ? 'HTML de leitura (gerado agora, com senha)' : 'Registro apenas', 'sel', (livroCarregado ? ['HTML de leitura (gerado agora, com senha)'] : []).concat(['Registro apenas', 'EPUB', 'PDF', 'Impresso'])) +
-    campoF('Senha de leitura (só para o HTML; mínimo 8 caracteres)', 'senha', '', 'password') + campoF('Observação', 'obs', '') +
-    (livroCarregado ? '' : '<p class="mut" style="grid-column:1/-1">Para gerar o HTML numerado e protegido, abra antes este livro no motor (aba Produção). Sem isso, o número é reservado e registrado; o arquivo entregue deve levar o mesmo número.</p>'), async function (val) {
+    campoF('Formato', 'formato', opHtml || 'Registro apenas', 'sel', (opHtml ? [opHtml] : []).concat(['Registro apenas', 'EPUB', 'PDF', 'Impresso'])) +
+    campoF('Senha de leitura (gerada; pode trocar, mínimo 8 caracteres)', 'senha', gerarSenha()) + campoF('Observação', 'obs', '') +
+    (opHtml ? '<p class="mut" style="grid-column:1/-1">A senha fica guardada no acervo (cifrado), no registro do exemplar. Envie-a ao destinatário por um canal diferente do arquivo.</p>' : '<p class="mut" style="grid-column:1/-1">Para gerar o HTML numerado e protegido, arquive na versão o projeto (.json) e o manuscrito, ou abra o livro no motor. Sem isso, o número é reservado e registrado.</p>'), async function (val) {
     if (!val.dest.trim()) throw new Error('Informe o destinatário.');
+    var html = /^HTML/.test(val.formato);
+    if (html && (val.senha || '').length < 8) throw new Error('Senha muito curta: use ao menos 8 caracteres.');
+    if (html && !livroNoMotor(o, ed)) await carregarNoMotor(o, ed);
     var r = await ghLerJson(CAT);
     if (r && r.sha !== st.sha) { await abrir(); o = obraPorId(o.id); ed = o.edicoes.find(function (x) { return x.n === ed.n; }); }
-    var num = proxEx(ed), x = { n: num, destinatario: val.dest.trim(), contato: val.contato.trim(), finalidade: val.fin, formato: val.formato.replace(/ \(.*$/, ''), versao: v ? v.v : '', data: hoje(), situacao: 'ativo', obs: val.obs };
-    if (/^HTML/.test(val.formato)) {
-      if ((val.senha || '').length < 8) throw new Error('Senha muito curta: use ao menos 8 caracteres.');
+    var num = proxEx(ed), x = { n: num, destinatario: val.dest.trim(), contato: val.contato.trim(), finalidade: val.fin, formato: html ? 'HTML' : val.formato, versao: v ? v.v : '', data: hoje(), situacao: 'ativo', obs: val.obs };
+    if (html) {
       msg('Gerando o exemplar nº ' + n3(num) + '…');
-      var ob = I().obra(); ob.exemplares = (ob.exemplares || []).concat([{ n: num, destinatario: x.destinatario, data: x.data }]);
-      var html = await I().htmlLeitura(mot.livro, mot.logos, ob, { exemplar: num, destinatario: x.destinatario, senha: val.senha });
-      var nome = slug(o.titulo) + '-' + ed.n + 'ed-exemplar-' + n3(num) + '.html', bytes = new TextEncoder().encode(html);
-      x.arquivo = await guardarArquivo(bytes, nome, 'HTML');
+      var mot = I().estado, ob = I().obra(); ob.exemplares = (ob.exemplares || []).concat([{ n: num, destinatario: x.destinatario, data: x.data }]);
+      var h = await I().htmlLeitura(mot.livro, mot.logos, ob, { exemplar: num, destinatario: x.destinatario, senha: val.senha });
+      var nome = slug(o.titulo) + '-' + ed.n + 'ed-exemplar-' + n3(num) + '.html', bytes = new TextEncoder().encode(h);
+      x.arquivo = await guardarArquivo(bytes, nome, 'HTML'); x.senha = val.senha;
       baixar(new Blob([bytes], { type: 'text/html' }), nome);
     }
     ed.exemplares.push(x);
     log('exemplar emitido', o.id, ord(ed.n) + ' ed. nº ' + n3(num) + ' · ' + x.destinatario + ' · ' + x.finalidade + ' · ' + x.formato);
     await salvar('Acervo: exemplar ' + o.id + ' ' + ed.n + 'ed nº ' + n3(num)); desenhar();
-    msg('Exemplar nº ' + n3(num) + ' registrado para ' + x.destinatario + (x.arquivo ? '. Envie a senha por um canal diferente do arquivo.' : '.'), 'ok');
+    msg('Exemplar nº ' + n3(num) + ' registrado para ' + x.destinatario + (x.arquivo ? '. Senha guardada no registro (🔑). Envie-a por um canal diferente do arquivo.' : '.'), 'ok');
   });
+}
+function emitirPorTitulo(titulo) {
+  var o = st.cat && st.cat.obras.find(function (x) { return x.titulo.trim().toLowerCase() === String(titulo || '').trim().toLowerCase(); });
+  if (!o) return false; st.obraId = o.id; st.vista = 'obra'; desenhar(); emitir(o, edVigente(o)); return true;
 }
 
 /* registrar o livro gerado no motor como nova versão (ou novo título) */
@@ -455,11 +494,11 @@ async function importar(file) {
   for (var i = 0; i < (vi.arquivos || []).length; i++) { var a = vi.arquivos[i], zf = z.file(a.caminho || a.nome); if (!zf) throw new Error('arquivo ausente no pacote: ' + a.nome); arqs.push({ nome: a.nome, formato: a.formato, bytes: new Uint8Array(await zf.async('uint8array')) }); }
   var nv = await criarVersao(o, ed, vi.tipo || (ed.versoes.length ? 'correcao' : 'lancamento'), vi.notas, vi.responsavel, arqs);
   if (vi.data) nv.data = vi.data;
-  (d.exemplares || []).forEach(function (x) { if (!ed.exemplares.some(function (y) { return y.n === x.n; })) { ed.exemplares.push({ n: x.n, destinatario: x.destinatario, finalidade: x.finalidade || '', formato: x.formato || '', versao: x.versao || nv.v, data: x.data, situacao: x.situacao || 'ativo', contato: x.contato || '', obs: x.obs || '' }); log('exemplar importado', o.id, ord(ed.n) + ' ed. nº ' + n3(x.n) + ' · ' + x.destinatario); } });
+  (d.exemplares || []).forEach(function (x) { if (!ed.exemplares.some(function (y) { return y.n === x.n; })) { ed.exemplares.push({ n: x.n, destinatario: x.destinatario, finalidade: x.finalidade || '', formato: x.formato || '', versao: x.versao || nv.v, data: x.data, situacao: x.situacao || 'ativo', contato: x.contato || '', obs: x.obs || '', senha: x.senha || undefined }); log('exemplar importado', o.id, ord(ed.n) + ' ed. nº ' + n3(x.n) + ' · ' + x.destinatario); } });
   ed.exemplares.sort(function (a, b) { return a.n - b.n; });
   await salvar('Acervo: importação de ' + o.id);
   st.obraId = o.id; st.vista = 'obra'; desenhar(); msg('Pacote importado: ' + o.id + ', ' + ord(ed.n) + ' edição, versão ' + nv.v + ', ' + nv.arquivos.length + ' arquivo(s).', 'ok');
 }
 
-window.ACERVO_ICET = { montar: montar, abrir: abrir, senhaPronta: function () { if (st.raiz) abrir(); }, registrarMotor: async function () { if (!st.cat) await abrir(); if (st.cat) return registrarMotor(null, null).catch(function (e) { msg(e.message, 'err'); }); }, _st: st };
+window.ACERVO_ICET = { montar: montar, emitirPorTitulo: function (t) { return emitirPorTitulo(t); }, abrir: abrir, senhaPronta: function () { if (st.raiz) abrir(); }, registrarMotor: async function () { if (!st.cat) await abrir(); if (st.cat) return registrarMotor(null, null).catch(function (e) { msg(e.message, 'err'); }); }, _st: st };
 })();

@@ -4682,6 +4682,7 @@ function montarUI(alvo) {
   Q('[data-a="acervo"]').addEventListener('click', function () { if (!estado.epub || !window.ACERVO_ICET) return; ui.irAcervo(); ACERVO_ICET.registrarMotor(); });
   Q('[data-a="html"]').addEventListener('click', function () {
     if (!estado.livro) return;
+    if (window.ACERVO_ICET && ACERVO_ICET.emitirPorTitulo(obra.titulo)) { ui.irAcervo(); return; } // título no acervo: numeração e senha ficam no registro oficial
     var dest = prompt('Exemplar controlado: nome da pessoa ou instituição que receberá esta cópia.\n(Deixe em branco para uma cópia sem numeração nem senha.)', '');
     if (dest === null) return;
     dest = dest.trim(); var senha = '';
