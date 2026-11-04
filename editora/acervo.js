@@ -178,12 +178,14 @@ function desenhar() {
 }
 function pendencias(o) {
   var p = [], ed = edVigente(o); if (!ed) return ['sem edição'];
-  if (!(ed.formatos.epub && ed.formatos.epub.isbn) && !(ed.formatos.pdf && ed.formatos.pdf.isbn)) p.push('ISBN não registrado');
+  var isbnLote = st.cat.isbns.filter(function (x) { return x.obra === o.id && x.edicao === ed.n && x.situacao === 'atribuído'; });
+  if (!(ed.formatos.epub && ed.formatos.epub.isbn) && !(ed.formatos.pdf && ed.formatos.pdf.isbn)) p.push(isbnLote.length ? 'definir o formato do ISBN ' + isbnFmt(isbnLote[0].isbn) : 'ISBN não registrado');
   if (o.situacao === 'publicada') {
     if (!ed.publicacao) p.push('data de publicação');
     if (!(ed.depositoLegal && ed.depositoLegal.data)) { var dias = ed.publicacao ? Math.floor((Date.now() - new Date(ed.publicacao)) / 864e5) : 0; p.push('depósito legal na Biblioteca Nacional' + (dias > 30 ? ' (prazo de 30 dias vencido)' : '')); }
   }
-  if (!ed.aprovacao || !ed.aprovacao.data) p.push('aprovação do conselho');
+  if (ed.portaria && ed.portaria.situacao === 'aguardando assinatura') p.push('portaria nº ' + ed.portaria.numero + ' aguardando assinatura gov.br');
+  else if (!ed.aprovacao || !ed.aprovacao.data) p.push('aprovação do conselho');
   if (!ed.versoes.length || !verVigente(ed).arquivos.length) p.push('arquivos da versão');
   else if (ed.versoes.every(function (v) { return v.tipo === 'preparacao'; })) p.push('lançamento: ao receber o ISBN, regerar com o número e registrar a versão ' + ed.n + '.0');
   return p;
@@ -207,7 +209,7 @@ function vObra() {
     campoF('Autores (um por linha)', 'autores', (o.autores || []).join('\n'), 'area') + campoF('Organizadores (um por linha)', 'organizadores', (o.organizadores || []).join('\n'), 'area') +
     campoF('Situação', 'situacao', o.situacao, 'sel', SITUACOES) + campoF('Série / coleção', 'serie', o.serie) + campoF('Idioma', 'idioma', o.idioma || 'pt-BR') +
     campoF('CDD', 'cdd', o.cdd) + campoF('CDU', 'cdu', o.cdu) + campoF('Assuntos (um por linha)', 'assuntos', (o.assuntos || []).join('\n'), 'area') +
-    campoF('Sinopse', 'sinopse', o.sinopse, 'area') + campoF('Observações internas', 'obs', o.obs, 'area') +
+    campoF('Identidade cultural citada na portaria (Art. 4º)', 'identidade', o.identidade || '') + campoF('Sinopse', 'sinopse', o.sinopse, 'area') + campoF('Observações internas', 'obs', o.obs, 'area') +
     '</div><div class="acoes"><button class="bt pri" data-ac="salvar-obra">💾 Salvar dados do título</button><button class="bt" data-ac="nova-edicao">＋ Nova edição</button><button class="bt" data-ac="ficha-csv">⬇ Ficha do título (CSV)</button></div></div>';
   var docs = (st.cat.documentos || []).filter(function (d) { return d.obra === o.id; });
   h += '<div class="bloco"><h4>Documentos desta obra <button class="bt mini" data-ac="doc-novo">＋ Arquivar documento</button></h4>' + tabelaDocs(docs) + '</div>';
@@ -225,7 +227,7 @@ function vEdicao(o, ed) {
     FORMATOS.map(function (f) { return campoF('ISBN ' + f[1], 'isbn_' + f[0], F[f[0]] && F[f[0]].isbn ? isbnFmt(F[f[0]].isbn) : ''); }).join('') +
     campoF('Tiragem do impresso', 'tiragem', F.impresso && F.impresso.tiragem) + campoF('Preço de capa / licença (R$)', 'preco', ed.preco) +
     campoF('Notas da edição', 'notas', ed.notas, 'area') +
-    '</div><div class="acoes"><button class="bt pri" data-ac="salvar-ed" data-n="' + ed.n + '">💾 Salvar edição</button>' + (proximoIsbnLivre() ? '<button class="bt" data-ac="isbn-livre" data-n="' + ed.n + '" title="Preenche o primeiro formato sem ISBN com o próximo ISBN livre do lote">🔢 Usar ISBN livre do lote</button>' : '') + '</div>';
+    '</div>' + (ed.portaria ? '<p class="' + (ed.portaria.situacao === 'assinada' ? 'okk' : 'alerta') + '" style="font-size:.76rem">Portaria nº ' + esc(ed.portaria.numero) + ' – ' + esc(ed.portaria.situacao) + '</p>' : '') + '<div class="acoes"><button class="bt pri" data-ac="salvar-ed" data-n="' + ed.n + '">💾 Salvar edição</button>' + (!ed.portaria || ed.portaria.situacao === 'cancelada' ? '<button class="bt" data-ac="emitir-portaria" data-n="' + ed.n + '">📜 Emitir portaria de aprovação</button>' : '') + (proximoIsbnLivre() ? '<button class="bt" data-ac="isbn-livre" data-n="' + ed.n + '" title="Preenche o primeiro formato sem ISBN com o próximo ISBN livre do lote">🔢 Usar ISBN livre do lote</button>' : '') + '</div>';
   // versões
   h += '<h4 style="margin-top:.8rem">Versões e arquivos <button class="bt mini" data-ac="nova-versao" data-n="' + ed.n + '">＋ Nova versão com arquivos</button>' + (I() && I().estado && I().estado.epub ? '<button class="bt mini" data-ac="registrar-motor" data-n="' + ed.n + '">📥 Versão a partir do motor</button>' : '') + '</h4>';
   h += ed.versoes.length ? '<table><tr><th>Versão</th><th>Data</th><th>Tipo</th><th>Notas</th><th>Arquivos</th><th></th></tr>' + ed.versoes.slice().reverse().map(function (v) {
@@ -244,8 +246,8 @@ function vEdicao(o, ed) {
 }
 function linhaDoc(d) {
   var o = d.obra && obraPorId(d.obra);
-  return '<tr><td>' + esc(nomeTipoDoc(d.tipo)) + (d.numero ? '<br><small class="mut">nº ' + esc(d.numero) + '</small>' : '') + '</td><td>' + esc(d.titulo) + (d.resumo ? '<br><small class="mut">' + esc(d.resumo) + '</small>' : '') + (d.alerta ? '<br><small class="alerta">' + esc(d.alerta) + '</small>' : '') + '</td><td>' + dataBr(d.data) + (d.emissor ? '<br><small class="mut">' + esc(d.emissor) + '</small>' : '') + '</td><td>' + (o ? esc(o.id) + (d.edicao ? ' · ' + ord(d.edicao) + ' ed.' : '') : '<span class="mut">Editora</span>') + (d.isbn ? '<br><small>ISBN ' + isbnFmt(d.isbn) + '</small>' : '') + (d.verificacao ? '<br><small class="mut">verificação: ' + esc(d.verificacao) + '</small>' : '') + '</td><td>' +
-    (d.arquivos || []).map(function (a) { return '<div><a href="#" data-ac="baixar" data-arq="' + a.id + '">⬇ ' + esc(a.nome) + '</a></div>'; }).join('') + '<button class="bt mini" data-ac="doc-arq" data-d="' + d.id + '">＋ arquivo</button> <button class="bt mini" data-ac="doc-editar" data-d="' + d.id + '">editar</button></td></tr>';
+  return '<tr><td>' + esc(nomeTipoDoc(d.tipo)) + (d.numero ? '<br><small class="mut">nº ' + esc(d.numero) + '</small>' : '') + '</td><td>' + esc(d.titulo) + (d.resumo ? '<br><small class="mut">' + esc(d.resumo) + '</small>' : '') + (d.alerta ? '<br><small class="alerta">' + esc(d.alerta) + '</small>' : '') + (d.situacao ? '<br><span class="selo">' + esc(d.situacao) + '</span>' : '') + (d.assinatura ? '<br><small class="okk">Assinado' + (d.assinatura.governo ? ' (gov.br)' : '') + (d.assinatura.titulares && d.assinatura.titulares.length ? ' por ' + esc(d.assinatura.titulares.join(', ')) : '') + (d.assinatura.data ? ' em ' + esc(d.assinatura.data) : '') + '</small>' : '') + '</td><td>' + dataBr(d.data) + (d.emissor ? '<br><small class="mut">' + esc(d.emissor) + '</small>' : '') + '</td><td>' + (o ? esc(o.id) + (d.edicao ? ' · ' + ord(d.edicao) + ' ed.' : '') : '<span class="mut">Editora</span>') + (d.isbn ? '<br><small>ISBN ' + isbnFmt(d.isbn) + '</small>' : '') + (d.verificacao ? '<br><small class="mut">verificação: ' + esc(d.verificacao) + '</small>' : '') + '</td><td>' +
+    (d.arquivos || []).map(function (a) { return '<div><a href="#" data-ac="baixar" data-arq="' + a.id + '">⬇ ' + esc(a.nome) + '</a></div>'; }).join('') + (d.situacao === 'aguardando assinatura' ? '<button class="bt mini" data-ac="doc-assinada" data-d="' + d.id + '">✍ anexar versão assinada</button> ' : '') + '<button class="bt mini" data-ac="doc-arq" data-d="' + d.id + '">＋ arquivo</button> <button class="bt mini" data-ac="doc-editar" data-d="' + d.id + '">editar</button></td></tr>';
 }
 function tabelaDocs(L) { return L.length ? '<table><tr><th>Tipo</th><th>Documento</th><th>Data · emissor</th><th>Vínculo</th><th>Arquivos</th></tr>' + L.map(linhaDoc).join('') + '</table>' : '<p class="mut">Nenhum documento arquivado.</p>'; }
 function vDocumentos() {
@@ -270,7 +272,8 @@ async function aplicarDoc(d) {
     registrarIsbn(d.isbn, o.id, ed.n, fm ? fm[1] : 'a definir'); feito.push('ISBN ' + isbnFmt(d.isbn) + ' atribuído');
     if (fm) { ed.formatos[fm[0]] = ed.formatos[fm[0]] || {}; ed.formatos[fm[0]].isbn = isbnL(d.isbn); }
   } else if (d.isbn && !isbnUso(d.isbn)) { if (!isbnOk(d.isbn)) throw new Error('ISBN inválido'); st.cat.isbns.push({ isbn: isbnL(d.isbn), situacao: 'livre', data: hoje() }); feito.push('ISBN incluído no lote'); }
-  if (d.tipo === 'aprovacao' && ed) { ed.aprovacao = { data: d.data, ato: d.titulo + (d.numero ? ', nº ' + d.numero : '') + (d.emissor ? ' (' + d.emissor + ')' : ''), documento: d.id }; feito.push('aprovação da ' + ord(ed.n) + ' edição'); }
+  if (d.tipo === 'aprovacao' && ed && d.numero && /portaria/i.test(d.titulo)) ed.portaria = { numero: d.numero, data: d.data, documento: d.id, situacao: d.situacao || 'assinada' };
+  if (d.tipo === 'aprovacao' && ed && d.situacao !== 'aguardando assinatura') { ed.aprovacao = { data: d.data, ato: d.titulo + (d.numero ? ', nº ' + d.numero : '') + (d.emissor ? ' (' + d.emissor + ')' : ''), documento: d.id }; feito.push('aprovação da ' + ord(ed.n) + ' edição'); }
   if (d.tipo === 'deposito' && ed) { ed.depositoLegal = { data: d.data, protocolo: d.numero, documento: d.id }; feito.push('depósito legal'); }
   if (d.tipo === 'direitos' && ed) { ed.direitos = (d.emissor ? d.emissor + ' ' : '') + (d.numero || ''); feito.push('registro de direitos'); }
   if ((d.tipo === 'resolucao' || d.tipo === 'ato-conselho') && d.textoLivros && I().cfg) {
@@ -284,6 +287,24 @@ function lerDocForm(v, d) {
   d.obra = /^\(Editora/.test(v.obra) ? '' : v.obra.split(' · ')[0]; d.edicao = d.obra ? (+v.edicao || 1) : 0; d.isbn = isbnL(v.isbn); d.formato = v.formato; d.verificacao = v.verificacao.trim(); d.resumo = v.resumo.trim(); d.textoLivros = v.textoLivros.trim();
   if (!d.titulo) throw new Error('Informe o título ou a ementa do documento.');
   return d;
+}
+function proximaPortaria(ano) {
+  var mx = 0; (st.cat.documentos || []).forEach(function (d) { var m = /^(\d+)\/(\d{4})$/.exec(String(d.numero || '').replace(/\s+/g, '')); if (d.tipo === 'aprovacao' && m && m[2] === String(ano) && d.situacao !== 'cancelada') mx = Math.max(mx, +m[1]); });
+  return String(mx + 1).padStart(2, '0') + '/' + ano;
+}
+async function emitirPortaria(o, ed) {
+  if (!window.PORTARIA_ICET) throw new Error('o gerador de portarias não carregou; recarregue a página');
+  var data = hoje(), numero = proximaPortaria(data.slice(0, 4)), F = ed.formatos || {}, isbn = (F.epub && F.epub.isbn) || (F.pdf && F.pdf.isbn) || '';
+  var modelo = st.cat.modeloPortaria || {}, dados = { numero: numero, data: data, titulo: o.titulo, subtitulo: o.subtitulo, autores: o.autores, edicao: ed.n, isbn: isbn, identidade: o.identidade, controle: 'Acervo da Editora · ' + o.id + ' · ' + ord(ed.n) + ' edição' };
+  for (var k in modelo) if (modelo[k]) dados[k] = modelo[k];
+  var pdf = window.PORTARIA_ICET.gerarPdf(dados), nome = 'Portaria_' + numero.replace('/', '-') + '_aprovacao_' + slug(o.titulo) + '.pdf';
+  var d = { id: idAleatorio(), arquivado: hoje(), arquivos: [], tipo: 'aprovacao', titulo: 'Portaria nº ' + numero + ' – aprovação de “' + o.titulo + '”', numero: numero, data: data, emissor: (dados.serie || window.PORTARIA_ICET.PADRAO.serie), obra: o.id, edicao: ed.n, situacao: 'aguardando assinatura', resumo: 'Emitida automaticamente pelo Acervo. Assinar no gov.br e anexar a versão assinada.' };
+  d.arquivos.push(await guardarArquivo(pdf, nome, 'Documento'));
+  st.cat.documentos.push(d); await aplicarDoc(d);
+  log('portaria emitida', o.id, 'nº ' + numero + ' (' + ord(ed.n) + ' edição), aguardando assinatura');
+  await salvar('Acervo: portaria ' + numero); baixar(new Blob([pdf], { type: 'application/pdf' }), nome);
+  st.obraId = o.id; st.vista = 'obra'; desenhar();
+  msg('Portaria nº ' + numero + ' emitida e baixada. Assine no gov.br e use “✍ anexar versão assinada” na lista de documentos da obra.', 'ok');
 }
 function proxEx(ed) { return ed.exemplares.reduce(function (m, x) { return Math.max(m, +x.n || 0); }, 0) + 1; }
 function vIsbn() {
@@ -369,9 +390,11 @@ async function acao(ac, b) {
     });
     case 'salvar-obra': {
       var f = lerForm('[data-form="obra"]'), antes = o.situacao;
-      o.titulo = f.titulo; o.subtitulo = f.subtitulo; o.autores = linhas(f.autores); o.organizadores = linhas(f.organizadores); o.situacao = f.situacao; o.serie = f.serie; o.idioma = f.idioma; o.cdd = f.cdd; o.cdu = f.cdu; o.assuntos = linhas(f.assuntos); o.sinopse = f.sinopse; o.obs = f.obs;
+      o.titulo = f.titulo; o.subtitulo = f.subtitulo; o.autores = linhas(f.autores); o.organizadores = linhas(f.organizadores); o.situacao = f.situacao; o.serie = f.serie; o.idioma = f.idioma; o.cdd = f.cdd; o.cdu = f.cdu; o.assuntos = linhas(f.assuntos); o.sinopse = f.sinopse; o.obs = f.obs; o.identidade = f.identidade;
       if (o.situacao === 'publicada' && antes !== 'publicada') { var e1 = edVigente(o); if (!e1.publicacao) e1.publicacao = hoje(); }
-      log('dados do título' + (antes !== o.situacao ? '; situação: ' + antes + ' → ' + o.situacao : ''), o.id, ''); await salvar('Acervo: ' + o.id); return desenhar();
+      log('dados do título' + (antes !== o.situacao ? '; situação: ' + antes + ' → ' + o.situacao : ''), o.id, ''); await salvar('Acervo: ' + o.id);
+      if (o.situacao === 'aprovada' && antes !== 'aprovada' && !edVigente(o).portaria) { await emitirPortaria(o, edVigente(o)); return; }
+      return desenhar();
     }
     case 'salvar-ed': {
       var g = lerForm('[data-form="ed"][data-n="' + n + '"]');
@@ -423,6 +446,16 @@ async function acao(ac, b) {
       return dialogo('Editar documento', formDoc(de), async function (v) { lerDocForm(v, de); var feito = await aplicarDoc(de); log('documento alterado', de.obra, de.titulo + (feito.length ? ' → ' + feito.join('; ') : '')); await salvar('Acervo: documento alterado'); desenhar(); }); }
     case 'doc-arq': { var da = st.cat.documentos.find(function (x) { return x.id === b.getAttribute('data-d'); });
       return dialogo('Incluir arquivo em: ' + da.titulo, '<label>Arquivos<input type="file" multiple data-k="arqs"></label>', async function (v) { var arqs = await lerArquivos(v.arqs); for (var i = 0; i < arqs.length; i++) da.arquivos.push(await guardarArquivo(arqs[i].bytes, arqs[i].nome, 'Documento')); log('arquivo incluído em documento', da.obra, da.titulo); await salvar('Acervo: documento'); desenhar(); }); }
+    case 'emitir-portaria': return emitirPortaria(o, ed);
+    case 'doc-assinada': { var dp = st.cat.documentos.find(function (x) { return x.id === b.getAttribute('data-d'); });
+      return dialogo('Anexar a versão assinada: ' + dp.titulo, '<label>PDF assinado no gov.br<input type="file" accept=".pdf,application/pdf" data-k="arqs"></label>', async function (v) {
+        var arqs = await lerArquivos(v.arqs); if (!arqs.length) throw new Error('Escolha o PDF assinado.');
+        var ass = window.PORTARIA_ICET.assinaturaPdf(arqs[0].bytes); if (!ass) throw new Error('Este PDF não tem assinatura digital. Assine no gov.br (assinador.iti.br) e envie o arquivo que ele devolve.');
+        dp.arquivos.push(await guardarArquivo(arqs[0].bytes, arqs[0].nome, 'Documento assinado')); dp.situacao = 'assinada'; dp.assinatura = ass;
+        if (ass.data) dp.dataAssinatura = ass.data.slice(0, 10);
+        var feito = await aplicarDoc(dp); log('portaria assinada', dp.obra, dp.titulo + ' · ' + (ass.titulares || []).join(', ') + (feito.length ? ' → ' + feito.join('; ') : ''));
+        await salvar('Acervo: ' + dp.titulo + ' assinada'); desenhar(); msg('Versão assinada arquivada' + (ass.governo ? ' (assinatura gov.br)' : '') + '. A aprovação da edição foi registrada.', 'ok');
+      }); }
     case 'emitir': return emitir(o, ed);
     case 'ver-senha': { var xs = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); log('senha consultada', o.id, ord(ed.n) + ' ed. nº ' + n3(xs.n)); salvar('Acervo: consulta de senha').catch(function () {});
       return dialogo('Senha do exemplar nº ' + n3(xs.n), '<p style="grid-column:1/-1">' + esc(xs.destinatario) + '</p><label>Senha de leitura<input type="text" readonly value="' + esc(xs.senha) + '" onclick="this.select()"></label><p class="mut" style="grid-column:1/-1">A consulta fica registrada no histórico.</p>', function () {}); }
@@ -557,8 +590,10 @@ async function importar(file) {
   if (vi.data) nv.data = vi.data;
   (d.exemplares || []).forEach(function (x) { if (!ed.exemplares.some(function (y) { return y.n === x.n; })) { ed.exemplares.push({ n: x.n, destinatario: x.destinatario, finalidade: x.finalidade || '', formato: x.formato || '', versao: x.versao || nv.v, data: x.data, situacao: x.situacao || 'ativo', contato: x.contato || '', obs: x.obs || '', senha: x.senha || undefined }); log('exemplar importado', o.id, ord(ed.n) + ' ed. nº ' + n3(x.n) + ' · ' + x.destinatario); } });
   ed.exemplares.sort(function (a, b) { return a.n - b.n; });
+  if (t.identidade && !o.identidade) o.identidade = t.identidade;
   await importarDocs(z, d.documentos || [], o);
   await salvar('Acervo: importação de ' + o.id);
+  if (o.situacao === 'aprovada' && !ed.portaria) { await emitirPortaria(o, ed); return; }
   st.obraId = o.id; st.vista = 'obra'; desenhar(); msg('Pacote importado: ' + o.id + ', ' + ord(ed.n) + ' edição, versão ' + nv.v + ', ' + nv.arquivos.length + ' arquivo(s).', 'ok');
 }
 
@@ -567,8 +602,9 @@ async function importarDocs(z, lista, oPadrao) {
   for (var i = 0; i < lista.length; i++) {
     var x = lista[i], o = x.tituloObra ? st.cat.obras.find(function (y) { return y.titulo.trim().toLowerCase() === x.tituloObra.trim().toLowerCase(); }) : oPadrao;
     if (x.criarObra && !o) { o = novaObra(x.criarObra); st.cat.obras.push(o); log('título criado a partir de documento', o.id, o.titulo); }
-    var d = { id: idAleatorio(), arquivado: hoje(), arquivos: [], tipo: x.tipo, titulo: x.titulo, numero: x.numero || '', data: x.data || '', emissor: x.emissor || '', obra: x.editora ? '' : (o ? o.id : ''), edicao: x.editora ? 0 : (x.edicao || (o ? 1 : 0)), isbn: isbnL(x.isbn), formato: x.formato || 'a definir', verificacao: x.verificacao || '', resumo: x.resumo || '', textoLivros: x.textoLivros || '', alerta: x.alerta || '' };
+    var d = { id: idAleatorio(), arquivado: hoje(), arquivos: [], tipo: x.tipo, titulo: x.titulo, numero: x.numero || '', data: x.data || '', emissor: x.emissor || '', obra: x.editora ? '' : (o ? o.id : ''), edicao: x.editora ? 0 : (x.edicao || (o ? 1 : 0)), isbn: isbnL(x.isbn), formato: x.formato || 'a definir', verificacao: x.verificacao || '', resumo: x.resumo || '', textoLivros: x.textoLivros || '', alerta: x.alerta || '', situacao: x.situacao || '' };
     for (var k = 0; k < (x.arquivos || []).length; k++) { var zf = z.file(x.arquivos[k]); if (!zf) throw new Error('arquivo ausente no pacote: ' + x.arquivos[k]); d.arquivos.push(await guardarArquivo(new Uint8Array(await zf.async('uint8array')), x.arquivos[k], 'Documento')); }
+    if (d.tipo === 'aprovacao' && d.arquivos.length && window.PORTARIA_ICET && x.arquivos[0] && /\.pdf$/i.test(x.arquivos[0])) { var ass = window.PORTARIA_ICET.assinaturaPdf(new Uint8Array(await z.file(x.arquivos[x.arquivos.length - 1]).async('uint8array'))); if (ass) { d.assinatura = ass; d.situacao = 'assinada'; } }
     var feito = await aplicarDoc(d); st.cat.documentos.push(d); n++;
     log('documento importado', d.obra, nomeTipoDoc(d.tipo) + ': ' + d.titulo + (feito.length ? ' → ' + feito.join('; ') : ''));
   }
