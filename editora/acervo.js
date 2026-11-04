@@ -297,6 +297,7 @@ async function emitirPortaria(o, ed) {
   var data = hoje(), numero = proximaPortaria(data.slice(0, 4)), F = ed.formatos || {}, isbn = (F.epub && F.epub.isbn) || (F.pdf && F.pdf.isbn) || '';
   var modelo = st.cat.modeloPortaria || {}, dados = { numero: numero, data: data, titulo: o.titulo, subtitulo: o.subtitulo, autores: o.autores, edicao: ed.n, isbn: isbn, identidade: o.identidade, controle: 'Acervo da Editora · ' + o.id + ' · ' + ord(ed.n) + ' edição' };
   for (var k in modelo) if (modelo[k]) dados[k] = modelo[k];
+  dados.logo = await window.PORTARIA_ICET.logoEditora('editora/logos/editora-cor.png');
   var pdf = window.PORTARIA_ICET.gerarPdf(dados), nome = 'Portaria_' + numero.replace('/', '-') + '_aprovacao_' + slug(o.titulo) + '.pdf';
   var d = { id: idAleatorio(), arquivado: hoje(), arquivos: [], tipo: 'aprovacao', titulo: 'Portaria nº ' + numero + ' – aprovação de “' + o.titulo + '”', numero: numero, data: data, emissor: (dados.serie || window.PORTARIA_ICET.PADRAO.serie), obra: o.id, edicao: ed.n, situacao: 'aguardando assinatura', resumo: 'Emitida automaticamente pelo Acervo. Assinar no gov.br e anexar a versão assinada.' };
   d.arquivos.push(await guardarArquivo(pdf, nome, 'Documento'));

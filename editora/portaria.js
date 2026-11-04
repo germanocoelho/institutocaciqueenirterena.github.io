@@ -82,7 +82,8 @@ function gerarPdf0(d, tam, ld, g) {
       y -= ld;
     });
   }
-  var LW = A4w - ME - MD;
+  var LW = A4w - ME - MD, logo = d.logo && d.logo.jpeg ? d.logo : null, lgW = 0, lgH = 0;
+  if (logo) { lgW = 125 * (g < 1 ? 0.85 : 1); lgH = lgW * logo.h / logo.w; ops.push('q ' + lgW.toFixed(2) + ' 0 0 ' + lgH.toFixed(2) + ' ' + (ME + (LW - lgW) / 2).toFixed(2) + ' ' + (A4h - 42 - lgH).toFixed(2) + ' cm /Im1 Do Q'); y = A4h - 42 - lgH - (1 + 1.2 * g) * ld; }
   escrever(ME, y, { t: T.cab[0], neg: true }); escrever(ME + largura(T.cab[0], true, tam) + 24, y, { t: T.cab[1], neg: true }); y -= (1.5 + 2.5 * g) * ld;
   paragrafo(T.preambulo, ME + LW * 0.5, LW * 0.5, true); y -= (1 + 1.5 * g) * ld;
   paragrafo('**RESOLVE:**', ME, LW, false); y -= 0.5 * ld;
@@ -97,17 +98,18 @@ function gerarPdf0(d, tam, ld, g) {
     '<< /Title ' + pdfStr('Portaria nº ' + d.numero + ' – ' + T.cab[1]) + ' /Author ' + pdfStr(T.signatario) + ' /Producer (Acervo da Editora Cacique Enir Terena) >>'];
   paginas.forEach(function (pg) {
     var nPag = objs.length + 1, nCont = nPag + 1; kids.push(nPag + ' 0 R');
-    objs.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + A4w + ' ' + A4h + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + nCont + ' 0 R >>');
+    objs.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + A4w + ' ' + A4h + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>' + (logo ? ' /XObject << /Im1 IMG 0 R >>' : '') + ' >> /Contents ' + nCont + ' 0 R >>');
     objs.push({ stream: Uint8Array.from(win(pg.join('\n'))) });
   });
   objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + np + ' >>';
+  if (logo) { var nImg = objs.length + 1; objs.push({ stream: logo.jpeg, dict: '/Type /XObject /Subtype /Image /Width ' + logo.w + ' /Height ' + logo.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode' }); objs = objs.map(function (o) { return typeof o === 'string' ? o.replace(/IMG 0 R/g, nImg + ' 0 R') : o; }); }
   var partes = [], pos = 0, offs = [];
   function add(u) { partes.push(u); pos += u.length; }
   function addS(s) { add(Uint8Array.from(win(s))); }
   addS('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n');
   objs.forEach(function (o, i) {
     offs.push(pos);
-    if (o.stream) { addS((i + 1) + ' 0 obj\n<< /Length ' + o.stream.length + ' >>\nstream\n'); add(o.stream); addS('\nendstream\nendobj\n'); }
+    if (o.stream) { addS((i + 1) + ' 0 obj\n<< ' + (o.dict ? o.dict + ' ' : '') + '/Length ' + o.stream.length + ' >>\nstream\n'); add(o.stream); addS('\nendstream\nendobj\n'); }
     else addS((i + 1) + ' 0 obj\n' + o + '\nendobj\n');
   });
   var xref = pos;
@@ -129,6 +131,15 @@ function assinaturaPdf(u8) {
   while ((x = rx.exec(s))) { var n = x[0].trim(); if (n.split(' ').length >= 3 && !/^AC |GOVERNO|BRASIL|INTERMEDIARIA|AUTORIDADE|ICP|RAIZ/.test(n) && nomes.indexOf(n) < 0) nomes.push(n); }
   return { governo: gov, data: m ? m[1] + '-' + m[2] + '-' + m[3] + ' ' + m[4] + ':' + m[5] : '', titulares: nomes.slice(0, 3) };
 }
-var API = { PADRAO: PADRAO, texto: texto, gerarPdf: gerarPdf, assinaturaPdf: assinaturaPdf, dataExtenso: dataExtenso };
+var _logo = null;
+function logoEditora(url) {
+  if (_logo) return _logo;
+  _logo = fetch(url, { cache: 'force-cache' }).then(function (r) { if (!r.ok) throw new Error('logo'); return r.blob(); }).then(function (b) { return createImageBitmap(b); }).then(function (im) {
+    var cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height; var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0);
+    return new Promise(function (ok) { cv.toBlob(ok, 'image/jpeg', 0.92); }).then(function (bl) { return bl.arrayBuffer(); }).then(function (ab) { return { jpeg: new Uint8Array(ab), w: im.width, h: im.height }; });
+  }).catch(function () { _logo = null; return null; });
+  return _logo;
+}
+var API = { logoEditora: logoEditora, PADRAO: PADRAO, texto: texto, gerarPdf: gerarPdf, assinaturaPdf: assinaturaPdf, dataExtenso: dataExtenso };
 if (typeof module !== 'undefined' && module.exports) module.exports = API; else raiz.PORTARIA_ICET = API;
 })(this);
