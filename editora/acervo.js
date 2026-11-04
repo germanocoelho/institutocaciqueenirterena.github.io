@@ -9,6 +9,8 @@ var DIR = 'editora/acervo/', CAT = DIR + 'catalogo.cifrado.json', ARQ = DIR + 'a
 var SITUACOES = ['em produção', 'em avaliação pelo conselho', 'aprovada', 'publicada', 'suspensa', 'esgotada', 'retirada de circulação'];
 var FORMATOS = [['epub', 'EPUB'], ['pdf', 'PDF'], ['html', 'HTML de leitura'], ['impresso', 'Impresso']];
 var TIPOS_VERSAO = [['preparacao', 'Preparação (arquivada antes do ISBN)'], ['lancamento', 'Lançamento da edição'], ['correcao', 'Correção (sem mudança de conteúdo)'], ['reimpressao', 'Reimpressão'], ['atualizacao', 'Atualização de arquivo (mesmo conteúdo)']];
+var TIPOS_DOC = [['resolucao', 'Resolução de criação da Editora'], ['ato-conselho', 'Ato ou portaria do Conselho Editorial'], ['aprovacao', 'Aprovação de obra pelo Conselho Editorial'], ['isbn', 'Declaração de registro de ISBN (CBL)'], ['deposito', 'Comprovante de depósito legal (Biblioteca Nacional)'], ['direitos', 'Registro de direitos autorais'], ['contrato', 'Contrato ou cessão de direitos'], ['marca', 'Autorização de uso de marca'], ['outro', 'Outro documento']];
+function nomeTipoDoc(t) { return (TIPOS_DOC.find(function (x) { return x[0] === t; }) || [0, t])[1]; }
 var FINALIDADES = ['venda', 'doação', 'cortesia', 'autor(a)', 'avaliação/parecer', 'depósito legal', 'imprensa', 'biblioteca', 'arquivo da editora', 'outra'];
 var I = function () { return window.EBOOK_ICET && window.EBOOK_ICET._interno; };
 var st = { cat: null, sha: null, chave: null, envelope: null, raiz: null, vista: 'titulos', obraId: null, carregando: false };
@@ -167,9 +169,10 @@ function desenhar() {
   else if (!st.cat) corpo = '<div class="acoes"><button class="bt pri" data-ac="criar">📚 Criar o acervo</button><button class="bt" data-ac="abrir">⟳ Abrir</button></div>';
   else {
     var V = st.vista;
-    corpo = '<div class="sub2">' + [['titulos', '📚 Títulos'], ['isbn', '🔢 ISBN'], ['exemplares', '🎫 Exemplares'], ['historico', '🕘 Histórico'], ['dados', '⇅ Importar e exportar']].map(function (b) { return '<button class="bt' + (V === b[0] || (V === 'obra' && b[0] === 'titulos') ? ' on' : '') + '" data-ac="vista" data-v="' + b[0] + '">' + b[1] + '</button>'; }).join('') +
+    corpo = '<div class="sub2">' + [['titulos', '📚 Títulos'], ['documentos', '📄 Documentos'], ['isbn', '🔢 ISBN'], ['exemplares', '🎫 Exemplares'], ['historico', '🕘 Histórico'], ['dados', '⇅ Importar e exportar']].map(function (b) { return '<button class="bt' + (V === b[0] || (V === 'obra' && b[0] === 'titulos') ? ' on' : '') + '" data-ac="vista" data-v="' + b[0] + '">' + b[1] + '</button>'; }).join('') +
       '<button class="bt" data-ac="abrir" title="Recarregar do servidor">⟳</button></div>';
-    corpo += V === 'obra' ? vObra() : V === 'isbn' ? vIsbn() : V === 'exemplares' ? vExemplares() : V === 'historico' ? vHistorico() : V === 'dados' ? vDados() : vTitulos();
+    if (!st.cat.documentos) st.cat.documentos = [];
+    corpo += V === 'obra' ? vObra() : V === 'documentos' ? vDocumentos() : V === 'isbn' ? vIsbn() : V === 'exemplares' ? vExemplares() : V === 'historico' ? vHistorico() : V === 'dados' ? vDados() : vTitulos();
   }
   R.innerHTML = topo + corpo + '<div class="msg ac-msg' + (st.ultMsg && st.ultMsg[1] ? ' ' + st.ultMsg[1] : '') + '" role="status" aria-live="polite">' + esc(st.ultMsg ? st.ultMsg[0] : '') + '</div><input type="file" multiple hidden data-ac-arq><dialog data-ac-dlg></dialog>';
 }
@@ -206,6 +209,8 @@ function vObra() {
     campoF('CDD', 'cdd', o.cdd) + campoF('CDU', 'cdu', o.cdu) + campoF('Assuntos (um por linha)', 'assuntos', (o.assuntos || []).join('\n'), 'area') +
     campoF('Sinopse', 'sinopse', o.sinopse, 'area') + campoF('Observações internas', 'obs', o.obs, 'area') +
     '</div><div class="acoes"><button class="bt pri" data-ac="salvar-obra">💾 Salvar dados do título</button><button class="bt" data-ac="nova-edicao">＋ Nova edição</button><button class="bt" data-ac="ficha-csv">⬇ Ficha do título (CSV)</button></div></div>';
+  var docs = (st.cat.documentos || []).filter(function (d) { return d.obra === o.id; });
+  h += '<div class="bloco"><h4>Documentos desta obra <button class="bt mini" data-ac="doc-novo">＋ Arquivar documento</button></h4>' + tabelaDocs(docs) + '</div>';
   o.edicoes.slice().reverse().forEach(function (ed) { h += vEdicao(o, ed); });
   return h;
 }
@@ -236,6 +241,49 @@ function vEdicao(o, ed) {
       (x.arquivo ? '<a href="#" data-ac="baixar" data-arq="' + x.arquivo.id + '" title="Baixar o arquivo deste exemplar">⬇</a> ' : '') + (x.senha ? '<button class="bt mini" data-ac="ver-senha" data-n="' + ed.n + '" data-x="' + x.n + '" title="Mostrar a senha de leitura">🔑</button> ' : (x.formato === 'HTML' ? '<button class="bt mini" data-ac="reg-senha" data-n="' + ed.n + '" data-x="' + x.n + '">registrar senha</button> ' : '')) + (x.situacao !== 'cancelado' ? '<button class="bt mini" data-ac="cancelar-ex" data-n="' + ed.n + '" data-x="' + x.n + '">cancelar</button>' : '') + '</td></tr>';
   }).join('') + '</table>' : '<p class="mut">Nenhum exemplar emitido nesta edição.</p>';
   return h + '</div>';
+}
+function linhaDoc(d) {
+  var o = d.obra && obraPorId(d.obra);
+  return '<tr><td>' + esc(nomeTipoDoc(d.tipo)) + (d.numero ? '<br><small class="mut">nº ' + esc(d.numero) + '</small>' : '') + '</td><td>' + esc(d.titulo) + (d.resumo ? '<br><small class="mut">' + esc(d.resumo) + '</small>' : '') + (d.alerta ? '<br><small class="alerta">' + esc(d.alerta) + '</small>' : '') + '</td><td>' + dataBr(d.data) + (d.emissor ? '<br><small class="mut">' + esc(d.emissor) + '</small>' : '') + '</td><td>' + (o ? esc(o.id) + (d.edicao ? ' · ' + ord(d.edicao) + ' ed.' : '') : '<span class="mut">Editora</span>') + (d.isbn ? '<br><small>ISBN ' + isbnFmt(d.isbn) + '</small>' : '') + (d.verificacao ? '<br><small class="mut">verificação: ' + esc(d.verificacao) + '</small>' : '') + '</td><td>' +
+    (d.arquivos || []).map(function (a) { return '<div><a href="#" data-ac="baixar" data-arq="' + a.id + '">⬇ ' + esc(a.nome) + '</a></div>'; }).join('') + '<button class="bt mini" data-ac="doc-arq" data-d="' + d.id + '">＋ arquivo</button> <button class="bt mini" data-ac="doc-editar" data-d="' + d.id + '">editar</button></td></tr>';
+}
+function tabelaDocs(L) { return L.length ? '<table><tr><th>Tipo</th><th>Documento</th><th>Data · emissor</th><th>Vínculo</th><th>Arquivos</th></tr>' + L.map(linhaDoc).join('') + '</table>' : '<p class="mut">Nenhum documento arquivado.</p>'; }
+function vDocumentos() {
+  var D = st.cat.documentos.slice().sort(function (a, b) { return (b.data || '').localeCompare(a.data || ''); });
+  var ed = D.filter(function (d) { return !d.obra; }), ob = D.filter(function (d) { return d.obra; });
+  return '<div class="acoes"><button class="bt pri" data-ac="doc-novo">＋ Arquivar documento</button></div>' +
+    '<p class="mut">Documentos oficiais da Editora e de cada obra, gravados cifrados. Ao arquivar, as informações vão para o lugar certo: a declaração de ISBN registra o número no lote e na edição; a aprovação do conselho preenche a aprovação da edição; a resolução e os atos do conselho podem atualizar o texto de constituição do conselho que sai nos créditos de todos os livros.</p>' +
+    '<div class="bloco"><h4>Documentos da Editora</h4>' + tabelaDocs(ed) + '</div><div class="bloco"><h4>Documentos das obras</h4>' + tabelaDocs(ob) + '</div>';
+}
+function formDoc(d) {
+  d = d || {};
+  return campoF('Tipo', 'tipo', nomeTipoDoc(d.tipo || 'outro'), 'sel', TIPOS_DOC.map(function (t) { return t[1]; })) + campoF('Título ou ementa', 'titulo', d.titulo) + campoF('Número', 'numero', d.numero) + campoF('Data', 'data', d.data, 'date') + campoF('Emissor (órgão, conselho, CBL…)', 'emissor', d.emissor) +
+    campoF('Obra vinculada', 'obra', d.obra ? d.obra + ' · ' + (obraPorId(d.obra) || {}).titulo : '(Editora, sem obra)', 'sel', ['(Editora, sem obra)'].concat(st.cat.obras.map(function (o) { return o.id + ' · ' + o.titulo; }))) + campoF('Edição', 'edicao', d.edicao || 1, 'number') +
+    campoF('ISBN declarado (se houver)', 'isbn', d.isbn ? isbnFmt(d.isbn) : '') + campoF('Formato do ISBN', 'formato', d.formato || 'a definir', 'sel', ['a definir'].concat(FORMATOS.map(function (f) { return f[1]; }))) + campoF('Código de verificação', 'verificacao', d.verificacao) +
+    campoF('Resumo', 'resumo', d.resumo, 'area') + campoF('Texto para os livros (resolução/ato: completa “Constituído e …” nos créditos)', 'textoLivros', d.textoLivros, 'area') +
+    (d.id ? '' : '<label>Arquivos (PDF, imagem…)<input type="file" multiple data-k="arqs"></label>');
+}
+async function aplicarDoc(d) {
+  var o = d.obra && obraPorId(d.obra), ed = o && (o.edicoes.find(function (x) { return x.n === (+d.edicao || 1); }) || null), feito = [];
+  if (d.isbn && o && ed) {
+    var fm = FORMATOS.find(function (f) { return f[1] === d.formato; });
+    registrarIsbn(d.isbn, o.id, ed.n, fm ? fm[1] : 'a definir'); feito.push('ISBN ' + isbnFmt(d.isbn) + ' atribuído');
+    if (fm) { ed.formatos[fm[0]] = ed.formatos[fm[0]] || {}; ed.formatos[fm[0]].isbn = isbnL(d.isbn); }
+  } else if (d.isbn && !isbnUso(d.isbn)) { if (!isbnOk(d.isbn)) throw new Error('ISBN inválido'); st.cat.isbns.push({ isbn: isbnL(d.isbn), situacao: 'livre', data: hoje() }); feito.push('ISBN incluído no lote'); }
+  if (d.tipo === 'aprovacao' && ed) { ed.aprovacao = { data: d.data, ato: d.titulo + (d.numero ? ', nº ' + d.numero : '') + (d.emissor ? ' (' + d.emissor + ')' : ''), documento: d.id }; feito.push('aprovação da ' + ord(ed.n) + ' edição'); }
+  if (d.tipo === 'deposito' && ed) { ed.depositoLegal = { data: d.data, protocolo: d.numero, documento: d.id }; feito.push('depósito legal'); }
+  if (d.tipo === 'direitos' && ed) { ed.direitos = (d.emissor ? d.emissor + ' ' : '') + (d.numero || ''); feito.push('registro de direitos'); }
+  if ((d.tipo === 'resolucao' || d.tipo === 'ato-conselho') && d.textoLivros && I().cfg) {
+    I().cfg().editora.conselhoAto = d.textoLivros.trim();
+    try { await I().cfgSalvarNuvem(); feito.push('texto do conselho atualizado para todos os livros'); } catch (e) { feito.push('texto do conselho guardado só neste navegador (' + e.message + ')'); }
+  }
+  return feito;
+}
+function lerDocForm(v, d) {
+  d.tipo = TIPOS_DOC.find(function (t) { return t[1] === v.tipo; })[0]; d.titulo = v.titulo.trim(); d.numero = v.numero.trim(); d.data = v.data; d.emissor = v.emissor.trim();
+  d.obra = /^\(Editora/.test(v.obra) ? '' : v.obra.split(' · ')[0]; d.edicao = d.obra ? (+v.edicao || 1) : 0; d.isbn = isbnL(v.isbn); d.formato = v.formato; d.verificacao = v.verificacao.trim(); d.resumo = v.resumo.trim(); d.textoLivros = v.textoLivros.trim();
+  if (!d.titulo) throw new Error('Informe o título ou a ementa do documento.');
+  return d;
 }
 function proxEx(ed) { return ed.exemplares.reduce(function (m, x) { return Math.max(m, +x.n || 0); }, 0) + 1; }
 function vIsbn() {
@@ -364,6 +412,17 @@ async function acao(ac, b) {
       if (!pj.obra) throw new Error('Este arquivo não é um projeto do motor.');
       I().setObra(pj.obra); msg('Projeto aberto no motor. Vá à aba Produção e envie o mesmo manuscrito para regerar.', 'ok'); return;
     }
+    case 'doc-novo': return dialogo('Arquivar documento', formDoc(), async function (v) {
+      var d = lerDocForm(v, { id: idAleatorio(), arquivado: hoje(), arquivos: [] }), arqs = await lerArquivos(v.arqs);
+      for (var i = 0; i < arqs.length; i++) d.arquivos.push(await guardarArquivo(arqs[i].bytes, arqs[i].nome, 'Documento'));
+      var feito = await aplicarDoc(d); st.cat.documentos.push(d);
+      log('documento arquivado', d.obra, nomeTipoDoc(d.tipo) + ': ' + d.titulo + (feito.length ? ' → ' + feito.join('; ') : ''));
+      await salvar('Acervo: documento ' + nomeTipoDoc(d.tipo)); desenhar(); msg('Documento arquivado' + (feito.length ? ': ' + feito.join('; ') : '') + '.', 'ok');
+    });
+    case 'doc-editar': { var de = st.cat.documentos.find(function (x) { return x.id === b.getAttribute('data-d'); });
+      return dialogo('Editar documento', formDoc(de), async function (v) { lerDocForm(v, de); var feito = await aplicarDoc(de); log('documento alterado', de.obra, de.titulo + (feito.length ? ' → ' + feito.join('; ') : '')); await salvar('Acervo: documento alterado'); desenhar(); }); }
+    case 'doc-arq': { var da = st.cat.documentos.find(function (x) { return x.id === b.getAttribute('data-d'); });
+      return dialogo('Incluir arquivo em: ' + da.titulo, '<label>Arquivos<input type="file" multiple data-k="arqs"></label>', async function (v) { var arqs = await lerArquivos(v.arqs); for (var i = 0; i < arqs.length; i++) da.arquivos.push(await guardarArquivo(arqs[i].bytes, arqs[i].nome, 'Documento')); log('arquivo incluído em documento', da.obra, da.titulo); await salvar('Acervo: documento'); desenhar(); }); }
     case 'emitir': return emitir(o, ed);
     case 'ver-senha': { var xs = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); log('senha consultada', o.id, ord(ed.n) + ' ed. nº ' + n3(xs.n)); salvar('Acervo: consulta de senha').catch(function () {});
       return dialogo('Senha do exemplar nº ' + n3(xs.n), '<p style="grid-column:1/-1">' + esc(xs.destinatario) + '</p><label>Senha de leitura<input type="text" readonly value="' + esc(xs.senha) + '" onclick="this.select()"></label><p class="mut" style="grid-column:1/-1">A consulta fica registrada no histórico.</p>', function () {}); }
@@ -395,7 +454,7 @@ async function acao(ac, b) {
   }
 }
 function isb(f) { return f && f.isbn ? isbnFmt(f.isbn) : ''; }
-function acharArquivo(id) { var r = null; st.cat.obras.forEach(function (o) { o.edicoes.forEach(function (ed) { ed.versoes.forEach(function (v) { v.arquivos.forEach(function (a) { if (a.id === id) r = a; }); }); ed.exemplares.forEach(function (x) { if (x.arquivo && x.arquivo.id === id) r = x.arquivo; }); }); }); return r; }
+function acharArquivo(id) { var r = null; (st.cat.documentos || []).forEach(function (d) { (d.arquivos || []).forEach(function (a) { if (a.id === id) r = a; }); }); st.cat.obras.forEach(function (o) { o.edicoes.forEach(function (ed) { ed.versoes.forEach(function (v) { v.arquivos.forEach(function (a) { if (a.id === id) r = a; }); }); ed.exemplares.forEach(function (x) { if (x.arquivo && x.arquivo.id === id) r = x.arquivo; }); }); }); return r; }
 function csv(nome, linhasCsv) { var t = '﻿' + linhasCsv.map(function (l) { return l.map(function (c) { c = String(c == null ? '' : c); return /[";\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(';'); }).join('\r\n'); baixar(new Blob([t], { type: 'text/csv;charset=utf-8' }), nome); }
 
 /* emissão de exemplar numerado: o livro arquivado (projeto + manuscrito da versão) é carregado no motor e o HTML
@@ -482,6 +541,8 @@ async function importar(file) {
   var z = await window.JSZip.loadAsync(await file.arrayBuffer()), man = z.file('acervo.json');
   if (!man) throw new Error('o pacote não tem acervo.json');
   var d = JSON.parse(await man.async('string')), t = d.titulo;
+  if (!st.cat.documentos) st.cat.documentos = [];
+  if (!t) { var nd = await importarDocs(z, d.documentos || [], null); await salvar('Acervo: importação de documentos'); st.vista = 'documentos'; desenhar(); msg('Pacote importado: ' + nd + ' documento(s).', 'ok'); return; }
   var o = st.cat.obras.find(function (x) { return x.titulo.trim().toLowerCase() === t.titulo.trim().toLowerCase(); });
   if (o && !confirm('“' + t.titulo + '” já está no acervo (' + o.id + '). Incluir o pacote como nova versão desse título?')) return;
   if (!o) { o = novaObra(t); o.edicoes = []; st.cat.obras.push(o); log('título importado', o.id, o.titulo); }
@@ -496,9 +557,22 @@ async function importar(file) {
   if (vi.data) nv.data = vi.data;
   (d.exemplares || []).forEach(function (x) { if (!ed.exemplares.some(function (y) { return y.n === x.n; })) { ed.exemplares.push({ n: x.n, destinatario: x.destinatario, finalidade: x.finalidade || '', formato: x.formato || '', versao: x.versao || nv.v, data: x.data, situacao: x.situacao || 'ativo', contato: x.contato || '', obs: x.obs || '', senha: x.senha || undefined }); log('exemplar importado', o.id, ord(ed.n) + ' ed. nº ' + n3(x.n) + ' · ' + x.destinatario); } });
   ed.exemplares.sort(function (a, b) { return a.n - b.n; });
+  await importarDocs(z, d.documentos || [], o);
   await salvar('Acervo: importação de ' + o.id);
   st.obraId = o.id; st.vista = 'obra'; desenhar(); msg('Pacote importado: ' + o.id + ', ' + ord(ed.n) + ' edição, versão ' + nv.v + ', ' + nv.arquivos.length + ' arquivo(s).', 'ok');
 }
 
+async function importarDocs(z, lista, oPadrao) {
+  var n = 0;
+  for (var i = 0; i < lista.length; i++) {
+    var x = lista[i], o = x.tituloObra ? st.cat.obras.find(function (y) { return y.titulo.trim().toLowerCase() === x.tituloObra.trim().toLowerCase(); }) : oPadrao;
+    if (x.criarObra && !o) { o = novaObra(x.criarObra); st.cat.obras.push(o); log('título criado a partir de documento', o.id, o.titulo); }
+    var d = { id: idAleatorio(), arquivado: hoje(), arquivos: [], tipo: x.tipo, titulo: x.titulo, numero: x.numero || '', data: x.data || '', emissor: x.emissor || '', obra: x.editora ? '' : (o ? o.id : ''), edicao: x.editora ? 0 : (x.edicao || (o ? 1 : 0)), isbn: isbnL(x.isbn), formato: x.formato || 'a definir', verificacao: x.verificacao || '', resumo: x.resumo || '', textoLivros: x.textoLivros || '', alerta: x.alerta || '' };
+    for (var k = 0; k < (x.arquivos || []).length; k++) { var zf = z.file(x.arquivos[k]); if (!zf) throw new Error('arquivo ausente no pacote: ' + x.arquivos[k]); d.arquivos.push(await guardarArquivo(new Uint8Array(await zf.async('uint8array')), x.arquivos[k], 'Documento')); }
+    var feito = await aplicarDoc(d); st.cat.documentos.push(d); n++;
+    log('documento importado', d.obra, nomeTipoDoc(d.tipo) + ': ' + d.titulo + (feito.length ? ' → ' + feito.join('; ') : ''));
+  }
+  return n;
+}
 window.ACERVO_ICET = { montar: montar, emitirPorTitulo: function (t) { return emitirPorTitulo(t); }, abrir: abrir, senhaPronta: function () { if (st.raiz) abrir(); }, registrarMotor: async function () { if (!st.cat) await abrir(); if (st.cat) return registrarMotor(null, null).catch(function (e) { msg(e.message, 'err'); }); }, _st: st };
 })();
