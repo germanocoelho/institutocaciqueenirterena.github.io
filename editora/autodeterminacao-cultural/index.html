@@ -285,6 +285,12 @@ footer{border-top:none}
 /* o leitor continua escuro, para descansar os olhos */
 #leitor{--noite:#0A0603;--creme:#F7F2E8;--creme2:#EDE4C8;--tx2:rgba(247,242,232,.72);--tx3:rgba(247,242,232,.45);--linha:rgba(242,196,90,.22);--ouro:#F5AA19;color:#F7F2E8}
 #leitor .lt-barra .tt{font-family:'Archivo',sans-serif;font-weight:700}
+.parc .lg.duplo{display:flex;gap:10px;justify-content:center;align-items:center;padding:6px}
+.parc .lg.duplo img{max-width:46%;max-height:76px}
+.aut-logos{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.aut-logos img{height:54px;width:auto;border-radius:8px;border:1.5px solid var(--linha);background:#fff;padding:4px}
+@media(max-width:760px){.aut-logos{justify-content:center}}
+html{overflow-x:clip}.hero{overflow:hidden}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
@@ -404,6 +410,7 @@ footer{border-top:none}
         <div class="olho" data-t="olho_autz">Autorização institucional</div>
         <h3 data-t="aut_h">Uso do nome do CMDDI autorizado pelo Conselho</h3>
         <p data-t="aut_p1">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) nesta obra e no selo editorial foi autorizado na 202ª Sessão Ordinária do Conselho, realizada em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena, com as obras editoriais já realizadas pelo Instituto Cacique Enir Terena.</p>
+        <div class="aut-logos"><img src="../logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="../logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><img src="../logos/focams.jpg" alt="FOCAMS"></div>
         <p class="ref" data-t="aut_ref">Convocação da 202ª Sessão Ordinária, assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</p>
       </div>
     </div>
@@ -412,7 +419,7 @@ footer{border-top:none}
     <div class="parceiros">
       <div class="parc rv"><div class="lg claro"><img src="../logos/editora-cor.png" alt="Editora Cacique Enir Terena"></div><b>Editora Cacique Enir Terena</b><span data-t="p_ed">Selo editorial de autoria indígena</span></div>
       <div class="parc rv"><div class="lg claro"><img src="../logos/icet.jpg" alt="Instituto Cacique Enir Terena"></div><b>ICET</b><span data-t="p_icet">Instituto Cacique Enir Terena</span></div>
-      <div class="parc rv"><div class="lg claro"><img src="../logos/cmddi.jpg" alt="CMDDI"></div><b>CMDDI</b><span data-t="p_cmddi">Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande</span></div>
+      <div class="parc rv"><div class="lg claro duplo"><img src="../logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="../logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"></div><b>CMDDI</b><span data-t="p_cmddi">Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande</span></div>
       <div class="parc rv"><div class="lg claro"><img src="../logos/focams.jpg" alt="FOCAMS"></div><b>FOCAMS</b><span data-t="p_focams">Fórum dos Caciques de Mato Grosso do Sul</span></div>
     </div>
   </div>

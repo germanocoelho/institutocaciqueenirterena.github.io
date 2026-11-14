@@ -255,8 +255,11 @@ section{padding:5.5rem 2rem;position:relative;overflow:hidden}
   font-weight:700;color:var(--ou);line-height:1.15;margin-bottom:.9rem;
 }
 /* Editora: chamada para a página exclusiva */
+.ed-mini{display:flex;gap:8px;align-items:center}
+.ed-mini img{height:44px;width:auto;border-radius:6px;background:#fff;padding:3px}
+@media(max-width:820px){.ed-mini{justify-content:center}}
 .ed-chamada{background:var(--k);padding:2.5rem 0}
-.ed-faixa{display:grid;grid-template-columns:auto 1fr auto;gap:2rem;align-items:center;text-decoration:none;color:var(--cr);padding:1.6rem 2rem;border-radius:18px;background:linear-gradient(90deg,#00A8E8 0 25%,#F5AA19 0 50%,#4FA862 0 75%,#EE1A8C 0) top/100% 5px no-repeat,rgba(255,255,255,.03);border:1px solid var(--brd2);transition:transform .3s,box-shadow .3s}
+.ed-faixa{display:grid;grid-template-columns:auto 1fr auto auto;gap:2rem;align-items:center;text-decoration:none;color:var(--cr);padding:1.6rem 2rem;border-radius:18px;background:linear-gradient(90deg,#00A8E8 0 25%,#F5AA19 0 50%,#4FA862 0 75%,#EE1A8C 0) top/100% 5px no-repeat,rgba(255,255,255,.03);border:1px solid var(--brd2);transition:transform .3s,box-shadow .3s}
 .ed-faixa:hover{transform:translateY(-3px);box-shadow:0 18px 40px -20px rgba(0,0,0,.8)}
 .ed-faixa>img{height:74px;width:auto}
 .ed-tx b{display:block;font-family:'Cinzel',serif;font-size:1.15rem;color:var(--ou);margin-bottom:.2rem}
@@ -2789,6 +2792,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <a class="ed-faixa reveal" href="editora/">
       <img src="editora/logos/editora-branca.png" alt="Editora Cacique Enir Terena">
       <span class="ed-tx"><b data-i18n="edl_eyb">Editora Cacique Enir Terena</b><span data-i18n="edl_txt">Selo editorial de autoria indígena do ICET. Conheça o catálogo e leia o primeiro livro, Autodeterminação Cultural, de graça.</span></span>
+      <span class="ed-mini"><img src="editora/logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="editora/logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><img src="editora/logos/focams.jpg" alt="FOCAMS"></span>
       <span class="ed-bt" data-i18n="edl_bt">Conhecer a Editora →</span>
     </a>
   </div>

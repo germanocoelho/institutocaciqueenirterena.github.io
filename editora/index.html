@@ -132,7 +132,7 @@ section{position:relative;z-index:1}
 
 /* parceiros */
 .parc{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;margin-top:36px}
-.parc .pc{background:#fff;border:1.5px solid var(--linha);border-radius:14px;padding:14px 20px;height:110px;display:grid;place-items:center}
+.parc .pc{background:#fff;border:1.5px solid var(--linha);border-radius:14px;padding:14px 20px;min-height:120px;display:grid;place-items:center;gap:6px}
 .parc img{max-height:80px;max-width:170px;object-fit:contain}
 .parc span{display:block;text-align:center;font-family:var(--disp);font-weight:700;font-size:.74rem;color:var(--tinta3);margin-top:8px}
 
@@ -186,6 +186,12 @@ footer img{height:70px;margin:0 auto 16px}
 .pg p{font-size:.88rem;color:var(--tinta2);line-height:1.5}
 .nota{font-family:var(--disp);font-size:.84rem;color:var(--tinta3);margin-top:22px;max-width:820px}
 @media(max-width:900px){.programa{grid-template-columns:1fr}}
+.parc .pc.duplo{width:auto}
+.par-lg{display:flex;align-items:center;gap:14px}
+.par-lg img{max-height:70px}
+.aut-logos{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 10px}
+.aut-logos img{height:56px;width:auto;border-radius:8px;border:1.5px solid var(--linha);background:#fff;padding:4px}
+@media(max-width:760px){.aut-logos{justify-content:center}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
@@ -345,13 +351,13 @@ footer img{height:70px;margin:0 auto 16px}
         <div class="etq"><i style="background:var(--verde)"></i><span data-t="aut_etq">Autorização institucional</span></div>
         <h3 data-t="aut_h" style="margin-top:8px">O nome do CMDDI no selo, com a autorização do Conselho</h3>
         <p data-t="aut_p">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) no selo editorial e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena.</p>
+        <div class="aut-logos"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><img src="logos/focams.jpg" alt="FOCAMS"></div>
         <small data-t="aut_s">Convocação assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</small>
       </div>
     </div>
     <div class="parc">
       <div class="rv"><div class="pc"><img src="logos/icet.jpg" alt="ICET"><span data-t="pa1">Realização</span></div></div>
-      <div class="rv"><div class="pc"><img src="logos/cmddi.jpg" alt="CMDDI"><span data-t="pa2">Apoio institucional</span></div></div>
-      <div class="rv"><div class="pc"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><span data-t="pa2b">CMDDI</span></div></div>
+      <div class="rv"><div class="pc duplo"><div class="par-lg"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"></div><span data-t="pa2">Apoio institucional</span></div></div>
       <div class="rv"><div class="pc"><img src="logos/focams.jpg" alt="FOCAMS"><span data-t="pa3">Parceria</span></div></div>
     </div>
   </div>
