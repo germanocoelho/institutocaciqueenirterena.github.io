@@ -192,6 +192,29 @@ footer img{height:70px;margin:0 auto 16px}
 .aut-logos{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 10px}
 .aut-logos img{height:56px;width:auto;border-radius:8px;border:1.5px solid var(--linha);background:#fff;padding:4px}
 @media(max-width:760px){.aut-logos{justify-content:center}}
+/* audiovisual */
+.av{background:#111;color:#FBF8F2;padding:100px 0;position:relative;z-index:1;overflow:hidden}
+.av::after{content:'';position:absolute;inset:auto 0 0 0;height:8px;background:linear-gradient(90deg,#00A8E8 0 25%,#F5AA19 0 50%,#4FA862 0 75%,#EE1A8C 0)}
+.av-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+.av-tit{font-family:var(--disp);font-weight:900;font-stretch:78%;text-transform:uppercase;font-size:clamp(2.2rem,5.4vw,4.2rem);line-height:.95;margin:14px 0 20px}
+.av-tit em{font-style:normal;color:#F5AA19}
+.av-lead{font-size:1.1rem;color:rgba(251,248,242,.8);max-width:620px}
+.av-itens{display:grid;gap:14px;margin-top:26px}
+.av-itens div{border-left:4px solid var(--c,#00A8E8);padding:4px 0 4px 16px}
+.av-itens div:nth-child(2){--c:#4FA862}.av-itens div:nth-child(3){--c:#EE1A8C}
+.av-itens b{display:block;font-family:var(--disp);font-weight:800}
+.av-itens span{font-size:.92rem;color:rgba(251,248,242,.7)}
+.av-visual{position:relative;display:grid;place-items:center;gap:26px}
+.disco{width:min(260px,60vw);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:repeating-radial-gradient(circle,#1d1d1d 0 2px,#111 2px 5px);box-shadow:0 0 0 8px #1a1a1a,0 30px 60px -20px rgba(0,0,0,.9);animation:gira 14s linear infinite}
+.disco img{width:46%;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+.ondas{display:flex;align-items:center;gap:5px;height:70px}
+.ondas i{width:7px;border-radius:4px;background:var(--c,#00A8E8);height:20%;animation:onda 1.2s ease-in-out infinite;animation-delay:calc(var(--k) * -0.09s)}
+.ondas i:nth-child(4n+2){--c:#F5AA19}.ondas i:nth-child(4n+3){--c:#4FA862}.ondas i:nth-child(4n){--c:#EE1A8C}
+@keyframes onda{0%,100%{height:15%}50%{height:100%}}
+.linguas-t{font-family:var(--disp);font-weight:800;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(251,248,242,.6);margin-bottom:-14px}
+.linguas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:420px}
+.linguas span{font-family:var(--disp);font-weight:700;font-size:.78rem;padding:5px 12px;border:1.5px solid rgba(251,248,242,.3);border-radius:999px}
+@media(max-width:900px){.av-grid{grid-template-columns:1fr}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
@@ -238,10 +261,10 @@ footer img{height:70px;margin:0 auto 16px}
   <div class="wrap">
     <div class="marco-ano rv" aria-hidden="true">2026</div>
     <div class="etq rv" style="color:#FBF8F2"><i style="background:var(--amarelo)"></i><span data-t="mc_etq">Um marco na história do livro indígena</span></div>
-    <h2 class="marco-tit rv" data-t-html="mc_tit">Da primeira aldeia urbana do Brasil, <em>uma editora do povo Terena</em></h2>
+    <h2 class="marco-tit rv" data-t-html="mc_tit">Da primeira aldeia urbana do Brasil, <em>a voz dos povos indígenas de Mato Grosso do Sul para o mundo</em></h2>
     <div class="marco-txt rv">
       <p data-t="mc_p1">Em 1995, famílias Terena ergueram em Campo Grande a Aldeia Urbana Marçal de Souza, reconhecida como a primeira aldeia urbana do país. Três décadas depois, é ali que nasce a Editora Cacique Enir Terena, criada por mulheres Terena e batizada com o nome da fundadora da aldeia, a primeira mulher eleita cacique em Mato Grosso do Sul.</p>
-      <p data-t="mc_p2">Durante séculos, a história dos povos indígenas foi escrita por outros. Agora, a palavra Terena tem casa própria: um selo que publica com autoria indígena, protege os saberes de quem os guarda e abre os livros a todos, gratuitamente. É o território que passa a escrever a própria história.</p>
+      <p data-t="mc_p2">Durante séculos, a história dos povos indígenas foi escrita por outros. Agora, a palavra dos povos indígenas de Mato Grosso do Sul tem casa própria: um selo que publica com autoria indígena, protege os saberes de quem os guarda e leva os livros a todo o mundo, gratuitamente. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau e Atikum: é o território que passa a escrever, e a narrar, a própria história.</p>
     </div>
     <div class="marco-marcos rv">
       <div><b>1995</b><span data-t="mc_m1">Nasce a Aldeia Urbana Marçal de Souza, a primeira aldeia urbana do Brasil</span></div>
@@ -339,6 +362,28 @@ footer img{height:70px;margin:0 auto 16px}
   </div>
 </section>
 
+<!-- EM BREVE: AUDIOVISUAL -->
+<section class="av" id="audiovisual">
+  <div class="wrap av-grid">
+    <div>
+      <div class="etq rv" style="color:#FBF8F2"><i style="background:#EE1A8C"></i><span data-t="av_etq">Em breve</span></div>
+      <h2 class="av-tit rv" data-t-html="av_tit">A palavra escrita <em>ganha voz</em></h2>
+      <p class="av-lead rv" data-t="av_lead">A Editora Cacique Enir Terena vai atuar em breve no segmento audiovisual. As obras escritas ganharão áudios narrados em línguas indígenas, na voz de falantes das próprias comunidades, para que cada livro possa ser ouvido na língua de quem guarda o saber.</p>
+      <div class="av-itens rv">
+        <div><b data-t="av1h">Audiolivros em línguas indígenas</b><span data-t="av1p">As obras do catálogo narradas em Terena e em outras línguas dos povos de Mato Grosso do Sul.</span></div>
+        <div><b data-t="av2h">Produção audiovisual</b><span data-t="av2p">Vídeos e registros que levam as histórias, os saberes e as vozes indígenas a novos públicos.</span></div>
+        <div><b data-t="av3h">Línguas vivas</b><span data-t="av3p">Cada gravação fortalece a transmissão das línguas originárias entre as gerações.</span></div>
+      </div>
+    </div>
+    <div class="av-visual rv" aria-hidden="true">
+      <div class="disco"><img src="logos/editora-branca.png" alt=""></div>
+      <div class="ondas" id="ondas"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="linguas-t" data-t="av_povos">Povos indígenas de Mato Grosso do Sul</div>
+      <div class="linguas"><span>Terena</span><span>Guarani</span><span>Kaiowá</span><span>Kadiwéu</span><span>Guató</span><span>Ofaié</span><span>Kinikinau</span><span>Atikum</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- AUTORIZAÇÃO E PARCEIROS -->
 <section class="bloco" id="autorizacao">
   <div class="wrap">
@@ -398,6 +443,7 @@ footer img{height:70px;margin:0 auto 16px}
 var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
 function ls(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
 
+document.querySelectorAll('#ondas i').forEach(function(e, k){ e.style.setProperty('--k', k); });
 /* estrela de livros (inspirada na marca) */
 (function(){
   var g = document.getElementById('giro'), cores = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C','#00A8E8','#F5AA19','#4FA862','#EE1A8C'], ns = 'http://www.w3.org/2000/svg', h = '';
@@ -414,6 +460,13 @@ function ls(k, v){ try{ if(v === undefined) return localStorage.getItem(k); loca
 
 /* idiomas */
 var T = {
+ av_povos:{en:'Indigenous peoples of Mato Grosso do Sul',es:'Pueblos indígenas de Mato Grosso do Sul',fr:'Peuples autochtones du Mato Grosso do Sul'},
+ av_etq:{en:'Coming soon',es:'Próximamente',fr:'Bientôt'},
+ av_tit:{en:'The written word <em>finds its voice</em>',es:'La palabra escrita <em>gana voz</em>',fr:'La parole écrite <em>prend voix</em>'},
+ av_lead:{en:'The Cacique Enir Terena Publishing House will soon expand into audiovisual production. Its written works will gain audio narrated in Indigenous languages, in the voices of speakers from the communities themselves, so that each book can be heard in the language of those who keep the knowledge.',es:'La Editorial Cacique Enir Terena actuará pronto en el segmento audiovisual. Las obras escritas tendrán audios narrados en lenguas indígenas, en la voz de hablantes de las propias comunidades, para que cada libro pueda escucharse en la lengua de quien guarda el saber.',fr:'Les Éditions Cacique Enir Terena se lanceront bientôt dans l’audiovisuel. Les ouvrages écrits seront accompagnés d’enregistrements narrés en langues autochtones, par des locuteurs des communautés elles-mêmes, pour que chaque livre puisse être entendu dans la langue de celles et ceux qui gardent le savoir.'},
+ av1h:{en:'Audiobooks in Indigenous languages',es:'Audiolibros en lenguas indígenas',fr:'Livres audio en langues autochtones'}, av1p:{en:'Catalogue works narrated in Terena and other languages of the peoples of Mato Grosso do Sul.',es:'Las obras del catálogo narradas en terena y en otras lenguas de los pueblos de Mato Grosso do Sul.',fr:'Les ouvrages du catalogue narrés en terena et dans d’autres langues des peuples du Mato Grosso do Sul.'},
+ av2h:{en:'Audiovisual production',es:'Producción audiovisual',fr:'Production audiovisuelle'}, av2p:{en:'Videos and recordings that take Indigenous stories, knowledge and voices to new audiences.',es:'Videos y registros que llevan las historias, los saberes y las voces indígenas a nuevos públicos.',fr:'Vidéos et enregistrements qui portent les histoires, les savoirs et les voix autochtones vers de nouveaux publics.'},
+ av3h:{en:'Living languages',es:'Lenguas vivas',fr:'Langues vivantes'}, av3p:{en:'Each recording strengthens the passing of original languages between generations.',es:'Cada grabación fortalece la transmisión de las lenguas originarias entre generaciones.',fr:'Chaque enregistrement renforce la transmission des langues originaires entre les générations.'},
  n_un:{en:'Our vocation',es:'Nuestra vocación',fr:'Notre vocation'},
  un_etq:{en:'What makes us unique',es:'Lo que nos hace únicos',fr:'Ce qui nous rend uniques'},
  un_tit:{en:'A publisher of <em>protected knowledge</em>',es:'Una editorial de <em>saber protegido</em>',fr:'Une maison du <em>savoir protégé</em>'},
@@ -439,9 +492,9 @@ var T = {
  g6h:{en:'Original Knowledge Literary Prize',es:'Premio Literario Saberes Originarios',fr:'Prix littéraire Savoirs originaires'}, g6p:{en:'An annual call to reveal new Indigenous authors, including in original languages.',es:'Una convocatoria anual para revelar nuevas autoras y nuevos autores indígenas, también en lenguas originarias.',fr:'Un appel annuel pour révéler de nouvelles autrices et de nouveaux auteurs autochtones, y compris en langues originaires.'},
  sb_nota:{en:'Authorship and ownership of the knowledge always remain with the communities of origin.',es:'La autoría y la titularidad de los saberes permanecen siempre con las comunidades de origen.',fr:'La paternité et la propriété des savoirs restent toujours aux communautés d’origine.'},
  mc_etq:{en:'A milestone in the history of Indigenous books',es:'Un hito en la historia del libro indígena',fr:'Un jalon dans l’histoire du livre autochtone'},
- mc_tit:{en:'From Brazil’s first urban Indigenous village, <em>a publishing house of the Terena people</em>',es:'De la primera aldea urbana de Brasil, <em>una editorial del pueblo terena</em>',fr:'Du premier village autochtone urbain du Brésil, <em>une maison d’édition du peuple terena</em>'},
+ mc_tit:{en:'From Brazil’s first urban Indigenous village, <em>the voice of the Indigenous peoples of Mato Grosso do Sul to the world</em>',es:'De la primera aldea urbana de Brasil, <em>la voz de los pueblos indígenas de Mato Grosso do Sul para el mundo</em>',fr:'Du premier village autochtone urbain du Brésil, <em>la voix des peuples autochtones du Mato Grosso do Sul pour le monde</em>'},
  mc_p1:{en:'In 1995, Terena families built the Marçal de Souza Urban Village in Campo Grande, recognized as the first urban Indigenous village in the country. Three decades later, it is there that the Cacique Enir Terena Publishing House is born, created by Terena women and named after the village’s founder, the first woman elected chief in Mato Grosso do Sul.',es:'En 1995, familias terena levantaron en Campo Grande la Aldea Urbana Marçal de Souza, reconocida como la primera aldea urbana del país. Tres décadas después, allí nace la Editorial Cacique Enir Terena, creada por mujeres terena y bautizada con el nombre de la fundadora de la aldea, la primera mujer elegida cacique en Mato Grosso do Sul.',fr:'En 1995, des familles terena ont bâti à Campo Grande le village urbain Marçal de Souza, reconnu comme le premier village autochtone urbain du pays. Trois décennies plus tard, c’est là que naissent les Éditions Cacique Enir Terena, créées par des femmes terena et baptisées du nom de la fondatrice du village, première femme élue cacique au Mato Grosso do Sul.'},
- mc_p2:{en:'For centuries, the history of Indigenous peoples was written by others. Now the Terena word has a home of its own: an imprint that publishes with Indigenous authorship, protects the knowledge of those who keep it and opens its books to everyone, free of charge. The territory begins to write its own history.',es:'Durante siglos, la historia de los pueblos indígenas fue escrita por otros. Ahora la palabra terena tiene casa propia: un sello que publica con autoría indígena, protege los saberes de quien los guarda y abre los libros a todos, gratuitamente. Es el territorio que pasa a escribir su propia historia.',fr:'Pendant des siècles, l’histoire des peuples autochtones a été écrite par d’autres. Désormais, la parole terena a sa propre maison : un label qui publie des auteurs autochtones, protège les savoirs de celles et ceux qui les gardent et ouvre ses livres à tous, gratuitement. C’est le territoire qui écrit sa propre histoire.'},
+ mc_p2:{en:'For centuries, the history of Indigenous peoples was written by others. Now the word of the Indigenous peoples of Mato Grosso do Sul has a home of its own: an imprint that publishes with Indigenous authorship, protects the knowledge of those who keep it and takes its books to the whole world, free of charge. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau and Atikum: the territory begins to write, and to tell, its own history.',es:'Durante siglos, la historia de los pueblos indígenas fue escrita por otros. Ahora la palabra de los pueblos indígenas de Mato Grosso do Sul tiene casa propia: un sello que publica con autoría indígena, protege los saberes de quien los guarda y lleva los libros a todo el mundo, gratuitamente. Terena, guaraní, kaiowá, kadiwéu, guató, ofaié, kinikinau y atikum: es el territorio que pasa a escribir, y a narrar, su propia historia.',fr:'Pendant des siècles, l’histoire des peuples autochtones a été écrite par d’autres. Désormais, la parole des peuples autochtones du Mato Grosso do Sul a sa propre maison : un label qui publie des auteurs autochtones, protège les savoirs de celles et ceux qui les gardent et porte ses livres au monde entier, gratuitement. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau et Atikum : c’est le territoire qui écrit, et raconte, sa propre histoire.'},
  mc_m1:{en:'The Marçal de Souza Urban Village is founded, Brazil’s first urban Indigenous village',es:'Nace la Aldea Urbana Marçal de Souza, la primera aldea urbana de Brasil',fr:'Naissance du village urbain Marçal de Souza, le premier du Brésil'},
  mc_m2:{en:'Terena women found the Cacique Enir Terena Institute',es:'Mujeres terena fundan el Instituto Cacique Enir Terena',fr:'Des femmes terena fondent l’Institut Cacique Enir Terena'},
  mc_m3:{en:'The Publisher’s first book, with ISBN and open access',es:'Primer libro de la Editorial, con ISBN y lectura abierta',fr:'Premier livre de la maison, avec ISBN et accès ouvert'},
