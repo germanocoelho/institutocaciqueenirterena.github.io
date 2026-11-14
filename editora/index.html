@@ -215,6 +215,73 @@ footer img{height:70px;margin:0 auto 16px}
 .linguas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:420px}
 .linguas span{font-family:var(--disp);font-weight:700;font-size:.78rem;padding:5px 12px;border:1.5px solid rgba(251,248,242,.3);border-radius:999px}
 @media(max-width:900px){.av-grid{grid-template-columns:1fr}}
+
+/* ═════════ SHOW: animações e iconografia Terena ═════════ */
+#abertura{position:fixed;inset:0;z-index:200;background:#111;display:grid;place-items:center;align-content:center;gap:26px;pointer-events:none}
+#abertura.sai{animation:sumir .01s linear 1.15s forwards}
+@keyframes sumir{to{visibility:hidden}}
+.ab-flor{width:min(240px,52vw);overflow:visible}
+.ab-petalas{animation:abGira 2.4s cubic-bezier(.6,0,.2,1) forwards;transform-origin:0 0}
+@keyframes abGira{from{transform:rotate(-120deg) scale(.4)}to{transform:rotate(0) scale(1)}}
+.ab-p{fill:transparent;stroke:var(--c);stroke-width:4;stroke-dasharray:420;stroke-dashoffset:420;animation:abTraco 1.1s ease forwards,abEnche .6s ease 1s forwards}
+.ab-p:nth-child(2){animation-delay:.12s,1.1s}.ab-p:nth-child(3){animation-delay:.24s,1.2s}.ab-p:nth-child(4){animation-delay:.36s,1.3s}
+@keyframes abTraco{to{stroke-dashoffset:0}}
+@keyframes abEnche{to{fill:var(--c)}}
+.ab-c{fill:#FBF8F2;transform:scale(0);animation:abPop .5s cubic-bezier(.3,1.6,.5,1) 1.3s forwards}
+@keyframes abPop{to{transform:scale(1)}}
+.ab-pontos circle{fill:#FBF8F2;opacity:0;animation:abPonto .4s ease forwards}
+@keyframes abPonto{to{opacity:.9}}
+.ab-nome{text-align:center;color:#FBF8F2;font-family:var(--disp);opacity:0;transform:translateY(12px);animation:sobe .7s ease 1.4s forwards}
+.ab-nome span{display:block;font-size:.8rem;letter-spacing:.6em;opacity:.7}
+.ab-nome b{font-weight:900;font-stretch:75%;font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.04em}
+.ab-cortina{position:fixed;top:0;bottom:0;width:50.5%;background:#111;z-index:-1}
+.ab-cortina.e{left:0}.ab-cortina.d{right:0}
+#abertura.sai .ab-flor,#abertura.sai .ab-nome{animation:abFora .5s ease forwards}
+@keyframes abFora{to{opacity:0;transform:scale(1.25)}}
+#abertura.sai{background:transparent}
+#abertura.sai .ab-cortina.e{animation:cortE .8s cubic-bezier(.7,0,.2,1) .25s forwards}
+#abertura.sai .ab-cortina.d{animation:cortD .8s cubic-bezier(.7,0,.2,1) .25s forwards}
+@keyframes cortE{to{transform:translateX(-100%)}}@keyframes cortD{to{transform:translateX(100%)}}
+
+#prog{position:fixed;top:0;left:0;right:0;height:4px;z-index:60;pointer-events:none}
+#prog i{display:block;height:100%;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#00A8E8 0 25%,#F5AA19 0 50%,#4FA862 0 75%,#EE1A8C 0)}
+
+#cursor{position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #111;pointer-events:none;z-index:150;transition:width .25s,height .25s,margin .25s,background .25s,border-color .25s;display:none;mix-blend-mode:multiply}
+#cursor.grande{width:70px;height:70px;margin:-35px 0 0 -35px;background:rgba(245,170,25,.25);border-color:#F5AA19}
+.petala-voo{position:fixed;left:0;top:0;width:16px;height:16px;pointer-events:none;z-index:149;animation:voo 1s ease-out forwards}
+@keyframes voo{from{opacity:.95;transform:translate(var(--x),var(--y)) rotate(0) scale(1)}to{opacity:0;transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) rotate(var(--r)) scale(.3)}}
+@media (hover:hover) and (pointer:fine){#cursor{display:block}}
+
+.grafia{height:46px;overflow:hidden;background:#111;position:relative;z-index:1}
+.grafia-trilho{height:100%;width:200%;background-repeat:repeat-x;background-size:auto 100%;will-change:transform}
+.grafia.dir .grafia-trilho{transform:translateX(-50%)}
+
+.pote{position:relative;display:block;width:220px;margin:40px auto 0;opacity:.9;pointer-events:none}@media(min-width:1320px){.marco{position:relative}.pote{position:absolute;right:3%;top:auto;bottom:260px;width:min(230px,16vw);margin:0}}
+.pote-l{fill:none;stroke:#FBF8F2;stroke-width:4;stroke-linecap:round;stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 3s cubic-bezier(.6,0,.2,1)}
+.pote-f use{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(0) rotate(-90deg);transition:opacity .6s,transform .9s cubic-bezier(.3,1.5,.5,1)}
+.marco.ver .pote-l{stroke-dashoffset:0}
+.marco.ver .pote-f use{opacity:1;transform:none}
+.marco.ver .pote-f use:nth-child(1){transition-delay:1.6s}.marco.ver .pote-f use:nth-child(2){transition-delay:1.8s}.marco.ver .pote-f use:nth-child(3){transition-delay:2s}.marco.ver .pote-f use:nth-child(4){transition-delay:2.2s}.marco.ver .pote-f use:nth-child(5){transition-delay:2.35s}.marco.ver .pote-f use:nth-child(6){transition-delay:2.5s}
+
+
+.palavra{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.04em}
+.palavra>span{display:inline-block;transform:translateY(105%);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.tit.in .palavra>span,.marco-tit.in .palavra>span,.av-tit.in .palavra>span{transform:none}
+
+.obra{transform-style:preserve-3d;position:relative;overflow:hidden}
+.obra .brilho{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),transparent 45%);opacity:0;transition:opacity .3s}
+.obra:hover .brilho{opacity:1}
+
+.pr{transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+.pr::after{content:'';position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;opacity:.18;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-50 -50 100 100'%3E%3Cg fill='%23111'%3E%3Cpath d='M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z'/%3E%3Cpath d='M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z' transform='rotate(90)'/%3E%3Cpath d='M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z' transform='rotate(180)'/%3E%3Cpath d='M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z' transform='rotate(270)'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.pr:hover{transform:translateY(-6px) rotate(-1deg)}
+.pr:hover::after{transform:rotate(90deg) scale(1.15)}
+
+.flor-rodape{display:flex;justify-content:center;gap:18px;margin-bottom:22px}
+.flor-rodape svg{width:30px;height:30px;animation:gira 10s linear infinite}
+.flor-rodape svg:nth-child(2){animation-direction:reverse}.flor-rodape svg:nth-child(3){animation-duration:14s}
+
+@media (prefers-reduced-motion:reduce){#abertura,#cursor,.petala-voo{display:none!important}.palavra>span{transform:none}.pote-l{stroke-dashoffset:0}.pote-f use{opacity:1;transform:none}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
@@ -222,6 +289,31 @@ footer img{height:70px;margin:0 auto 16px}
 </head>
 <body>
 <div class="papel-tex" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- flor de quatro pétalas da cerâmica Terena -->
+    <symbol id="flor" viewBox="-50 -50 100 100"><g fill="currentColor"><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(90)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(180)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(270)"/></g><circle r="7" fill="#fff"/><circle r="3.5" fill="currentColor"/></symbol>
+    <!-- losango duplo do grafismo -->
+    <symbol id="losango" viewBox="-50 -50 100 100"><g fill="none" stroke="currentColor" stroke-width="6"><path d="M0-42 42 0 0 42-42 0z"/><path d="M0-20 20 0 0 20-20 0z"/></g><circle r="5" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+<div id="abertura" aria-hidden="true">
+  <svg viewBox="-120 -120 240 240" class="ab-flor">
+    <g class="ab-petalas">
+      <path class="ab-p" style="--c:#00A8E8" d="M0-14C-22-36-22-80 0-104 22-80 22-36 0-14z"/>
+      <path class="ab-p" style="--c:#F5AA19" d="M0-14C-22-36-22-80 0-104 22-80 22-36 0-14z" transform="rotate(90)"/>
+      <path class="ab-p" style="--c:#4FA862" d="M0-14C-22-36-22-80 0-104 22-80 22-36 0-14z" transform="rotate(180)"/>
+      <path class="ab-p" style="--c:#EE1A8C" d="M0-14C-22-36-22-80 0-104 22-80 22-36 0-14z" transform="rotate(270)"/>
+    </g>
+    <g class="ab-pontos"></g>
+    <circle class="ab-c" r="12"/>
+  </svg>
+  <div class="ab-nome"><span>EDITORA</span><b>CACIQUE ENIR TERENA</b></div>
+  <div class="ab-cortina e"></div><div class="ab-cortina d"></div>
+</div>
+<div id="prog" aria-hidden="true"><i></i></div>
+<div id="cursor" aria-hidden="true"></div>
+
 
 <header class="topo">
   <div class="wrap">
@@ -256,6 +348,7 @@ footer img{height:70px;margin:0 auto 16px}
   </div>
 </section>
 
+<div class="grafia dir" aria-hidden="true"><div class="grafia-trilho"></div></div>
 <!-- MARCO HISTÓRICO -->
 <section class="marco" id="marco">
   <div class="wrap">
@@ -272,6 +365,18 @@ footer img{height:70px;margin:0 auto 16px}
       <div><b>2026</b><span data-t="mc_m3">Primeiro livro da Editora, com ISBN e leitura aberta</span></div>
       <div><b>13.11.26</b><span data-t="mc_m4">O CMDDI autoriza o uso do seu nome no selo editorial</span></div>
     </div>
+    <svg class="pote" viewBox="0 0 300 320" aria-hidden="true">
+      <path class="pote-l" d="M95 40h110M105 40c0 18-6 26-22 40-34 30-48 70-40 112 10 56 52 96 107 96s97-40 107-96c8-42-6-82-40-112-16-14-22-22-22-40"/>
+      <path class="pote-l" d="M60 150c60 14 120 14 180 0M52 196c66 16 130 16 196 0" style="stroke-width:3"/>
+      <g class="pote-f">
+        <use href="#flor" x="88" y="158" width="34" height="34" style="color:#F5AA19"/>
+        <use href="#flor" x="133" y="164" width="34" height="34" style="color:#FBF8F2"/>
+        <use href="#flor" x="178" y="158" width="34" height="34" style="color:#F5AA19"/>
+        <use href="#losango" x="110" y="222" width="22" height="22" style="color:#EE1A8C"/>
+        <use href="#losango" x="139" y="226" width="22" height="22" style="color:#00A8E8"/>
+        <use href="#losango" x="168" y="222" width="22" height="22" style="color:#4FA862"/>
+      </g>
+    </svg>
   </div>
 </section>
 
@@ -362,6 +467,7 @@ footer img{height:70px;margin:0 auto 16px}
   </div>
 </section>
 
+<div class="grafia dir" aria-hidden="true"><div class="grafia-trilho"></div></div>
 <!-- EM BREVE: AUDIOVISUAL -->
 <section class="av" id="audiovisual">
   <div class="wrap av-grid">
@@ -430,8 +536,9 @@ footer img{height:70px;margin:0 auto 16px}
 </section>
 </main>
 
-<div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="grafia esq" aria-hidden="true"><div class="grafia-trilho"></div></div>
 <footer>
+  <div class="flor-rodape" aria-hidden="true"><svg style="color:#00A8E8"><use href="#flor"/></svg><svg style="color:#F5AA19"><use href="#flor"/></svg><svg style="color:#4FA862"><use href="#flor"/></svg><svg style="color:#EE1A8C"><use href="#flor"/></svg></div>
   <img src="logos/editora-cor.png" alt="Editora Cacique Enir Terena">
   <div data-t="rod">Editora Cacique Enir Terena · Selo editorial do Instituto Cacique Enir Terena (ICET) · Aldeia Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul</div>
   <div style="margin-top:8px"><a href="../" data-t="rod2">Instituto Cacique Enir Terena</a></div>
@@ -548,6 +655,115 @@ $$('.idi button').forEach(function(b){ b.addEventListener('click', function(){ l
 aplicar();
 var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
 $$('.rv').forEach(function(el){ io.observe(el); });
+})();
+
+/* ═════════ SHOW ═════════ */
+(function(){
+  var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ss(k, v){ try{ if(v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); }catch(e){ return null; } }
+
+  /* abertura: a flor Terena desabrocha uma vez por visita */
+  var ab = document.getElementById('abertura');
+  if(reduz || ss('ed_abertura')){ ab.remove(); }
+  else {
+    ss('ed_abertura', '1');
+    var g = ab.querySelector('.ab-pontos'), ns = 'http://www.w3.org/2000/svg';
+    for(var i = 0; i < 16; i++){ var a = i / 16 * Math.PI * 2, c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', Math.cos(a) * 112); c.setAttribute('cy', Math.sin(a) * 112); c.setAttribute('r', i % 2 ? 3 : 5); c.style.animationDelay = (0.9 + i * 0.04) + 's'; g.appendChild(c); }
+    var fim = function(){ ab.classList.add('sai'); setTimeout(function(){ ab.remove(); }, 1300); };
+    setTimeout(fim, 2500); ab.style.pointerEvents = 'auto'; ab.addEventListener('click', fim);
+  }
+
+  /* barra de progresso de leitura */
+  var barra = document.querySelector('#prog i');
+  function prog(){ var d = document.documentElement, t = d.scrollHeight - innerHeight; barra.style.transform = 'scaleX(' + (t > 0 ? scrollY / t : 0) + ')'; }
+  addEventListener('scroll', prog, { passive: true }); prog();
+
+  /* faixas de grafismo: losango, flor, zigue-zague e pontos nas cores da marca */
+  var tile = "data:image/svg+xml," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="46" viewBox="0 0 240 46">' +
+    '<path d="M0 6 L10 14 L20 6 L30 14 L40 6 L50 14 L60 6 L70 14 L80 6 L90 14 L100 6 L110 14 L120 6 L130 14 L140 6 L150 14 L160 6 L170 14 L180 6 L190 14 L200 6 L210 14 L220 6 L230 14 L240 6" fill="none" stroke="#F5AA19" stroke-width="2"/>' +
+    '<path d="M0 40 L10 32 L20 40 L30 32 L40 40 L50 32 L60 40 L70 32 L80 40 L90 32 L100 40 L110 32 L120 40 L130 32 L140 40 L150 32 L160 40 L170 32 L180 40 L190 32 L200 40 L210 32 L220 40 L230 32 L240 40" fill="none" stroke="#00A8E8" stroke-width="2"/>' +
+    '<g transform="translate(30 23)"><path d="M0-10 10 0 0 10-10 0z" fill="none" stroke="#EE1A8C" stroke-width="2.2"/><circle r="2.6" fill="#EE1A8C"/></g>' +
+    '<g transform="translate(90 23)" fill="#4FA862"><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(90)"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(180)"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(270)"/></g>' +
+    '<g fill="#FBF8F2"><circle cx="120" cy="23" r="2"/><circle cx="128" cy="23" r="1.4"/><circle cx="112" cy="23" r="1.4"/></g>' +
+    '<g transform="translate(150 23)"><path d="M0-10 10 0 0 10-10 0z" fill="none" stroke="#00A8E8" stroke-width="2.2"/><path d="M0-5 5 0 0 5-5 0z" fill="#00A8E8"/></g>' +
+    '<g transform="translate(210 23)" fill="#F5AA19"><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(90)"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(180)"/><path d="M0-2C-3-5-3-10 0-13 3-10 3-5 0-2z" transform="rotate(270)"/></g>' +
+    '</svg>');
+  var trilhos = Array.prototype.slice.call(document.querySelectorAll('.grafia-trilho'));
+  trilhos.forEach(function(t){ t.style.backgroundImage = 'url("' + tile + '")'; });
+  var off = 0, vel = 0, ultimo = scrollY;
+  function anda(){
+    var dy = scrollY - ultimo; ultimo = scrollY; vel = vel * 0.9 + dy * 0.1;
+    off = (off + 0.35 + Math.abs(vel) * 0.25) % 240;
+    trilhos.forEach(function(t){ var d = t.parentNode.classList.contains('dir'); t.style.transform = d ? 'translateX(calc(-50% + ' + off + 'px))' : 'translateX(' + (-off) + 'px)'; });
+    if(!reduz) requestAnimationFrame(anda);
+  }
+  requestAnimationFrame(anda);
+
+  /* títulos que sobem palavra por palavra */
+  function partir(el){
+    if(el.dataset.partido) return; el.dataset.partido = '1';
+    var anda = function(no){
+      Array.prototype.slice.call(no.childNodes).forEach(function(n){
+        if(n.nodeType === 3){ var f = document.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach(function(w, i){ if(!w) return; if(/^\s+$/.test(w)){ f.appendChild(document.createTextNode(w)); return; } var s = document.createElement('span'); s.className = 'palavra'; var d = document.createElement('span'); d.textContent = w; s.appendChild(d); f.appendChild(s); }); no.replaceChild(f, n); }
+        else if(n.nodeType === 1 && !n.classList.contains('palavra')) anda(n);
+      });
+    };
+    anda(el);
+    el.querySelectorAll('.palavra>span').forEach(function(s, i){ s.style.transitionDelay = (i * 0.06) + 's'; });
+  }
+  function prepTitulos(){ document.querySelectorAll('.tit,.marco-tit,.av-tit').forEach(function(t){ t.classList.remove('in'); delete t.dataset.partido; partir(t); requestAnimationFrame(function(){ requestAnimationFrame(function(){ var r = t.getBoundingClientRect(); if(r.top < innerHeight) t.classList.add('in'); }); }); }); }
+  if(!reduz) prepTitulos();
+  document.querySelectorAll('.idi button').forEach(function(b){ b.addEventListener('click', function(){ if(!reduz) setTimeout(prepTitulos, 30); }); });
+  var obsT = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); }, { threshold: .3 });
+  document.querySelectorAll('.tit,.marco-tit,.av-tit').forEach(function(t){ obsT.observe(t); });
+
+  /* cerâmica Terena desenhada no marco */
+  var marco = document.querySelector('.marco');
+  new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) marco.classList.add('ver'); }); }, { threshold: .25 }).observe(marco);
+
+  /* cartão do livro em 3D com brilho */
+  document.querySelectorAll('.obra:not(.breve)').forEach(function(c){
+    var b = document.createElement('span'); b.className = 'brilho'; c.appendChild(b);
+    c.addEventListener('pointermove', function(e){ var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; c.style.transform = 'perspective(900px) rotateY(' + ((x - .5) * 10) + 'deg) rotateX(' + ((.5 - y) * 8) + 'deg) translate(-3px,-3px)'; c.style.setProperty('--mx', (x * 100) + '%'); c.style.setProperty('--my', (y * 100) + '%'); });
+    c.addEventListener('pointerleave', function(){ c.style.transform = ''; });
+  });
+
+  /* estrela de livros reage ao ponteiro e à rolagem */
+  var est = document.querySelector('.estrela svg');
+  if(est && !reduz){
+    var rx = 0, ry = 0;
+    addEventListener('pointermove', function(e){ rx = (e.clientX / innerWidth - .5); ry = (e.clientY / innerHeight - .5); est.style.transform = 'translate(' + (rx * 18) + 'px,' + (ry * 18) + 'px) rotate(' + (scrollY * 0.05) + 'deg)'; }, { passive: true });
+    addEventListener('scroll', function(){ est.style.transform = 'translate(' + (rx * 18) + 'px,' + (ry * 18) + 'px) rotate(' + (scrollY * 0.05) + 'deg)'; }, { passive: true });
+  }
+
+  /* botões magnéticos */
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches && !reduz){
+    document.querySelectorAll('.bt').forEach(function(b){
+      b.addEventListener('pointermove', function(e){ var r = b.getBoundingClientRect(); b.style.translate = ((e.clientX - r.left - r.width / 2) * .18) + 'px ' + ((e.clientY - r.top - r.height / 2) * .25) + 'px'; });
+      b.addEventListener('pointerleave', function(){ b.style.translate = ''; });
+    });
+  }
+
+  /* cursor com pétalas Terena */
+  var cur = document.getElementById('cursor');
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches && !reduz){
+    var cores = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'], k = 0, ult = 0;
+    addEventListener('pointermove', function(e){
+      cur.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+      var agora = performance.now(); if(agora - ult < 55) return; ult = agora;
+      var p = document.createElement('div'); p.className = 'petala-voo';
+      p.innerHTML = '<svg viewBox="-50 -50 100 100" width="16" height="16" style="color:' + cores[k++ % 4] + '"><use href="#flor"/></svg>';
+      p.style.setProperty('--x', e.clientX - 8 + 'px'); p.style.setProperty('--y', e.clientY - 8 + 'px');
+      p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); p.style.setProperty('--dy', (20 + Math.random() * 50) + 'px'); p.style.setProperty('--r', (Math.random() * 360) + 'deg');
+      document.body.appendChild(p); setTimeout(function(){ p.remove(); }, 1000);
+    }, { passive: true });
+    document.querySelectorAll('a,button,.obra').forEach(function(el){ el.addEventListener('pointerenter', function(){ cur.classList.add('grande'); }); el.addEventListener('pointerleave', function(){ cur.classList.remove('grande'); }); });
+  } else { cur.remove(); }
+
+  /* contagem dos anos no marco */
+  var anos = document.querySelectorAll('.marco-marcos b');
+  new IntersectionObserver(function(es, o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); anos.forEach(function(b){ var alvo = b.textContent.trim(); if(!/^\d{4}$/.test(alvo)) return; var fim = +alvo, ini = fim - 40, t0 = performance.now(); (function q(t){ var k = Math.min(1, (t - t0) / 1400); b.textContent = Math.round(ini + (fim - ini) * (1 - Math.pow(1 - k, 3))); if(k < 1) requestAnimationFrame(q); })(t0); }); }); }, { threshold: .4 }).observe(document.querySelector('.marco-marcos'));
 })();
 </script>
 </body>
