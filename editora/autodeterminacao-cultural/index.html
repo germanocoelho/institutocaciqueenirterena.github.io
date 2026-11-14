@@ -8,8 +8,10 @@
 <meta property="og:title" content="Autodeterminação Cultural · Editora Cacique Enir Terena">
 <meta property="og:description" content="Livro digital de autoria indígena sobre a cerâmica Terena, a ancestralidade Arawak, a bioeconomia e a indicação geográfica indígena. Leitura aberta e gratuita.">
 <meta property="og:image" content="capa.webp">
-<meta name="theme-color" content="#0A0603">
-<link rel="icon" href="../logos/icet.jpg">
+<meta name="theme-color" content="#FBF8F2">
+<link rel="icon" href="../logos/editora-cor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
 <style>
 @font-face{font-family:'Cinzel';src:url('../fontes/cinzel-regular.woff') format('woff');font-weight:400;font-display:swap}
 @font-face{font-family:'Cinzel';src:url('../fontes/cinzel-bold.woff') format('woff');font-weight:700;font-display:swap}
@@ -234,6 +236,55 @@ footer img{height:56px;margin:0 auto 14px}
 @keyframes ond{0%,100%{height:3px}50%{height:14px}}
 @media(max-width:760px){.lt-barra .rotulo{display:none}.lt-seta{width:44px;height:44px}.lt-seta.ant{left:4px}.lt-seta.prox{right:4px}}
 
+
+/* ═══ IDENTIDADE DA EDITORA (papel claro, preto e as cores da marca) ═══ */
+:root{--noite:#FBF8F2;--noite2:#F3EEE3;--noite3:#ECE5D6;--creme:#111111;--creme2:#2b2b2b;--tx2:rgba(17,17,17,.74);--tx3:rgba(17,17,17,.52);--linha:rgba(17,17,17,.14);
+  --ouro:#EE1A8C;--argila:#F5AA19;--palha:#00A8E8;--urucum2:#4FA862;--urucum:#4FA862;--brasa:#F5AA19;--titulo:'Archivo',system-ui,sans-serif}
+body{background:var(--noite);color:var(--creme)}
+#ceu{opacity:.55}
+.grafismo{opacity:.05;filter:grayscale(1) brightness(.2)}
+.topo{background:rgba(251,248,242,.9);border-bottom:1px solid var(--linha)}
+.topo .marca span{color:var(--tinta,#111);font-family:'Archivo',sans-serif;font-weight:800;letter-spacing:.14em}
+.idiomas{border-color:#111}.idiomas button{color:#111}.idiomas button.on{background:#111;color:#FBF8F2}
+.olho{color:#4FA862;font-family:'Archivo',sans-serif;font-weight:800}
+.hero h1{font-family:'Archivo',sans-serif;font-weight:900;font-stretch:72%;text-transform:uppercase;letter-spacing:-.01em;line-height:.92;background:linear-gradient(100deg,#111 0%,#111 38%,#EE1A8C 50%,#00A8E8 60%,#111 72%,#111 100%);background-size:280% 100%;-webkit-background-clip:text;background-clip:text}
+h2.tit{font-family:'Archivo',sans-serif;font-weight:900;font-stretch:80%;text-transform:uppercase;line-height:1}
+h2.tit em{color:#EE1A8C}
+.bt.pri{background:#111;color:#FBF8F2;box-shadow:5px 5px 0 #EE1A8C;border:2px solid #111}
+.bt.pri:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 #EE1A8C}
+.bt.sec{border:2px solid #111;color:#111}.bt.sec:hover{background:#F5AA19;color:#111;border-color:#111}
+#som-bt.on{background:#00A8E8;color:#111}
+.num{background:#fff;border:2px solid #111;box-shadow:4px 4px 0 var(--c,#00A8E8)}
+.num:nth-child(2){--c:#F5AA19}.num:nth-child(3){--c:#4FA862}.num:nth-child(4){--c:#EE1A8C}
+.num b{color:#111;font-family:'Archivo',sans-serif;font-weight:900}
+.aura{background:radial-gradient(circle,rgba(0,168,232,.22),rgba(238,26,140,.12) 45%,transparent 70%)}
+.espiral-giro{opacity:.35}
+.bloco.escuro{background:#F3EEE3}
+.eixo{background:#fff;border:2px solid #111;box-shadow:5px 5px 0 var(--sb,#00A8E8)}
+.eixo:nth-child(2){--sb:#4FA862}.eixo:nth-child(3){--sb:#F5AA19}.eixo:nth-child(4){--sb:#00A8E8}.eixo:nth-child(5){--sb:#EE1A8C}.eixo:nth-child(6){--sb:#F5AA19}
+.eixo h3{font-family:'Archivo',sans-serif;font-weight:800;color:#111}
+.eixo::before{display:none}
+.eixo i svg{stroke:#111}
+.pessoa{background:#fff;border:1.5px solid var(--linha)}
+.pessoa .ini{background:conic-gradient(#00A8E8 0 25%,#F5AA19 0 50%,#4FA862 0 75%,#EE1A8C 0);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.cap .n{color:#EE1A8C;font-family:'Archivo',sans-serif;font-weight:900}
+.cap:hover{background:#fff}
+.parte{color:#4FA862;font-family:'Archivo',sans-serif;font-weight:800}
+.autoriza{background:#fff;border:2px solid #111;box-shadow:8px 8px 0 #4FA862}
+.autoriza h3{color:#111;font-family:'Archivo',sans-serif;font-weight:900}
+.selo .nucleo{background:#000;box-shadow:0 0 0 4px #111}
+.selo .nucleo img{width:100%;height:100%;object-fit:cover}
+.parc{background:#fff;border:1.5px solid var(--linha)}
+.parc .lg{background:#fff}
+.fmt{background:#fff;border:2px solid #111;box-shadow:5px 5px 0 #F5AA19}
+.fmt h3{color:#111;font-family:'Archivo',sans-serif;font-weight:800}
+.ficha{background:#fff}
+.citacao{border-left-color:#EE1A8C;color:#2b2b2b}
+.faixa{filter:grayscale(1) brightness(.25);opacity:.5}
+footer{border-top:none}
+/* o leitor continua escuro, para descansar os olhos */
+#leitor{--noite:#0A0603;--creme:#F7F2E8;--creme2:#EDE4C8;--tx2:rgba(247,242,232,.72);--tx3:rgba(247,242,232,.45);--linha:rgba(242,196,90,.22);--ouro:#F5AA19;color:#F7F2E8}
+#leitor .lt-barra .tt{font-family:'Archivo',sans-serif;font-weight:700}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
@@ -242,8 +293,8 @@ footer img{height:56px;margin:0 auto 14px}
 <div class="grafismo" aria-hidden="true"></div>
 
 <header class="topo">
-  <a class="marca" href="../../" aria-label="Instituto Cacique Enir Terena">
-    <img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena">
+  <a class="marca" href="../" aria-label="Editora Cacique Enir Terena">
+    <img src="../logos/editora-cor.png" alt="Editora Cacique Enir Terena">
     <span data-t="editora">EDITORA CACIQUE ENIR TERENA</span>
   </a>
   <nav>
@@ -289,7 +340,7 @@ footer img{height:56px;margin:0 auto 14px}
         <div class="capa"><img src="capa.webp" alt="Capa do livro Autodeterminação Cultural, com cerâmica Terena sobre fundo de grafismos"></div>
         <div class="sombra"></div>
       </div>
-      <img class="selo-ed" src="../logos/editora-branca.png" alt="">
+      <img class="selo-ed" src="../logos/editora-cor.png" alt="">
     </div>
   </div>
 </section>
@@ -346,7 +397,7 @@ footer img{height:56px;margin:0 auto 14px}
   <div class="wrap">
     <div class="autoriza rv">
       <div class="selo" aria-hidden="true">
-        <svg class="anel" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#F2C45A" stroke-width="1.2" stroke-dasharray="2 5"/><circle cx="100" cy="100" r="70" fill="none" stroke="#C4621A" stroke-width="1"/><text font-family="Cinzel,serif" font-size="11.5" letter-spacing="3" fill="#F2C45A"><textPath href="#circ">CMDDI · 202ª SESSÃO ORDINÁRIA · 13 · 11 · 2026 · USO AUTORIZADO ·</textPath></text></svg>
+        <svg class="anel" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="3 6"/><circle cx="100" cy="100" r="70" fill="none" stroke="#4FA862" stroke-width="2"/><text font-family="Archivo,sans-serif" font-weight="800" font-size="11.5" letter-spacing="2.4" fill="#111"><textPath href="#circ">CMDDI · 202ª SESSÃO ORDINÁRIA · 13 · 11 · 2026 · USO AUTORIZADO ·</textPath></text></svg>
         <div class="nucleo"><img src="../logos/cmddi.jpg" alt=""></div>
       </div>
       <div>
@@ -359,7 +410,7 @@ footer img{height:56px;margin:0 auto 14px}
 
     <div class="olho rv" style="margin-top:4rem" data-t="olho_parc">Realização e parceria</div>
     <div class="parceiros">
-      <div class="parc rv"><div class="lg"><img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena"></div><b>Editora Cacique Enir Terena</b><span data-t="p_ed">Selo editorial de autoria indígena</span></div>
+      <div class="parc rv"><div class="lg claro"><img src="../logos/editora-cor.png" alt="Editora Cacique Enir Terena"></div><b>Editora Cacique Enir Terena</b><span data-t="p_ed">Selo editorial de autoria indígena</span></div>
       <div class="parc rv"><div class="lg claro"><img src="../logos/icet.jpg" alt="Instituto Cacique Enir Terena"></div><b>ICET</b><span data-t="p_icet">Instituto Cacique Enir Terena</span></div>
       <div class="parc rv"><div class="lg claro"><img src="../logos/cmddi.jpg" alt="CMDDI"></div><b>CMDDI</b><span data-t="p_cmddi">Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande</span></div>
       <div class="parc rv"><div class="lg claro"><img src="../logos/focams.jpg" alt="FOCAMS"></div><b>FOCAMS</b><span data-t="p_focams">Fórum dos Caciques de Mato Grosso do Sul</span></div>
@@ -388,9 +439,9 @@ footer img{height:56px;margin:0 auto 14px}
 </main>
 
 <footer>
-  <img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena">
+  <img src="../logos/editora-cor.png" alt="Editora Cacique Enir Terena">
   <div data-t="rodape">Editora Cacique Enir Terena · Instituto Cacique Enir Terena (ICET) · Aldeia Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul</div>
-  <div style="margin-top:.6rem"><a href="../../" data-t="voltar">Voltar ao site do ICET</a></div>
+  <div style="margin-top:.6rem"><a href="../" data-t="voltar">Editora Cacique Enir Terena</a> · <a href="../../">ICET</a></div>
 </footer>
 
 <!-- LEITOR -->
@@ -498,7 +549,7 @@ var T = {
  f3p:{pt:null,en:'For institutions and researchers, the Publishing House issues numbered, personalised copies, with encrypted text and an individual password, recorded in its catalogue.',es:'Para instituciones e investigadores, la Editorial emite ejemplares numerados y nominales, con texto cifrado y contraseña individual, registrados en el acervo.',fr:'Pour les institutions et les chercheurs, la maison d’édition délivre des exemplaires numérotés et nominatifs, au texte chiffré et à mot de passe individuel, enregistrés dans son catalogue.'},
  pedir:{pt:'Solicitar exemplar à Editora',en:'Request a copy from the Publisher',es:'Solicitar ejemplar a la Editorial',fr:'Demander un exemplaire à l’éditeur'},
  rodape:{pt:null,en:'Cacique Enir Terena Publishing · Cacique Enir Terena Institute (ICET) · Marçal de Souza Urban Village, Campo Grande, Mato Grosso do Sul',es:'Editorial Cacique Enir Terena · Instituto Cacique Enir Terena (ICET) · Aldea Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul',fr:'Éditions Cacique Enir Terena · Institut Cacique Enir Terena (ICET) · Village urbain Marçal de Souza, Campo Grande, Mato Grosso do Sul'},
- voltar:{pt:'Voltar ao site do ICET',en:'Back to the ICET website',es:'Volver al sitio del ICET',fr:'Retour au site de l’ICET'},
+ voltar:{pt:'Editora Cacique Enir Terena',en:'Cacique Enir Terena Publishing',es:'Editorial Cacique Enir Terena',fr:'Éditions Cacique Enir Terena'},
  r_sum:{pt:'Sumário',en:'Contents',es:'Índice',fr:'Sommaire'},
  r_bus:{pt:'Buscar',en:'Search',es:'Buscar',fr:'Rechercher'},
  r_ouv:{pt:'Ouvir',en:'Listen',es:'Escuchar',fr:'Écouter'},

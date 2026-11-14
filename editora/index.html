@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Editora Cacique Enir Terena · Selo editorial de autoria indígena</title>
+<meta name="description" content="Editora Cacique Enir Terena: selo editorial de autoria indígena do Instituto Cacique Enir Terena (ICET), em Campo Grande, Mato Grosso do Sul. Livros digitais acessíveis, de leitura aberta, com o nome do CMDDI autorizado pelo Conselho.">
+<meta property="og:title" content="Editora Cacique Enir Terena">
+<meta property="og:description" content="Selo editorial de autoria indígena. Livros digitais acessíveis, de leitura aberta.">
+<meta property="og:image" content="logos/editora-cor.png">
+<meta name="theme-color" content="#FBF8F2">
+<link rel="icon" href="logos/editora-cor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Literata';src:url('fontes/literata-regular.woff') format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:'Literata';src:url('fontes/literata-italic.woff') format('woff');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'Literata';src:url('fontes/literata-bold.woff') format('woff');font-weight:700;font-display:swap}
+:root{
+  --papel:#FBF8F2;--papel2:#F3EEE3;--tinta:#111111;--tinta2:#3d3d3d;--tinta3:#6b6b6b;--linha:rgba(17,17,17,.12);
+  --azul:#00A8E8;--amarelo:#F5AA19;--verde:#4FA862;--magenta:#EE1A8C;
+  --disp:'Archivo',system-ui,sans-serif;--serif:'Literata',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--papel);color:var(--tinta);font-family:var(--serif);line-height:1.65;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--azul);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1200px,100% - 32px);margin-inline:auto}
+.papel-tex{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;background-image:radial-gradient(rgba(17,17,17,.05) 1px,transparent 1px);background-size:4px 4px}
+
+/* topo */
+.topo{position:sticky;top:0;z-index:30;background:rgba(251,248,242,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
+.topo .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0}
+.topo img{height:46px;width:auto}
+.topo nav{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.topo nav a{font-family:var(--disp);font-weight:600;font-size:.86rem;text-decoration:none;padding:8px 12px;border-radius:999px}
+.topo nav a:hover{background:var(--papel2)}
+.idi{display:flex;border:1.5px solid var(--tinta);border-radius:999px;overflow:hidden;margin-left:6px}
+.idi button{font-family:var(--disp);font-weight:800;font-size:.7rem;padding:5px 9px}
+.idi button.on{background:var(--tinta);color:var(--papel)}
+@media(max-width:820px){.topo nav a{display:none}}
+
+/* hero */
+.hero{position:relative;z-index:1;padding:70px 0 40px;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.etq{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:800;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase}
+.etq i{width:10px;height:10px;border-radius:50%;background:var(--verde)}
+.hero h1{font-family:var(--disp);font-weight:900;font-stretch:72%;font-size:clamp(3rem,9vw,7.4rem);line-height:.88;letter-spacing:-.01em;margin:18px 0 22px;text-transform:uppercase}
+.hero h1 .c{display:inline-block;background:var(--verde);color:#fff;padding:.02em .16em .06em;font-stretch:90%;font-weight:600;font-size:.42em;vertical-align:.55em;letter-spacing:.02em;border-radius:2px}
+.hero h1 span.l{display:inline-block;opacity:0;transform:translateY(40px);animation:sobe .8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes sobe{to{opacity:1;transform:none}}
+.hero p.lema{font-size:clamp(1.1rem,1.8vw,1.4rem);color:var(--tinta2);max-width:600px}
+.hero p.lema b{font-family:var(--disp);font-weight:800}
+.acoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.bt{display:inline-flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:800;font-size:.95rem;padding:15px 24px;border-radius:999px;text-decoration:none;border:2px solid var(--tinta);transition:transform .2s,box-shadow .2s,background .2s}
+.bt.pri{background:var(--tinta);color:var(--papel);box-shadow:5px 5px 0 var(--magenta)}
+.bt.pri:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--magenta)}
+.bt.sec:hover{background:var(--amarelo)}
+.bt svg{width:18px;height:18px}
+
+/* estrela de livros */
+.estrela{position:relative;aspect-ratio:1;width:min(480px,90vw);margin-inline:auto}
+.estrela svg{width:100%;height:100%;overflow:visible}
+.estrela .giro{transform-origin:250px 250px;animation:gira 60s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.estrela .lv{transform-origin:250px 250px;opacity:0;animation:abre .9s cubic-bezier(.2,.9,.25,1.2) forwards}
+@keyframes abre{from{opacity:0;transform:rotate(var(--r)) translateY(0) scale(.4)}to{opacity:1;transform:rotate(var(--r)) translateY(0) scale(1)}}
+.estrela .lv:hover .capa-l{filter:brightness(1.12)}
+.estrela .centro{font-family:var(--disp);font-weight:900;font-size:22px;letter-spacing:.06em}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.estrela{width:min(340px,80vw);order:-1}}
+
+/* faixa de cores */
+.cores{display:flex;height:10px}.cores i{flex:1}
+.cores i:nth-child(1){background:var(--azul)}.cores i:nth-child(2){background:var(--amarelo)}.cores i:nth-child(3){background:var(--verde)}.cores i:nth-child(4){background:var(--magenta)}
+
+/* blocos */
+section{position:relative;z-index:1}
+.bloco{padding:90px 0}
+.bloco.cinza{background:var(--papel2)}
+.bloco.preto{background:var(--tinta);color:var(--papel)}
+.tit{font-family:var(--disp);font-weight:900;font-stretch:80%;text-transform:uppercase;font-size:clamp(2rem,5vw,3.6rem);line-height:.95;margin:12px 0 18px}
+.tit em{font-style:normal;color:var(--magenta)}
+.lead{font-size:1.1rem;color:var(--tinta2);max-width:720px}
+.preto .lead{color:rgba(251,248,242,.75)}
+
+/* catálogo */
+.catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:28px;margin-top:40px}
+.obra{display:grid;grid-template-columns:180px 1fr;gap:22px;align-items:start;padding:22px;border:2px solid var(--tinta);border-radius:18px;background:#fff;text-decoration:none;transition:transform .25s,box-shadow .25s;box-shadow:6px 6px 0 var(--azul)}
+.obra:hover{transform:translate(-3px,-3px);box-shadow:10px 10px 0 var(--azul)}
+.obra img{border-radius:3px 8px 8px 3px;box-shadow:-6px 10px 20px -8px rgba(0,0,0,.5)}
+.obra .tg{font-family:var(--disp);font-weight:800;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--verde)}
+.obra h3{font-family:var(--disp);font-weight:900;font-size:1.35rem;line-height:1.1;margin:6px 0 8px}
+.obra p{font-size:.88rem;color:var(--tinta2);line-height:1.5}
+.obra .meta{font-family:var(--disp);font-weight:600;font-size:.76rem;color:var(--tinta3);margin-top:10px}
+.obra .ir{display:inline-block;margin-top:12px;font-family:var(--disp);font-weight:800;font-size:.86rem;border-bottom:3px solid var(--magenta)}
+.obra.breve{box-shadow:6px 6px 0 var(--amarelo);border-style:dashed;place-items:center;grid-template-columns:1fr;text-align:center;min-height:220px}
+.obra.breve h3{font-size:1.1rem}
+@media(max-width:520px){.obra{grid-template-columns:110px 1fr}}
+
+/* princípios */
+.princ{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+.pr{padding:26px;border-radius:18px;color:#111;position:relative;overflow:hidden}
+.pr:nth-child(1){background:var(--azul)}.pr:nth-child(2){background:var(--amarelo)}.pr:nth-child(3){background:var(--verde);color:#fff}.pr:nth-child(4){background:var(--magenta);color:#fff}
+.pr b{display:block;font-family:var(--disp);font-weight:900;font-size:2.6rem;line-height:1}
+.pr h3{font-family:var(--disp);font-weight:800;font-size:1.05rem;margin:10px 0 6px}
+.pr p{font-size:.88rem;line-height:1.5;opacity:.92}
+@media(max-width:900px){.princ{grid-template-columns:1fr 1fr}}@media(max-width:520px){.princ{grid-template-columns:1fr}}
+
+/* processo */
+.passos{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:44px;counter-reset:p}
+.ps{position:relative;padding:0 16px 0 0}
+.ps::before{counter-increment:p;content:counter(p);display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--papel);color:var(--tinta);font-family:var(--disp);font-weight:900;font-size:1.3rem;margin-bottom:14px;position:relative;z-index:1}
+.ps::after{content:'';position:absolute;top:26px;left:52px;right:0;height:2px;background:rgba(251,248,242,.25)}
+.ps:last-child::after{display:none}
+.ps h4{font-family:var(--disp);font-weight:800;font-size:1rem;margin-bottom:6px}
+.ps p{font-size:.86rem;color:rgba(251,248,242,.72);line-height:1.5}
+@media(max-width:900px){.passos{grid-template-columns:1fr;gap:22px}.ps::after{display:none}}
+
+/* autorização */
+.aut{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;padding:34px;border:2px solid var(--tinta);border-radius:24px;background:#fff;box-shadow:8px 8px 0 var(--verde)}
+.selo{position:relative;width:200px;aspect-ratio:1;display:grid;place-items:center}
+.selo svg{position:absolute;inset:0;animation:gira 40s linear infinite}
+.selo .n{width:58%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:3px solid var(--tinta);background:#000}
+.selo .n img{width:100%;height:100%;object-fit:cover}
+.aut h3{font-family:var(--disp);font-weight:900;font-size:1.6rem;line-height:1.1;margin-bottom:10px}
+.aut p{color:var(--tinta2);margin-bottom:8px}
+.aut small{font-family:var(--disp);font-size:.78rem;color:var(--tinta3)}
+@media(max-width:760px){.aut{grid-template-columns:1fr;text-align:center}.selo{margin:auto}}
+
+/* parceiros */
+.parc{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;margin-top:36px}
+.parc .pc{background:#fff;border:1.5px solid var(--linha);border-radius:14px;padding:14px 20px;height:110px;display:grid;place-items:center}
+.parc img{max-height:80px;max-width:170px;object-fit:contain}
+.parc span{display:block;text-align:center;font-family:var(--disp);font-weight:700;font-size:.74rem;color:var(--tinta3);margin-top:8px}
+
+/* publique */
+.pub{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
+.pub ul{list-style:none;margin-top:18px}
+.pub li{padding:10px 0 10px 34px;position:relative;border-bottom:1px solid var(--linha)}
+.pub li::before{content:'';position:absolute;left:0;top:16px;width:18px;height:18px;border-radius:4px;background:var(--c,var(--azul))}
+.pub li:nth-child(2){--c:var(--amarelo)}.pub li:nth-child(3){--c:var(--verde)}.pub li:nth-child(4){--c:var(--magenta)}
+.cartao{background:var(--tinta);color:var(--papel);border-radius:22px;padding:30px;box-shadow:8px 8px 0 var(--amarelo)}
+.cartao h3{font-family:var(--disp);font-weight:900;font-size:1.5rem;margin-bottom:10px}
+.cartao p{color:rgba(251,248,242,.75);margin-bottom:18px}
+.cartao .bt{border-color:var(--papel);color:var(--papel)}
+.cartao .bt:hover{background:var(--papel);color:var(--tinta)}
+@media(max-width:900px){.pub{grid-template-columns:1fr}}
+
+footer{position:relative;z-index:1;padding:50px 0 70px;text-align:center;font-family:var(--disp);font-size:.84rem;color:var(--tinta3)}
+footer img{height:70px;margin:0 auto 16px}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="papel-tex" aria-hidden="true"></div>
+
+<header class="topo">
+  <div class="wrap">
+    <a href="./" aria-label="Editora Cacique Enir Terena"><img src="logos/editora-cor.png" alt="Editora Cacique Enir Terena"></a>
+    <nav>
+      <a href="#catalogo" data-t="n_cat">Catálogo</a>
+      <a href="#editora" data-t="n_ed">A Editora</a>
+      <a href="#como" data-t="n_como">Como publicamos</a>
+      <a href="#publique" data-t="n_pub">Publique conosco</a>
+      <a href="../" data-t="n_icet">ICET</a>
+      <div class="idi" role="group" aria-label="Idioma"><button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="fr">FR</button></div>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="etq"><i></i><span data-t="etq">Selo editorial de autoria indígena</span></div>
+      <h1 aria-label="Editora Cacique Enir Terena"><span class="l" style="animation-delay:.05s">Editora</span><br><span class="l c" style="animation-delay:.2s">Cacique</span> <span class="l" style="animation-delay:.32s">Enir</span><br><span class="l" style="animation-delay:.45s">Terena</span></h1>
+      <p class="lema" data-t-html="lema">Livros que nascem do <b>território</b>, escritos por quem <b>vive o saber</b>. Digitais, acessíveis e abertos a todos.</p>
+      <div class="acoes">
+        <a class="bt pri" href="autodeterminacao-cultural/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg><span data-t="ler">Ler o primeiro livro</span></a>
+        <a class="bt sec" href="#catalogo"><span data-t="ver_cat">Ver o catálogo</span></a>
+      </div>
+    </div>
+    <div class="estrela" aria-hidden="true">
+      <svg viewBox="0 0 500 500" id="estrela"><g class="giro" id="giro"></g><text class="centro" x="250" y="258" text-anchor="middle" fill="#111">ICET</text></svg>
+    </div>
+  </div>
+</section>
+
+<div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<!-- CATÁLOGO -->
+<section class="bloco" id="catalogo">
+  <div class="wrap">
+    <div class="etq rv"><i style="background:var(--azul)"></i><span data-t="cat_etq">Catálogo</span></div>
+    <h2 class="tit rv" data-t-html="cat_tit">Nossas <em>obras</em></h2>
+    <p class="lead rv" data-t="cat_lead">Cada livro da Editora pode ser lido gratuitamente nesta página, com busca em todo o texto e leitura em voz alta.</p>
+    <div class="catalogo">
+      <a class="obra rv" href="autodeterminacao-cultural/">
+        <img src="autodeterminacao-cultural/capa.webp" alt="Capa do livro Autodeterminação Cultural" loading="lazy">
+        <div>
+          <div class="tg" data-t="o1_tg">1ª edição · 2026 · Leitura aberta</div>
+          <h3>Autodeterminação Cultural</h3>
+          <p data-t="o1_p">Bioeconomia e Indicação Geográfica Indígena e seus Impactos na Língua, Saúde e Educação. Fundamentos históricos e jurídicos da cerâmica Terena e da ancestralidade Arawak.</p>
+          <div class="meta">390 p. · 22 cap. · ISBN 978-65-84351-01-1</div>
+          <span class="ir" data-t="o1_ir">Ler o livro →</span>
+        </div>
+      </a>
+      <div class="obra breve rv"><div><div class="tg" style="color:var(--magenta)" data-t="br_tg">Em preparação</div><h3 data-t="br_h">Próximas obras de autoria indígena</h3><p data-t="br_p">Novos títulos chegam pelo Prêmio Literário Saberes Originários e pelas comunidades parceiras.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- A EDITORA -->
+<section class="bloco cinza" id="editora">
+  <div class="wrap">
+    <div class="etq rv"><i style="background:var(--amarelo)"></i><span data-t="ed_etq">A Editora</span></div>
+    <h2 class="tit rv" data-t-html="ed_tit">A palavra indígena <em>em livro</em></h2>
+    <p class="lead rv" data-t="ed_lead">A Editora Cacique Enir Terena é o selo editorial do Instituto Cacique Enir Terena (ICET), associação indígena da Aldeia Urbana Marçal de Souza, em Campo Grande. Seu nome homenageia a Cacique Enir Terena, fundadora da aldeia e primeira mulher eleita cacique em Mato Grosso do Sul.</p>
+    <div class="princ">
+      <div class="pr rv"><b>01</b><h3 data-t="p1h">Autoria indígena</h3><p data-t="p1p">Toda obra tem ao menos uma autora ou um autor indígena. Parceiros não indígenas participam ao lado deles.</p></div>
+      <div class="pr rv"><b>02</b><h3 data-t="p2h">Sem custo para quem escreve</h3><p data-t="p2p">O ICET arca com o ISBN e com o registro dos direitos autorais das obras do selo.</p></div>
+      <div class="pr rv"><b>03</b><h3 data-t="p3h">Saber protegido</h3><p data-t="p3p">Autoria e titularidade ficam com os autores e as comunidades. Nenhum saber sagrado é publicado sem consentimento.</p></div>
+      <div class="pr rv"><b>04</b><h3 data-t="p4h">Acesso aberto</h3><p data-t="p4p">Os livros podem ser lidos gratuitamente, em edição digital acessível, com leitura em voz alta.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO PUBLICAMOS -->
+<section class="bloco preto" id="como">
+  <div class="wrap">
+    <div class="etq rv" style="color:var(--papel)"><i style="background:var(--magenta)"></i><span data-t="como_etq">Editora digital</span></div>
+    <h2 class="tit rv" data-t-html="como_tit">Um motor editorial <em>próprio</em></h2>
+    <p class="lead rv" data-t="como_lead">A Editora desenvolveu o próprio sistema de produção de livros digitais. Ele transforma o manuscrito em livro pronto, seguindo as normas da ABNT e os padrões internacionais de acessibilidade.</p>
+    <div class="passos">
+      <div class="ps rv"><h4 data-t="s1h">Manuscrito</h4><p data-t="s1p">Recebe Word, LibreOffice, PDF e outros formatos, com notas, tabelas e imagens.</p></div>
+      <div class="ps rv"><h4 data-t="s2h">Normas ABNT</h4><p data-t="s2p">Monta folha de rosto, ficha catalográfica, sumário, referências e índice remissivo.</p></div>
+      <div class="ps rv"><h4 data-t="s3h">Conselho Editorial</h4><p data-t="s3p">A obra é avaliada e aprovada por portaria, com auditoria completa do texto.</p></div>
+      <div class="ps rv"><h4 data-t="s4h">EPUB acessível</h4><p data-t="s4p">Gera EPUB 3 acessível, PDF paginado e leitura aberta na internet.</p></div>
+      <div class="ps rv"><h4 data-t="s5h">Exemplar controlado</h4><p data-t="s5p">Emite exemplares numerados e cifrados, com senha individual, e traduções para outros idiomas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTORIZAÇÃO E PARCEIROS -->
+<section class="bloco" id="autorizacao">
+  <div class="wrap">
+    <div class="aut rv">
+      <div class="selo" aria-hidden="true">
+        <svg viewBox="0 0 200 200"><defs><path id="cc" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="3 6"/><text font-family="Archivo,sans-serif" font-weight="800" font-size="12" letter-spacing="2.4" fill="#111"><textPath href="#cc">CMDDI · 202ª SESSÃO ORDINÁRIA · 13.11.2026 · USO AUTORIZADO ·</textPath></text></svg>
+        <div class="n"><img src="logos/cmddi.jpg" alt=""></div>
+      </div>
+      <div>
+        <div class="etq"><i style="background:var(--verde)"></i><span data-t="aut_etq">Autorização institucional</span></div>
+        <h3 data-t="aut_h" style="margin-top:8px">O nome do CMDDI no selo, com a autorização do Conselho</h3>
+        <p data-t="aut_p">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) no selo editorial e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena entre CMDDI, ICET, IFMS e MPMS.</p>
+        <small data-t="aut_s">Convocação assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</small>
+      </div>
+    </div>
+    <div class="parc">
+      <div class="rv"><div class="pc"><img src="logos/icet.jpg" alt="ICET"><span data-t="pa1">Realização</span></div></div>
+      <div class="rv"><div class="pc"><img src="logos/cmddi.jpg" alt="CMDDI"><span data-t="pa2">Apoio institucional</span></div></div>
+      <div class="rv"><div class="pc"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><span data-t="pa2b">CMDDI</span></div></div>
+      <div class="rv"><div class="pc"><img src="logos/focams.jpg" alt="FOCAMS"><span data-t="pa3">Parceria</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLIQUE -->
+<section class="bloco cinza" id="publique">
+  <div class="wrap pub">
+    <div>
+      <div class="etq rv"><i style="background:var(--magenta)"></i><span data-t="pub_etq">Publique conosco</span></div>
+      <h2 class="tit rv" data-t-html="pub_tit">Sua história <em>merece um livro</em></h2>
+      <ul class="rv">
+        <li data-t="l1">Autoras e autores indígenas, individualmente ou em coletivo</li>
+        <li data-t="l2">Pesquisas, memórias, narrativas, poesia e obras em línguas indígenas</li>
+        <li data-t="l3">Coletâneas de comunidades, escolas e organizações indígenas</li>
+        <li data-t="l4">Parcerias com universidades e instituições, sempre com autoria indígena</li>
+      </ul>
+    </div>
+    <div class="cartao rv">
+      <h3 data-t="c_h">Envie sua proposta</h3>
+      <p data-t="c_p">Fale com a Editora pelo WhatsApp. A equipe orienta sobre o manuscrito, os direitos e as etapas de publicação.</p>
+      <a class="bt" href="https://wa.me/5567981644664?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20a%20Editora%20Cacique%20Enir%20Terena." target="_blank" rel="noopener"><span data-t="c_bt">Falar com a Editora</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<footer>
+  <img src="logos/editora-cor.png" alt="Editora Cacique Enir Terena">
+  <div data-t="rod">Editora Cacique Enir Terena · Selo editorial do Instituto Cacique Enir Terena (ICET) · Aldeia Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul</div>
+  <div style="margin-top:8px"><a href="../" data-t="rod2">Instituto Cacique Enir Terena</a></div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+function ls(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+
+/* estrela de livros (inspirada na marca) */
+(function(){
+  var g = document.getElementById('giro'), cores = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C','#00A8E8','#F5AA19','#4FA862','#EE1A8C'], ns = 'http://www.w3.org/2000/svg', h = '';
+  for(var i = 0; i < 8; i++){
+    var r = i * 45;
+    h += '<g class="lv" style="--r:' + r + 'deg;transform:rotate(' + r + 'deg);animation-delay:' + (0.15 + i * 0.09) + 's">' +
+      '<rect x="215" y="40" width="70" height="150" rx="35" fill="#111"/>' +
+      '<rect class="capa-l" x="226" y="52" width="48" height="128" rx="24" fill="' + cores[i] + '"/>' +
+      '<path d="M238 70v96M250 66v104M262 70v96" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/>' +
+      '<path d="M268 120l9 -4 -2 9 9 2 -7 6" fill="#fff"/></g>';
+  }
+  g.innerHTML = h;
+})();
+
+/* idiomas */
+var T = {
+ n_cat:{en:'Catalogue',es:'Catálogo',fr:'Catalogue'}, n_ed:{en:'The Publisher',es:'La Editorial',fr:'La maison'}, n_como:{en:'How we publish',es:'Cómo publicamos',fr:'Comment nous publions'}, n_pub:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, n_icet:{en:'ICET',es:'ICET',fr:'ICET'},
+ etq:{en:'Indigenous-authored imprint',es:'Sello editorial de autoría indígena',fr:'Label éditorial d’auteurs autochtones'},
+ lema:{en:'Books born from the <b>territory</b>, written by those who <b>live the knowledge</b>. Digital, accessible and open to all.',es:'Libros que nacen del <b>territorio</b>, escritos por quienes <b>viven el saber</b>. Digitales, accesibles y abiertos a todos.',fr:'Des livres nés du <b>territoire</b>, écrits par celles et ceux qui <b>vivent le savoir</b>. Numériques, accessibles et ouverts à tous.'},
+ ler:{en:'Read our first book',es:'Leer el primer libro',fr:'Lire le premier livre'}, ver_cat:{en:'See the catalogue',es:'Ver el catálogo',fr:'Voir le catalogue'},
+ cat_etq:{en:'Catalogue',es:'Catálogo',fr:'Catalogue'}, cat_tit:{en:'Our <em>books</em>',es:'Nuestras <em>obras</em>',fr:'Nos <em>ouvrages</em>'},
+ cat_lead:{en:'Every book from the Publisher can be read free of charge on this page, with full-text search and read-aloud.',es:'Cada libro de la Editorial puede leerse gratis en esta página, con búsqueda en todo el texto y lectura en voz alta.',fr:'Chaque livre de la maison se lit gratuitement sur cette page, avec recherche plein texte et lecture à voix haute.'},
+ o1_tg:{en:'1st edition · 2026 · Open access',es:'1ª edición · 2026 · Lectura abierta',fr:'1re édition · 2026 · Accès ouvert'},
+ o1_p:{en:'Indigenous Bioeconomy and Geographical Indication and their Impacts on Language, Health and Education. Historical and legal foundations of Terena ceramics and Arawak ancestry. In Portuguese.',es:'Bioeconomía e Indicación Geográfica Indígena y sus impactos en la lengua, la salud y la educación. Fundamentos históricos y jurídicos de la cerámica terena y de la ascendencia arawak. En portugués.',fr:'Bioéconomie et indication géographique autochtones et leurs effets sur la langue, la santé et l’éducation. Fondements historiques et juridiques de la céramique terena et de l’ascendance arawak. En portugais.'},
+ o1_ir:{en:'Read the book →',es:'Leer el libro →',fr:'Lire le livre →'},
+ br_tg:{en:'In preparation',es:'En preparación',fr:'En préparation'}, br_h:{en:'Upcoming Indigenous-authored books',es:'Próximas obras de autoría indígena',fr:'Prochains ouvrages d’auteurs autochtones'},
+ br_p:{en:'New titles will come through the Original Knowledge Literary Prize and partner communities.',es:'Nuevos títulos llegarán por el Premio Literario Saberes Originarios y las comunidades aliadas.',fr:'De nouveaux titres viendront du Prix littéraire Savoirs originaires et des communautés partenaires.'},
+ ed_etq:{en:'The Publisher',es:'La Editorial',fr:'La maison'}, ed_tit:{en:'The Indigenous word <em>in print</em>',es:'La palabra indígena <em>en libro</em>',fr:'La parole autochtone <em>en livre</em>'},
+ ed_lead:{en:'The Cacique Enir Terena Publishing House is the editorial imprint of the Cacique Enir Terena Institute (ICET), an Indigenous association in the Marçal de Souza Urban Village, Campo Grande. Its name honours Cacique Enir Terena, founder of the village and the first woman elected chief in Mato Grosso do Sul.',es:'La Editorial Cacique Enir Terena es el sello editorial del Instituto Cacique Enir Terena (ICET), asociación indígena de la Aldea Urbana Marçal de Souza, en Campo Grande. Su nombre homenajea a la Cacique Enir Terena, fundadora de la aldea y primera mujer elegida cacique en Mato Grosso do Sul.',fr:'Les Éditions Cacique Enir Terena sont le label de l’Institut Cacique Enir Terena (ICET), association autochtone du village urbain Marçal de Souza, à Campo Grande. Leur nom rend hommage à la cacique Enir Terena, fondatrice du village et première femme élue cacique au Mato Grosso do Sul.'},
+ p1h:{en:'Indigenous authorship',es:'Autoría indígena',fr:'Auteurs autochtones'}, p1p:{en:'Every book has at least one Indigenous author. Non-Indigenous partners take part alongside them.',es:'Toda obra tiene al menos una autora o un autor indígena. Los colaboradores no indígenas participan junto a ellos.',fr:'Chaque ouvrage compte au moins une autrice ou un auteur autochtone. Les partenaires non autochtones participent à leurs côtés.'},
+ p2h:{en:'No cost to authors',es:'Sin costo para quien escribe',fr:'Sans frais pour les auteurs'}, p2p:{en:'ICET covers the ISBN and copyright registration for the imprint’s books.',es:'El ICET asume el ISBN y el registro de los derechos de autor de las obras del sello.',fr:'L’ICET prend en charge l’ISBN et l’enregistrement des droits d’auteur des ouvrages du label.'},
+ p3h:{en:'Protected knowledge',es:'Saber protegido',fr:'Savoir protégé'}, p3p:{en:'Authorship and ownership remain with the authors and communities. No sacred knowledge is published without consent.',es:'La autoría y la titularidad quedan con los autores y las comunidades. Ningún saber sagrado se publica sin consentimiento.',fr:'La paternité et la propriété restent aux auteurs et aux communautés. Aucun savoir sacré n’est publié sans consentement.'},
+ p4h:{en:'Open access',es:'Acceso abierto',fr:'Accès ouvert'}, p4p:{en:'Books can be read free of charge, in an accessible digital edition with read-aloud.',es:'Los libros pueden leerse gratis, en edición digital accesible y con lectura en voz alta.',fr:'Les livres se lisent gratuitement, en édition numérique accessible avec lecture à voix haute.'},
+ como_etq:{en:'Digital publisher',es:'Editorial digital',fr:'Éditeur numérique'}, como_tit:{en:'An editorial engine <em>of our own</em>',es:'Un motor editorial <em>propio</em>',fr:'Un moteur éditorial <em>bien à nous</em>'},
+ como_lead:{en:'The Publisher built its own digital book production system. It turns a manuscript into a finished book, following ABNT standards and international accessibility standards.',es:'La Editorial desarrolló su propio sistema de producción de libros digitales. Convierte el manuscrito en libro terminado, según las normas de la ABNT y los estándares internacionales de accesibilidad.',fr:'La maison a développé son propre système de production de livres numériques. Il transforme le manuscrit en livre fini, selon les normes ABNT et les standards internationaux d’accessibilité.'},
+ s1h:{en:'Manuscript',es:'Manuscrito',fr:'Manuscrit'}, s1p:{en:'Accepts Word, LibreOffice, PDF and other formats, with notes, tables and images.',es:'Recibe Word, LibreOffice, PDF y otros formatos, con notas, tablas e imágenes.',fr:'Accepte Word, LibreOffice, PDF et d’autres formats, avec notes, tableaux et images.'},
+ s2h:{en:'ABNT standards',es:'Normas ABNT',fr:'Normes ABNT'}, s2p:{en:'Builds the title page, catalogue record, contents, references and index.',es:'Arma portada, ficha catalográfica, índice, referencias e índice analítico.',fr:'Compose page de titre, notice catalographique, sommaire, références et index.'},
+ s3h:{en:'Editorial Board',es:'Consejo Editorial',fr:'Comité éditorial'}, s3p:{en:'The book is reviewed and approved by ordinance, with a full audit of the text.',es:'La obra es evaluada y aprobada por resolución, con auditoría completa del texto.',fr:'L’ouvrage est évalué et approuvé par arrêté, avec un audit complet du texte.'},
+ s4h:{en:'Accessible EPUB',es:'EPUB accesible',fr:'EPUB accessible'}, s4p:{en:'Produces accessible EPUB 3, paginated PDF and open online reading.',es:'Genera EPUB 3 accesible, PDF paginado y lectura abierta en internet.',fr:'Produit un EPUB 3 accessible, un PDF paginé et une lecture ouverte en ligne.'},
+ s5h:{en:'Controlled copy',es:'Ejemplar controlado',fr:'Exemplaire contrôlé'}, s5p:{en:'Issues numbered, encrypted copies with individual passwords, and translations into other languages.',es:'Emite ejemplares numerados y cifrados, con contraseña individual, y traducciones a otros idiomas.',fr:'Délivre des exemplaires numérotés et chiffrés, à mot de passe individuel, et des traductions.'},
+ aut_etq:{en:'Institutional authorization',es:'Autorización institucional',fr:'Autorisation institutionnelle'}, aut_h:{en:'The CMDDI name in the imprint, authorized by the Council',es:'El nombre del CMDDI en el sello, con la autorización del Consejo',fr:'Le nom du CMDDI dans le label, autorisé par le Conseil'},
+ aut_p:{en:'The use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in the editorial imprint and in the works already published by ICET was authorized at the Council’s 202nd Ordinary Session, on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project between CMDDI, ICET, IFMS and MPMS.',es:'El uso del nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) en el sello editorial y en las obras ya publicadas por el ICET fue autorizado en la 202ª Sesión Ordinaria del Consejo, el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena entre CMDDI, ICET, IFMS y MPMS.',fr:'L’utilisation du nom du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) dans le label et dans les ouvrages déjà publiés par l’ICET a été autorisée lors de la 202e session ordinaire du Conseil, le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone entre le CMDDI, l’ICET, l’IFMS et le MPMS.'},
+ aut_s:{en:'Notice signed by the President of CMDDI, Lisio Lili. Minutes approved by the Plenary.',es:'Convocatoria firmada por el Presidente del CMDDI, Lisio Lili. Acta aprobada por el Pleno.',fr:'Convocation signée par le président du CMDDI, Lisio Lili. Procès-verbal approuvé par l’assemblée plénière.'},
+ pa1:{en:'Production',es:'Realización',fr:'Réalisation'}, pa2:{en:'Institutional support',es:'Apoyo institucional',fr:'Soutien institutionnel'}, pa3:{en:'Partnership',es:'Alianza',fr:'Partenariat'},
+ pub_etq:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, pub_tit:{en:'Your story <em>deserves a book</em>',es:'Tu historia <em>merece un libro</em>',fr:'Votre histoire <em>mérite un livre</em>'},
+ l1:{en:'Indigenous authors, individually or collectively',es:'Autoras y autores indígenas, individualmente o en colectivo',fr:'Autrices et auteurs autochtones, seuls ou en collectif'},
+ l2:{en:'Research, memoirs, narratives, poetry and works in Indigenous languages',es:'Investigaciones, memorias, narrativas, poesía y obras en lenguas indígenas',fr:'Recherches, mémoires, récits, poésie et œuvres en langues autochtones'},
+ l3:{en:'Collections by communities, schools and Indigenous organizations',es:'Colecciones de comunidades, escuelas y organizaciones indígenas',fr:'Recueils de communautés, d’écoles et d’organisations autochtones'},
+ l4:{en:'Partnerships with universities and institutions, always with Indigenous authorship',es:'Alianzas con universidades e instituciones, siempre con autoría indígena',fr:'Partenariats avec universités et institutions, toujours avec des auteurs autochtones'},
+ c_h:{en:'Send your proposal',es:'Envía tu propuesta',fr:'Envoyez votre proposition'}, c_p:{en:'Talk to the Publisher on WhatsApp. The team will guide you on the manuscript, rights and publication steps.',es:'Habla con la Editorial por WhatsApp. El equipo orienta sobre el manuscrito, los derechos y las etapas de publicación.',fr:'Parlez à la maison d’édition sur WhatsApp. L’équipe vous guide sur le manuscrit, les droits et les étapes de publication.'},
+ c_bt:{en:'Talk to the Publisher',es:'Hablar con la Editorial',fr:'Contacter la maison'},
+ rod:{en:'Cacique Enir Terena Publishing · Imprint of the Cacique Enir Terena Institute (ICET) · Marçal de Souza Urban Village, Campo Grande, Mato Grosso do Sul',es:'Editorial Cacique Enir Terena · Sello del Instituto Cacique Enir Terena (ICET) · Aldea Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul',fr:'Éditions Cacique Enir Terena · Label de l’Institut Cacique Enir Terena (ICET) · Village urbain Marçal de Souza, Campo Grande, Mato Grosso do Sul'},
+ rod2:{en:'Cacique Enir Terena Institute',es:'Instituto Cacique Enir Terena',fr:'Institut Cacique Enir Terena'}
+};
+var PT = {}, lang = (function(){ var l = ls('icet_lang'); return /^(pt|en|es|fr)$/.test(l || '') ? l : 'pt'; })();
+function aplicar(){
+  document.documentElement.lang = {pt:'pt-BR',en:'en',es:'es',fr:'fr'}[lang];
+  $$('[data-t]').forEach(function(el){ var k = el.getAttribute('data-t'); if(!(k in PT)) PT[k] = el.textContent; el.textContent = (lang !== 'pt' && T[k] && T[k][lang]) || PT[k]; });
+  $$('[data-t-html]').forEach(function(el){ var k = el.getAttribute('data-t-html'); if(!(k in PT)) PT[k] = el.innerHTML; el.innerHTML = (lang !== 'pt' && T[k] && T[k][lang]) || PT[k]; });
+  $$('.idi button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+}
+$$('.idi button').forEach(function(b){ b.addEventListener('click', function(){ lang = b.getAttribute('data-lang'); ls('icet_lang', lang); aplicar(); }); });
+aplicar();
+var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
+$$('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
