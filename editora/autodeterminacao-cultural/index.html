@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Autodeterminação Cultural · Editora Cacique Enir Terena</title>
+<meta name="description" content="Autodeterminação Cultural: Bioeconomia e Indicação Geográfica Indígena e seus Impactos na Língua, Saúde e Educação. Fundamentos históricos e jurídicos da cerâmica Terena e da ancestralidade Arawak. Livro digital da Editora Cacique Enir Terena, de leitura aberta.">
+<meta property="og:title" content="Autodeterminação Cultural · Editora Cacique Enir Terena">
+<meta property="og:description" content="Livro digital de autoria indígena sobre a cerâmica Terena, a ancestralidade Arawak, a bioeconomia e a indicação geográfica indígena. Leitura aberta e gratuita.">
+<meta property="og:image" content="capa.webp">
+<meta name="theme-color" content="#0A0603">
+<link rel="icon" href="../logos/icet.jpg">
+<style>
+@font-face{font-family:'Cinzel';src:url('../fontes/cinzel-regular.woff') format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:'Cinzel';src:url('../fontes/cinzel-bold.woff') format('woff');font-weight:700;font-display:swap}
+@font-face{font-family:'Literata';src:url('../fontes/literata-regular.woff') format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:'Literata';src:url('../fontes/literata-italic.woff') format('woff');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'Literata';src:url('../fontes/literata-bold.woff') format('woff');font-weight:700;font-display:swap}
+:root{
+  --noite:#0A0603;--noite2:#150A01;--noite3:#1E0E02;
+  --urucum:#8B3A0F;--urucum2:#C4621A;--brasa:#E8722A;
+  --ouro:#F2C45A;--argila:#D4854A;--palha:#E8A853;
+  --mata:#2D6A4F;--broto:#52B788;--rio:#1B4965;--ceu:#5FA8D3;
+  --creme:#F7F2E8;--creme2:#EDE4C8;
+  --tx2:rgba(247,242,232,.72);--tx3:rgba(247,242,232,.45);
+  --linha:rgba(242,196,90,.22);
+  --serif:'Literata',Georgia,'Times New Roman',serif;
+  --titulo:'Cinzel','Trajan Pro',Georgia,serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--noite);color:var(--creme);font-family:var(--serif);line-height:1.65;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{width:min(1180px,100% - 32px);margin-inline:auto}
+.vis{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--ouro);outline-offset:3px;border-radius:4px}
+
+/* ── céu de vagalumes e grafismo ── */
+#ceu{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grafismo{position:fixed;inset:-10%;z-index:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23F2C45A' stroke-width='1.4'%3E%3Cpath d='M0 30 L15 15 L30 30 L45 15 L60 30 L75 15 L90 30 L105 15 L120 30'/%3E%3Cpath d='M0 90 L15 105 L30 90 L45 105 L60 90 L75 105 L90 90 L105 105 L120 90'/%3E%3Cpath d='M60 42 L78 60 L60 78 L42 60 Z'/%3E%3Cpath d='M60 51 L69 60 L60 69 L51 60 Z'/%3E%3C/g%3E%3Cg fill='%23C4621A'%3E%3Ccircle cx='60' cy='60' r='2.4'/%3E%3Ccircle cx='15' cy='60' r='1.6'/%3E%3Ccircle cx='105' cy='60' r='1.6'/%3E%3C/g%3E%3C/svg%3E");background-size:120px 120px;animation:deriva 120s linear infinite}
+@keyframes deriva{to{transform:translate(120px,120px)}}
+
+/* ── barra superior ── */
+.topo{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:linear-gradient(180deg,rgba(10,6,3,.92),rgba(10,6,3,.55) 70%,transparent);backdrop-filter:blur(6px)}
+.topo .marca{display:flex;align-items:center;gap:12px;text-decoration:none}
+.topo .marca img{height:42px;width:auto}
+.topo .marca span{font-family:var(--titulo);font-size:.78rem;letter-spacing:.12em;color:var(--tx2)}
+.topo nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.topo nav a{font-family:var(--sans);font-size:.82rem;text-decoration:none;color:var(--tx2);padding:6px 10px;border-radius:999px}
+.topo nav a:hover{color:var(--ouro)}
+.idiomas{display:flex;gap:2px;border:1px solid var(--linha);border-radius:999px;padding:2px}
+.idiomas button{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:999px;color:var(--tx3)}
+.idiomas button.on{background:var(--ouro);color:var(--noite)}
+@media(max-width:760px){.topo nav a{display:none}.topo .marca span{display:none}}
+
+section{position:relative;z-index:1}
+.olho{font-family:var(--sans);font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ouro)}
+h2.tit{font-family:var(--titulo);font-weight:400;font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.2;margin:.5rem 0 1rem;color:var(--creme)}
+h2.tit em{font-style:normal;color:var(--ouro)}
+.lead{font-size:1.08rem;color:var(--tx2);max-width:760px}
+.faixa{height:18px;background:url('../faixa.svg') repeat-x center/auto 18px;opacity:.85;margin:2.2rem 0}
+
+/* ── HERO ── */
+.hero{min-height:100svh;display:grid;align-items:center;padding:110px 0 70px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{font-family:var(--titulo);font-weight:400;font-size:clamp(2.2rem,5.6vw,4.4rem);line-height:1.04;letter-spacing:.01em;margin:.8rem 0 1rem;background:linear-gradient(100deg,var(--creme) 10%,var(--ouro) 45%,var(--palha) 60%,var(--creme) 90%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brilho 9s ease-in-out infinite}
+@keyframes brilho{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.hero .sub{font-style:italic;font-size:clamp(1.02rem,1.6vw,1.25rem);color:var(--tx2);max-width:620px}
+.hero .sub2{font-family:var(--sans);font-size:.92rem;color:var(--tx3);margin-top:.8rem;max-width:600px}
+.autores-linha{font-family:var(--sans);font-size:.86rem;color:var(--tx2);margin-top:1.4rem;line-height:1.7}
+.acoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:2rem}
+.bt{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-weight:700;font-size:.92rem;letter-spacing:.02em;padding:14px 22px;border-radius:999px;text-decoration:none;transition:transform .25s,box-shadow .25s,background .25s}
+.bt.pri{background:linear-gradient(135deg,var(--ouro),var(--argila));color:var(--noite);box-shadow:0 10px 30px -10px rgba(242,196,90,.6)}
+.bt.pri:hover{transform:translateY(-2px);box-shadow:0 16px 40px -12px rgba(242,196,90,.75)}
+.bt.sec{border:1.5px solid var(--linha);color:var(--creme)}
+.bt.sec:hover{border-color:var(--ouro);color:var(--ouro)}
+.bt svg{width:18px;height:18px}
+
+/* livro 3D */
+.palco{perspective:1600px;display:grid;place-items:center;position:relative}
+.aura{position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(242,196,90,.28),rgba(196,98,26,.12) 45%,transparent 70%);filter:blur(10px);animation:pulsa 6s ease-in-out infinite}
+@keyframes pulsa{50%{transform:scale(1.08);opacity:.8}}
+.espiral-giro{position:absolute;width:115%;aspect-ratio:1;opacity:.16;animation:gira 80s linear infinite}
+.espiral-giro.r{width:92%;opacity:.12;animation-direction:reverse;animation-duration:60s}
+@keyframes gira{to{transform:rotate(360deg)}}
+.livro3d{position:relative;width:min(340px,70vw);aspect-ratio:.6752;transform-style:preserve-3d;transform:rotateY(-24deg) rotateX(6deg);transition:transform .6s cubic-bezier(.2,.7,.2,1);animation:flutua 7s ease-in-out infinite;cursor:pointer}
+@keyframes flutua{50%{translate:0 -12px}}
+.livro3d .capa{position:absolute;inset:0;border-radius:3px 8px 8px 3px;overflow:hidden;transform:translateZ(16px);box-shadow:0 30px 60px -20px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.06)}
+.livro3d .capa img{width:100%;height:100%;object-fit:cover}
+.livro3d .capa::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.22) 45%,transparent 60%);background-size:250% 100%;animation:reflexo 6s ease-in-out infinite}
+@keyframes reflexo{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}
+.livro3d .lombada{position:absolute;top:0;bottom:0;left:0;width:32px;transform:rotateY(-90deg) translateZ(0) translateX(-16px);transform-origin:left;background:linear-gradient(90deg,#3a1406,#6b2a0c 40%,#3a1406);border-radius:3px 0 0 3px}
+.livro3d .miolo{position:absolute;top:6px;bottom:6px;right:0;width:30px;transform:rotateY(90deg) translateZ(-15px) translateX(15px);transform-origin:right;background:repeating-linear-gradient(90deg,#efe6d2 0 1px,#d9ccb0 1px 2px)}
+.livro3d .sombra{position:absolute;left:8%;right:-6%;bottom:-34px;height:28px;background:radial-gradient(ellipse,rgba(0,0,0,.7),transparent 70%);transform:translateZ(-40px)}
+.selo-ed{position:absolute;bottom:-6%;right:-4%;width:120px;opacity:.95;filter:drop-shadow(0 6px 14px rgba(0,0,0,.6))}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:40px}.palco{order:-1;margin-top:10px}.livro3d{width:min(260px,62vw)}.selo-ed{width:90px}}
+
+/* números */
+.numeros{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:2.6rem}
+.num{border:1px solid var(--linha);border-radius:16px;padding:18px;background:linear-gradient(160deg,rgba(139,58,15,.16),rgba(10,6,3,.2))}
+.num b{display:block;font-family:var(--titulo);font-size:2rem;color:var(--ouro);line-height:1}
+.num span{font-family:var(--sans);font-size:.8rem;color:var(--tx2)}
+@media(max-width:700px){.numeros{grid-template-columns:repeat(2,1fr)}}
+
+/* blocos */
+.bloco{padding:90px 0}
+.bloco.escuro{background:linear-gradient(180deg,transparent,rgba(21,10,1,.92) 12%,rgba(21,10,1,.92) 88%,transparent)}
+.duas{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+@media(max-width:900px){.duas{grid-template-columns:1fr}}
+.texto p{margin-bottom:1rem;color:var(--tx2);text-align:justify;hyphens:auto}
+.texto p:first-letter{}
+.citacao{border-left:3px solid var(--urucum2);padding:8px 0 8px 18px;font-style:italic;color:var(--creme2);margin:1.4rem 0}
+.citacao small{display:block;font-style:normal;font-family:var(--sans);font-size:.78rem;color:var(--tx3);margin-top:.4rem}
+
+/* eixos temáticos */
+.eixos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:2.4rem}
+.eixo{position:relative;border-radius:18px;padding:24px;overflow:hidden;border:1px solid var(--linha);background:rgba(30,14,2,.6);transition:transform .35s,border-color .35s}
+.eixo:hover{transform:translateY(-4px);border-color:rgba(242,196,90,.5)}
+.eixo i{display:block;width:46px;height:46px;margin-bottom:12px}
+.eixo h3{font-family:var(--titulo);font-weight:400;font-size:1.08rem;color:var(--ouro);margin-bottom:6px}
+.eixo p{font-family:var(--sans);font-size:.88rem;color:var(--tx2);line-height:1.55}
+.eixo::before{content:'';position:absolute;inset:auto -30% -60% auto;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,var(--cor,rgba(196,98,26,.35)),transparent 70%)}
+@media(max-width:900px){.eixos{grid-template-columns:1fr 1fr}}@media(max-width:560px){.eixos{grid-template-columns:1fr}}
+
+/* autoria */
+.autoria{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:2rem}
+.pessoa{display:flex;align-items:center;gap:14px;border:1px solid var(--linha);border-radius:14px;padding:14px 16px;background:rgba(10,6,3,.45)}
+.pessoa .ini{flex:0 0 44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--titulo);font-weight:700;color:var(--noite);background:conic-gradient(from 200deg,var(--ouro),var(--argila),var(--urucum2),var(--ouro))}
+.pessoa b{display:block;font-family:var(--sans);font-size:.92rem;font-weight:600}
+.pessoa span{font-family:var(--sans);font-size:.75rem;color:var(--tx3)}
+
+/* sumário */
+.sumario{columns:2 360px;column-gap:40px;margin-top:2rem}
+.cap{break-inside:avoid;display:flex;gap:12px;align-items:baseline;width:100%;text-align:left;padding:10px 12px;border-radius:10px;transition:background .2s}
+.cap:hover{background:rgba(139,58,15,.22)}
+.cap .n{font-family:var(--titulo);color:var(--ouro);min-width:2.2em;font-size:.95rem}
+.cap .t{flex:1;font-size:.98rem;color:var(--creme)}
+.cap .pg{font-family:var(--sans);font-size:.78rem;color:var(--tx3);white-space:nowrap}
+.cap .pg::before{content:'';display:inline-block;width:40px;border-bottom:1px dotted var(--tx3);margin-right:8px;vertical-align:middle}
+.parte{column-span:all;font-family:var(--titulo);font-size:.84rem;letter-spacing:.18em;text-transform:uppercase;color:var(--argila);margin:1.4rem 0 .4rem 12px}
+
+/* selo de autorização */
+.autoriza{display:grid;grid-template-columns:auto 1fr;gap:42px;align-items:center;border:1px solid var(--linha);border-radius:26px;padding:36px;background:radial-gradient(ellipse at 0% 50%,rgba(139,58,15,.25),transparent 60%),rgba(10,6,3,.55)}
+.selo{position:relative;width:220px;aspect-ratio:1;display:grid;place-items:center}
+.selo svg.anel{position:absolute;inset:0;width:100%;height:100%;animation:gira 40s linear infinite}
+.selo .nucleo{width:58%;aspect-ratio:1;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 0 0 6px rgba(242,196,90,.35),0 18px 40px -10px rgba(0,0,0,.8)}
+.selo .nucleo img{width:92%}
+.autoriza h3{font-family:var(--titulo);font-weight:400;font-size:1.5rem;color:var(--ouro);margin-bottom:.6rem}
+.autoriza p{color:var(--tx2);margin-bottom:.8rem}
+.autoriza .ref{font-family:var(--sans);font-size:.82rem;color:var(--tx3)}
+@media(max-width:760px){.autoriza{grid-template-columns:1fr;text-align:center;padding:26px}.selo{margin:auto;width:190px}}
+
+/* parceiros */
+.parceiros{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:2rem}
+.parc{border-radius:18px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;border:1px solid var(--linha);background:rgba(10,6,3,.5)}
+.parc .lg{height:96px;width:100%;display:grid;place-items:center;border-radius:12px}
+.parc .lg.claro{background:#fff}
+.parc .lg img{max-height:84px;max-width:88%;object-fit:contain}
+.parc b{font-family:var(--sans);font-size:.86rem}
+.parc span{font-family:var(--sans);font-size:.74rem;color:var(--tx3)}
+@media(max-width:900px){.parceiros{grid-template-columns:1fr 1fr}}
+
+/* exemplares */
+.formatos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:2rem}
+.fmt{border:1px solid var(--linha);border-radius:18px;padding:22px;background:rgba(30,14,2,.55)}
+.fmt .ic{font-size:1.6rem}
+.fmt h3{font-family:var(--titulo);font-weight:400;color:var(--ouro);font-size:1.05rem;margin:.4rem 0}
+.fmt p{font-family:var(--sans);font-size:.86rem;color:var(--tx2)}
+@media(max-width:900px){.formatos{grid-template-columns:1fr}}
+
+/* ficha */
+.ficha{font-family:var(--sans);font-size:.82rem;color:var(--tx2);border:1px dashed var(--linha);border-radius:14px;padding:18px 20px;line-height:1.6;white-space:pre-line}
+
+footer{position:relative;z-index:1;padding:50px 0 80px;border-top:1px solid var(--linha);font-family:var(--sans);font-size:.82rem;color:var(--tx3);text-align:center}
+footer img{height:56px;margin:0 auto 14px}
+
+/* revelação */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ═════════ LEITOR ═════════ */
+#leitor{position:fixed;inset:0;z-index:100;background:radial-gradient(ellipse at center,#24120a 0%,#0A0603 70%);display:none;flex-direction:column}
+#leitor.aberto{display:flex;animation:surge .45s ease}
+@keyframes surge{from{opacity:0}to{opacity:1}}
+.lt-barra{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--linha);background:rgba(10,6,3,.85);font-family:var(--sans);font-size:.84rem;flex-wrap:wrap}
+.lt-barra .tt{flex:1;min-width:140px;font-family:var(--titulo);font-size:.82rem;letter-spacing:.08em;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lt-bt{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;color:var(--creme);border:1px solid transparent}
+.lt-bt:hover,.lt-bt.on{border-color:var(--linha);color:var(--ouro)}
+.lt-bt svg{width:18px;height:18px}
+.lt-pg{display:flex;align-items:center;gap:6px;color:var(--tx2)}
+.lt-pg input{width:64px;padding:6px 8px;border-radius:8px;border:1px solid var(--linha);background:rgba(255,255,255,.04);color:var(--creme);text-align:center;font:inherit}
+.lt-corpo{flex:1;position:relative;overflow:hidden;display:grid;place-items:center;touch-action:pan-y pinch-zoom}
+.espelho{position:relative;display:flex;justify-content:center;align-items:center;perspective:2400px}
+.folha{position:relative;width:var(--fw,300px);height:var(--fh,420px);background:#fff;box-shadow:0 22px 60px -18px rgba(0,0,0,.9)}
+.folha img{width:100%;height:100%;object-fit:contain;background:#fff}
+.folha.esq{border-radius:6px 0 0 6px;box-shadow:inset -28px 0 40px -30px rgba(0,0,0,.45),0 22px 60px -18px rgba(0,0,0,.9)}
+.folha.dir{border-radius:0 6px 6px 0;box-shadow:inset 28px 0 40px -30px rgba(0,0,0,.45),0 22px 60px -18px rgba(0,0,0,.9)}
+.folha.vazia{background:transparent;box-shadow:none}
+.virando{position:absolute;top:0;width:var(--fw,300px);height:var(--fh,420px);transform-style:preserve-3d;transition:transform .75s cubic-bezier(.45,.05,.25,1);z-index:5}
+.virando .face{position:absolute;inset:0;backface-visibility:hidden;background:#fff}
+.virando .face img{width:100%;height:100%;object-fit:contain}
+.virando .verso{transform:rotateY(180deg)}
+.virando::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.25),transparent 30%,transparent 70%,rgba(0,0,0,.25))}
+.lt-seta{position:absolute;top:50%;translate:0 -50%;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:rgba(10,6,3,.6);border:1px solid var(--linha);z-index:8}
+.lt-seta:hover{background:rgba(139,58,15,.6)}
+.lt-seta.ant{left:12px}.lt-seta.prox{right:12px}
+.lt-seta svg{width:22px;height:22px}
+.lt-prog{height:3px;background:rgba(255,255,255,.08)}
+.lt-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--urucum2),var(--ouro));transition:width .4s}
+.lt-miniaturas{display:none;gap:8px;overflow-x:auto;padding:10px 14px;background:rgba(10,6,3,.9);border-top:1px solid var(--linha)}
+.lt-miniaturas.on{display:flex}
+.lt-miniaturas button{flex:0 0 auto;width:62px;border-radius:4px;overflow:hidden;opacity:.6;border:2px solid transparent;position:relative}
+.lt-miniaturas button.on{opacity:1;border-color:var(--ouro)}
+.lt-miniaturas button span{position:absolute;bottom:0;left:0;right:0;font:700 .62rem var(--sans);background:rgba(0,0,0,.6);color:#fff}
+.lt-painel{position:absolute;top:0;right:0;bottom:0;width:min(400px,100%);background:rgba(15,8,2,.97);border-left:1px solid var(--linha);z-index:12;transform:translateX(100%);transition:transform .35s ease;display:flex;flex-direction:column;font-family:var(--sans)}
+.lt-painel.on{transform:none}
+.lt-painel h4{font-family:var(--titulo);font-weight:400;color:var(--ouro);padding:16px 18px 6px;font-size:1rem}
+.lt-painel .ps{padding:0 18px 12px}
+.lt-painel input[type=search]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--linha);background:rgba(255,255,255,.05);color:var(--creme);font:inherit}
+.lt-res{flex:1;overflow:auto;padding:0 10px 20px}
+.lt-res button{display:block;width:100%;text-align:left;padding:10px 10px;border-radius:10px;font-size:.84rem;color:var(--tx2);border-bottom:1px solid rgba(255,255,255,.04)}
+.lt-res button:hover{background:rgba(139,58,15,.25);color:var(--creme)}
+.lt-res b{color:var(--ouro);font-weight:700}
+.lt-res mark{background:rgba(242,196,90,.35);color:var(--creme);border-radius:3px;padding:0 2px}
+.lt-zoom{position:absolute;inset:0;overflow:auto;z-index:20;background:#1a0d05;display:none;cursor:zoom-out}
+.lt-zoom.on{display:block}
+.lt-zoom img{width:min(1240px,100%);margin:20px auto;background:#fff}
+.lt-ouvindo{position:absolute;left:50%;bottom:16px;translate:-50% 0;z-index:9;font:600 .8rem var(--sans);background:rgba(10,6,3,.85);border:1px solid var(--linha);padding:8px 14px;border-radius:999px;display:none;align-items:center;gap:10px}
+.lt-ouvindo.on{display:flex}
+.onda{display:flex;gap:3px;align-items:flex-end;height:14px}.onda i{width:3px;background:var(--ouro);animation:ond 1s ease-in-out infinite}.onda i:nth-child(2){animation-delay:.15s}.onda i:nth-child(3){animation-delay:.3s}.onda i:nth-child(4){animation-delay:.45s}
+@keyframes ond{0%,100%{height:3px}50%{height:14px}}
+@media(max-width:760px){.lt-barra .rotulo{display:none}.lt-seta{width:44px;height:44px}.lt-seta.ant{left:4px}.lt-seta.prox{right:4px}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="ceu" aria-hidden="true"></canvas>
+<div class="grafismo" aria-hidden="true"></div>
+
+<header class="topo">
+  <a class="marca" href="../../" aria-label="Instituto Cacique Enir Terena">
+    <img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena">
+    <span data-t="editora">EDITORA CACIQUE ENIR TERENA</span>
+  </a>
+  <nav>
+    <a href="#obra" data-t="nav_obra">A obra</a>
+    <a href="#sumario" data-t="nav_sumario">Sumário</a>
+    <a href="#autorizacao" data-t="nav_aut">Autorização</a>
+    <a href="#exemplares" data-t="nav_ex">Exemplares</a>
+    <button class="bt pri" style="padding:8px 16px;font-size:.8rem" data-ler="1" data-t="ler">Ler o livro</button>
+    <div class="idiomas" role="group" aria-label="Idioma">
+      <button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="fr">FR</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero" aria-labelledby="h1">
+  <div class="wrap">
+    <div>
+      <div class="olho" data-t="olho_hero">Editora Cacique Enir Terena · Livro digital</div>
+      <h1 id="h1">Autodeterminação Cultural</h1>
+      <p class="sub">Bioeconomia e Indicação Geográfica Indígena e seus Impactos na Língua, Saúde e Educação</p>
+      <p class="sub2">Fundamentos Históricos e Jurídicos da Cerâmica Terena e da Ancestralidade Arawak</p>
+      <p class="autores-linha" id="autores-linha"></p>
+      <div class="acoes">
+        <button class="bt pri" data-ler="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg><span data-t="ler_agora">Ler agora, gratuitamente</span></button>
+        <a class="bt sec" href="#obra"><span data-t="conhecer">Conhecer a obra</span></a>
+        <button class="bt sec" id="som-bt" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg><span data-t="som">Paisagem sonora</span></button>
+      </div>
+      <div class="numeros">
+        <div class="num"><b id="n-pag">390</b><span data-t="n_pag">páginas</span></div>
+        <div class="num"><b>7</b><span data-t="n_aut">autoras e autores</span></div>
+        <div class="num"><b id="n-cap">21</b><span data-t="n_cap">capítulos</span></div>
+        <div class="num"><b>1ª</b><span data-t="n_ed">edição, 2026</span></div>
+      </div>
+    </div>
+    <div class="palco">
+      <div class="aura"></div>
+      <img class="espiral-giro" src="../espiral.svg" alt="" aria-hidden="true">
+      <img class="espiral-giro r" src="../espiral.svg" alt="" aria-hidden="true">
+      <div class="livro3d" id="livro3d" role="button" tabindex="0" aria-label="Abrir o leitor do livro" data-ler="1">
+        <div class="lombada"></div><div class="miolo"></div>
+        <div class="capa"><img src="capa.webp" alt="Capa do livro Autodeterminação Cultural, com cerâmica Terena sobre fundo de grafismos"></div>
+        <div class="sombra"></div>
+      </div>
+      <img class="selo-ed" src="../logos/editora-branca.png" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- A OBRA -->
+<section class="bloco escuro" id="obra">
+  <div class="wrap">
+    <div class="olho rv" data-t="olho_obra">A obra</div>
+    <h2 class="tit rv" data-t-html="tit_obra">O barro que guarda a memória de um <em>povo inteiro</em></h2>
+    <div class="duas">
+      <div class="texto rv" data-t-html="obra_txt">
+        <p>Da travessia do Chaco ao Mato Grosso do Sul, a cerâmica Terena atravessou séculos como linguagem, território e resistência. Este livro reúne história, linguística, direito e economia para mostrar que proteger esse saber é também proteger a língua, a saúde e a educação de um povo.</p>
+        <p>A obra examina a ancestralidade Arawak, a trajetória da Aldeia Urbana Marçal de Souza e o reconhecimento da cerâmica Terena como patrimônio imaterial de Mato Grosso do Sul. Analisa os instrumentos de propriedade intelectual à disposição dos povos indígenas, da marca coletiva à indicação geográfica, e propõe caminhos de bioeconomia em que a autoria, a titularidade e os benefícios permanecem com as comunidades.</p>
+        <p>Escrita por autoras e autores indígenas e parceiros, com revisão do Conselho Editorial da Editora Cacique Enir Terena, é uma contribuição à autodeterminação cultural dos povos originários.</p>
+      </div>
+      <div class="rv">
+        <div class="citacao" id="epigrafe">“Do outro lado do rio, vinham nossos parentes cansados, trazendo nos olhos a guerra, trazendo nos pés a poeira da fuga. Nós acendemos o fogo, partilhamos o milho e o peixe, porque sangue e memória nos unem.”<small>Canto da Travessia, tradição oral Terena</small></div>
+        <button class="bt pri" data-ler="1" style="margin-top:.6rem"><span data-t="abrir_leitor">Abrir o leitor</span></button>
+      </div>
+    </div>
+    <div class="faixa" aria-hidden="true"></div>
+    <div class="eixos">
+      <article class="eixo rv" style="--cor:rgba(196,98,26,.4)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#F2C45A" stroke-width="2"><path d="M8 34c0-10 7-18 16-18s16 8 16 18"/><path d="M6 34h36"/><path d="M14 34c2-6 6-9 10-9s8 3 10 9"/><path d="M20 16c0-4 2-7 4-8 2 1 4 4 4 8"/></svg></i><h3 data-t="e1h">Cerâmica Terena</h3><p data-t="e1p">Técnicas, grafismos e mestras ceramistas: o patrimônio imaterial de Mato Grosso do Sul.</p></article>
+      <article class="eixo rv" style="--cor:rgba(82,183,136,.35)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#52B788" stroke-width="2"><path d="M24 42V20"/><path d="M24 26c-8 0-12-6-12-12 8 0 12 5 12 12z"/><path d="M24 22c6 0 10-5 10-10-6 0-10 4-10 10z"/><path d="M14 42h20"/></svg></i><h3 data-t="e2h">Bioeconomia indígena</h3><p data-t="e2p">Economia circular, franchising social e geração de renda com titularidade das comunidades.</p></article>
+      <article class="eixo rv" style="--cor:rgba(242,196,90,.35)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#F2C45A" stroke-width="2"><path d="M24 6l14 6v10c0 9-6 16-14 20-8-4-14-11-14-20V12z"/><path d="M18 24l4 4 8-8"/></svg></i><h3 data-t="e3h">Propriedade intelectual</h3><p data-t="e3p">Marca coletiva, indicação geográfica e proteção dos conhecimentos tradicionais.</p></article>
+      <article class="eixo rv" style="--cor:rgba(95,168,211,.35)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#5FA8D3" stroke-width="2"><path d="M8 12h22v16H18l-6 6v-6H8z"/><path d="M30 18h10v14h-4v5l-5-5h-7v-4"/></svg></i><h3 data-t="e4h">Língua</h3><p data-t="e4p">A língua Terena, o Guaná e a escola indígena como direito e como resistência.</p></article>
+      <article class="eixo rv" style="--cor:rgba(204,0,102,.3)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#E8A853" stroke-width="2"><path d="M24 40s-14-8-14-19a8 8 0 0 1 14-5 8 8 0 0 1 14 5c0 11-14 19-14 19z"/><path d="M15 24h6l3-5 3 9 2-4h4"/></svg></i><h3 data-t="e5h">Saúde</h3><p data-t="e5p">Determinantes sociais da saúde e a relação entre cultura protegida e bem-viver.</p></article>
+      <article class="eixo rv" style="--cor:rgba(139,58,15,.45)"><i aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="#C4621A" stroke-width="2"><path d="M6 36c6-4 10-14 18-14s12 10 18 14"/><path d="M12 30l-4-8M36 30l4-8"/><circle cx="24" cy="14" r="4"/></svg></i><h3 data-t="e6h">Ancestralidade Arawak</h3><p data-t="e6p">Do Chaco à Guerra do Paraguai: a história Guaná/Terena e a autodeterminação jurídica.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- AUTORIA -->
+<section class="bloco" id="autoria">
+  <div class="wrap">
+    <div class="olho rv" data-t="olho_aut">Autoria</div>
+    <h2 class="tit rv" data-t-html="tit_aut">Vozes que escrevem a partir do <em>território</em></h2>
+    <div class="autoria" id="autoria-lista"></div>
+  </div>
+</section>
+
+<!-- SUMÁRIO -->
+<section class="bloco escuro" id="sumario">
+  <div class="wrap">
+    <div class="olho rv" data-t="olho_sum">Sumário interativo</div>
+    <h2 class="tit rv" data-t-html="tit_sum">Escolha um capítulo e <em>comece a ler</em></h2>
+    <p class="lead rv" data-t="sum_lead">Cada item abre o leitor na página correspondente. A busca do leitor encontra qualquer palavra em todo o livro.</p>
+    <div class="sumario" id="sumario-lista"></div>
+  </div>
+</section>
+
+<!-- AUTORIZAÇÃO -->
+<section class="bloco" id="autorizacao">
+  <div class="wrap">
+    <div class="autoriza rv">
+      <div class="selo" aria-hidden="true">
+        <svg class="anel" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#F2C45A" stroke-width="1.2" stroke-dasharray="2 5"/><circle cx="100" cy="100" r="70" fill="none" stroke="#C4621A" stroke-width="1"/><text font-family="Cinzel,serif" font-size="11.5" letter-spacing="3" fill="#F2C45A"><textPath href="#circ">CMDDI · 202ª SESSÃO ORDINÁRIA · 13 · 11 · 2026 · USO AUTORIZADO ·</textPath></text></svg>
+        <div class="nucleo"><img src="../logos/cmddi.jpg" alt=""></div>
+      </div>
+      <div>
+        <div class="olho" data-t="olho_autz">Autorização institucional</div>
+        <h3 data-t="aut_h">Uso do nome do CMDDI autorizado pelo Conselho</h3>
+        <p data-t="aut_p1">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) nesta obra e no selo editorial foi autorizado na 202ª Sessão Ordinária do Conselho, realizada em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena entre CMDDI, ICET, IFMS e MPMS, com as obras editoriais já realizadas pelo Instituto Cacique Enir Terena.</p>
+        <p class="ref" data-t="aut_ref">Convocação da 202ª Sessão Ordinária, assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</p>
+      </div>
+    </div>
+
+    <div class="olho rv" style="margin-top:4rem" data-t="olho_parc">Realização e parceria</div>
+    <div class="parceiros">
+      <div class="parc rv"><div class="lg"><img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena"></div><b>Editora Cacique Enir Terena</b><span data-t="p_ed">Selo editorial de autoria indígena</span></div>
+      <div class="parc rv"><div class="lg claro"><img src="../logos/icet.jpg" alt="Instituto Cacique Enir Terena"></div><b>ICET</b><span data-t="p_icet">Instituto Cacique Enir Terena</span></div>
+      <div class="parc rv"><div class="lg claro"><img src="../logos/cmddi.jpg" alt="CMDDI"></div><b>CMDDI</b><span data-t="p_cmddi">Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande</span></div>
+      <div class="parc rv"><div class="lg claro"><img src="../logos/focams.jpg" alt="FOCAMS"></div><b>FOCAMS</b><span data-t="p_focams">Fórum dos Caciques de Mato Grosso do Sul</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXEMPLARES -->
+<section class="bloco escuro" id="exemplares">
+  <div class="wrap">
+    <div class="olho rv" data-t="olho_ex">Editora digital</div>
+    <h2 class="tit rv" data-t-html="tit_ex">Um livro, três formas de <em>chegar ao leitor</em></h2>
+    <p class="lead rv" data-t="ex_lead">A Editora Cacique Enir Terena produz suas obras com um motor editorial próprio, que segue as normas da ABNT e os padrões internacionais de acessibilidade do livro digital.</p>
+    <div class="formatos">
+      <div class="fmt rv"><div class="ic">📖</div><h3 data-t="f1h">Leitura aberta</h3><p data-t="f1p">Nesta página, o livro completo pode ser lido gratuitamente, com busca em todo o texto, sumário interativo e leitura em voz alta.</p></div>
+      <div class="fmt rv"><div class="ic">📱</div><h3 data-t="f2h">EPUB 3 acessível</h3><p data-t="f2p">Edição em EPUB 3 com metadados de acessibilidade, sumário navegável e paginação equivalente à edição impressa, para leitores de e-book.</p></div>
+      <div class="fmt rv"><div class="ic">🔐</div><h3 data-t="f3h">Exemplar controlado</h3><p data-t="f3p">Para instituições e pesquisadores, a Editora emite exemplares numerados e nominais, com texto cifrado e senha individual, registrados no acervo.</p></div>
+    </div>
+    <div class="acoes rv" style="margin-top:2rem">
+      <a class="bt sec" href="https://wa.me/5567981644664?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20exemplar%20do%20livro%20Autodetermina%C3%A7%C3%A3o%20Cultural." target="_blank" rel="noopener"><span data-t="pedir">Solicitar exemplar à Editora</span></a>
+    </div>
+    <div class="faixa" aria-hidden="true"></div>
+    <div class="ficha rv" id="ficha"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <img src="../logos/editora-branca.png" alt="Editora Cacique Enir Terena">
+  <div data-t="rodape">Editora Cacique Enir Terena · Instituto Cacique Enir Terena (ICET) · Aldeia Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul</div>
+  <div style="margin-top:.6rem"><a href="../../" data-t="voltar">Voltar ao site do ICET</a></div>
+</footer>
+
+<!-- LEITOR -->
+<div id="leitor" role="dialog" aria-modal="true" aria-label="Leitor do livro">
+  <div class="lt-barra">
+    <button class="lt-bt" id="lt-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="tt" id="lt-cap">Autodeterminação Cultural</div>
+    <div class="lt-pg"><label class="vis" for="lt-ir">Página</label><input id="lt-ir" type="number" min="1" inputmode="numeric"><span id="lt-tot">/ 390</span></div>
+    <button class="lt-bt" id="lt-sumbt" aria-label="Sumário"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="rotulo" data-t="r_sum">Sumário</span></button>
+    <button class="lt-bt" id="lt-busbt" aria-label="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="rotulo" data-t="r_bus">Buscar</span></button>
+    <button class="lt-bt" id="lt-ouvir" aria-label="Ouvir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span class="rotulo" data-t="r_ouv">Ouvir</span></button>
+    <button class="lt-bt" id="lt-mini" aria-label="Miniaturas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="9"/><rect x="3" y="15" width="7" height="6"/><rect x="14" y="15" width="7" height="6"/></svg></button>
+    <button class="lt-bt" id="lt-zoombt" aria-label="Ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M11 8v6M8 11h6M20 20l-3.5-3.5"/></svg></button>
+    <button class="lt-bt" id="lt-tela" aria-label="Tela cheia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+  <div class="lt-prog"><i id="lt-progi"></i></div>
+  <div class="lt-corpo" id="lt-corpo">
+    <div class="espelho" id="espelho"></div>
+    <button class="lt-seta ant" id="lt-ant" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button class="lt-seta prox" id="lt-prox" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg></button>
+    <div class="lt-ouvindo" id="lt-ouvindo"><div class="onda"><i></i><i></i><i></i><i></i></div><span data-t="lendo">Lendo em voz alta</span><button class="lt-bt" id="lt-parar" data-t="parar">Parar</button></div>
+    <div class="lt-painel" id="lt-painel">
+      <h4 id="lt-painel-t">Buscar no livro</h4>
+      <div class="ps" id="lt-busca-box"><input type="search" id="lt-busca" placeholder="Digite uma palavra" aria-label="Buscar no livro"></div>
+      <div class="lt-res" id="lt-res"></div>
+    </div>
+    <div class="lt-zoom" id="lt-zoom"><img alt="" id="lt-zoomimg"></div>
+  </div>
+  <div class="lt-miniaturas" id="lt-miniaturas"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var LIVRO = { paginas: 390, prop: 0.7, toc: [], autores: [], ficha: '' };
+var TEXTO = null;
+var $ = function(s, c){ return (c || document).querySelector(s); };
+var $$ = function(s, c){ return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+function ls(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function pad(n){ n = String(n); while(n.length < 3) n = '0' + n; return n; }
+function src(n, mini){ return (mini ? 't/' : 'p/') + pad(n) + '.webp'; }
+
+/* ───── idiomas ───── */
+var T = {
+ editora:{pt:'EDITORA CACIQUE ENIR TERENA',en:'CACIQUE ENIR TERENA PUBLISHING',es:'EDITORIAL CACIQUE ENIR TERENA',fr:'ÉDITIONS CACIQUE ENIR TERENA'},
+ nav_obra:{pt:'A obra',en:'The book',es:'La obra',fr:'L’ouvrage'},
+ nav_sumario:{pt:'Sumário',en:'Contents',es:'Índice',fr:'Sommaire'},
+ nav_aut:{pt:'Autorização',en:'Authorization',es:'Autorización',fr:'Autorisation'},
+ nav_ex:{pt:'Exemplares',en:'Editions',es:'Ejemplares',fr:'Exemplaires'},
+ ler:{pt:'Ler o livro',en:'Read the book',es:'Leer el libro',fr:'Lire le livre'},
+ olho_hero:{pt:'Editora Cacique Enir Terena · Livro digital',en:'Cacique Enir Terena Publishing · Digital book',es:'Editorial Cacique Enir Terena · Libro digital',fr:'Éditions Cacique Enir Terena · Livre numérique'},
+ ler_agora:{pt:'Ler agora, gratuitamente',en:'Read now, free of charge',es:'Leer ahora, gratis',fr:'Lire maintenant, gratuitement'},
+ conhecer:{pt:'Conhecer a obra',en:'About the book',es:'Conocer la obra',fr:'Découvrir l’ouvrage'},
+ som:{pt:'Paisagem sonora',en:'Soundscape',es:'Paisaje sonoro',fr:'Paysage sonore'},
+ n_pag:{pt:'páginas',en:'pages',es:'páginas',fr:'pages'},
+ n_aut:{pt:'autoras e autores',en:'authors',es:'autoras y autores',fr:'autrices et auteurs'},
+ n_cap:{pt:'capítulos',en:'chapters',es:'capítulos',fr:'chapitres'},
+ n_ed:{pt:'edição, 2026',en:'edition, 2026',es:'edición, 2026',fr:'édition, 2026'},
+ olho_obra:{pt:'A obra',en:'The book',es:'La obra',fr:'L’ouvrage'},
+ tit_obra:{pt:'O barro que guarda a memória de um <em>povo inteiro</em>',en:'The clay that keeps the memory of <em>an entire people</em>',es:'El barro que guarda la memoria de <em>todo un pueblo</em>',fr:'L’argile qui garde la mémoire <em>de tout un peuple</em>'},
+ obra_txt:{
+  pt:null,
+  en:'<p>From the crossing of the Chaco to Mato Grosso do Sul, Terena ceramics have travelled through the centuries as language, territory and resistance. This book brings together history, linguistics, law and economics to show that protecting this knowledge also means protecting a people’s language, health and education.</p><p>The work examines Arawak ancestry, the history of the Marçal de Souza Urban Village and the recognition of Terena ceramics as intangible heritage of Mato Grosso do Sul. It analyses the intellectual property tools available to Indigenous peoples, from collective marks to geographical indications, and proposes bioeconomy pathways in which authorship, ownership and benefits remain with the communities.</p><p>Written by Indigenous authors and partners and reviewed by the Editorial Board of the Cacique Enir Terena Publishing House, it is a contribution to the cultural self-determination of the original peoples. The book is in Portuguese.</p>',
+  es:'<p>De la travesía del Chaco a Mato Grosso do Sul, la cerámica terena atravesó siglos como lenguaje, territorio y resistencia. Este libro reúne historia, lingüística, derecho y economía para mostrar que proteger ese saber es también proteger la lengua, la salud y la educación de un pueblo.</p><p>La obra examina la ascendencia arawak, la trayectoria de la Aldea Urbana Marçal de Souza y el reconocimiento de la cerámica terena como patrimonio inmaterial de Mato Grosso do Sul. Analiza los instrumentos de propiedad intelectual a disposición de los pueblos indígenas, de la marca colectiva a la indicación geográfica, y propone caminos de bioeconomía en los que la autoría, la titularidad y los beneficios permanecen con las comunidades.</p><p>Escrita por autoras y autores indígenas y colaboradores, con revisión del Consejo Editorial de la Editorial Cacique Enir Terena, es una contribución a la autodeterminación cultural de los pueblos originarios. El libro está en portugués.</p>',
+  fr:'<p>De la traversée du Chaco au Mato Grosso do Sul, la céramique terena a traversé les siècles comme langage, territoire et résistance. Ce livre réunit histoire, linguistique, droit et économie pour montrer que protéger ce savoir, c’est aussi protéger la langue, la santé et l’éducation d’un peuple.</p><p>L’ouvrage examine l’ascendance arawak, l’histoire du village urbain Marçal de Souza et la reconnaissance de la céramique terena comme patrimoine immatériel du Mato Grosso do Sul. Il analyse les outils de propriété intellectuelle à la disposition des peuples autochtones, de la marque collective à l’indication géographique, et propose des voies de bioéconomie où la paternité, la propriété et les bénéfices restent aux communautés.</p><p>Écrit par des autrices et auteurs autochtones et des partenaires, avec la révision du comité éditorial des Éditions Cacique Enir Terena, il est une contribution à l’autodétermination culturelle des peuples originaires. Le livre est en portugais.</p>'},
+ abrir_leitor:{pt:'Abrir o leitor',en:'Open the reader',es:'Abrir el lector',fr:'Ouvrir la liseuse'},
+ e1h:{pt:'Cerâmica Terena',en:'Terena ceramics',es:'Cerámica terena',fr:'Céramique terena'},
+ e1p:{pt:'Técnicas, grafismos e mestras ceramistas: o patrimônio imaterial de Mato Grosso do Sul.',en:'Techniques, graphic patterns and master potters: the intangible heritage of Mato Grosso do Sul.',es:'Técnicas, grafismos y maestras ceramistas: el patrimonio inmaterial de Mato Grosso do Sul.',fr:'Techniques, motifs et maîtresses céramistes : le patrimoine immatériel du Mato Grosso do Sul.'},
+ e2h:{pt:'Bioeconomia indígena',en:'Indigenous bioeconomy',es:'Bioeconomía indígena',fr:'Bioéconomie autochtone'},
+ e2p:{pt:'Economia circular, franchising social e geração de renda com titularidade das comunidades.',en:'Circular economy, social franchising and income generation owned by the communities.',es:'Economía circular, franquicia social y generación de ingresos con titularidad de las comunidades.',fr:'Économie circulaire, franchise sociale et création de revenus appartenant aux communautés.'},
+ e3h:{pt:'Propriedade intelectual',en:'Intellectual property',es:'Propiedad intelectual',fr:'Propriété intellectuelle'},
+ e3p:{pt:'Marca coletiva, indicação geográfica e proteção dos conhecimentos tradicionais.',en:'Collective marks, geographical indications and protection of traditional knowledge.',es:'Marca colectiva, indicación geográfica y protección de los conocimientos tradicionales.',fr:'Marque collective, indication géographique et protection des savoirs traditionnels.'},
+ e4h:{pt:'Língua',en:'Language',es:'Lengua',fr:'Langue'},
+ e4p:{pt:'A língua Terena, o Guaná e a escola indígena como direito e como resistência.',en:'The Terena language, Guaná and the Indigenous school as a right and as resistance.',es:'La lengua terena, el guaná y la escuela indígena como derecho y como resistencia.',fr:'La langue terena, le guaná et l’école autochtone comme droit et comme résistance.'},
+ e5h:{pt:'Saúde',en:'Health',es:'Salud',fr:'Santé'},
+ e5p:{pt:'Determinantes sociais da saúde e a relação entre cultura protegida e bem-viver.',en:'Social determinants of health and the link between protected culture and well-being.',es:'Determinantes sociales de la salud y la relación entre cultura protegida y buen vivir.',fr:'Déterminants sociaux de la santé et lien entre culture protégée et bien-vivre.'},
+ e6h:{pt:'Ancestralidade Arawak',en:'Arawak ancestry',es:'Ascendencia arawak',fr:'Ascendance arawak'},
+ e6p:{pt:'Do Chaco à Guerra do Paraguai: a história Guaná/Terena e a autodeterminação jurídica.',en:'From the Chaco to the Paraguayan War: Guaná/Terena history and legal self-determination.',es:'Del Chaco a la Guerra del Paraguay: la historia guaná/terena y la autodeterminación jurídica.',fr:'Du Chaco à la guerre du Paraguay : l’histoire guaná/terena et l’autodétermination juridique.'},
+ olho_aut:{pt:'Autoria',en:'Authorship',es:'Autoría',fr:'Auteurs'},
+ tit_aut:{pt:'Vozes que escrevem a partir do <em>território</em>',en:'Voices writing from the <em>territory</em>',es:'Voces que escriben desde el <em>territorio</em>',fr:'Des voix qui écrivent depuis le <em>territoire</em>'},
+ olho_sum:{pt:'Sumário interativo',en:'Interactive contents',es:'Índice interactivo',fr:'Sommaire interactif'},
+ tit_sum:{pt:'Escolha um capítulo e <em>comece a ler</em>',en:'Choose a chapter and <em>start reading</em>',es:'Elige un capítulo y <em>empieza a leer</em>',fr:'Choisissez un chapitre et <em>commencez à lire</em>'},
+ sum_lead:{pt:'Cada item abre o leitor na página correspondente. A busca do leitor encontra qualquer palavra em todo o livro.',en:'Each item opens the reader at the corresponding page. The reader’s search finds any word in the whole book.',es:'Cada ítem abre el lector en la página correspondiente. La búsqueda del lector encuentra cualquier palabra en todo el libro.',fr:'Chaque élément ouvre la liseuse à la page correspondante. La recherche trouve n’importe quel mot dans tout le livre.'},
+ olho_autz:{pt:'Autorização institucional',en:'Institutional authorization',es:'Autorización institucional',fr:'Autorisation institutionnelle'},
+ aut_h:{pt:'Uso do nome do CMDDI autorizado pelo Conselho',en:'Use of the CMDDI name authorized by the Council',es:'Uso del nombre del CMDDI autorizado por el Consejo',fr:'Utilisation du nom du CMDDI autorisée par le Conseil'},
+ aut_p1:{pt:null,
+  en:'The use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in this work and in the editorial imprint was authorized at the Council’s 202nd Ordinary Session, held on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project between CMDDI, ICET, IFMS and MPMS, including the works already published by the Cacique Enir Terena Institute.',
+  es:'El uso del nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) en esta obra y en el sello editorial fue autorizado en la 202ª Sesión Ordinaria del Consejo, realizada el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena entre CMDDI, ICET, IFMS y MPMS, con las obras editoriales ya realizadas por el Instituto Cacique Enir Terena.',
+  fr:'L’utilisation du nom du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) dans cet ouvrage et dans le label éditorial a été autorisée lors de la 202e session ordinaire du Conseil, tenue le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone entre le CMDDI, l’ICET, l’IFMS et le MPMS, avec les ouvrages déjà publiés par l’Institut Cacique Enir Terena.'},
+ aut_ref:{pt:null,en:'Notice of the 202nd Ordinary Session, signed by the President of CMDDI, Lisio Lili. Minutes approved by the Plenary.',es:'Convocatoria de la 202ª Sesión Ordinaria, firmada por el Presidente del CMDDI, Lisio Lili. Acta aprobada por el Pleno.',fr:'Convocation de la 202e session ordinaire, signée par le président du CMDDI, Lisio Lili. Procès-verbal approuvé par l’assemblée plénière.'},
+ olho_parc:{pt:'Realização e parceria',en:'Production and partnership',es:'Realización y alianza',fr:'Réalisation et partenariat'},
+ p_ed:{pt:'Selo editorial de autoria indígena',en:'Indigenous-authored imprint',es:'Sello editorial de autoría indígena',fr:'Label éditorial d’auteurs autochtones'},
+ p_icet:{pt:'Instituto Cacique Enir Terena',en:'Cacique Enir Terena Institute',es:'Instituto Cacique Enir Terena',fr:'Institut Cacique Enir Terena'},
+ p_cmddi:{pt:null,en:'Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande',es:'Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande',fr:'Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande'},
+ p_focams:{pt:null,en:'Forum of Chiefs of Mato Grosso do Sul',es:'Foro de los Caciques de Mato Grosso do Sul',fr:'Forum des caciques du Mato Grosso do Sul'},
+ olho_ex:{pt:'Editora digital',en:'Digital publisher',es:'Editorial digital',fr:'Éditeur numérique'},
+ tit_ex:{pt:'Um livro, três formas de <em>chegar ao leitor</em>',en:'One book, three ways to <em>reach the reader</em>',es:'Un libro, tres formas de <em>llegar al lector</em>',fr:'Un livre, trois façons d’<em>atteindre le lecteur</em>'},
+ ex_lead:{pt:null,en:'The Cacique Enir Terena Publishing House produces its works with its own editorial engine, following ABNT standards and international digital book accessibility standards.',es:'La Editorial Cacique Enir Terena produce sus obras con un motor editorial propio, que sigue las normas de la ABNT y los estándares internacionales de accesibilidad del libro digital.',fr:'Les Éditions Cacique Enir Terena produisent leurs ouvrages avec un moteur éditorial propre, conforme aux normes ABNT et aux standards internationaux d’accessibilité du livre numérique.'},
+ f1h:{pt:'Leitura aberta',en:'Open reading',es:'Lectura abierta',fr:'Lecture ouverte'},
+ f1p:{pt:null,en:'On this page, the complete book can be read free of charge, with full-text search, interactive contents and read-aloud.',es:'En esta página, el libro completo puede leerse gratuitamente, con búsqueda en todo el texto, índice interactivo y lectura en voz alta.',fr:'Sur cette page, le livre complet se lit gratuitement, avec recherche plein texte, sommaire interactif et lecture à voix haute.'},
+ f2h:{pt:'EPUB 3 acessível',en:'Accessible EPUB 3',es:'EPUB 3 accesible',fr:'EPUB 3 accessible'},
+ f2p:{pt:null,en:'EPUB 3 edition with accessibility metadata, navigable contents and page numbering equivalent to the print edition, for e-book readers.',es:'Edición en EPUB 3 con metadatos de accesibilidad, índice navegable y paginación equivalente a la edición impresa, para lectores de libros electrónicos.',fr:'Édition EPUB 3 avec métadonnées d’accessibilité, sommaire navigable et pagination équivalente à l’édition imprimée, pour liseuses.'},
+ f3h:{pt:'Exemplar controlado',en:'Controlled copy',es:'Ejemplar controlado',fr:'Exemplaire contrôlé'},
+ f3p:{pt:null,en:'For institutions and researchers, the Publishing House issues numbered, personalised copies, with encrypted text and an individual password, recorded in its catalogue.',es:'Para instituciones e investigadores, la Editorial emite ejemplares numerados y nominales, con texto cifrado y contraseña individual, registrados en el acervo.',fr:'Pour les institutions et les chercheurs, la maison d’édition délivre des exemplaires numérotés et nominatifs, au texte chiffré et à mot de passe individuel, enregistrés dans son catalogue.'},
+ pedir:{pt:'Solicitar exemplar à Editora',en:'Request a copy from the Publisher',es:'Solicitar ejemplar a la Editorial',fr:'Demander un exemplaire à l’éditeur'},
+ rodape:{pt:null,en:'Cacique Enir Terena Publishing · Cacique Enir Terena Institute (ICET) · Marçal de Souza Urban Village, Campo Grande, Mato Grosso do Sul',es:'Editorial Cacique Enir Terena · Instituto Cacique Enir Terena (ICET) · Aldea Urbana Marçal de Souza, Campo Grande, Mato Grosso do Sul',fr:'Éditions Cacique Enir Terena · Institut Cacique Enir Terena (ICET) · Village urbain Marçal de Souza, Campo Grande, Mato Grosso do Sul'},
+ voltar:{pt:'Voltar ao site do ICET',en:'Back to the ICET website',es:'Volver al sitio del ICET',fr:'Retour au site de l’ICET'},
+ r_sum:{pt:'Sumário',en:'Contents',es:'Índice',fr:'Sommaire'},
+ r_bus:{pt:'Buscar',en:'Search',es:'Buscar',fr:'Rechercher'},
+ r_ouv:{pt:'Ouvir',en:'Listen',es:'Escuchar',fr:'Écouter'},
+ lendo:{pt:'Lendo em voz alta',en:'Reading aloud',es:'Leyendo en voz alta',fr:'Lecture à voix haute'},
+ parar:{pt:'Parar',en:'Stop',es:'Detener',fr:'Arrêter'},
+ busca_t:{pt:'Buscar no livro',en:'Search the book',es:'Buscar en el libro',fr:'Rechercher dans le livre'},
+ busca_ph:{pt:'Digite uma palavra',en:'Type a word',es:'Escribe una palabra',fr:'Saisissez un mot'},
+ sem_res:{pt:'Nenhum resultado.',en:'No results.',es:'Sin resultados.',fr:'Aucun résultat.'},
+ pagina:{pt:'Página',en:'Page',es:'Página',fr:'Page'},
+ carregando:{pt:'Carregando o texto do livro…',en:'Loading the book text…',es:'Cargando el texto del libro…',fr:'Chargement du texte…'},
+ res_n:{pt:'resultados',en:'results',es:'resultados',fr:'résultats'}
+};
+var lang = (function(){ var l = ls('icet_lang'); return /^(pt|en|es|fr)$/.test(l || '') ? l : 'pt'; })();
+var PT = {};
+function t(k){ var e = T[k]; if(!e) return ''; return (e[lang] != null ? e[lang] : (e.pt != null ? e.pt : PT[k])) || PT[k] || ''; }
+function aplicar(){
+  document.documentElement.lang = {pt:'pt-BR',en:'en',es:'es',fr:'fr'}[lang];
+  $$('[data-t]').forEach(function(el){ var k = el.getAttribute('data-t'); if(!(k in PT)) PT[k] = el.textContent; var v = t(k); if(v) el.textContent = v; });
+  $$('[data-t-html]').forEach(function(el){ var k = el.getAttribute('data-t-html'); if(!(k in PT)) PT[k] = el.innerHTML; var v = t(k); if(v) el.innerHTML = v; });
+  $$('.idiomas button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+  var bx = $('#lt-busca'); if(bx) bx.placeholder = t('busca_ph');
+}
+$$('.idiomas button').forEach(function(b){ b.addEventListener('click', function(){ lang = b.getAttribute('data-lang'); ls('icet_lang', lang); aplicar(); }); });
+
+/* ───── céu de vagalumes ───── */
+(function(){
+  var cv = $('#ceu'), cx = cv.getContext('2d'), W, H, pts = [], red = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function tam(){ W = cv.width = innerWidth * devicePixelRatio; H = cv.height = innerHeight * devicePixelRatio; cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; }
+  tam(); addEventListener('resize', tam);
+  var N = Math.min(70, Math.round(innerWidth / 18));
+  for(var i = 0; i < N; i++) pts.push({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.8, v: .0002 + Math.random() * .0006, f: Math.random() * 6.28, c: Math.random() < .7 ? '242,196,90' : (Math.random() < .5 ? '82,183,136' : '232,114,42') });
+  function q(t){
+    cx.clearRect(0, 0, W, H);
+    pts.forEach(function(p){
+      p.y -= p.v; p.x += Math.sin(t / 4000 + p.f) * .0003; if(p.y < -.02){ p.y = 1.02; p.x = Math.random(); }
+      var a = .25 + .55 * Math.max(0, Math.sin(t / 900 + p.f * 3));
+      var g = cx.createRadialGradient(p.x * W, p.y * H, 0, p.x * W, p.y * H, p.r * 6 * devicePixelRatio);
+      g.addColorStop(0, 'rgba(' + p.c + ',' + a + ')'); g.addColorStop(1, 'rgba(' + p.c + ',0)');
+      cx.fillStyle = g; cx.beginPath(); cx.arc(p.x * W, p.y * H, p.r * 6 * devicePixelRatio, 0, 6.28); cx.fill();
+    });
+    if(!red) requestAnimationFrame(q);
+  }
+  requestAnimationFrame(q);
+})();
+
+/* ───── livro 3D: inclinação com o ponteiro ───── */
+(function(){
+  var lv = $('#livro3d'), palco = lv.parentNode;
+  palco.addEventListener('pointermove', function(e){ var r = palco.getBoundingClientRect(); var x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; lv.style.transform = 'rotateY(' + (-24 + x * 30) + 'deg) rotateX(' + (6 - y * 16) + 'deg)'; });
+  palco.addEventListener('pointerleave', function(){ lv.style.transform = ''; });
+  lv.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrir(1); } });
+})();
+
+/* ───── revelação ao rolar ───── */
+var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
+function observar(){ $$('.rv:not(.in)').forEach(function(el){ io.observe(el); }); }
+
+/* ───── paisagem sonora (síntese no navegador) ───── */
+(function(){
+  var bt = $('#som-bt'), ac = null, mestre = null, on = false, timer = null;
+  var escala = [293.66, 329.63, 392.0, 440.0, 523.25, 587.33]; // pentatônica
+  function vento(){
+    var n = ac.createBuffer(1, ac.sampleRate * 4, ac.sampleRate), d = n.getChannelData(0), b = 0;
+    for(var i = 0; i < d.length; i++){ var w = Math.random() * 2 - 1; b = (b + .02 * w) / 1.02; d[i] = b * 3.5; }
+    var s = ac.createBufferSource(); s.buffer = n; s.loop = true;
+    var f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 600;
+    var lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = .07; lg.gain.value = 250; lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+    var g = ac.createGain(); g.gain.value = .18; s.connect(f); f.connect(g); g.connect(mestre); s.start();
+  }
+  function nota(){
+    if(!on) return;
+    var o = ac.createOscillator(), g = ac.createGain(), fr = escala[Math.floor(Math.random() * escala.length)] * (Math.random() < .3 ? .5 : 1);
+    o.type = 'sine'; o.frequency.value = fr; var o2 = ac.createOscillator(); o2.type = 'triangle'; o2.frequency.value = fr * 2.01; var g2 = ac.createGain(); g2.gain.value = .25;
+    var t0 = ac.currentTime; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.09, t0 + .08); g.gain.exponentialRampToValueAtTime(.0001, t0 + 4.5);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(mestre); o.start(t0); o2.start(t0); o.stop(t0 + 4.6); o2.stop(t0 + 4.6);
+    timer = setTimeout(nota, 1400 + Math.random() * 2600);
+  }
+  function passaro(){
+    if(!on) return;
+    var t0 = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.setValueAtTime(2400 + Math.random() * 800, t0); o.frequency.exponentialRampToValueAtTime(3600 + Math.random() * 900, t0 + .09); o.frequency.exponentialRampToValueAtTime(2200, t0 + .2);
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.025, t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + .22);
+    o.connect(g); g.connect(mestre); o.start(t0); o.stop(t0 + .25);
+    setTimeout(passaro, 3500 + Math.random() * 7000);
+  }
+  bt.addEventListener('click', function(){
+    try{
+      if(!ac){ ac = new (window.AudioContext || window.webkitAudioContext)(); mestre = ac.createGain(); mestre.gain.value = 0; mestre.connect(ac.destination); vento(); }
+      on = !on; bt.setAttribute('aria-pressed', on); bt.classList.toggle('on', on);
+      if(on){ ac.resume(); mestre.gain.linearRampToValueAtTime(.9, ac.currentTime + 1.5); nota(); setTimeout(passaro, 1200); }
+      else { mestre.gain.linearRampToValueAtTime(0, ac.currentTime + .8); clearTimeout(timer); }
+    }catch(e){}
+  });
+})();
+
+/* ───── dados do livro ───── */
+function montar(){
+  document.documentElement.style.setProperty('--prop', LIVRO.prop);
+  $('#n-pag').textContent = LIVRO.paginas; $('#lt-tot').textContent = '/ ' + LIVRO.paginas; $('#lt-ir').max = LIVRO.paginas;
+  if(LIVRO.capitulos) $('#n-cap').textContent = LIVRO.capitulos;
+  $('#autores-linha').textContent = LIVRO.autores.map(function(a){ return a.nome; }).join(' · ');
+  $('#autoria-lista').innerHTML = LIVRO.autores.map(function(a){
+    var ini = a.nome.split(' ').filter(function(w){ return w.length > 2; }); ini = (ini[0][0] + (ini[ini.length - 1][0] || '')).toUpperCase();
+    return '<div class="pessoa rv"><div class="ini">' + esc(ini) + '</div><div><b>' + esc(a.nome) + '</b>' + (a.info ? '<span>' + esc(a.info) + '</span>' : '') + '</div></div>';
+  }).join('');
+  var h = '';
+  LIVRO.toc.forEach(function(c){
+    if(c.parte) { h += '<div class="parte">' + esc(c.parte) + '</div>'; return; }
+    h += '<button class="cap" data-p="' + c.p + '"><span class="n">' + esc(c.n || '') + '</span><span class="t">' + esc(c.t) + '</span><span class="pg">' + c.p + '</span></button>';
+  });
+  $('#sumario-lista').innerHTML = h;
+  $$('#sumario-lista .cap').forEach(function(b){ b.addEventListener('click', function(){ abrir(+b.getAttribute('data-p')); }); });
+  $('#ficha').textContent = LIVRO.ficha || '';
+  observar();
+}
+
+/* ═════════ LEITOR ═════════ */
+var atual = 1, duplo = false, animando = false, falando = false;
+var ld = $('#leitor'), esp = $('#espelho');
+function ehDuplo(){ return innerWidth > 980 && innerWidth / innerHeight > 1.15; }
+function par(n){ if(!duplo) return [n]; if(n === 1) return [null, 1]; var e = n % 2 === 0 ? n : n - 1; return [e, e + 1 <= LIVRO.paginas ? e + 1 : null]; }
+function folhaHTML(n, lado){ if(!n) return '<div class="folha ' + lado + ' vazia"></div>'; return '<div class="folha ' + lado + '"><img src="' + src(n) + '" alt="' + t('pagina') + ' ' + n + '" draggable="false" data-n="' + n + '"></div>'; }
+function medir(){ var c = $('#lt-corpo'), W = c.clientWidth - (innerWidth > 760 ? 140 : 24), H = c.clientHeight - 28; var fw = Math.min(H * LIVRO.prop, duplo ? W / 2 : W); esp.style.setProperty('--fw', Math.floor(fw) + 'px'); esp.style.setProperty('--fh', Math.floor(fw / LIVRO.prop) + 'px'); }
+function render(){
+  duplo = ehDuplo(); medir();
+  var ps = par(atual);
+  esp.innerHTML = duplo ? folhaHTML(ps[0], 'esq') + folhaHTML(ps[1], 'dir') : folhaHTML(ps[0], 'uni');
+  $('#lt-ir').value = atual; $('#lt-progi').style.width = (atual / LIVRO.paginas * 100) + '%';
+  var cap = null; LIVRO.toc.forEach(function(c){ if(c.p && c.p <= atual) cap = c; });
+  $('#lt-cap').textContent = cap ? ((cap.n ? cap.n + ' · ' : '') + cap.t) : 'Autodeterminação Cultural';
+  ls('icet_livro_autodet_pg', atual);
+  try{ history.replaceState(null, '', '#p=' + atual); }catch(e){}
+  [1, 2, 3, -1, -2].forEach(function(d){ var n = atual + d; if(n >= 1 && n <= LIVRO.paginas){ var im = new Image(); im.src = src(n); } });
+  $$('#lt-miniaturas button').forEach(function(b){ var n = +b.getAttribute('data-n'); var on = ps.indexOf(n) >= 0; b.classList.toggle('on', on); if(on && $('#lt-miniaturas').classList.contains('on')) b.scrollIntoView({ inline: 'center', block: 'nearest' }); });
+}
+function passo(){ return duplo ? 2 : 1; }
+function ir(n, animar){
+  n = Math.max(1, Math.min(LIVRO.paginas, n | 0));
+  if(duplo){ n = n === 1 ? 1 : (n % 2 === 0 ? n : n - 1); }
+  if(n === atual || animando) { if(n !== atual) { atual = n; render(); } return; }
+  var dir = n > atual ? 1 : -1;
+  if(animar && duplo && Math.abs(n - atual) <= 2 && !matchMedia('(prefers-reduced-motion: reduce)').matches){ virar(n, dir); return; }
+  atual = n; pararFala(); render();
+}
+function virar(n, dir){
+  animando = true; pararFala();
+  var de = par(atual), para = par(n);
+  var frente = dir > 0 ? de[1] : de[0], verso = dir > 0 ? para[0] : para[1];
+  var esqF = $('.folha.esq', esp), dirF = $('.folha.dir', esp);
+  var base = dir > 0 ? dirF : esqF; var w = base.getBoundingClientRect().width;
+  var v = document.createElement('div'); v.className = 'virando';
+  v.style.left = (dir > 0 ? dirF.offsetLeft : esqF.offsetLeft) + 'px';
+  v.style.transformOrigin = dir > 0 ? 'left center' : 'right center';
+  v.innerHTML = '<div class="face"><img src="' + (frente ? src(frente) : '') + '" alt=""></div><div class="face verso"><img src="' + (verso ? src(verso) : '') + '" alt=""></div>';
+  esp.appendChild(v);
+  var alvoImg = dir > 0 ? $('img', dirF) : $('img', esqF);
+  var sob = dir > 0 ? para[1] : para[0];
+  if(alvoImg){ if(sob) alvoImg.src = src(sob); else alvoImg.parentNode.classList.add('vazia'); }
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ v.style.transform = 'rotateY(' + (dir > 0 ? -180 : 180) + 'deg)'; }); });
+  setTimeout(function(){ atual = n; animando = false; render(); }, 760);
+}
+function abrir(n){
+  if(!LIVRO.toc.length && !LIVRO.carregado){ setTimeout(function(){ abrir(n); }, 200); return; }
+  ld.classList.add('aberto'); document.documentElement.style.overflow = 'hidden';
+  atual = 0; ir(n || +ls('icet_livro_autodet_pg') || 1, false);
+  if(!$('#lt-miniaturas').children.length){
+    var h = ''; for(var i = 1; i <= LIVRO.paginas; i++) h += '<button data-n="' + i + '" aria-label="' + t('pagina') + ' ' + i + '"><img loading="lazy" src="' + src(i, true) + '" alt=""><span>' + i + '</span></button>';
+    $('#lt-miniaturas').innerHTML = h;
+    $$('#lt-miniaturas button').forEach(function(b){ b.addEventListener('click', function(){ ir(+b.getAttribute('data-n')); }); });
+  }
+  setTimeout(function(){ $('#lt-prox').focus(); }, 50);
+}
+function fechar(){ ld.classList.remove('aberto'); document.documentElement.style.overflow = ''; pararFala(); $('#lt-zoom').classList.remove('on'); try{ history.replaceState(null, '', location.pathname); }catch(e){} }
+$$('[data-ler]').forEach(function(b){ b.addEventListener('click', function(){ abrir(); }); });
+$('#lt-fechar').addEventListener('click', fechar);
+$('#lt-ant').addEventListener('click', function(){ ir(atual - passo(), true); });
+$('#lt-prox').addEventListener('click', function(){ ir(atual + passo(), true); });
+$('#lt-ir').addEventListener('change', function(){ ir(+this.value); });
+addEventListener('keydown', function(e){
+  if(!ld.classList.contains('aberto')) return;
+  if(e.target.tagName === 'INPUT') return;
+  if(e.key === 'ArrowRight' || e.key === 'PageDown') { ir(atual + passo(), true); e.preventDefault(); }
+  else if(e.key === 'ArrowLeft' || e.key === 'PageUp') { ir(atual - passo(), true); e.preventDefault(); }
+  else if(e.key === 'Home') ir(1); else if(e.key === 'End') ir(LIVRO.paginas);
+  else if(e.key === 'Escape'){ if($('#lt-zoom').classList.contains('on')) $('#lt-zoom').classList.remove('on'); else if($('#lt-painel').classList.contains('on')) $('#lt-painel').classList.remove('on'); else fechar(); }
+});
+addEventListener('resize', function(){ if(ld.classList.contains('aberto')) render(); });
+/* gestos */
+(function(){ var x0 = null, y0 = null; var c = $('#lt-corpo');
+  c.addEventListener('touchstart', function(e){ if(e.touches.length === 1){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, { passive: true });
+  c.addEventListener('touchend', function(e){ if(x0 == null) return; var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) ir(atual + (dx < 0 ? passo() : -passo()), true); x0 = null; });
+})();
+/* zoom */
+esp.addEventListener('dblclick', function(e){ var im = e.target.closest('img[data-n]'); if(im) ampliar(+im.getAttribute('data-n')); });
+$('#lt-zoombt').addEventListener('click', function(){ ampliar(atual); });
+function ampliar(n){ $('#lt-zoomimg').src = src(n); $('#lt-zoomimg').alt = t('pagina') + ' ' + n; $('#lt-zoom').classList.add('on'); $('#lt-zoom').scrollTop = 0; }
+$('#lt-zoom').addEventListener('click', function(){ this.classList.remove('on'); });
+$('#lt-mini').addEventListener('click', function(){ this.classList.toggle('on'); $('#lt-miniaturas').classList.toggle('on'); render(); });
+$('#lt-tela').addEventListener('click', function(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else ld.requestFullscreen(); }catch(e){} });
+
+/* painel: sumário e busca */
+var painel = $('#lt-painel');
+$('#lt-sumbt').addEventListener('click', function(){
+  if(painel.classList.contains('on') && painel.dataset.modo === 'sum'){ painel.classList.remove('on'); return; }
+  painel.dataset.modo = 'sum'; $('#lt-painel-t').textContent = t('r_sum'); $('#lt-busca-box').style.display = 'none';
+  $('#lt-res').innerHTML = LIVRO.toc.filter(function(c){ return c.p; }).map(function(c){ return '<button data-p="' + c.p + '"><b>' + esc(c.n || '') + '</b> ' + esc(c.t) + ' <span style="float:right;color:var(--tx3)">' + c.p + '</span></button>'; }).join('');
+  $$('#lt-res button').forEach(function(b){ b.addEventListener('click', function(){ ir(+b.getAttribute('data-p')); if(innerWidth < 700) painel.classList.remove('on'); }); });
+  painel.classList.add('on');
+});
+$('#lt-busbt').addEventListener('click', function(){
+  if(painel.classList.contains('on') && painel.dataset.modo === 'bus'){ painel.classList.remove('on'); return; }
+  painel.dataset.modo = 'bus'; $('#lt-painel-t').textContent = t('busca_t'); $('#lt-busca-box').style.display = ''; $('#lt-res').innerHTML = '';
+  painel.classList.add('on'); carregarTexto(); setTimeout(function(){ $('#lt-busca').focus(); }, 300);
+});
+function norm(s){ s = String(s || ''); var o = ''; for(var i = 0; i < s.length; i++){ o += (s[i].normalize('NFD')[0] || s[i]).toLowerCase(); } return o; }
+function carregarTexto(cb){
+  if(TEXTO){ cb && cb(); return; }
+  if(!cb) $('#lt-res').innerHTML = '<p style="padding:12px;color:var(--tx3)">' + t('carregando') + '</p>';
+  fetch('texto.json').then(function(r){ return r.json(); }).then(function(j){ TEXTO = j; TEXTO.n = TEXTO.map(norm); if(!cb) $('#lt-res').innerHTML = ''; cb && cb(); }).catch(function(){});
+}
+var tbus = null;
+$('#lt-busca').addEventListener('input', function(){ var q = this.value; clearTimeout(tbus); tbus = setTimeout(function(){ buscar(q); }, 220); });
+function buscar(q){
+  if(!TEXTO) return carregarTexto(function(){ buscar(q); });
+  var nq = norm(q).trim(); if(nq.length < 3){ $('#lt-res').innerHTML = ''; return; }
+  var res = [];
+  for(var i = 0; i < TEXTO.length && res.length < 200; i++){
+    var tx = TEXTO.n[i], k = tx.indexOf(nq);
+    while(k >= 0 && res.length < 200){ res.push([i + 1, k]); k = tx.indexOf(nq, k + nq.length); if(res.length && res[res.length - 1][0] === i + 1 && res.filter(function(r){ return r[0] === i + 1; }).length >= 3) break; }
+  }
+  if(!res.length){ $('#lt-res').innerHTML = '<p style="padding:12px;color:var(--tx3)">' + t('sem_res') + '</p>'; return; }
+  $('#lt-res').innerHTML = '<p style="padding:6px 10px;color:var(--tx3);font-size:.78rem">' + res.length + (res.length >= 200 ? '+' : '') + ' ' + t('res_n') + '</p>' + res.map(function(r){
+    var orig = TEXTO[r[0] - 1], a = Math.max(0, r[1] - 60), b = Math.min(orig.length, r[1] + nq.length + 80);
+    var tr = orig.slice(a, b).replace(/\s+/g, ' ');
+    var ini = norm(tr).indexOf(nq); if(ini < 0) ini = 0; var txt = esc(tr.slice(0, ini)) + '<mark>' + esc(tr.slice(ini, ini + nq.length)) + '</mark>' + esc(tr.slice(ini + nq.length));
+    return '<button data-p="' + r[0] + '"><b>' + t('pagina') + ' ' + r[0] + '</b><br>' + (a > 0 ? '…' : '') + txt + '…</button>';
+  }).join('');
+  $$('#lt-res button').forEach(function(b){ b.addEventListener('click', function(){ ir(+b.getAttribute('data-p')); if(innerWidth < 700) painel.classList.remove('on'); }); });
+}
+
+/* leitura em voz alta */
+var synth = window.speechSynthesis;
+function vozPt(){ var vs = synth ? synth.getVoices() : []; return vs.filter(function(v){ return /^pt(-|_)BR/i.test(v.lang); })[0] || vs.filter(function(v){ return /^pt/i.test(v.lang); })[0] || null; }
+function pararFala(){ falando = false; try{ synth && synth.cancel(); }catch(e){} $('#lt-ouvindo').classList.remove('on'); $('#lt-ouvir').classList.remove('on'); }
+function falarPagina(n){
+  if(!synth || !falando) return;
+  var tx = (TEXTO[n - 1] || '').replace(/-\n(\S)/g, '$1').replace(/\s+/g, ' ').trim();
+  if(!tx){ if(n < LIVRO.paginas){ ir(n + 1); falarPagina(n + 1); } return; }
+  var partes = tx.match(/[^.!?;:]+[.!?;:]*/g) || [tx], k = 0;
+  (function prox(){
+    if(!falando) return;
+    if(k >= partes.length){ if(n < LIVRO.paginas){ ir(n + 1); if(duplo && n + 1 < atual) {} falarPagina(n + 1); } else pararFala(); return; }
+    var u = new SpeechSynthesisUtterance(partes[k++]); u.lang = 'pt-BR'; var v = vozPt(); if(v) u.voice = v; u.rate = 1;
+    u.onend = prox; u.onerror = function(){ pararFala(); }; synth.speak(u);
+  })();
+}
+$('#lt-ouvir').addEventListener('click', function(){
+  if(!synth) return;
+  if(falando){ pararFala(); return; }
+  carregarTexto(function(){ falando = true; $('#lt-ouvindo').classList.add('on'); $('#lt-ouvir').classList.add('on'); var ps = par(atual).filter(Boolean); falarPagina(ps[0]); });
+});
+$('#lt-parar').addEventListener('click', pararFala);
+
+/* início */
+aplicar();
+fetch('livro.json').then(function(r){ return r.json(); }).then(function(j){
+  Object.keys(j).forEach(function(k){ LIVRO[k] = j[k]; }); LIVRO.carregado = true; montar(); aplicar();
+  var m = /#p=(\d+)/.exec(location.hash); if(m) abrir(+m[1]);
+}).catch(function(){ LIVRO.carregado = true; montar(); });
+observar();
+})();
+</script>
+</body>
+</html>
