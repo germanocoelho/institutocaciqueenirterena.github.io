@@ -169,23 +169,23 @@ footer img{height:70px;margin:0 auto 16px}
 .marco-marcos b{display:block;font-family:var(--disp);font-weight:900;font-size:1.7rem;line-height:1;margin-bottom:8px}
 .marco-marcos span{font-size:.9rem;color:rgba(251,248,242,.72)}
 @media(max-width:900px){.marco-txt{grid-template-columns:1fr}.marco-marcos{grid-template-columns:1fr 1fr;row-gap:26px}}
-/* IFMS */
-.ifms{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start;margin-top:10px}
-.frentes{display:grid;gap:14px;margin-top:22px}
-.fr{border-left:6px solid var(--c,#00A8E8);background:#fff;border-radius:0 14px 14px 0;padding:16px 18px}
-.fr:nth-child(2){--c:#EE1A8C}
-.fr b{display:block;font-family:var(--disp);font-weight:800;font-size:1.05rem;margin-bottom:4px}
-.fr span{font-size:.92rem;color:var(--tinta2)}
-.foto{border:2px solid #111;border-radius:18px;overflow:hidden;box-shadow:8px 8px 0 #4FA862;background:#fff}
-.foto figcaption{font-family:var(--disp);font-size:.78rem;color:var(--tinta3);padding:10px 14px}
-.sub-tit{font-family:var(--disp);font-weight:900;font-stretch:85%;text-transform:uppercase;font-size:1.4rem;margin:52px 0 18px}
-.propostas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.pp{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--linha);border-radius:14px;padding:16px}
-.pp i{font-style:normal;color:#EE1A8C;font-size:1.1rem;line-height:1.4}
-.pp:nth-child(3n+2) i{color:#00A8E8}.pp:nth-child(3n) i{color:#F5AA19}
-.pp span{font-size:.9rem;line-height:1.5}
+/* única */
+.unicos{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px}
+.un{background:#fff;border:2px solid #111;border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;box-shadow:5px 5px 0 var(--c)}
+.un:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--c)}
+.un-n{font-family:var(--disp);font-weight:900;font-size:2.4rem;line-height:1;color:var(--c)}
+.un h3{font-family:var(--disp);font-weight:800;font-size:1.05rem;line-height:1.2;margin:12px 0 8px}
+.un p{font-size:.88rem;color:var(--tinta2);line-height:1.5}
+@media(max-width:1100px){.unicos{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.unicos{grid-template-columns:1fr}}
+/* programa */
+.programa{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px;counter-reset:g}
+.pg{background:#fff;border-radius:16px;padding:22px 22px 22px 70px;position:relative;border:1.5px solid var(--linha)}
+.pg::before{counter-increment:g;content:counter(g);position:absolute;left:20px;top:20px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-weight:900;color:#fff;background:var(--c,#00A8E8)}
+.pg:nth-child(2){--c:#F5AA19}.pg:nth-child(3){--c:#4FA862}.pg:nth-child(4){--c:#EE1A8C}.pg:nth-child(5){--c:#111}.pg:nth-child(6){--c:#00A8E8}
+.pg h4{font-family:var(--disp);font-weight:800;font-size:1rem;margin-bottom:6px}
+.pg p{font-size:.88rem;color:var(--tinta2);line-height:1.5}
 .nota{font-family:var(--disp);font-size:.84rem;color:var(--tinta3);margin-top:22px;max-width:820px}
-@media(max-width:900px){.ifms{grid-template-columns:1fr}.propostas{grid-template-columns:1fr}}
+@media(max-width:900px){.programa{grid-template-columns:1fr}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
@@ -201,7 +201,7 @@ footer img{height:70px;margin:0 auto 16px}
       <a href="#catalogo" data-t="n_cat">Catálogo</a>
       <a href="#editora" data-t="n_ed">A Editora</a>
       <a href="#como" data-t="n_como">Como publicamos</a>
-      <a href="#ifms" data-t="n_ifms">IFMS</a>
+      <a href="#unica" data-t="n_un">Nossa vocação</a>
       <a href="#publique" data-t="n_pub">Publique conosco</a>
       <a href="../" data-t="n_icet">ICET</a>
       <div class="idi" role="group" aria-label="Idioma"><button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="fr">FR</button></div>
@@ -299,31 +299,37 @@ footer img{height:70px;margin:0 auto 16px}
   </div>
 </section>
 
-<!-- PARCERIA COM O IFMS -->
-<section class="bloco" id="ifms">
+<!-- O QUE TORNA A EDITORA ÚNICA -->
+<section class="bloco" id="unica">
   <div class="wrap">
-    <div class="etq rv"><i style="background:var(--verde)"></i><span data-t="if_etq">Parceria em construção</span></div>
-    <h2 class="tit rv" data-t-html="if_tit">Editora e <em>Instituto Federal</em></h2>
-    <div class="ifms">
-      <div class="rv">
-        <p class="lead" data-t="if_lead">Em 9 de outubro de 2026, a Reitoria do Instituto Federal de Mato Grosso do Sul (IFMS) recebeu o ICET, o CMDDI, o FOCAMS e a UNIPBRAS para iniciar as tratativas de um acordo de cooperação técnica. O projeto, de autoria de Germano Coelho Ramos Rocha-Silva, mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação, tem duas frentes:</p>
-        <div class="frentes">
-          <div class="fr"><b data-t="if_f1h">Biblioteca digital de autoria indígena</b><span data-t="if_f1p">A expansão do selo da Editora, sem edição em papel, com curadoria do ICET e publicação conjunta nos portais das instituições parceiras.</span></div>
-          <div class="fr"><b data-t="if_f2h">Núcleo de propriedade intelectual indígena</b><span data-t="if_f2p">Um núcleo permanente de propriedade intelectual, biotecnologia e conhecimentos tradicionais, que documenta saberes com o consentimento prévio, livre e informado das comunidades.</span></div>
-        </div>
-      </div>
-      <figure class="foto rv"><img src="img/ifms-encontro.webp" alt="Lideranças indígenas e dirigentes do IFMS no encontro de 9 de outubro de 2026" loading="lazy"><figcaption data-t="if_cap">Encontro na Reitoria do IFMS, 9 de outubro de 2026.</figcaption></figure>
+    <div class="etq rv"><i style="background:var(--magenta)"></i><span data-t="un_etq">O que nos torna únicos</span></div>
+    <h2 class="tit rv" data-t-html="un_tit">Uma editora de <em>saber protegido</em></h2>
+    <p class="lead rv" data-t="un_lead">No Brasil, editoras indígenas abriram caminhos que honramos: a UK'A Editorial, de Daniel Munduruku, levou a literatura indígena às escolas e à infância; a GRUMIN Edições, de Eliane Potiguara, deu voz à resistência das mulheres indígenas; a Pachamama, de Aline Pachamama, fez do livro bilíngue uma defesa das línguas originárias. A Editora Cacique Enir Terena chega para somar, com uma vocação que é só sua: fazer de cada livro um instrumento de proteção do saber de um povo.</p>
+    <div class="unicos">
+      <article class="un rv" style="--c:#00A8E8"><span class="un-n">01</span><h3 data-t="u1h">O livro como prova de autoria</h3><p data-t="u1p">Cada obra registra, com data, ISBN e autoria indígena, saberes que a propriedade intelectual convencional não protege. Publicar é também deixar prova de quem criou primeiro.</p></article>
+      <article class="un rv" style="--c:#F5AA19"><span class="un-n">02</span><h3 data-t="u2h">Propriedade intelectual em casa</h3><p data-t="u2p">A Editora nasce dentro de uma instituição com marca coletiva registrada no INPI, a OREKA, e com a cerâmica Terena a caminho da indicação geográfica. O livro, a marca e o território caminham juntos.</p></article>
+      <article class="un rv" style="--c:#4FA862"><span class="un-n">03</span><h3 data-t="u3h">Ciência indígena aplicada</h3><p data-t="u3p">Além da literatura, publica pesquisa feita a partir do território: bioeconomia, direito, saúde, língua e educação, escritas por quem vive esses temas na própria pele.</p></article>
+      <article class="un rv" style="--c:#EE1A8C"><span class="un-n">04</span><h3 data-t="u4h">Tecnologia própria, acesso aberto</h3><p data-t="u4p">Um motor editorial desenvolvido pela própria Editora produz EPUB acessível, leitura gratuita na internet, exemplares numerados e cifrados e traduções para outros idiomas.</p></article>
+      <article class="un rv" style="--c:#111"><span class="un-n">05</span><h3 data-t="u5h">Governança comunitária</h3><p data-t="u5p">Nasce na primeira aldeia urbana do Brasil, fundada por mulheres Terena, com o nome do CMDDI autorizado pelo próprio Conselho e o apoio do Fórum dos Caciques de Mato Grosso do Sul.</p></article>
     </div>
-    <h3 class="sub-tit rv" data-t="if_prop_h">O que a proposta prevê</h3>
-    <div class="propostas">
-      <div class="pp rv"><i>✦</i><span data-t="if_p1">Prêmio Literário Saberes Originários, chamada anual para obras de autoria indígena publicadas pela Editora com ISBN</span></div>
-      <div class="pp rv"><i>✦</i><span data-t="if_p2">Linhas temáticas sobre saberes indígenas nos editais de pesquisa, extensão e inovação, com prioridade a estudantes indígenas</span></div>
-      <div class="pp rv"><i>✦</i><span data-t="if_p3">Polos do Programa nos campi próximos às comunidades e cursos de formação inicial e continuada</span></div>
-      <div class="pp rv"><i>✦</i><span data-t="if_p4">Reconhecimento de sabedoras e sabedores indígenas por notório saber e pelo título de Doutor Honoris Causa</span></div>
-      <div class="pp rv"><i>✦</i><span data-t="if_p5">Trilha de saberes indígenas e propriedade intelectual na FECINTEC e apoio do Núcleo de Inovação Tecnológica</span></div>
-      <div class="pp rv"><i>✦</i><span data-t="if_p6">Formações sobre relações étnico-raciais e indígenas, eventos dos NEABIs e visitas técnicas às comunidades</span></div>
+  </div>
+</section>
+
+<!-- PROGRAMA SABERES ORIGINÁRIOS -->
+<section class="bloco cinza" id="saberes">
+  <div class="wrap">
+    <div class="etq rv"><i style="background:var(--verde)"></i><span data-t="sb_etq">Projeto em desenvolvimento</span></div>
+    <h2 class="tit rv" data-t-html="sb_tit">Programa <em>Saberes Originários</em></h2>
+    <p class="lead rv" data-t="sb_lead">A Editora é o coração de um programa mais amplo, desenvolvido pelo ICET com o CMDDI e o apoio do FOCAMS, que reúne, sob titularidade e governança indígenas, a publicação, a guarda e a proteção dos conhecimentos tradicionais dos povos indígenas de Mato Grosso do Sul.</p>
+    <div class="programa">
+      <div class="pg rv"><h4 data-t="g1h">Biblioteca digital de autoria indígena</h4><p data-t="g1p">Obras com ISBN, revisão por pares e acesso aberto, nascidas digitais e acessíveis.</p></div>
+      <div class="pg rv"><h4 data-t="g2h">Núcleo de propriedade intelectual indígena</h4><p data-t="g2p">Biotecnologia, medicina tradicional e artesanato, sempre com consentimento prévio, livre e informado das comunidades.</p></div>
+      <div class="pg rv"><h4 data-t="g3h">Registro de anterioridade</h4><p data-t="g3p">Aberto ou cego, para que saberes sagrados possam ser protegidos sem precisar ser publicados.</p></div>
+      <div class="pg rv"><h4 data-t="g4h">Observatório de apropriação indevida</h4><p data-t="g4p">Vigilância sobre o uso não autorizado de grafismos, cerâmica, plantas medicinais e músicas indígenas.</p></div>
+      <div class="pg rv"><h4 data-t="g5h">Passaporte cultural da peça</h4><p data-t="g5p">Identifica a origem e a autora de cada obra de cerâmica e artesanato, valorizando quem a fez.</p></div>
+      <div class="pg rv"><h4 data-t="g6h">Prêmio Literário Saberes Originários</h4><p data-t="g6p">Uma chamada anual para revelar novas autoras e novos autores indígenas, inclusive em línguas originárias.</p></div>
     </div>
-    <p class="nota rv" data-t="if_nota">A autoria, a curadoria e a titularidade do selo permanecem com o ICET e o CMDDI. A parceria está em tramitação no IFMS, e os termos da cooperação dependem dos trâmites internos de cada instituição.</p>
+    <p class="nota rv" data-t="sb_nota">A autoria e a titularidade dos saberes permanecem sempre com as comunidades de origem.</p>
   </div>
 </section>
 
@@ -338,7 +344,7 @@ footer img{height:70px;margin:0 auto 16px}
       <div>
         <div class="etq"><i style="background:var(--verde)"></i><span data-t="aut_etq">Autorização institucional</span></div>
         <h3 data-t="aut_h" style="margin-top:8px">O nome do CMDDI no selo, com a autorização do Conselho</h3>
-        <p data-t="aut_p">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) no selo editorial e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena entre CMDDI, ICET, IFMS e MPMS.</p>
+        <p data-t="aut_p">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) no selo editorial e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena.</p>
         <small data-t="aut_s">Convocação assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</small>
       </div>
     </div>
@@ -402,6 +408,30 @@ function ls(k, v){ try{ if(v === undefined) return localStorage.getItem(k); loca
 
 /* idiomas */
 var T = {
+ n_un:{en:'Our vocation',es:'Nuestra vocación',fr:'Notre vocation'},
+ un_etq:{en:'What makes us unique',es:'Lo que nos hace únicos',fr:'Ce qui nous rend uniques'},
+ un_tit:{en:'A publisher of <em>protected knowledge</em>',es:'Una editorial de <em>saber protegido</em>',fr:'Une maison du <em>savoir protégé</em>'},
+ un_lead:{en:'In Brazil, Indigenous publishers have opened paths we honour: UK’A Editorial, by Daniel Munduruku, brought Indigenous literature to schools and childhood; GRUMIN Edições, by Eliane Potiguara, gave voice to the resistance of Indigenous women; Pachamama, by Aline Pachamama, made the bilingual book a defence of original languages. The Cacique Enir Terena Publishing House joins them with a vocation of its own: making each book a tool to protect a people’s knowledge.',es:'En Brasil, editoriales indígenas abrieron caminos que honramos: UK’A Editorial, de Daniel Munduruku, llevó la literatura indígena a las escuelas y a la infancia; GRUMIN Edições, de Eliane Potiguara, dio voz a la resistencia de las mujeres indígenas; Pachamama, de Aline Pachamama, hizo del libro bilingüe una defensa de las lenguas originarias. La Editorial Cacique Enir Terena llega para sumar, con una vocación propia: hacer de cada libro un instrumento de protección del saber de un pueblo.',fr:'Au Brésil, des maisons d’édition autochtones ont ouvert des chemins que nous honorons : UK’A Editorial, de Daniel Munduruku, a porté la littérature autochtone dans les écoles et auprès des enfants ; GRUMIN Edições, d’Eliane Potiguara, a donné voix à la résistance des femmes autochtones ; Pachamama, d’Aline Pachamama, a fait du livre bilingue une défense des langues originaires. Les Éditions Cacique Enir Terena les rejoignent avec une vocation propre : faire de chaque livre un instrument de protection du savoir d’un peuple.'},
+ u1h:{en:'The book as proof of authorship',es:'El libro como prueba de autoría',fr:'Le livre comme preuve de paternité'},
+ u1p:{en:'Each work records, with date, ISBN and Indigenous authorship, knowledge that conventional intellectual property does not protect. Publishing also leaves proof of who created first.',es:'Cada obra registra, con fecha, ISBN y autoría indígena, saberes que la propiedad intelectual convencional no protege. Publicar es también dejar prueba de quién creó primero.',fr:'Chaque ouvrage consigne, avec date, ISBN et paternité autochtone, des savoirs que la propriété intellectuelle classique ne protège pas. Publier, c’est aussi prouver qui a créé en premier.'},
+ u2h:{en:'Intellectual property at home',es:'Propiedad intelectual en casa',fr:'La propriété intellectuelle à la maison'},
+ u2p:{en:'The Publisher is born within an institution with a collective mark registered at INPI, OREKA, and with Terena ceramics on the way to a geographical indication. Book, mark and territory walk together.',es:'La Editorial nace dentro de una institución con marca colectiva registrada en el INPI, OREKA, y con la cerámica terena camino a la indicación geográfica. El libro, la marca y el territorio caminan juntos.',fr:'La maison naît au sein d’une institution titulaire d’une marque collective enregistrée à l’INPI, OREKA, avec la céramique terena en route vers l’indication géographique. Le livre, la marque et le territoire avancent ensemble.'},
+ u3h:{en:'Applied Indigenous science',es:'Ciencia indígena aplicada',fr:'Science autochtone appliquée'},
+ u3p:{en:'Beyond literature, it publishes research made from the territory: bioeconomy, law, health, language and education, written by those who live these issues first-hand.',es:'Además de la literatura, publica investigación hecha desde el territorio: bioeconomía, derecho, salud, lengua y educación, escritas por quienes viven estos temas en carne propia.',fr:'Au-delà de la littérature, elle publie une recherche faite depuis le territoire : bioéconomie, droit, santé, langue et éducation, écrites par celles et ceux qui les vivent.'},
+ u4h:{en:'Own technology, open access',es:'Tecnología propia, acceso abierto',fr:'Technologie propre, accès ouvert'},
+ u4p:{en:'An editorial engine developed by the Publisher itself produces accessible EPUB, free online reading, numbered and encrypted copies and translations into other languages.',es:'Un motor editorial desarrollado por la propia Editorial produce EPUB accesible, lectura gratuita en internet, ejemplares numerados y cifrados y traducciones a otros idiomas.',fr:'Un moteur éditorial développé par la maison produit des EPUB accessibles, une lecture gratuite en ligne, des exemplaires numérotés et chiffrés et des traductions.'},
+ u5h:{en:'Community governance',es:'Gobernanza comunitaria',fr:'Gouvernance communautaire'},
+ u5p:{en:'Born in Brazil’s first urban Indigenous village, founded by Terena women, with the CMDDI name authorized by the Council itself and the support of the Forum of Chiefs of Mato Grosso do Sul.',es:'Nace en la primera aldea urbana de Brasil, fundada por mujeres terena, con el nombre del CMDDI autorizado por el propio Consejo y el apoyo del Foro de los Caciques de Mato Grosso do Sul.',fr:'Née dans le premier village autochtone urbain du Brésil, fondée par des femmes terena, avec le nom du CMDDI autorisé par le Conseil lui-même et le soutien du Forum des caciques du Mato Grosso do Sul.'},
+ sb_etq:{en:'Project in development',es:'Proyecto en desarrollo',fr:'Projet en développement'},
+ sb_tit:{en:'<em>Original Knowledge</em> Program',es:'Programa <em>Saberes Originarios</em>',fr:'Programme <em>Savoirs originaires</em>'},
+ sb_lead:{en:'The Publisher is the heart of a wider program, developed by ICET with CMDDI and the support of FOCAMS, which brings together, under Indigenous ownership and governance, the publication, safekeeping and protection of the traditional knowledge of the Indigenous peoples of Mato Grosso do Sul.',es:'La Editorial es el corazón de un programa más amplio, desarrollado por el ICET con el CMDDI y el apoyo del FOCAMS, que reúne, bajo titularidad y gobernanza indígenas, la publicación, la guarda y la protección de los conocimientos tradicionales de los pueblos indígenas de Mato Grosso do Sul.',fr:'La maison est le cœur d’un programme plus large, développé par l’ICET avec le CMDDI et le soutien du FOCAMS, qui réunit, sous propriété et gouvernance autochtones, la publication, la conservation et la protection des savoirs traditionnels des peuples autochtones du Mato Grosso do Sul.'},
+ g1h:{en:'Digital library of Indigenous authorship',es:'Biblioteca digital de autoría indígena',fr:'Bibliothèque numérique d’auteurs autochtones'}, g1p:{en:'Books with ISBN, peer review and open access, born digital and accessible.',es:'Obras con ISBN, revisión por pares y acceso abierto, nacidas digitales y accesibles.',fr:'Ouvrages avec ISBN, évaluation par les pairs et accès ouvert, nés numériques et accessibles.'},
+ g2h:{en:'Indigenous intellectual property center',es:'Núcleo de propiedad intelectual indígena',fr:'Centre de propriété intellectuelle autochtone'}, g2p:{en:'Biotechnology, traditional medicine and handicrafts, always with the free, prior and informed consent of the communities.',es:'Biotecnología, medicina tradicional y artesanía, siempre con el consentimiento previo, libre e informado de las comunidades.',fr:'Biotechnologie, médecine traditionnelle et artisanat, toujours avec le consentement préalable, libre et éclairé des communautés.'},
+ g3h:{en:'Prior-art record',es:'Registro de anterioridad',fr:'Registre d’antériorité'}, g3p:{en:'Open or sealed, so that sacred knowledge can be protected without having to be published.',es:'Abierto o ciego, para que los saberes sagrados puedan protegerse sin necesidad de publicarse.',fr:'Ouvert ou scellé, pour que les savoirs sacrés soient protégés sans devoir être publiés.'},
+ g4h:{en:'Misappropriation observatory',es:'Observatorio de apropiación indebida',fr:'Observatoire de l’appropriation illicite'}, g4p:{en:'Monitoring the unauthorized use of Indigenous graphic patterns, ceramics, medicinal plants and music.',es:'Vigilancia del uso no autorizado de grafismos, cerámica, plantas medicinales y músicas indígenas.',fr:'Veille sur l’usage non autorisé des motifs, de la céramique, des plantes médicinales et des musiques autochtones.'},
+ g5h:{en:'Cultural passport for each piece',es:'Pasaporte cultural de la pieza',fr:'Passeport culturel de la pièce'}, g5p:{en:'Identifies the origin and the maker of each ceramic or craft piece, valuing those who made it.',es:'Identifica el origen y la autora de cada obra de cerámica y artesanía, valorando a quien la hizo.',fr:'Identifie l’origine et l’autrice de chaque pièce de céramique et d’artisanat, en valorisant celle qui l’a faite.'},
+ g6h:{en:'Original Knowledge Literary Prize',es:'Premio Literario Saberes Originarios',fr:'Prix littéraire Savoirs originaires'}, g6p:{en:'An annual call to reveal new Indigenous authors, including in original languages.',es:'Una convocatoria anual para revelar nuevas autoras y nuevos autores indígenas, también en lenguas originarias.',fr:'Un appel annuel pour révéler de nouvelles autrices et de nouveaux auteurs autochtones, y compris en langues originaires.'},
+ sb_nota:{en:'Authorship and ownership of the knowledge always remain with the communities of origin.',es:'La autoría y la titularidad de los saberes permanecen siempre con las comunidades de origen.',fr:'La paternité et la propriété des savoirs restent toujours aux communautés d’origine.'},
  mc_etq:{en:'A milestone in the history of Indigenous books',es:'Un hito en la historia del libro indígena',fr:'Un jalon dans l’histoire du livre autochtone'},
  mc_tit:{en:'From Brazil’s first urban Indigenous village, <em>a publishing house of the Terena people</em>',es:'De la primera aldea urbana de Brasil, <em>una editorial del pueblo terena</em>',fr:'Du premier village autochtone urbain du Brésil, <em>une maison d’édition du peuple terena</em>'},
  mc_p1:{en:'In 1995, Terena families built the Marçal de Souza Urban Village in Campo Grande, recognized as the first urban Indigenous village in the country. Three decades later, it is there that the Cacique Enir Terena Publishing House is born, created by Terena women and named after the village’s founder, the first woman elected chief in Mato Grosso do Sul.',es:'En 1995, familias terena levantaron en Campo Grande la Aldea Urbana Marçal de Souza, reconocida como la primera aldea urbana del país. Tres décadas después, allí nace la Editorial Cacique Enir Terena, creada por mujeres terena y bautizada con el nombre de la fundadora de la aldea, la primera mujer elegida cacique en Mato Grosso do Sul.',fr:'En 1995, des familles terena ont bâti à Campo Grande le village urbain Marçal de Souza, reconnu comme le premier village autochtone urbain du pays. Trois décennies plus tard, c’est là que naissent les Éditions Cacique Enir Terena, créées par des femmes terena et baptisées du nom de la fondatrice du village, première femme élue cacique au Mato Grosso do Sul.'},
@@ -410,23 +440,6 @@ var T = {
  mc_m2:{en:'Terena women found the Cacique Enir Terena Institute',es:'Mujeres terena fundan el Instituto Cacique Enir Terena',fr:'Des femmes terena fondent l’Institut Cacique Enir Terena'},
  mc_m3:{en:'The Publisher’s first book, with ISBN and open access',es:'Primer libro de la Editorial, con ISBN y lectura abierta',fr:'Premier livre de la maison, avec ISBN et accès ouvert'},
  mc_m4:{en:'CMDDI authorizes the use of its name in the imprint',es:'El CMDDI autoriza el uso de su nombre en el sello',fr:'Le CMDDI autorise l’utilisation de son nom dans le label'},
- n_ifms:{en:'IFMS',es:'IFMS',fr:'IFMS'},
- if_etq:{en:'Partnership in progress',es:'Alianza en construcción',fr:'Partenariat en construction'},
- if_tit:{en:'Publisher and <em>Federal Institute</em>',es:'Editorial e <em>Instituto Federal</em>',fr:'Maison d’édition et <em>Institut fédéral</em>'},
- if_lead:{en:'On October 9, 2026, the Rectorate of the Federal Institute of Mato Grosso do Sul (IFMS) received ICET, CMDDI, FOCAMS and UNIPBRAS to begin negotiations on a technical cooperation agreement. The project, authored by Germano Coelho Ramos Rocha-Silva, master in Intellectual Property and Technology Transfer for Innovation, has two fronts:',es:'El 9 de octubre de 2026, la Rectoría del Instituto Federal de Mato Grosso do Sul (IFMS) recibió al ICET, el CMDDI, el FOCAMS y la UNIPBRAS para iniciar las negociaciones de un acuerdo de cooperación técnica. El proyecto, de autoría de Germano Coelho Ramos Rocha-Silva, máster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación, tiene dos frentes:',fr:'Le 9 octobre 2026, le rectorat de l’Institut fédéral du Mato Grosso do Sul (IFMS) a reçu l’ICET, le CMDDI, le FOCAMS et l’UNIPBRAS pour engager les négociations d’un accord de coopération technique. Le projet, conçu par Germano Coelho Ramos Rocha-Silva, master en propriété intellectuelle et transfert de technologie pour l’innovation, comporte deux volets :'},
- if_f1h:{en:'Digital library of Indigenous authorship',es:'Biblioteca digital de autoría indígena',fr:'Bibliothèque numérique d’auteurs autochtones'},
- if_f1p:{en:'The expansion of the Publisher’s imprint, without print editions, curated by ICET and published jointly on the partner institutions’ portals.',es:'La expansión del sello de la Editorial, sin edición en papel, con curaduría del ICET y publicación conjunta en los portales de las instituciones aliadas.',fr:'L’extension du label, sans édition papier, sous la curation de l’ICET et publiée conjointement sur les portails des institutions partenaires.'},
- if_f2h:{en:'Indigenous intellectual property center',es:'Núcleo de propiedad intelectual indígena',fr:'Centre de propriété intellectuelle autochtone'},
- if_f2p:{en:'A permanent center for intellectual property, biotechnology and traditional knowledge, documenting knowledge with the free, prior and informed consent of the communities.',es:'Un núcleo permanente de propiedad intelectual, biotecnología y conocimientos tradicionales, que documenta saberes con el consentimiento previo, libre e informado de las comunidades.',fr:'Un centre permanent de propriété intellectuelle, de biotechnologie et de savoirs traditionnels, qui documente les savoirs avec le consentement préalable, libre et éclairé des communautés.'},
- if_cap:{en:'Meeting at the IFMS Rectorate, October 9, 2026.',es:'Encuentro en la Rectoría del IFMS, 9 de octubre de 2026.',fr:'Rencontre au rectorat de l’IFMS, 9 octobre 2026.'},
- if_prop_h:{en:'What the proposal includes',es:'Lo que prevé la propuesta',fr:'Ce que prévoit la proposition'},
- if_p1:{en:'The Original Knowledge Literary Prize, an annual call for Indigenous-authored works published by the Publisher with ISBN',es:'Premio Literario Saberes Originarios, convocatoria anual para obras de autoría indígena publicadas por la Editorial con ISBN',fr:'Prix littéraire Savoirs originaires, appel annuel pour des œuvres d’auteurs autochtones publiées avec ISBN'},
- if_p2:{en:'Thematic lines on Indigenous knowledge in research, extension and innovation calls, with priority for Indigenous students',es:'Líneas temáticas sobre saberes indígenas en las convocatorias de investigación, extensión e innovación, con prioridad a estudiantes indígenas',fr:'Axes thématiques sur les savoirs autochtones dans les appels de recherche, d’extension et d’innovation, avec priorité aux étudiants autochtones'},
- if_p3:{en:'Program hubs at campuses near the communities and initial and continuing training courses',es:'Polos del Programa en los campus cercanos a las comunidades y cursos de formación inicial y continua',fr:'Pôles du programme sur les campus proches des communautés et formations initiales et continues'},
- if_p4:{en:'Recognition of Indigenous knowledge holders by notorious knowledge and with honorary doctorates',es:'Reconocimiento de sabias y sabios indígenas por notorio saber y con el título de Doctor Honoris Causa',fr:'Reconnaissance des détentrices et détenteurs de savoirs autochtones par notoriété et par le doctorat honoris causa'},
- if_p5:{en:'An Indigenous knowledge and intellectual property track at FECINTEC and support from the Technological Innovation Center',es:'Ruta de saberes indígenas y propiedad intelectual en la FECINTEC y apoyo del Núcleo de Innovación Tecnológica',fr:'Parcours savoirs autochtones et propriété intellectuelle à la FECINTEC et appui du centre d’innovation technologique'},
- if_p6:{en:'Training on ethnic-racial and Indigenous relations, NEABI events and technical visits to the communities',es:'Formaciones sobre relaciones étnico-raciales e indígenas, eventos de los NEABI y visitas técnicas a las comunidades',fr:'Formations sur les relations ethno-raciales et autochtones, événements des NEABI et visites techniques dans les communautés'},
- if_nota:{en:'Authorship, curation and ownership of the imprint remain with ICET and CMDDI. The partnership is under review at IFMS, and the terms of cooperation depend on each institution’s internal procedures.',es:'La autoría, la curaduría y la titularidad del sello permanecen con el ICET y el CMDDI. La alianza está en trámite en el IFMS, y los términos de la cooperación dependen de los trámites internos de cada institución.',fr:'La paternité, la curation et la propriété du label restent à l’ICET et au CMDDI. Le partenariat est en cours d’examen à l’IFMS, et ses termes dépendent des procédures internes de chaque institution.'},
  n_cat:{en:'Catalogue',es:'Catálogo',fr:'Catalogue'}, n_ed:{en:'The Publisher',es:'La Editorial',fr:'La maison'}, n_como:{en:'How we publish',es:'Cómo publicamos',fr:'Comment nous publions'}, n_pub:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, n_icet:{en:'ICET',es:'ICET',fr:'ICET'},
  etq:{en:'Indigenous-authored imprint',es:'Sello editorial de autoría indígena',fr:'Label éditorial d’auteurs autochtones'},
  lema:{en:'Books born from the <b>territory</b>, written by those who <b>live the knowledge</b>. Digital, accessible and open to all.',es:'Libros que nacen del <b>territorio</b>, escritos por quienes <b>viven el saber</b>. Digitales, accesibles y abiertos a todos.',fr:'Des livres nés du <b>territoire</b>, écrits par celles et ceux qui <b>vivent le savoir</b>. Numériques, accessibles et ouverts à tous.'},
@@ -452,7 +465,7 @@ var T = {
  s4h:{en:'Accessible EPUB',es:'EPUB accesible',fr:'EPUB accessible'}, s4p:{en:'Produces accessible EPUB 3, paginated PDF and open online reading.',es:'Genera EPUB 3 accesible, PDF paginado y lectura abierta en internet.',fr:'Produit un EPUB 3 accessible, un PDF paginé et une lecture ouverte en ligne.'},
  s5h:{en:'Controlled copy',es:'Ejemplar controlado',fr:'Exemplaire contrôlé'}, s5p:{en:'Issues numbered, encrypted copies with individual passwords, and translations into other languages.',es:'Emite ejemplares numerados y cifrados, con contraseña individual, y traducciones a otros idiomas.',fr:'Délivre des exemplaires numérotés et chiffrés, à mot de passe individuel, et des traductions.'},
  aut_etq:{en:'Institutional authorization',es:'Autorización institucional',fr:'Autorisation institutionnelle'}, aut_h:{en:'The CMDDI name in the imprint, authorized by the Council',es:'El nombre del CMDDI en el sello, con la autorización del Consejo',fr:'Le nom du CMDDI dans le label, autorisé par le Conseil'},
- aut_p:{en:'The use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in the editorial imprint and in the works already published by ICET was authorized at the Council’s 202nd Ordinary Session, on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project between CMDDI, ICET, IFMS and MPMS.',es:'El uso del nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) en el sello editorial y en las obras ya publicadas por el ICET fue autorizado en la 202ª Sesión Ordinaria del Consejo, el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena entre CMDDI, ICET, IFMS y MPMS.',fr:'L’utilisation du nom du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) dans le label et dans les ouvrages déjà publiés par l’ICET a été autorisée lors de la 202e session ordinaire du Conseil, le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone entre le CMDDI, l’ICET, l’IFMS et le MPMS.'},
+ aut_p:{en:'The use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in the editorial imprint and in the works already published by ICET was authorized at the Council’s 202nd Ordinary Session, on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project.',es:'El uso del nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) en el sello editorial y en las obras ya publicadas por el ICET fue autorizado en la 202ª Sesión Ordinaria del Consejo, el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena.',fr:'L’utilisation du nom du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) dans le label et dans les ouvrages déjà publiés par l’ICET a été autorisée lors de la 202e session ordinaire du Conseil, le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone.'},
  aut_s:{en:'Notice signed by the President of CMDDI, Lisio Lili. Minutes approved by the Plenary.',es:'Convocatoria firmada por el Presidente del CMDDI, Lisio Lili. Acta aprobada por el Pleno.',fr:'Convocation signée par le président du CMDDI, Lisio Lili. Procès-verbal approuvé par l’assemblée plénière.'},
  pa1:{en:'Production',es:'Realización',fr:'Réalisation'}, pa2:{en:'Institutional support',es:'Apoyo institucional',fr:'Soutien institutionnel'}, pa3:{en:'Partnership',es:'Alianza',fr:'Partenariat'},
  pub_etq:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, pub_tit:{en:'Your story <em>deserves a book</em>',es:'Tu historia <em>merece un libro</em>',fr:'Votre histoire <em>mérite un livre</em>'},
