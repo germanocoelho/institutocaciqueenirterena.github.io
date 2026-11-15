@@ -863,7 +863,7 @@ body.adm-on .slot-vaso-adm{display:flex}
 @keyframes title-shimmer{0%{background-position:0%}50%{background-position:100%}100%{background-position:0%}}
 
 /* ══ PARALLAX SUAVE nas seções ══ */
-section{will-change:transform}
+/* sem will-change nas seções: ele prendia as janelas e o lightbox dentro da seção */
 .parallax-bg{
   position:absolute;inset:-10%;
   background-attachment:fixed;
@@ -874,7 +874,7 @@ section{will-change:transform}
 
 /* ══ FADE-IN nas seções ao rolar ══ */
 .sec-fade{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
-.sec-fade.in{opacity:1;transform:translateY(0)}
+.sec-fade.in{opacity:1;transform:none}
 
 /* ══ HOVER ZOOM nas imagens ══ */
 .gal-item img,.dir-foto,.enir-foto-img,.prod-foto img{
@@ -8970,6 +8970,13 @@ else setTimeout(iniciar, 0);
       '<g class="edh-giro">' + livros() + '</g>';
     if(sv.closest('.edh-linha')){ sv.querySelector('.edh-anel').style.display = 'none'; sv.setAttribute('viewBox', '-110 -110 220 220'); }
   });
+})();
+</script>
+<script>
+/* janelas (modais) ficam direto no corpo da página, para não ficarem presas dentro de uma seção animada */
+(function(){
+  function soltar(){ document.querySelectorAll('.icet-modal').forEach(function(m){ if(m.parentElement !== document.body) document.body.appendChild(m); }); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', soltar); else soltar();
 })();
 </script>
 </body>
