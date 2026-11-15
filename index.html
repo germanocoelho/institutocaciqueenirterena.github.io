@@ -353,6 +353,46 @@ section.claro .btn-p,section.claro .btn-g,section.claro .org-mais,section.claro 
 .cons-planos span.on em{color:var(--c)}
 @media (prefers-reduced-motion:reduce){.pl-giro{animation:none}.pl-los{stroke-dashoffset:0}}
 
+/* ══ BOTÕES ÉTNICOS (2ª leva): selos das notícias, abas de documentos, acervo e contato ══ */
+.nc-selo,.cons-tab,.acervo-tab,.acervo-link,.nav-contato,.doc-bt{position:relative;isolation:isolate;overflow:hidden;outline:1.5px dotted rgba(226,169,59,.6);outline-offset:3px;transition:outline-offset .35s,transform .3s}
+.nc-selo::before,.cons-tab::before,.acervo-tab::before,.acervo-link::before,.nav-contato::before,.doc-bt::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='5'%3E%3Cpath d='M0 1 4 4 8 1' fill='none' stroke='%23E2A93B' stroke-width='1.4'/%3E%3Cpath d='M8 1 12 4 16 1' fill='none' stroke='%23C2502E' stroke-width='1.4'/%3E%3Cpath d='M16 1 20 4 24 1' fill='none' stroke='%232BB3A8' stroke-width='1.4'/%3E%3Cpath d='M24 1 28 4 32 1' fill='none' stroke='%23F4EEE3' stroke-width='1.4'/%3E%3C/svg%3E") 0 calc(100% - 2px)/32px 5px repeat-x,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M11 3 19 11 11 19 3 11z' fill='none' stroke='%231F1712' stroke-opacity='.14' stroke-width='1.2'/%3E%3Ccircle cx='11' cy='11' r='1.4' fill='%23F4EEE3' fill-opacity='.35'/%3E%3C/svg%3E") 0 0/22px 22px;
+  opacity:.7;animation:icetTrama 6s linear infinite}
+.nc-selo:hover::before,.cons-tab:hover::before,.acervo-tab:hover::before,.acervo-link:hover::before,.nav-contato:hover::before,.doc-bt:hover::before,.cons-tab.on::before,.acervo-tab.on::before{opacity:1;animation-duration:2.5s}
+.nc-selo:hover,.cons-tab:hover,.acervo-tab:hover,.acervo-link:hover,.nav-contato:hover,.doc-bt:hover{outline-offset:5px;outline-style:dashed;transform:translateY(-1px)}
+.nc-selo{outline-offset:2px;animation:seloBrilha 4s ease-in-out infinite}
+@keyframes seloBrilha{0%,100%{box-shadow:0 0 0 0 rgba(226,169,59,0)}50%{box-shadow:0 0 14px 2px rgba(226,169,59,.35)}}
+section.claro .nc-selo,section.claro .cons-tab{outline-color:rgba(154,106,18,.55)}
+@media (prefers-reduced-motion:reduce){.nc-selo::before,.cons-tab::before,.acervo-tab::before,.acervo-link::before,.nav-contato::before,.doc-bt::before{animation:none!important}.nc-selo{animation:none}}
+
+/* ══ PROJETOS DO FOCAMS: autoria, projeto estadual e biblioteca 3D ══ */
+.cons-autoria{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:1.6rem;align-items:center;margin:1.6rem 0 2.4rem;padding:1.5rem 1.8rem;border-radius:20px;background:var(--k3);isolation:isolate;overflow:hidden}
+.cons-autoria::before{content:'';position:absolute;inset:-60%;z-index:-2;background:conic-gradient(from 0deg,#E2A93B,#C2502E,#2BB3A8,#F4EEE3,#E2A93B);animation:autGiro 8s linear infinite}
+.cons-autoria::after{content:'';position:absolute;inset:2px;z-index:-1;border-radius:18px;background:linear-gradient(135deg,#15253A,#0E1A2B)}
+@keyframes autGiro{to{transform:rotate(360deg)}}
+.cons-autoria .eyebrow{margin-bottom:.4rem}
+.cons-autoria p{margin:0;color:var(--cr2);line-height:1.75;font-size:1rem}
+.cons-autoria strong{color:var(--ou)}
+.aut-med{position:relative;width:74px;height:74px;display:grid;place-items:center}
+.aut-med span{position:relative;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#C2502E,#A8422A);font-family:'Cinzel',serif;font-weight:700;color:#F4EEE3;font-size:1.05rem;box-shadow:0 0 0 3px rgba(226,169,59,.35)}
+.aut-med.m span{background:linear-gradient(135deg,#1F7A6B,#2BB3A8)}
+.aut-med i{position:absolute;inset:0;border-radius:50%;border:1.5px dotted rgba(226,169,59,.8);animation:autGiro 14s linear infinite}
+.aut-med.m i{border-color:rgba(43,179,168,.8);animation-direction:reverse}
+@media(max-width:760px){.cons-autoria{grid-template-columns:1fr;text-align:center;justify-items:center}.aut-med.m{display:none}}
+.cons-ms{margin:2.6rem 0 1rem;padding:1.6rem 1.8rem;border-radius:18px;border:1px solid var(--brd2);background:linear-gradient(135deg,rgba(43,179,168,.08),rgba(226,169,59,.05));position:relative;overflow:hidden}
+.cons-ms::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border:2px dotted rgba(226,169,59,.3);transform:rotate(45deg);animation:autGiro 40s linear infinite}
+.cons-ms h3{font-family:'Cinzel',serif;color:var(--ou);font-size:1.5rem;margin:.2rem 0 .7rem}
+.cons-ms p{color:var(--cr2);line-height:1.75;max-width:880px;margin:0}
+.cons-ms strong{color:var(--cr)}
+.cons-bib-l{color:var(--tx2);max-width:760px}
+.capa-ms{display:flex !important;flex-direction:column;justify-content:center;align-items:center;gap:.3rem;background:radial-gradient(circle at 30% 20%,#2BB3A8,#1F7A6B 45%,#0E1A2B) !important;color:#F4EEE3;text-align:center;padding:1rem}
+.capa-ms em{font-style:normal;font-family:'Cinzel',serif;font-size:2.6rem;font-weight:700;color:#E2A93B;line-height:1}
+.capa-ms strong{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.06em}
+.capa-ms small{font-size:.8rem;opacity:.85}
+.capa-ms i{position:absolute;left:0;right:0;bottom:12px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 7 8 1 16 7' fill='none' stroke='%23E2A93B' stroke-width='1.6'/%3E%3C/svg%3E") 0 0/16px 8px repeat-x}
+.doc3d.em-breve .livro3d{cursor:default}
+
 /* ══ STATS HERO ══ */
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
@@ -2401,6 +2441,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
 <link rel="alternate" hreflang="es" href="https://institutocaciqueenirterena.com.br/?lang=es">
 <link rel="alternate" hreflang="fr" href="https://institutocaciqueenirterena.com.br/?lang=fr">
 <link rel="alternate" hreflang="x-default" href="https://institutocaciqueenirterena.com.br/">
+<link rel="stylesheet" href="leitor/leitor.css?v=20261115">
 </head>
 <body>
 <canvas id="sparkle-canvas" aria-hidden="true"></canvas>
@@ -3051,7 +3092,14 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <h2 class="sec-title" data-i18n="cons_t">Programa Integrado de Políticas para os Povos Indígenas</h2>
     <div class="divider"></div>
     <p class="sec-lead" data-i18n="cons_l">Consultoria técnica realizada pelo ICET para o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS), aprovada por aclamação pelas lideranças indígenas em 31 de outubro de 2026.</p>
-
+    <div class="cons-autoria reveal">
+      <div class="aut-med" aria-hidden="true"><i></i><span>GC</span></div>
+      <div class="aut-txt">
+        <span class="eyebrow" data-i18n="cons_aut_eyb">Autoria dos projetos do FOCAMS</span>
+        <p data-i18n-html="cons_aut_p">Os dois projetos desenvolvidos para o FOCAMS, o <strong>nacional</strong> e o <strong>de Mato Grosso do Sul</strong>, foram elaborados por <strong>Germano Coelho Ramos Rocha-Silva</strong>, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação, com o acompanhamento institucional da Presidente do ICET, <strong>Maria Auxiliadora Bezerra</strong>.</p>
+      </div>
+      <div class="aut-med m" aria-hidden="true"><i></i><span>MA</span></div>
+    </div>
     <div class="cons-grid">
       <figure class="cons-capa reveal"><img src="imgs/galeria/programa-integrado-01-capa.jpg" alt="Capa do resumo executivo do Programa Integrado" loading="lazy"><figcaption data-i18n="cons_cliente">Cliente: FOCAMS | 2027 a 2030</figcaption></figure>
       <div class="cons-texto reveal">
@@ -3081,6 +3129,29 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
       <span style="--c:#00A8E8"><strong class="pl-n" style="--c:#00A8E8" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>VI</b></strong><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
     </div>
 
+    <div class="cons-ms reveal">
+      <div class="cons-ms-tx">
+        <span class="eyebrow" data-i18n="cons_ms_eyb">Projeto estadual</span>
+        <h3 data-i18n="cons_ms_t">MS Povos Indígenas 2027 a 2030</h3>
+        <p data-i18n-html="cons_ms_p">O <strong>Plano Estadual Integrado dos Povos Indígenas de Mato Grosso do Sul</strong> leva para o governo do estado a mesma lógica do Programa nacional: diagnóstico, ações, responsáveis, metas e entregas, pensados a partir das demandas das comunidades de Mato Grosso do Sul. É uma proposta técnica desenvolvida para o FOCAMS e apresentada para consulta.</p>
+      </div>
+    </div>
+    <h3 class="cons-sub reveal" data-i18n="cons_bib_t">Biblioteca dos projetos: folheie como um livro</h3>
+    <p class="cons-bib-l" data-i18n="cons_bib_l">Clique em um livro para abrir o leitor: vire as páginas, veja as miniaturas, busque palavras em todo o texto e ouça a leitura em voz alta.</p>
+    <div class="docs3d">
+      <div class="doc3d"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
+        <button class="livro3d" data-doc="docs/consultorias/focams-programa-integrado/leitor/integral/" data-pdf="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf" aria-label="Programa completo"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/integral/p/005.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
+        <div><b data-i18n="cons_bk1">Programa completo</b><small data-i18n="cons_bk1s">Nacional · 222 páginas</small></div></div>
+      <div class="doc3d"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
+        <button class="livro3d" data-doc="docs/consultorias/focams-programa-integrado/leitor/resumo/" data-pdf="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf" aria-label="Resumo executivo"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/resumo/p/001.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
+        <div><b data-i18n="cons_bk2">Resumo executivo</b><small data-i18n="cons_bk2s">Nacional · 9 páginas</small></div></div>
+      <div class="doc3d"><div class="doc3d-palco larga"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
+        <button class="livro3d" style="--ar:1.413" data-doc="docs/consultorias/focams-programa-integrado/leitor/apresentacao/" data-pdf="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf" aria-label="Apresentação"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/apresentacao/p/001.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
+        <div><b data-i18n="cons_bk3">Apresentação</b><small data-i18n="cons_bk3s">Nacional · 13 slides</small></div></div>
+      <div class="doc3d em-breve"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
+        <span class="livro3d" aria-hidden="true"><span class="lombada"></span><span class="miolo"></span><span class="capa capa-ms"><em>MS</em><strong>Povos Indígenas</strong><small>2027 a 2030</small><i></i></span><span class="sombra"></span></span></div>
+        <div><b data-i18n="cons_bk4">Plano Estadual de MS</b><small data-i18n="cons_bk4s">Em breve no leitor</small></div></div>
+    </div>
     <h3 class="cons-sub reveal" data-i18n="cons_docs_t">Documentos: versão mais atual</h3>
     <div class="cons-tabs" role="tablist">
       <button class="cons-tab on" data-cons="res" data-i18n="cons_tab_res">Resumo executivo</button>
@@ -6478,7 +6549,18 @@ document.addEventListener('DOMContentLoaded',function(){
       cons_p1: {pt:'O <strong>Programa Integrado</strong> reúne seis planos nacionais de políticas públicas para os povos indígenas, dirigidos ao governo federal para o mandato de 2027 a 2030. A pedido do FOCAMS, o ICET transformou as demandas das comunidades de Mato Grosso do Sul em propostas que os ministérios e órgãos federais podem executar.', es:'El <strong>Programa Integrado</strong> reúne seis planes nacionales de políticas públicas para los pueblos indígenas, dirigidos al gobierno federal para el mandato 2027 a 2030. A pedido del FOCAMS, el ICET transformó las demandas de las comunidades de Mato Grosso do Sul en propuestas que los ministerios y órganos federales pueden ejecutar.', en:'The <strong>Integrated Program</strong> brings together six national public policy plans for Indigenous peoples, addressed to the federal government for the 2027–2030 term. At the request of FOCAMS, ICET turned the demands of Mato Grosso do Sul’s communities into proposals that federal ministries and agencies can carry out.', fr:'Le <strong>Programme intégré</strong> réunit six plans nationaux de politiques publiques pour les peuples autochtones, adressés au gouvernement fédéral pour le mandat 2027-2030. À la demande du FOCAMS, l’ICET a transformé les demandes des communautés du Mato Grosso do Sul en propositions que les ministères et organismes fédéraux peuvent mettre en œuvre.'},
       cons_p2: {pt:'Cada plano segue o mesmo método: diagnóstico com dados oficiais, base legal, ações, responsáveis no governo federal, metas até 2030, medidas para os primeiros 100 dias, riscos a evitar e minutas de decretos e projetos de lei. O Programa organiza programas federais que já existem e não cria cargos.', es:'Cada plan sigue el mismo método: diagnóstico con datos oficiales, base legal, acciones, responsables en el gobierno federal, metas hasta 2030, medidas para los primeros 100 días, riesgos a evitar y borradores de decretos y proyectos de ley. El Programa organiza programas federales que ya existen y no crea cargos.', en:'Each plan follows the same method: a diagnosis based on official data, the legal basis, actions, the responsible federal bodies, targets through 2030, measures for the first 100 days, risks to avoid and draft decrees and bills. The Program builds on federal programs that already exist and creates no new posts.', fr:'Chaque plan suit la même méthode : diagnostic fondé sur des données officielles, base juridique, actions, organismes fédéraux responsables, objectifs jusqu’en 2030, mesures pour les 100 premiers jours, risques à éviter et projets de décrets et de lois. Le Programme s’appuie sur des programmes fédéraux existants et ne crée aucun poste.'},
       cons_p3: {pt:'Em 31 de outubro de 2026, em reunião convocada pelo FOCAMS em Campo Grande, <strong>32 lideranças, caciques e instituições indígenas</strong> de todo o estado aprovaram o Programa por unanimidade e por aclamação. O próximo passo é o envio às instituições indígenas que ainda não participaram e, depois, à Presidência da República e aos ministérios.', es:'El 31 de octubre de 2026, en una reunión convocada por el FOCAMS en Campo Grande, <strong>32 liderazgos, caciques e instituciones indígenas</strong> de todo el estado aprobaron el Programa por unanimidad y por aclamación. El próximo paso es el envío a las instituciones indígenas que aún no participaron y, después, a la Presidencia de la República y a los ministerios.', en:'On October 31, 2026, at a meeting called by FOCAMS in Campo Grande, <strong>32 Indigenous leaders, chiefs and institutions</strong> from across the state approved the Program unanimously and by acclamation. The next step is to send it to the Indigenous institutions that have not yet taken part and then to the Presidency of the Republic and the ministries.', fr:'Le 31 octobre 2026, lors d’une réunion convoquée par le FOCAMS à Campo Grande, <strong>32 dirigeants, caciques et institutions autochtones</strong> de tout l’État ont approuvé le Programme à l’unanimité et par acclamation. La prochaine étape est l’envoi aux institutions autochtones qui n’ont pas encore participé, puis à la Présidence de la République et aux ministères.'},
-      cons_resp: {pt:'<strong>Responsáveis pela consultoria:</strong> Maria Auxiliadora Bezerra, presidente do ICET (consultoria institucional técnica), e Germano Coelho Ramos Rocha-Silva, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação.', es:'<strong>Responsables de la consultoría:</strong> Maria Auxiliadora Bezerra, presidenta del ICET (consultoría institucional técnica), y Germano Coelho Ramos Rocha-Silva, indígena terena, secretario general del ICET y magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación.', en:'<strong>Consultancy leads:</strong> Maria Auxiliadora Bezerra, ICET president (technical institutional consultancy), and Germano Coelho Ramos Rocha-Silva, a Terena Indigenous man, ICET secretary-general and holder of a master’s degree in Intellectual Property and Technology Transfer for Innovation.', fr:'<strong>Responsables de la mission :</strong> Maria Auxiliadora Bezerra, présidente de l’ICET (conseil institutionnel technique), et Germano Coelho Ramos Rocha-Silva, autochtone terena, secrétaire général de l’ICET et titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation.'},
+      cons_resp: {pt:'<strong>Autoria:</strong> Germano Coelho Ramos Rocha-Silva, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação, com o acompanhamento institucional da Presidente do ICET, Maria Auxiliadora Bezerra.', es:'<strong>Autoría:</strong> Germano Coelho Ramos Rocha-Silva, indígena terena, secretario general del ICET y magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación, con el acompañamiento institucional de la Presidenta del ICET, Maria Auxiliadora Bezerra.', en:'<strong>Authorship:</strong> Germano Coelho Ramos Rocha-Silva, a Terena Indigenous man, ICET secretary-general and holder of a master’s degree in Intellectual Property and Technology Transfer for Innovation, with the institutional guidance of ICET President Maria Auxiliadora Bezerra.', fr:'<strong>Auteur :</strong> Germano Coelho Ramos Rocha-Silva, autochtone terena, secrétaire général de l’ICET et titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation, avec l’accompagnement institutionnel de la présidente de l’ICET, Maria Auxiliadora Bezerra.'},
+      cons_aut_eyb: {pt:'Autoria dos projetos do FOCAMS', es:'Autoría de los proyectos del FOCAMS', en:'Authorship of the FOCAMS projects', fr:'Auteur des projets du FOCAMS'},
+      cons_aut_p: {pt:'Os dois projetos desenvolvidos para o FOCAMS, o <strong>nacional</strong> e o <strong>de Mato Grosso do Sul</strong>, foram elaborados por <strong>Germano Coelho Ramos Rocha-Silva</strong>, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação, com o acompanhamento institucional da Presidente do ICET, <strong>Maria Auxiliadora Bezerra</strong>.', es:'Los dos proyectos desarrollados para el FOCAMS, el <strong>nacional</strong> y el <strong>de Mato Grosso do Sul</strong>, fueron elaborados por <strong>Germano Coelho Ramos Rocha-Silva</strong>, indígena terena, secretario general del ICET y magíster en Propiedad Intelectual y Transferencia de Tecnología para la Innovación, con el acompañamiento institucional de la Presidenta del ICET, <strong>Maria Auxiliadora Bezerra</strong>.', en:'The two projects developed for FOCAMS, the <strong>national</strong> one and the <strong>Mato Grosso do Sul</strong> one, were prepared by <strong>Germano Coelho Ramos Rocha-Silva</strong>, a Terena Indigenous man, ICET secretary-general and holder of a master’s degree in Intellectual Property and Technology Transfer for Innovation, with the institutional guidance of ICET President <strong>Maria Auxiliadora Bezerra</strong>.', fr:'Les deux projets développés pour le FOCAMS, le <strong>national</strong> et celui du <strong>Mato Grosso do Sul</strong>, ont été élaborés par <strong>Germano Coelho Ramos Rocha-Silva</strong>, autochtone terena, secrétaire général de l’ICET et titulaire d’un master en propriété intellectuelle et transfert de technologie pour l’innovation, avec l’accompagnement institutionnel de la présidente de l’ICET, <strong>Maria Auxiliadora Bezerra</strong>.'},
+      cons_ms_eyb: {pt:'Projeto estadual', es:'Proyecto estatal', en:'State project', fr:'Projet de l’État'},
+      cons_ms_t: {pt:'MS Povos Indígenas 2027 a 2030', es:'MS Pueblos Indígenas 2027 a 2030', en:'MS Indigenous Peoples 2027 to 2030', fr:'MS Peuples autochtones 2027 à 2030'},
+      cons_ms_p: {pt:'O <strong>Plano Estadual Integrado dos Povos Indígenas de Mato Grosso do Sul</strong> leva para o governo do estado a mesma lógica do Programa nacional: diagnóstico, ações, responsáveis, metas e entregas, pensados a partir das demandas das comunidades de Mato Grosso do Sul. É uma proposta técnica desenvolvida para o FOCAMS e apresentada para consulta.', es:'El <strong>Plan Estatal Integrado de los Pueblos Indígenas de Mato Grosso do Sul</strong> lleva al gobierno del estado la misma lógica del Programa nacional: diagnóstico, acciones, responsables, metas y entregas, pensados a partir de las demandas de las comunidades de Mato Grosso do Sul. Es una propuesta técnica desarrollada para el FOCAMS y presentada para consulta.', en:'The <strong>Integrated State Plan for the Indigenous Peoples of Mato Grosso do Sul</strong> brings to the state government the same logic as the national Program: diagnosis, actions, responsible bodies, targets and deliverables, built from the demands of Mato Grosso do Sul’s communities. It is a technical proposal developed for FOCAMS and presented for consultation.', fr:'Le <strong>Plan intégré de l’État pour les peuples autochtones du Mato Grosso do Sul</strong> apporte au gouvernement de l’État la même logique que le Programme national : diagnostic, actions, responsables, objectifs et livrables, conçus à partir des demandes des communautés du Mato Grosso do Sul. C’est une proposition technique élaborée pour le FOCAMS et présentée pour consultation.'},
+      cons_bib_t: {pt:'Biblioteca dos projetos: folheie como um livro', es:'Biblioteca de los proyectos: hojéala como un libro', en:'Project library: leaf through it like a book', fr:'Bibliothèque des projets : feuilletez-la comme un livre'},
+      cons_bib_l: {pt:'Clique em um livro para abrir o leitor: vire as páginas, veja as miniaturas, busque palavras em todo o texto e ouça a leitura em voz alta.', es:'Haz clic en un libro para abrir el lector: pasa las páginas, mira las miniaturas, busca palabras en todo el texto y escucha la lectura en voz alta.', en:'Click a book to open the reader: turn the pages, see thumbnails, search the whole text and listen to it read aloud.', fr:'Cliquez sur un livre pour ouvrir la liseuse : tournez les pages, voyez les miniatures, cherchez dans tout le texte et écoutez la lecture à voix haute.'},
+      cons_bk1: {pt:'Programa completo', es:'Programa completo', en:'Full Program', fr:'Programme complet'}, cons_bk1s: {pt:'Nacional · 222 páginas', es:'Nacional · 222 páginas', en:'National · 222 pages', fr:'National · 222 pages'},
+      cons_bk2: {pt:'Resumo executivo', es:'Resumen ejecutivo', en:'Executive summary', fr:'Résumé exécutif'}, cons_bk2s: {pt:'Nacional · 9 páginas', es:'Nacional · 9 páginas', en:'National · 9 pages', fr:'National · 9 pages'},
+      cons_bk3: {pt:'Apresentação', es:'Presentación', en:'Presentation', fr:'Présentation'}, cons_bk3s: {pt:'Nacional · 13 slides', es:'Nacional · 13 diapositivas', en:'National · 13 slides', fr:'National · 13 diapositives'},
+      cons_bk4: {pt:'Plano Estadual de MS', es:'Plan Estatal de MS', en:'MS State Plan', fr:'Plan de l’État du MS'}, cons_bk4s: {pt:'Em breve no leitor', es:'Pronto en el lector', en:'Coming soon to the reader', fr:'Bientôt dans la liseuse'},
       cons_n1: {pt:'planos nacionais', es:'planes nacionales', en:'national plans', fr:'plans nationaux'},
       cons_n2: {pt:'áreas de ação', es:'áreas de acción', en:'areas of action', fr:'domaines d’action'},
       cons_n3: {pt:'metas verificáveis', es:'metas verificables', en:'verifiable targets', fr:'objectifs vérifiables'},
@@ -9101,5 +9183,6 @@ else setTimeout(iniciar, 0);
   ps.forEach(function(p, i){ p.addEventListener('pointerenter', function(){ ps.forEach(function(q){ q.classList.remove('on'); }); p.classList.add('on'); k = i; }); });
 })();
 </script>
+<script src="leitor/leitor.js?v=20261115"></script>
 </body>
 </html>
