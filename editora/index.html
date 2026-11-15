@@ -378,13 +378,35 @@ footer img{height:70px;margin:0 auto 16px}
 .marca-pt.on,.marca-pt:hover{background:#EE1A8C;transform:scale(1.25)}
 .marca-leg{list-style:none;display:grid;gap:4px;margin:6px 0 18px}
 .marca-leg li{position:relative;padding:12px 14px 12px 54px;border-radius:14px;transition:background .3s,transform .35s cubic-bezier(.3,1.4,.5,1);cursor:pointer}
-.marca-leg li::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:30px;height:30px;border-radius:7px;transform:rotate(45deg);background:var(--c,#00A8E8);transition:transform .6s cubic-bezier(.3,1.5,.5,1)}
+.marca-leg li::before{content:'';position:absolute;left:12px;top:12px;width:30px;height:30px;border-radius:7px;transform:rotate(45deg);background:var(--c,#00A8E8);transition:transform .6s cubic-bezier(.3,1.5,.5,1)}
 .marca-leg li::after{content:attr(data-n);position:absolute;left:12px;top:12px;width:30px;height:30px;display:grid;place-items:center;font-family:var(--disp);font-weight:900;color:#fff;font-size:.85rem}
 .marca-leg li:nth-child(2){--c:#F5AA19}.marca-leg li:nth-child(3){--c:#4FA862}.marca-leg li:nth-child(4){--c:#EE1A8C}
 .marca-leg li.on{background:#fff;transform:translateX(6px);box-shadow:4px 4px 0 var(--c)}
 .marca-leg li.on::before{transform:rotate(225deg) scale(1.1)}
 .marca-leg b{display:block;font-family:var(--disp);font-weight:800;font-size:1rem}
 .marca-leg span{font-size:.92rem;color:var(--tinta2);line-height:1.5}
+
+/* marca da Editora */
+.ed-fig{width:100%;aspect-ratio:auto}
+.ed-cartao{position:relative;background:#fff;border:2px solid #111;border-radius:22px;padding:7% 6%;box-shadow:10px 10px 0 #F5AA19;overflow:hidden}
+.ed-cartao img{position:relative;z-index:1;width:100%;animation:edRespira 6s ease-in-out infinite}
+@keyframes edRespira{50%{transform:scale(1.025)}}
+.ed-fig .marca-anel{position:absolute;z-index:0;inset:auto;left:calc(6% + 88% * .704);top:calc(7% + 86% * .48);width:62%;height:auto;aspect-ratio:1;transform:translate(-50%,-50%);animation:edAnel 40s linear infinite}
+@keyframes edAnel{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.ed-brilho{position:absolute;z-index:0;left:calc(6% + 88% * .704);top:calc(7% + 86% * .48);width:18%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#F5AA19 0,rgba(245,170,25,.35) 40%,transparent 70%);animation:edFogo 2.8s ease-in-out infinite}
+@keyframes edFogo{50%{transform:translate(-50%,-50%) scale(1.35);opacity:.7}}
+.ed-fig .marca-pt{left:calc(6% + 88% * var(--xv));top:calc(7% + 86% * var(--yv));width:26px;height:26px;margin:-13px 0 0 -13px;font-size:.72rem;opacity:.92}
+.ed-cores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.cor{position:relative;padding:12px 12px 12px 50px;border-radius:14px;background:#fff;border:1.5px solid var(--linha);transition:transform .35s cubic-bezier(.3,1.4,.5,1),box-shadow .35s}
+.cor i{position:absolute;left:12px;top:13px;width:26px;height:26px;border-radius:50%;background:var(--c);box-shadow:0 0 0 0 var(--c);transition:transform .6s cubic-bezier(.3,1.6,.5,1)}
+.cor i::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:2px dashed var(--c);animation:gira 9s linear infinite}
+.cor:hover{transform:translateY(-4px);box-shadow:5px 5px 0 var(--c)}
+.cor:hover i{transform:scale(1.2)}
+.cor b{display:block;font-family:var(--disp);font-weight:900;font-size:.95rem;color:var(--c)}
+.cor:nth-child(4) b{color:#c4106f}
+.cor span{display:block;font-size:.84rem;color:var(--tinta2);line-height:1.45}
+.marca-leg li:nth-child(5){--c:#111}
+@media(max-width:520px){.ed-cores{grid-template-columns:1fr}}
 /* criação */
 .cria-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .cria-ano{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:clamp(5rem,12vw,8.5rem);line-height:.8;color:transparent;-webkit-text-stroke:2px #111;background:linear-gradient(90deg,#00A8E8,#4FA862,#F5AA19,#EE1A8C) 0 100%/0 100% no-repeat;-webkit-background-clip:text;background-clip:text;transition:background-size 1.6s cubic-bezier(.6,0,.2,1) .3s;margin-bottom:12px}
@@ -574,29 +596,40 @@ footer img{height:70px;margin:0 auto 16px}
     <div class="etq rv"><i style="background:var(--verde)"></i><span data-t="id_etq">Identidade e governança</span></div>
     <h2 class="tit rv" data-t-html="id_tit">Uma marca, <em>um conselho</em></h2>
     <div class="abas rv" role="tablist" aria-label="Identidade e governança">
-      <button class="aba on" role="tab" id="aba-marca" aria-controls="pn-marca" aria-selected="true"><svg class="aba-ic" style="color:#EE1A8C"><use href="#flor"/></svg><span data-t="ab1">A marca do ICET</span></button>
+      <button class="aba on" role="tab" id="aba-marca" aria-controls="pn-marca" aria-selected="true"><svg class="aba-ic" style="color:#EE1A8C"><use href="#flor"/></svg><span data-t="ab1">A marca da Editora</span></button>
       <button class="aba" role="tab" id="aba-criacao" aria-controls="pn-criacao" aria-selected="false" tabindex="-1"><svg class="aba-ic" style="color:#00A8E8"><use href="#losango"/></svg><span data-t="ab2">A criação da Editora</span></button>
       <i class="abas-ind" aria-hidden="true"></i>
     </div>
 
     <div class="painel on" role="tabpanel" id="pn-marca" aria-labelledby="aba-marca">
       <div class="marca-grid">
-        <figure class="marca-fig">
-          <svg class="marca-anel" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
-          <div class="marca-disco"><img src="logos/icet.jpg" alt="Logomarca do Instituto Cacique Enir Terena: retrato da Cacique Enir Terena com o nome do Instituto em arco e faixas coloridas ao fundo"></div>
-          <button class="marca-pt" data-n="1" style="--x:66%;--y:74%" aria-label="1"><span>1</span></button>
-          <button class="marca-pt" data-n="2" style="--x:50%;--y:9%" aria-label="2"><span>2</span></button>
-          <button class="marca-pt" data-n="3" style="--x:85%;--y:40%" aria-label="3"><span>3</span></button>
-          <button class="marca-pt" data-n="4" style="--x:31%;--y:64%" aria-label="4"><span>4</span></button>
+        <figure class="marca-fig ed-fig">
+          <div class="ed-cartao">
+            <svg class="marca-anel" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+            <i class="ed-brilho" aria-hidden="true"></i>
+            <img src="logos/editora-cor.png" alt="Logomarca da Editora Cacique Enir Terena: oito livros em roda, nas cores azul, amarelo, verde e magenta, ao lado do nome da Editora">
+            <button class="marca-pt" data-n="1" style="--xv:0.955;--yv:0.080" aria-label="1"><span>1</span></button>
+            <button class="marca-pt" data-n="2" style="--xv:0.704;--yv:0.480" aria-label="2"><span>2</span></button>
+            <button class="marca-pt" data-n="3" style="--xv:0.880;--yv:0.330" aria-label="3"><span>3</span></button>
+            <button class="marca-pt" data-n="4" style="--xv:0.266;--yv:0.600" aria-label="4"><span>4</span></button>
+            <button class="marca-pt" data-n="5" style="--xv:0.300;--yv:1.030" aria-label="5"><span>5</span></button>
+          </div>
+          <figcaption class="ed-cores">
+            <div class="cor" style="--c:#00A8E8"><i></i><b data-t="co1h">Azul</b><span data-t="co1p">O céu que cobre a aldeia e os rios do Pantanal, caminhos de água por onde a palavra viaja.</span></div>
+            <div class="cor" style="--c:#F5AA19"><i></i><b data-t="co2h">Amarelo</b><span data-t="co2p">O sol e o milho maduro, a colheita de um povo agricultor que aprendeu a plantar também saberes.</span></div>
+            <div class="cor" style="--c:#4FA862"><i></i><b data-t="co3h">Verde</b><span data-t="co3p">A mata e o Cerrado, a terra viva de onde vêm o barro, as plantas que curam e as histórias.</span></div>
+            <div class="cor" style="--c:#EE1A8C"><i></i><b data-t="co4h">Magenta</b><span data-t="co4p">A flor que se abre na seca e a força das mulheres Terena, que deram à Editora o seu nome e a sua coragem.</span></div>
+          </figcaption>
         </figure>
         <div>
-          <h3 class="ab-h" data-t="mk_h">Um rosto, um nome e as cores de um povo</h3>
-          <p class="ab-p" data-t-html="mk_p">A logomarca do Instituto Cacique Enir Terena foi criada pelo designer indígena <b>Mauro Sérgio Forasteiro</b>, Terena, filho da Cacique Enir Terena. Cada traço leva para a marca a memória da fundadora e a cultura do seu povo.</p>
+          <h3 class="ab-h" data-t="mk_h">Oito livros em roda, a palavra que gira e ilumina</h3>
+          <p class="ab-p" data-t-html="mk_p">A logomarca da Editora Cacique Enir Terena foi criada pelo designer indígena <b>Mauro Sérgio Forasteiro</b>, Terena, filho da Cacique Enir Terena. É um sol feito de livros: a roda da aldeia transformada em biblioteca, girando para os povos indígenas de Mato Grosso do Sul e para o mundo.</p>
           <ol class="marca-leg">
-            <li data-n="1"><b data-t="mk1h">O retrato da Cacique Enir</b><span data-t="mk1p">No centro está a fundadora da Aldeia Urbana Marçal de Souza, primeira mulher eleita cacique em Mato Grosso do Sul. A marca coloca a memória dela no coração do Instituto.</span></li>
-            <li data-n="2"><b data-t="mk2h">O nome em arco</b><span data-t="mk2p">Em letras desenhadas à mão, o nome do Instituto contorna o retrato e fecha a marca em círculo.</span></li>
-            <li data-n="3"><b data-t="mk3h">As faixas coloridas</b><span data-t="mk3p">Atrás do retrato, faixas em azul, amarelo, verde e rosa se abrem como uma estrela. São as mesmas cores que vivem na identidade da Editora.</span></li>
-            <li data-n="4"><b data-t="mk4h">O adorno no peito</b><span data-t="mk4p">Um adorno colorido com grafismo acompanha o retrato, sinal da arte que a cacique ajudou a manter viva.</span></li>
+            <li data-n="1"><b data-t="mk1h">Os oito livros em roda</b><span data-t="mk1p">Os livros se reúnem como pessoas sentadas em roda para ouvir os mais velhos. São oito, apontando para os quatro cantos do mundo e para os caminhos entre eles: a palavra indígena sai da aldeia em todas as direções.</span></li>
+            <li data-n="2"><b data-t="mk2h">O centro aberto</b><span data-t="mk2p">No meio da roda fica um espaço livre, como o terreiro onde se acende o fogo e se conta a história. É o lugar reservado a quem lê, convidado a sentar junto.</span></li>
+            <li data-n="3"><b data-t="mk3h">As estrelas nas páginas</b><span data-t="mk3p">Cada livro guarda uma estrela branca entre as folhas: a luz de quem escreve. Juntas, elas formam uma constelação, como os saberes que orientam o povo há gerações.</span></li>
+            <li data-n="4"><b data-t="mk4h">A faixa do nome</b><span data-t="mk4p">A palavra Cacique vem numa faixa verde, como um cinto tecido, arrematada por grafismo Terena de losangos, triângulos e pontos. A liderança é vestida com a arte do povo.</span></li>
+            <li data-n="5"><b data-t="mk5h">As letras talhadas</b><span data-t="mk5p">Enir Terena aparece em letras fortes, com cortes que lembram as incisões feitas no barro antes da queima. É o nome gravado para durar, ao lado da palavra Editora, leve e espaçada, a serviço dele.</span></li>
           </ol>
           <p class="nota" data-t="mk_nota">Mauro também criou a logomarca da OREKA, a marca coletiva das artesãs Terena. Como artista, ele se apresenta como “forasteiro”, mas é Terena de sangue e de origem.</p>
         </div>
@@ -802,13 +835,18 @@ document.querySelectorAll('#ondas i').forEach(function(e, k){ e.style.setPropert
 var T = {
  id_etq:{en:'Identity and governance',es:'Identidad y gobernanza',fr:'Identité et gouvernance'},
  id_tit:{en:'One mark, <em>one board</em>',es:'Una marca, <em>un consejo</em>',fr:'Une marque, <em>un comité</em>'},
- ab1:{en:'The ICET logo',es:'La marca del ICET',fr:'Le logo de l’ICET'}, ab2:{en:'How the Publisher was created',es:'La creación de la Editorial',fr:'La création de la maison'},
- mk_h:{en:'A face, a name and the colours of a people',es:'Un rostro, un nombre y los colores de un pueblo',fr:'Un visage, un nom et les couleurs d’un peuple'},
- mk_p:{en:'The logo of the Cacique Enir Terena Institute was created by Indigenous designer <b>Mauro Sérgio Forasteiro</b>, a Terena and son of Cacique Enir Terena. Every line brings the founder’s memory and her people’s culture into the mark.',es:'La marca del Instituto Cacique Enir Terena fue creada por el diseñador indígena <b>Mauro Sérgio Forasteiro</b>, terena, hijo de la Cacique Enir Terena. Cada trazo lleva a la marca la memoria de la fundadora y la cultura de su pueblo.',fr:'Le logo de l’Institut Cacique Enir Terena a été créé par le designer autochtone <b>Mauro Sérgio Forasteiro</b>, terena, fils de la cacique Enir Terena. Chaque trait porte la mémoire de la fondatrice et la culture de son peuple.'},
- mk1h:{en:'The portrait of Cacique Enir',es:'El retrato de la Cacique Enir',fr:'Le portrait de la cacique Enir'}, mk1p:{en:'At the centre is the founder of the Marçal de Souza Urban Village, the first woman elected chief in Mato Grosso do Sul. The logo places her memory at the heart of the Institute.',es:'En el centro está la fundadora de la Aldea Urbana Marçal de Souza, primera mujer elegida cacique en Mato Grosso do Sul. La marca pone su memoria en el corazón del Instituto.',fr:'Au centre, la fondatrice du village urbain Marçal de Souza, première femme élue cacique au Mato Grosso do Sul. Le logo place sa mémoire au cœur de l’Institut.'},
- mk2h:{en:'The arched name',es:'El nombre en arco',fr:'Le nom en arc'}, mk2p:{en:'In hand-drawn letters, the Institute’s name wraps around the portrait and closes the mark in a circle.',es:'En letras dibujadas a mano, el nombre del Instituto rodea el retrato y cierra la marca en círculo.',fr:'En lettres dessinées à la main, le nom de l’Institut entoure le portrait et referme le logo en cercle.'},
- mk3h:{en:'The coloured bands',es:'Las franjas de colores',fr:'Les bandes colorées'}, mk3p:{en:'Behind the portrait, bands in blue, yellow, green and pink open like a star. They are the same colours that live in the Publisher’s identity.',es:'Detrás del retrato, franjas en azul, amarillo, verde y rosa se abren como una estrella. Son los mismos colores que viven en la identidad de la Editorial.',fr:'Derrière le portrait, des bandes bleues, jaunes, vertes et roses s’ouvrent comme une étoile. Ce sont les couleurs de l’identité de la maison.'},
- mk4h:{en:'The ornament on her chest',es:'El adorno en el pecho',fr:'L’ornement sur la poitrine'}, mk4p:{en:'A colourful ornament with graphic patterns accompanies the portrait, a sign of the art the chief helped keep alive.',es:'Un adorno colorido con grafismo acompaña el retrato, señal del arte que la cacique ayudó a mantener vivo.',fr:'Un ornement coloré à motifs accompagne le portrait, signe de l’art que la cacique a aidé à garder vivant.'},
+ ab1:{en:'The Publisher’s logo',es:'La marca de la Editorial',fr:'Le logo de la maison'}, ab2:{en:'How the Publisher was created',es:'La creación de la Editorial',fr:'La création de la maison'},
+ mk_h:{en:'Eight books in a circle, the word that turns and shines',es:'Ocho libros en rueda, la palabra que gira e ilumina',fr:'Huit livres en cercle, la parole qui tourne et éclaire'},
+ mk_p:{en:'The logo of the Cacique Enir Terena Publishing House was created by Indigenous designer <b>Mauro Sérgio Forasteiro</b>, a Terena and son of Cacique Enir Terena. It is a sun made of books: the village circle turned into a library, turning towards the Indigenous peoples of Mato Grosso do Sul and the world.',es:'La marca de la Editorial Cacique Enir Terena fue creada por el diseñador indígena <b>Mauro Sérgio Forasteiro</b>, terena, hijo de la Cacique Enir Terena. Es un sol hecho de libros: la rueda de la aldea convertida en biblioteca, girando hacia los pueblos indígenas de Mato Grosso do Sul y hacia el mundo.',fr:'Le logo des Éditions Cacique Enir Terena a été créé par le designer autochtone <b>Mauro Sérgio Forasteiro</b>, terena, fils de la cacique Enir Terena. C’est un soleil fait de livres : le cercle du village devenu bibliothèque, tourné vers les peuples autochtones du Mato Grosso do Sul et vers le monde.'},
+ mk1h:{en:'Eight books in a circle',es:'Los ocho libros en rueda',fr:'Les huit livres en cercle'}, mk1p:{en:'The books gather like people sitting in a circle to listen to the elders. There are eight, pointing to the four corners of the world and the paths between them: the Indigenous word leaves the village in every direction.',es:'Los libros se reúnen como personas sentadas en rueda para escuchar a los mayores. Son ocho, apuntando a los cuatro rumbos del mundo y a los caminos entre ellos: la palabra indígena sale de la aldea en todas las direcciones.',fr:'Les livres se rassemblent comme des personnes assises en cercle pour écouter les anciens. Ils sont huit, tournés vers les quatre coins du monde et les chemins entre eux : la parole autochtone quitte le village dans toutes les directions.'},
+ mk2h:{en:'The open centre',es:'El centro abierto',fr:'Le centre ouvert'}, mk2p:{en:'In the middle of the circle lies a free space, like the yard where the fire is lit and stories are told. It is the place kept for the reader, invited to sit with them.',es:'En medio de la rueda queda un espacio libre, como el patio donde se enciende el fuego y se cuenta la historia. Es el lugar reservado a quien lee, invitado a sentarse junto.',fr:'Au milieu du cercle, un espace libre, comme la cour où l’on allume le feu et raconte les histoires. C’est la place réservée au lecteur, invité à s’asseoir avec eux.'},
+ mk3h:{en:'The stars in the pages',es:'Las estrellas en las páginas',fr:'Les étoiles dans les pages'}, mk3p:{en:'Each book keeps a white star between its leaves: the light of those who write. Together they form a constellation, like the knowledge that has guided the people for generations.',es:'Cada libro guarda una estrella blanca entre sus hojas: la luz de quien escribe. Juntas forman una constelación, como los saberes que orientan al pueblo desde hace generaciones.',fr:'Chaque livre garde une étoile blanche entre ses feuilles : la lumière de qui écrit. Ensemble, elles forment une constellation, comme les savoirs qui guident le peuple depuis des générations.'},
+ mk4h:{en:'The name band',es:'La franja del nombre',fr:'La bande du nom'}, mk5h:{en:'The carved letters',es:'Las letras talladas',fr:'Les lettres gravées'}, mk5p:{en:'Enir Terena appears in strong letters, with cuts that recall the incisions made in clay before firing. It is a name engraved to last, beside the word Editora, light and spaced, at its service.',es:'Enir Terena aparece en letras fuertes, con cortes que recuerdan las incisiones hechas en el barro antes de la quema. Es el nombre grabado para durar, junto a la palabra Editora, ligera y espaciada, a su servicio.',fr:'Enir Terena apparaît en lettres fortes, avec des entailles qui rappellent les incisions faites dans l’argile avant la cuisson. C’est un nom gravé pour durer, à côté du mot Editora, léger et espacé, à son service.'},
+ co1h:{en:'Blue',es:'Azul',fr:'Bleu'}, co1p:{en:'The sky over the village and the rivers of the Pantanal, water paths along which the word travels.',es:'El cielo que cubre la aldea y los ríos del Pantanal, caminos de agua por donde viaja la palabra.',fr:'Le ciel au-dessus du village et les rivières du Pantanal, chemins d’eau où voyage la parole.'},
+ co2h:{en:'Yellow',es:'Amarillo',fr:'Jaune'}, co2p:{en:'The sun and ripe corn, the harvest of a farming people who also learned to plant knowledge.',es:'El sol y el maíz maduro, la cosecha de un pueblo agricultor que aprendió a sembrar también saberes.',fr:'Le soleil et le maïs mûr, la récolte d’un peuple agriculteur qui a appris à semer aussi des savoirs.'},
+ co3h:{en:'Green',es:'Verde',fr:'Vert'}, co3p:{en:'The forest and the Cerrado, the living land that gives clay, healing plants and stories.',es:'La mata y el Cerrado, la tierra viva de donde vienen el barro, las plantas que curan y las historias.',fr:'La forêt et le Cerrado, la terre vivante d’où viennent l’argile, les plantes qui soignent et les histoires.'},
+ co4h:{en:'Magenta',es:'Magenta',fr:'Magenta'}, co4p:{en:'The flower that blooms in the dry season and the strength of the Terena women, who gave the Publisher its name and its courage.',es:'La flor que se abre en la sequía y la fuerza de las mujeres terena, que dieron a la Editorial su nombre y su valentía.',fr:'La fleur qui s’ouvre en saison sèche et la force des femmes terena, qui ont donné à la maison son nom et son courage.'},
+ mk4p:{en:'The word Cacique sits on a green band, like a woven belt, finished with a Terena pattern of diamonds, triangles and dots. Leadership is dressed in the people’s art.',es:'La palabra Cacique viene en una franja verde, como un cinturón tejido, rematada con grafismo terena de rombos, triángulos y puntos. El liderazgo se viste con el arte del pueblo.',fr:'Le mot Cacique repose sur une bande verte, comme une ceinture tissée, terminée par un motif terena de losanges, triangles et points. Le commandement est vêtu de l’art du peuple.'},
  mk_nota:{en:'Mauro also created the logo of OREKA, the collective mark of Terena artisans. As an artist he calls himself a “forasteiro” (outsider), but he is Terena by blood and origin.',es:'Mauro también creó la marca de OREKA, la marca colectiva de las artesanas terena. Como artista se presenta como “forasteiro”, pero es terena de sangre y de origen.',fr:'Mauro a aussi créé le logo d’OREKA, la marque collective des artisanes terena. Comme artiste, il se dit « forasteiro » (étranger), mais il est terena de sang et d’origine.'},
  cr_h:{en:'Created by the ICET Board',es:'Creada por la Directiva del ICET',fr:'Créée par la direction de l’ICET'},
  cr_p:{en:'The Cacique Enir Terena Publishing House was created in 2025 by the Board of the Cacique Enir Terena Institute as an Indigenous-authored imprint. Resolution No. 01/2025 defines its editorial responsibility and objectives, and the Editorial Board was constituted and approved by an internal ordinance of the Board (Ordinance No. 01/2025), with its own Internal Rules.',es:'La Editorial Cacique Enir Terena fue creada en 2025 por la Directiva del Instituto Cacique Enir Terena como sello editorial de autoría indígena. La Resolución nº 01/2025 define su responsabilidad editorial y sus objetivos, y el Consejo Editorial fue constituido y aprobado por resolución interna de la Directiva (Portaria nº 01/2025), con Reglamento Interno propio.',fr:'Les Éditions Cacique Enir Terena ont été créées en 2025 par la direction de l’Institut Cacique Enir Terena, comme label d’auteurs autochtones. La Résolution nº 01/2025 définit sa responsabilité éditoriale et ses objectifs, et le comité éditorial a été constitué et approuvé par arrêté interne de la direction (Portaria nº 01/2025), avec son propre règlement intérieur.'},
