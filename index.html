@@ -200,6 +200,41 @@ button{cursor:pointer;font-family:inherit}
 }
 .btn-g:hover{border-color:var(--ou);color:#fff6e0;background:rgba(242,196,90,.1);transform:translateY(-3px) scale(1.02)}
 
+
+/* ══ SELO ANIMADO DA EDITORA NA PRIMEIRA DOBRA ══ */
+.edh{display:flex;align-items:center;gap:1rem;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.edh svg{display:block;overflow:visible}
+.edh-disco{fill:#FBF8F2;filter:drop-shadow(0 10px 28px rgba(0,0,0,.55))}
+.edh-borda{fill:none;stroke:var(--ou,#F2C45A);stroke-width:1.6;opacity:.85}
+.edh-pontos{fill:none;stroke:var(--ou,#F2C45A);stroke-width:2.4;stroke-dasharray:1 7;stroke-linecap:round}
+.edh-texto{font-family:'Cinzel',serif;font-weight:700;font-size:13px;letter-spacing:3px;fill:var(--ou,#F2C45A)}
+.edh-anel{transform-origin:0 0;animation:edhGiro 70s linear infinite reverse}
+.edh-giro{transform-origin:0 0;animation:edhGiro 48s linear infinite}
+@keyframes edhGiro{to{transform:rotate(360deg)}}
+.edh-lv{opacity:0;animation:edhVoa 1.1s cubic-bezier(.2,1.2,.3,1) forwards}
+@keyframes edhVoa{from{opacity:0;transform:rotate(calc(var(--r) - 90deg)) translateY(46px) scale(.15)}to{opacity:1;transform:rotate(var(--r))}}
+.edh-lv-in{transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.edh:hover .edh-lv-in,.edh:focus-visible .edh-lv-in{transform:translateY(-9px)}
+.edh:hover .edh-giro{animation-duration:9s}
+.edh-fogo{transform-origin:0 0;animation:edhFogo 2.8s ease-in-out infinite}
+@keyframes edhFogo{0%,100%{transform:scale(.85);opacity:.75}50%{transform:scale(1.2);opacity:1}}
+.edh-txt{display:block;min-width:0}.edh-txt b{display:block;font-family:'Cinzel',serif;font-size:.95rem;color:#fff6e0;letter-spacing:.04em;line-height:1.25}
+.edh-txt span{display:inline-flex;align-items:center;gap:.4rem;margin-top:.45rem;font-family:'Inter',sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.06em;color:#111;background:linear-gradient(90deg,#00A8E8,#4FA862,#F5AA19,#EE1A8C);padding:.42rem .95rem;border-radius:30px;transition:transform .3s}
+.edh:hover .edh-txt span{transform:translateX(4px)}
+.edh-txt>span[data-i18n]{display:table}.edh-cores{display:flex;height:4px;width:120px;margin-top:.55rem;border-radius:2px;overflow:hidden}.edh-cores i{flex:1}
+/* lateral, telas largas */
+.edh-lado{position:absolute;z-index:3;right:clamp(1.4rem,calc((100vw - 1440px) / 2 + 2.4rem),6rem);top:50%;transform:translateY(-50%);flex-direction:column;gap:.6rem;text-align:center;opacity:0;animation:edhEntra 1s ease .5s forwards}
+.edh-lado svg{width:200px;height:200px}
+.edh-lado .edh-txt b{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ou,#F2C45A)}
+.edh-lado .edh-cores{display:none}
+@keyframes edhEntra{from{opacity:0;transform:translateY(-46%)}to{opacity:1;transform:translateY(-50%)}}
+/* em linha, telas menores */
+.edh-linha{display:none;justify-content:flex-start;margin:-2.2rem auto 2.6rem;padding:.7rem 1.3rem .7rem .7rem;width:fit-content;max-width:min(440px,100%);box-sizing:border-box;border:1px solid var(--brd2,rgba(242,196,90,.3));border-radius:999px;background:rgba(255,255,255,.03);text-align:left}
+.edh-linha svg{width:92px;height:92px;flex:none}
+@media(max-width:1399px){.edh-lado{display:none}.edh-linha{display:flex}}
+@media(max-width:420px){.edh-linha{border-radius:22px}.edh-linha svg{width:78px;height:78px}.edh-txt b{font-size:.84rem}}
+@media (prefers-reduced-motion:reduce){.edh-lv{opacity:1;animation:none;transform:rotate(var(--r))}.edh-giro,.edh-anel,.edh-fogo{animation:none}.edh-lado{animation:none;opacity:1}}
+
 /* ══ STATS HERO ══ */
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
@@ -2289,6 +2324,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
       <a href="#consultorias" class="btn-g" data-i18n="hero_btn3">Projetos e Consultorias</a>
       <a href="#loja" class="btn-g">Loja OREKA</a>
     </div>
+    <a class="edh edh-linha" href="editora/" aria-label="Editora Cacique Enir Terena"><svg class="edh-svg" viewBox="-130 -130 260 260" aria-hidden="true"></svg><span class="edh-txt"><b>Editora Cacique Enir Terena</b><span class="edh-cores" aria-hidden="true"><i style="background:#00A8E8"></i><i style="background:#F5AA19"></i><i style="background:#4FA862"></i><i style="background:#EE1A8C"></i></span><span data-i18n="edl_bt">Conhecer a Editora →</span></span></a>
     <div class="hero-stats">
       <div class="stat-card">
         <span class="stat-n" id="sn1">117.261</span>
@@ -2308,6 +2344,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
       </div>
     </div>
   </div>
+  <a class="edh edh-lado" href="editora/" aria-label="Editora Cacique Enir Terena"><svg class="edh-svg" viewBox="-130 -130 260 260" aria-hidden="true"></svg><span class="edh-txt"><b>Editora Cacique Enir Terena</b><span data-i18n="edl_bt">Conhecer a Editora →</span></span></a>
   <div class="hero-scroll">
     <span data-i18n="hero_role">Role</span>
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -8885,6 +8922,36 @@ else setTimeout(iniciar, 0);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(iniciar, 400); });
   else setTimeout(iniciar, 400);
+})();
+</script>
+<script>
+/* selo animado da Editora: oito livros que se abrem em roda, nas cores da marca */
+(function(){
+  var cs = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'];
+  function livros(){
+    var h = '';
+    /* ordem da marca: azul no alto à esquerda, amarelo, verde, magenta, azul, amarelo, ... */
+    var cor = ['#F5AA19','#4FA862','#EE1A8C','#00A8E8','#F5AA19','#00A8E8','#EE1A8C','#00A8E8'];
+    for(var i = 0; i < 8; i++){
+      var r = i * 45;
+      h += '<g class="edh-lv" style="--r:' + r + 'deg;transform:rotate(' + r + 'deg);animation-delay:' + (0.55 + i * 0.09) + 's"><g class="edh-lv-in">' +
+        '<rect x="-19" y="-100" width="38" height="78" rx="19" fill="#111"/>' +
+        '<rect x="-13" y="-95" width="26" height="66" rx="13" fill="' + cor[i] + '"/>' +
+        '<path d="M-6-90V-40M0-92V-36M6-90V-40" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>' +
+        '<path d="M7-46l6-1.6-.4 6.2 5.4 2.6-5.6 2.4" fill="#fff"/></g></g>';
+    }
+    return h;
+  }
+  document.querySelectorAll('.edh-svg').forEach(function(sv, k){
+    var id = 'edhc' + k;
+    sv.innerHTML = '<defs><path id="' + id + '" d="M0 0m-118 0a118 118 0 1 1 236 0a118 118 0 1 1-236 0"/>' +
+      '<radialGradient id="' + id + 'f"><stop offset="0" stop-color="#F5AA19" stop-opacity=".9"/><stop offset=".5" stop-color="#EE1A8C" stop-opacity=".25"/><stop offset="1" stop-color="#EE1A8C" stop-opacity="0"/></radialGradient></defs>' +
+      '<g class="edh-anel"><circle r="127" class="edh-pontos"/><text class="edh-texto"><textPath href="#' + id + '" textLength="735" lengthAdjust="spacing">EDITORA ✦ CACIQUE ENIR TERENA ✦ AUTORIA INDÍGENA ✦</textPath></text></g>' +
+      '<circle r="106" class="edh-disco"/><circle r="101" class="edh-borda"/>' +
+      '<circle r="26" class="edh-fogo" fill="url(#' + id + 'f)"/>' +
+      '<g class="edh-giro">' + livros() + '</g>';
+    if(sv.closest('.edh-linha')){ sv.querySelector('.edh-anel').style.display = 'none'; sv.setAttribute('viewBox', '-110 -110 220 220'); }
+  });
 })();
 </script>
 </body>
