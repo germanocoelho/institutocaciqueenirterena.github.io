@@ -1,0 +1,91 @@
+/* Editora Cacique Enir Terena · camada étnica comum (botões, cartões, medalhões)
+   Iconografia inspirada na cerâmica e nos grafismos Terena: flor de quatro pétalas,
+   losango duplo, zigue-zague e pontilhado, nas quatro cores da marca. */
+
+/* ───────── botões étnicos ───────── */
+.bt{position:relative;isolation:isolate;overflow:hidden;
+  --tx-esc:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><path d='M14 3 25 14 14 25 3 14z' fill='none' stroke='%23EE1A8C' stroke-width='1.6'/><path d='M14 9 19 14 14 19 9 14z' fill='none' stroke='%23F5AA19' stroke-width='1.4'/><circle cx='0' cy='0' r='1.8' fill='%2300A8E8'/><circle cx='28' cy='0' r='1.8' fill='%234FA862'/><circle cx='0' cy='28' r='1.8' fill='%234FA862'/><circle cx='28' cy='28' r='1.8' fill='%2300A8E8'/></svg>");
+  --tx-cla:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><path d='M14 3 25 14 14 25 3 14z' fill='none' stroke='%23111' stroke-opacity='.28' stroke-width='1.6'/><circle cx='14' cy='14' r='2' fill='%23111' fill-opacity='.3'/><circle cx='0' cy='0' r='1.6' fill='%23111' fill-opacity='.3'/><circle cx='28' cy='0' r='1.6' fill='%23111' fill-opacity='.3'/><circle cx='0' cy='28' r='1.6' fill='%23111' fill-opacity='.3'/><circle cx='28' cy='28' r='1.6' fill='%23111' fill-opacity='.3'/></svg>")}
+.bt::before{content:'';position:absolute;inset:0;z-index:-1;background:#F5AA19 var(--tx-cla) 0 0/28px 28px;transform:translateX(-102%) skewX(-12deg);transform-origin:0 50%;transition:transform .6s cubic-bezier(.65,0,.2,1)}
+.bt.pri::before{background:#111 var(--tx-esc) 0 0/28px 28px}
+.bt:hover::before,.bt:focus-visible::before{transform:translateX(0) skewX(0);animation:etnTrama 5s linear infinite .6s}
+@keyframes etnTrama{to{background-position:56px 0}}
+.bt::after{content:'';position:absolute;left:18px;right:18px;bottom:4px;height:5px;pointer-events:none;
+  background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='5'><path d='M0 1 6 4 12 1' fill='none' stroke='%2300A8E8' stroke-width='1.6'/><path d='M12 1 18 4 24 1' fill='none' stroke='%23F5AA19' stroke-width='1.6'/><path d='M24 1 30 4 36 1' fill='none' stroke='%234FA862' stroke-width='1.6'/><path d='M36 1 42 4 48 1' fill='none' stroke='%23EE1A8C' stroke-width='1.6'/></svg>") 0 0/48px 5px repeat-x;
+  transform:scaleX(0);transition:transform .5s cubic-bezier(.3,0,.2,1) .1s}
+.bt:hover::after,.bt:focus-visible::after{transform:scaleX(1);animation:etnZig 1.6s linear infinite}
+@keyframes etnZig{to{background-position:48px 0}}
+.bt-flor{width:18px;height:18px;flex:none;color:#F5AA19;transition:transform .7s cubic-bezier(.3,1.6,.45,1),color .3s}
+.bt.sec .bt-flor{color:#EE1A8C}
+.bt:hover .bt-flor{transform:rotate(135deg) scale(1.25);color:#4FA862}
+.bt.pri:hover .bt-flor{color:#00A8E8}
+.bt-flor .miolo{fill:#fff}
+/* explosão de pétalas ao clicar */
+.etn-estouro{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;pointer-events:none;z-index:300;animation:etnEstouro .9s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes etnEstouro{from{transform:translate(var(--x),var(--y)) scale(.4) rotate(0);opacity:1}to{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(1.1) rotate(var(--r));opacity:0}}
+
+/* ───────── cartões vivos ───────── */
+.etn-card{isolation:isolate;overflow:hidden;position:relative}
+.etn-card.rv:not(.in){transform:perspective(900px) rotateX(26deg) translateY(46px);transform-origin:50% 100%}
+.etn-tex{position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--c,#00A8E8);opacity:.14;
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='34'><path d='M17 4 30 17 17 30 4 17z' fill='none' stroke='%23000' stroke-width='2'/><circle cx='17' cy='17' r='2.6'/><circle cx='0' cy='0' r='2.2'/><circle cx='34' cy='0' r='2.2'/><circle cx='0' cy='34' r='2.2'/><circle cx='34' cy='34' r='2.2'/></svg>") 0 0/34px 34px;
+  mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='34'><path d='M17 4 30 17 17 30 4 17z' fill='none' stroke='%23000' stroke-width='2'/><circle cx='17' cy='17' r='2.6'/><circle cx='0' cy='0' r='2.2'/><circle cx='34' cy='0' r='2.2'/><circle cx='0' cy='34' r='2.2'/><circle cx='34' cy='34' r='2.2'/></svg>") 0 0/34px 34px;
+  clip-path:circle(0 at var(--mx,50%) var(--my,50%));transition:clip-path .8s cubic-bezier(.3,0,.2,1)}
+.etn-card:hover .etn-tex{clip-path:circle(150% at var(--mx,50%) var(--my,50%))}
+.etn-faixa{position:absolute;left:0;right:0;top:0;height:8px;pointer-events:none;background:var(--c,#00A8E8);
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8'><path d='M0 7 8 1 16 7' fill='none' stroke='%23000' stroke-width='2.2'/></svg>") 0 0/16px 8px repeat-x;
+  mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8'><path d='M0 7 8 1 16 7' fill='none' stroke='%23000' stroke-width='2.2'/></svg>") 0 0/16px 8px repeat-x;
+  transform:scaleX(0);transform-origin:0 50%;transition:transform 1.1s cubic-bezier(.6,0,.2,1) .25s}
+.etn-card.in .etn-faixa,.etn-card:not(.rv) .etn-faixa{transform:scaleX(1)}
+.etn-card:hover .etn-faixa{animation:etnFaixa 1.2s linear infinite}
+@keyframes etnFaixa{to{-webkit-mask-position:16px 0;mask-position:16px 0}}
+.etn-orn{position:absolute;top:16px;right:16px;width:30px;height:30px;color:var(--c,#00A8E8);pointer-events:none;opacity:0;transform:scale(0) rotate(-180deg);transition:transform 1.1s cubic-bezier(.3,1.5,.5,1) .45s,opacity .5s .45s}
+.etn-orn.baixo{top:auto;bottom:14px;width:22px;height:22px}
+.etn-card.in .etn-orn,.etn-card:not(.rv) .etn-orn{opacity:.95;transform:none}
+.etn-card:hover .etn-orn{transform:rotate(135deg) scale(1.2);transition-delay:0s}
+.etn-orn .miolo{fill:#fff}
+
+/* ───────── medalhões das logomarcas ───────── */
+.medalhas{max-width:100%;display:flex;align-items:center;justify-content:flex-start;gap:0;margin:18px 0 12px;flex-wrap:nowrap}
+.med{position:relative;width:clamp(70px,20vw,112px);flex:none;text-align:center}
+.med-dsc{position:relative;aspect-ratio:1;display:grid;place-items:center;transform:scale(.3) rotate(-120deg);opacity:0;transition:transform 1.1s cubic-bezier(.3,1.4,.5,1),opacity .5s}
+.medalhas.etn-in .med-dsc{transform:none;opacity:1}
+.medalhas.etn-in .med:nth-child(3) .med-dsc{transition-delay:.25s}.medalhas.etn-in .med:nth-child(5) .med-dsc{transition-delay:.5s}
+.med-anel{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.med-giro{transform-origin:0 0;animation:etnGiro 26s linear infinite}
+.med:nth-child(3) .med-giro{animation-direction:reverse;animation-duration:32s}
+.med:hover .med-giro{animation-duration:5s}
+@keyframes etnGiro{to{transform:rotate(360deg)}}
+.med-traco{fill:none;stroke:#111;stroke-width:1.6;stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.6s cubic-bezier(.6,0,.2,1) .5s}
+.medalhas.etn-in .med-traco{stroke-dashoffset:0}
+.med-img{position:relative;width:68%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:#fff;box-shadow:0 0 0 3px #111,0 10px 22px -10px rgba(0,0,0,.55);transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.med-img img{width:100%;height:100%;object-fit:contain;padding:9%;display:block;max-width:none;border:0;border-radius:0;margin:0}
+.med-img.escuro{background:#000}.med-img.escuro img{object-fit:cover;padding:0}
+.med:hover .med-img{transform:scale(1.08) rotate(-4deg)}
+.med-img::after{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.65) 50%,transparent 65%) -200% 0/250% 100% no-repeat;animation:etnBrilho 5s ease-in-out infinite;pointer-events:none}
+.med:nth-child(3) .med-img::after{animation-delay:1.6s}.med:nth-child(5) .med-img::after{animation-delay:3.2s}
+@keyframes etnBrilho{0%,60%{background-position:-200% 0}85%,100%{background-position:200% 0}}
+.med b{display:block;font-family:'Archivo',system-ui,sans-serif;font-weight:900;font-size:.82rem;letter-spacing:.06em;margin-top:8px;line-height:1.1}
+.med small{display:block;font-family:'Archivo',system-ui,sans-serif;font-weight:600;font-size:.66rem;color:#6b6b6b;line-height:1.25;margin-top:2px}
+.med-elo{flex:1 1 40px;width:40px;min-width:14px;max-width:70px;height:24px;margin-bottom:34px;overflow:visible;opacity:0;transition:opacity .6s .9s}
+.medalhas.etn-in .med-elo{opacity:1}
+.med-elo line{stroke:#111;stroke-width:2;stroke-dasharray:3 5;animation:etnFluxo 1s linear infinite}
+@keyframes etnFluxo{to{stroke-dashoffset:-16}}
+.med-elo .elo-flor{transform-box:fill-box;transform-origin:center;animation:etnPulso 2.4s ease-in-out infinite}
+@keyframes etnPulso{0%,100%{transform:scale(.85) rotate(0)}50%{transform:scale(1.15) rotate(45deg)}}
+@media(max-width:760px){.medalhas{justify-content:center}}
+
+/* selo com as marcas alternando */
+.etn-selo-pilha{position:relative;width:100%;height:100%}
+.etn-selo-pilha img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transform:scale(1.15) rotate(-8deg);transition:opacity .9s,transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.etn-selo-pilha img.on{opacity:1;transform:none}
+.etn-selo-pilha img.claro{background:#fff;object-fit:contain!important;padding:12%}
+
+@media (prefers-reduced-motion:reduce){
+  .bt::before,.bt::after,.etn-tex{display:none}
+  .etn-card.rv:not(.in){transform:none}
+  .etn-faixa{transform:scaleX(1)}.etn-orn{opacity:.95;transform:none}
+  .med-dsc{transform:none;opacity:1}.med-traco{stroke-dashoffset:0}.med-elo{opacity:1}
+}
+
+.aut>div,.autoriza>div{min-width:0}

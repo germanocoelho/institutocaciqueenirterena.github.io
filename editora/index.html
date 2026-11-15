@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Editora Cacique Enir Terena · Selo editorial de autoria indígena</title>
-<meta name="description" content="Editora Cacique Enir Terena: selo editorial de autoria indígena do Instituto Cacique Enir Terena (ICET), em Campo Grande, Mato Grosso do Sul. Livros digitais acessíveis, de leitura aberta, com o nome do CMDDI autorizado pelo Conselho.">
+<meta name="description" content="Editora Cacique Enir Terena: selo editorial de autoria indígena do Instituto Cacique Enir Terena (ICET), em Campo Grande, Mato Grosso do Sul. Livros digitais acessíveis, de leitura aberta, com o nome do CMDDI e do FOCAMS no selo, por convênio interinstitucional entre as entidades indígenas.">
 <meta property="og:title" content="Editora Cacique Enir Terena">
 <meta property="og:description" content="Selo editorial de autoria indígena. Livros digitais acessíveis, de leitura aberta.">
 <meta property="og:image" content="logos/editora-cor.png">
@@ -256,12 +256,26 @@ footer img{height:70px;margin:0 auto 16px}
 .grafia-trilho{height:100%;width:200%;background-repeat:repeat-x;background-size:auto 100%;will-change:transform}
 .grafia.dir .grafia-trilho{transform:translateX(-50%)}
 
-.pote{position:relative;display:block;width:220px;margin:40px auto 0;opacity:.9;pointer-events:none}@media(min-width:1320px){.marco{position:relative}.pote{position:absolute;right:3%;top:auto;bottom:260px;width:min(230px,16vw);margin:0}}
-.pote-l{fill:none;stroke:#FBF8F2;stroke-width:4;stroke-linecap:round;stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 3s cubic-bezier(.6,0,.2,1)}
-.pote-f use{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(0) rotate(-90deg);transition:opacity .6s,transform .9s cubic-bezier(.3,1.5,.5,1)}
-.marco.ver .pote-l{stroke-dashoffset:0}
-.marco.ver .pote-f use{opacity:1;transform:none}
-.marco.ver .pote-f use:nth-child(1){transition-delay:1.6s}.marco.ver .pote-f use:nth-child(2){transition-delay:1.8s}.marco.ver .pote-f use:nth-child(3){transition-delay:2s}.marco.ver .pote-f use:nth-child(4){transition-delay:2.2s}.marco.ver .pote-f use:nth-child(5){transition-delay:2.35s}.marco.ver .pote-f use:nth-child(6){transition-delay:2.5s}
+.marco-txt{position:relative}
+.pote{grid-column:1/-1;position:relative;display:block;width:min(300px,80vw);margin:10px auto -10px;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media(min-width:1320px){.pote{position:absolute;left:calc(100% + 22px);top:-96px;width:clamp(200px,calc(100vw - 1160px),290px);margin:0}}
+.pote-l{fill:none;stroke:#FBF8F2;stroke-width:3.2;stroke-linecap:round;stroke-dasharray:1100;stroke-dashoffset:1100;transition:stroke-dashoffset 1.6s cubic-bezier(.6,0,.2,1),stroke .8s 2.4s,stroke-width .8s 2.4s,opacity .8s 2.4s}
+.marco.ver .pote-l{stroke-dashoffset:0;stroke:#E8A57C;stroke-width:1.6;opacity:.55}
+.pote-aura{transform-box:fill-box;transform-origin:center;opacity:0;transform:scale(.6);transition:opacity 1.2s 1.6s,transform 1.6s 1.6s}
+.marco.ver .pote-aura{opacity:1;transform:none;animation:poteAura 4s ease-in-out 3.2s infinite}
+@keyframes poteAura{50%{transform:scale(1.08);opacity:.7}}
+.pote:hover .pote-aura{opacity:1;filter:saturate(1.6)}
+.pote-sol{transform-origin:160px 206px;animation:gira 50s linear infinite}
+.pote-sol circle{fill:#FBF8F2;opacity:0;transition:opacity .4s}
+.marco.ver .pote-sol circle{opacity:.55}
+.pote-sombra{opacity:0;transition:opacity 1s 1.2s}.marco.ver .pote-sombra{opacity:1}
+.pote-boca{opacity:0;transform:translateY(8px);transition:opacity .6s 2.6s,transform .6s 2.6s}
+.marco.ver .pote-boca{opacity:1;transform:none}
+.pote-bandas path{stroke-dasharray:300;stroke-dashoffset:300;transition:stroke-dashoffset 1.2s cubic-bezier(.6,0,.2,1)}
+.pote.pinta .pote-bandas path{stroke-dashoffset:0}
+.pote-voo g{animation:poteVoo 3.4s ease-out forwards}
+@keyframes poteVoo{0%{transform:translate(var(--x0),48px) scale(.15) rotate(0);opacity:0}18%{opacity:1}100%{transform:translate(var(--x1),-70px) scale(1) rotate(var(--r));opacity:0}}
+@media (prefers-reduced-motion:reduce){.pote-l{stroke-dashoffset:0}.pote-aura,.pote-boca,.pote-sombra{opacity:1;transform:none}.pote-bandas path{stroke-dashoffset:0}}
 
 
 .palavra{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.04em}
@@ -281,18 +295,68 @@ footer img{height:70px;margin:0 auto 16px}
 .flor-rodape svg{width:30px;height:30px;animation:gira 10s linear infinite}
 .flor-rodape svg:nth-child(2){animation-direction:reverse}.flor-rodape svg:nth-child(3){animation-duration:14s}
 
-@media (prefers-reduced-motion:reduce){#abertura,#cursor,.petala-voo{display:none!important}.palavra>span{transform:none}.pote-l{stroke-dashoffset:0}.pote-f use{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#abertura,#cursor,.petala-voo{display:none!important}.palavra>span{transform:none}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
+/* ═════════ recortes com grafismo e movimento ═════════ */
+.como-flor{--miolo:transparent;position:absolute;right:-140px;top:-60px;width:520px;height:520px;color:rgba(251,248,242,.045);animation:gira 90s linear infinite;pointer-events:none;z-index:0}
+#como{overflow:hidden}#como .wrap{position:relative;z-index:1}
+.ps::before{display:none}
+.ps:nth-child(1){--c:#00A8E8}.ps:nth-child(2){--c:#F5AA19}.ps:nth-child(3){--c:#4FA862}.ps:nth-child(4){--c:#EE1A8C}.ps:nth-child(5){--c:#FBF8F2}
+.ps-n{position:relative;display:grid;place-items:center;width:64px;height:64px;margin-bottom:16px;z-index:1;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.ps-n svg{position:absolute;left:-8px;top:-8px;width:80px;height:80px;overflow:visible}
+.ps-giro{animation:gira 22s linear infinite}
+.ps-giro path{fill:var(--c)}
+.ps-anel{fill:none;stroke:var(--c);stroke-width:2;stroke-dasharray:1.5 6;stroke-linecap:round;opacity:.75}
+.ps-los{fill:#111;stroke:var(--c);stroke-width:2.6;stroke-linejoin:round;stroke-dasharray:160;stroke-dashoffset:160;transition:stroke-dashoffset 1.3s cubic-bezier(.6,0,.2,1) .2s,fill .5s}
+.ps.in .ps-los{stroke-dashoffset:0}
+.ps-los2{fill:none;stroke:var(--c);stroke-width:1.6;opacity:.55;transition:opacity .4s}
+.ps-n b{position:relative;font-family:var(--disp);font-weight:900;font-size:1.25rem;color:#FBF8F2;transition:color .4s}
+.ps.on .ps-n{transform:scale(1.14)}
+.ps.on .ps-los{fill:var(--c)}.ps.on .ps-los2{stroke:#111;opacity:.5}.ps.on .ps-n b{color:#111}
+.ps.on .ps-giro{animation-duration:4s}
+.ps h4{transition:color .4s}.ps.on h4{color:var(--c)}
+.ps::after{top:28px;left:76px;right:10px;height:8px;background:rgba(251,248,242,.28);
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8'><path d='M0 7 8 1 16 7' fill='none' stroke='%23000' stroke-width='2'/></svg>") 0 0/16px 8px repeat-x;
+  mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='8'><path d='M0 7 8 1 16 7' fill='none' stroke='%23000' stroke-width='2'/></svg>") 0 0/16px 8px repeat-x;
+  transform:scaleX(0);transform-origin:0 50%;transition:transform 1s cubic-bezier(.6,0,.2,1) .5s,background .4s}
+.ps.in::after{transform:scaleX(1)}
+.ps.on::after{background:var(--c);animation:etnFaixa .6s linear infinite}
+.un-n{color:transparent;-webkit-text-stroke:2px var(--c);transition:color .8s .6s}
+.un.in .un-n{color:var(--c)}
+.pg::before{counter-increment:none;content:'';width:30px;height:30px;left:22px;top:22px;border-radius:5px;transform:rotate(45deg);transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
+.pg::after{counter-increment:g;content:counter(g);position:absolute;left:20px;top:20px;width:34px;height:34px;display:grid;place-items:center;font-family:var(--disp);font-weight:900;color:#fff;font-size:.95rem}
+.pg:hover::before{transform:rotate(225deg) scale(1.12)}
+.pg{padding-bottom:44px}
+.pub li::before{display:none}
+.pub li{transition:padding .35s cubic-bezier(.3,1.4,.5,1);background:linear-gradient(90deg,var(--c,#00A8E8),var(--c,#00A8E8)) 34px 100%/0 2px no-repeat;transition:padding .35s,background-size .5s}
+.pub li:hover{padding-left:42px;background-size:calc(100% - 34px) 2px}
+.pub li:nth-child(1){--c:#00A8E8}
+.pub-ic{position:absolute;left:0;top:12px;width:22px;height:22px;transform:scale(0) rotate(-180deg);transition:transform .9s cubic-bezier(.3,1.5,.5,1)}
+.pub ul.in .pub-ic{transform:none}
+.pub ul.in li:nth-child(2) .pub-ic{transition-delay:.15s}.pub ul.in li:nth-child(3) .pub-ic{transition-delay:.3s}.pub ul.in li:nth-child(4) .pub-ic{transition-delay:.45s}
+.pub li:hover .pub-ic{transform:rotate(135deg) scale(1.2);transition-delay:0s}
+.cartao{position:relative}
+.cartao-flor{--miolo:transparent;position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;color:rgba(245,170,25,.13);animation:gira 40s linear infinite;pointer-events:none;z-index:-1}
+.prep{display:flex;gap:7px;justify-content:center;align-items:flex-end;height:74px;margin:0 auto 16px;position:relative;width:max-content}
+.prep i{width:20px;height:44px;border-radius:5px 5px 2px 2px;background:var(--c,#00A8E8);position:relative;animation:prepSobe 2.6s cubic-bezier(.5,0,.3,1) infinite;box-shadow:inset -4px 0 0 rgba(0,0,0,.18)}
+.prep i::after{content:'';position:absolute;left:5px;right:5px;top:9px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 22px 0 rgba(255,255,255,.6)}
+.prep i:nth-child(2){--c:#F5AA19;height:56px;animation-delay:.2s}.prep i:nth-child(3){--c:#4FA862;height:50px;animation-delay:.4s}.prep i:nth-child(4){--c:#EE1A8C;height:60px;animation-delay:.6s}
+@keyframes prepSobe{0%,100%{transform:translateY(0)}35%{transform:translateY(-12px) rotate(-3deg)}60%{transform:translateY(0)}}
+.prep svg{position:absolute;right:-26px;top:-6px;width:24px;height:24px;color:#EE1A8C;animation:gira 6s linear infinite}
+.disco-wrap{position:relative;display:grid;place-items:center;padding:30px}
+.av-anel{position:absolute;inset:0;width:100%;height:100%;overflow:visible;animation:gira 30s linear infinite reverse}
+@media (prefers-reduced-motion:reduce){.ps-los{stroke-dashoffset:0}.ps::after{transform:scaleX(1)}.un-n{color:var(--c)}.pub-ic{transform:none}}
 </style>
+<link rel="stylesheet" href="etnico.css?v=20261115">
 </head>
 <body>
 <div class="papel-tex" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <!-- flor de quatro pétalas da cerâmica Terena -->
-    <symbol id="flor" viewBox="-50 -50 100 100"><g fill="currentColor"><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(90)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(180)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(270)"/></g><circle r="7" fill="#fff"/><circle r="3.5" fill="currentColor"/></symbol>
+    <symbol id="flor" viewBox="-50 -50 100 100"><g fill="currentColor"><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(90)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(180)"/><path d="M0-6C-9-16-9-34 0-44 9-34 9-16 0-6z" transform="rotate(270)"/></g><circle r="7" style="fill:var(--miolo,#fff)"/><circle r="3.5" fill="currentColor"/></symbol>
     <!-- losango duplo do grafismo -->
     <symbol id="losango" viewBox="-50 -50 100 100"><g fill="none" stroke="currentColor" stroke-width="6"><path d="M0-42 42 0 0 42-42 0z"/><path d="M0-20 20 0 0 20-20 0z"/></g><circle r="5" fill="currentColor"/></symbol>
   </defs>
@@ -356,27 +420,46 @@ footer img{height:70px;margin:0 auto 16px}
     <div class="etq rv" style="color:#FBF8F2"><i style="background:var(--amarelo)"></i><span data-t="mc_etq">Um marco na história do livro indígena</span></div>
     <h2 class="marco-tit rv" data-t-html="mc_tit">Da primeira aldeia urbana do Brasil, <em>a voz dos povos indígenas de Mato Grosso do Sul para o mundo</em></h2>
     <div class="marco-txt rv">
-      <p data-t="mc_p1">Em 1995, famílias Terena ergueram em Campo Grande a Aldeia Urbana Marçal de Souza, reconhecida como a primeira aldeia urbana do país. Três décadas depois, é ali que nasce a Editora Cacique Enir Terena, criada por mulheres Terena e batizada com o nome da fundadora da aldeia, a primeira mulher eleita cacique em Mato Grosso do Sul.</p>
+      <p data-t="mc_p1">Em 1995, famílias Terena ergueram em Campo Grande a Aldeia Urbana Marçal de Souza, reconhecida como a primeira aldeia urbana do país. Três décadas depois, é ali que nasce a Editora Cacique Enir Terena, de um Instituto indígena criado por mulheres Terena e batizada com o nome da fundadora da aldeia, a primeira mulher eleita cacique em Mato Grosso do Sul.</p>
       <p data-t="mc_p2">Durante séculos, a história dos povos indígenas foi escrita por outros. Agora, a palavra dos povos indígenas de Mato Grosso do Sul tem casa própria: um selo que publica com autoria indígena, protege os saberes de quem os guarda e leva os livros a todo o mundo, gratuitamente. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau e Atikum: é o território que passa a escrever, e a narrar, a própria história.</p>
+      <svg class="pote" viewBox="0 0 320 400" role="img" aria-label="Cerâmica Terena girando no torno">
+      <defs>
+        <radialGradient id="pBarro" cx="36%" cy="38%" r="72%"><stop offset="0" stop-color="#DE8A5A"/><stop offset=".42" stop-color="#B24A27"/><stop offset=".8" stop-color="#7C2C14"/><stop offset="1" stop-color="#4E180A"/></radialGradient>
+        <linearGradient id="pVol" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".6"/><stop offset=".2" stop-color="#000" stop-opacity="0"/><stop offset=".33" stop-color="#fff" stop-opacity=".2"/><stop offset=".47" stop-color="#fff" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".65"/></linearGradient>
+        <radialGradient id="pAura"><stop offset="0" stop-color="#F5AA19" stop-opacity=".42"/><stop offset=".55" stop-color="#EE1A8C" stop-opacity=".1"/><stop offset="1" stop-color="#EE1A8C" stop-opacity="0"/></radialGradient>
+        <radialGradient id="pSombra"><stop offset="0" stop-color="#000" stop-opacity=".75"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+        <clipPath id="pCorpo"><path d="M112 52C112 70 128 76 126 92C124 108 62 130 42 180C24 226 36 286 82 326C112 352 142 360 160 360C178 360 208 352 238 326C284 286 296 226 278 180C258 130 196 108 194 92C192 76 208 70 208 52Z"/></clipPath>
+        <clipPath id="pSobe"><rect class="pote-sobe" x="0" y="400" width="320" height="0"/></clipPath>
+      </defs>
+      <circle class="pote-aura" cx="160" cy="206" r="175" fill="url(#pAura)"/>
+      <g class="pote-sol"></g>
+      <ellipse class="pote-sombra" cx="160" cy="366" rx="118" ry="16" fill="url(#pSombra)"/>
+      <g clip-path="url(#pSobe)">
+        <g clip-path="url(#pCorpo)">
+          <rect width="320" height="400" fill="url(#pBarro)"/>
+          <g class="pote-roletes"></g>
+          <g class="pote-pint">
+            <g class="pote-bandas" fill="none" stroke="#F6E6D0" stroke-linecap="round"></g>
+            <path class="pote-zz" fill="none" stroke="#F6E6D0" stroke-width="2.6" stroke-linejoin="round"/>
+            <path class="pote-zz2" fill="none" stroke="#F5AA19" stroke-width="2.2" stroke-linejoin="round"/>
+            <g class="pote-mot"></g>
+          </g>
+          <rect width="320" height="400" fill="url(#pVol)"/>
+          <ellipse cx="108" cy="176" rx="22" ry="66" fill="#fff" opacity=".12" transform="rotate(16 108 176)"/>
+        </g>
+      </g>
+      <g class="pote-boca"><ellipse cx="160" cy="52" rx="48" ry="9" fill="#2A0C03"/><ellipse cx="160" cy="52" rx="48" ry="9" fill="none" stroke="#E8A57C" stroke-width="3.2"/></g>
+      <path class="pote-l" d="M112 52C112 70 128 76 126 92C124 108 62 130 42 180C24 226 36 286 82 326C112 352 142 360 160 360C178 360 208 352 238 326C284 286 296 226 278 180C258 130 196 108 194 92C192 76 208 70 208 52Z"/>
+      <g class="pote-voo"></g>
+    </svg>
     </div>
     <div class="marco-marcos rv">
       <div><b>1995</b><span data-t="mc_m1">Nasce a Aldeia Urbana Marçal de Souza, a primeira aldeia urbana do Brasil</span></div>
       <div><b>2025</b><span data-t="mc_m2">Mulheres Terena fundam o Instituto Cacique Enir Terena</span></div>
       <div><b>2026</b><span data-t="mc_m3">Primeiro livro da Editora, com ISBN e leitura aberta</span></div>
-      <div><b>13.11.26</b><span data-t="mc_m4">O CMDDI autoriza o uso do seu nome no selo editorial</span></div>
+      <div><b>13.11.26</b><span data-t="mc_m4">O CMDDI (Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande) e o FOCAMS (Fórum dos Caciques de Mato Grosso do Sul) autorizam o uso de seus nomes no selo editorial</span></div>
     </div>
-    <svg class="pote" viewBox="0 0 300 320" aria-hidden="true">
-      <path class="pote-l" d="M95 40h110M105 40c0 18-6 26-22 40-34 30-48 70-40 112 10 56 52 96 107 96s97-40 107-96c8-42-6-82-40-112-16-14-22-22-22-40"/>
-      <path class="pote-l" d="M60 150c60 14 120 14 180 0M52 196c66 16 130 16 196 0" style="stroke-width:3"/>
-      <g class="pote-f">
-        <use href="#flor" x="88" y="158" width="34" height="34" style="color:#F5AA19"/>
-        <use href="#flor" x="133" y="164" width="34" height="34" style="color:#FBF8F2"/>
-        <use href="#flor" x="178" y="158" width="34" height="34" style="color:#F5AA19"/>
-        <use href="#losango" x="110" y="222" width="22" height="22" style="color:#EE1A8C"/>
-        <use href="#losango" x="139" y="226" width="22" height="22" style="color:#00A8E8"/>
-        <use href="#losango" x="168" y="222" width="22" height="22" style="color:#4FA862"/>
-      </g>
-    </svg>
+
   </div>
 </section>
 
@@ -397,7 +480,7 @@ footer img{height:70px;margin:0 auto 16px}
           <span class="ir" data-t="o1_ir">Ler o livro →</span>
         </div>
       </a>
-      <div class="obra breve rv"><div><div class="tg" style="color:var(--magenta)" data-t="br_tg">Em preparação</div><h3 data-t="br_h">Próximas obras de autoria indígena</h3><p data-t="br_p">Novos títulos chegam pelo Prêmio Literário Saberes Originários e pelas comunidades parceiras.</p></div></div>
+      <div class="obra breve rv"><div><div class="prep" aria-hidden="true"><i></i><i></i><i></i><i></i><svg><use href="#flor"/></svg></div><div class="tg" style="color:var(--magenta)" data-t="br_tg">Em preparação</div><h3 data-t="br_h">Próximas obras de autoria indígena</h3><p data-t="br_p">Novos títulos chegam pelo Prêmio Literário Saberes Originários e pelas comunidades parceiras.</p></div></div>
     </div>
   </div>
 </section>
@@ -407,7 +490,7 @@ footer img{height:70px;margin:0 auto 16px}
   <div class="wrap">
     <div class="etq rv"><i style="background:var(--amarelo)"></i><span data-t="ed_etq">A Editora</span></div>
     <h2 class="tit rv" data-t-html="ed_tit">A palavra indígena <em>em livro</em></h2>
-    <p class="lead rv" data-t="ed_lead">A Editora Cacique Enir Terena é o selo editorial do Instituto Cacique Enir Terena (ICET), associação indígena da Aldeia Urbana Marçal de Souza, em Campo Grande. Seu nome homenageia a Cacique Enir Terena, fundadora da aldeia e primeira mulher eleita cacique em Mato Grosso do Sul.</p>
+    <p class="lead rv" data-t="ed_lead">A Editora Cacique Enir Terena é o selo editorial do Instituto Cacique Enir Terena (ICET), associação indígena da Aldeia Urbana Marçal de Souza, em Campo Grande. Seu nome homenageia a Cacique Enir Terena, fundadora da aldeia e primeira mulher eleita cacique em Mato Grosso do Sul, e uma das primeiras do Brasil.</p>
     <div class="princ">
       <div class="pr rv"><b>01</b><h3 data-t="p1h">Autoria indígena</h3><p data-t="p1p">Toda obra tem ao menos uma autora ou um autor indígena. Parceiros não indígenas participam ao lado deles.</p></div>
       <div class="pr rv"><b>02</b><h3 data-t="p2h">Sem custo para quem escreve</h3><p data-t="p2p">O ICET arca com o ISBN e com o registro dos direitos autorais das obras do selo.</p></div>
@@ -419,16 +502,17 @@ footer img{height:70px;margin:0 auto 16px}
 
 <!-- COMO PUBLICAMOS -->
 <section class="bloco preto" id="como">
+  <svg class="como-flor" aria-hidden="true"><use href="#flor"/></svg>
   <div class="wrap">
     <div class="etq rv" style="color:var(--papel)"><i style="background:var(--magenta)"></i><span data-t="como_etq">Editora digital</span></div>
     <h2 class="tit rv" data-t-html="como_tit">Um motor editorial <em>próprio</em></h2>
     <p class="lead rv" data-t="como_lead">A Editora desenvolveu o próprio sistema de produção de livros digitais. Ele transforma o manuscrito em livro pronto, seguindo as normas da ABNT e os padrões internacionais de acessibilidade.</p>
     <div class="passos">
-      <div class="ps rv"><h4 data-t="s1h">Manuscrito</h4><p data-t="s1p">Recebe Word, LibreOffice, PDF e outros formatos, com notas, tabelas e imagens.</p></div>
-      <div class="ps rv"><h4 data-t="s2h">Normas ABNT</h4><p data-t="s2p">Monta folha de rosto, ficha catalográfica, sumário, referências e índice remissivo.</p></div>
-      <div class="ps rv"><h4 data-t="s3h">Conselho Editorial</h4><p data-t="s3p">A obra é avaliada e aprovada por portaria, com auditoria completa do texto.</p></div>
-      <div class="ps rv"><h4 data-t="s4h">EPUB acessível</h4><p data-t="s4p">Gera EPUB 3 acessível, PDF paginado e leitura aberta na internet.</p></div>
-      <div class="ps rv"><h4 data-t="s5h">Exemplar controlado</h4><p data-t="s5p">Emite exemplares numerados e cifrados, com senha individual, e traduções para outros idiomas.</p></div>
+      <div class="ps rv"><span class="ps-n" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="ps-giro"><circle class="ps-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="ps-los" d="M0-28 28 0 0 28-28 0z"/><path class="ps-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>1</b></span><h4 data-t="s1h">Manuscrito</h4><p data-t="s1p">Recebe Word, LibreOffice, PDF e outros formatos, com notas, tabelas e imagens.</p></div>
+      <div class="ps rv"><span class="ps-n" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="ps-giro"><circle class="ps-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="ps-los" d="M0-28 28 0 0 28-28 0z"/><path class="ps-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>2</b></span><h4 data-t="s2h">Normas ABNT</h4><p data-t="s2p">Monta folha de rosto, ficha catalográfica, sumário, referências e índice remissivo.</p></div>
+      <div class="ps rv"><span class="ps-n" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="ps-giro"><circle class="ps-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="ps-los" d="M0-28 28 0 0 28-28 0z"/><path class="ps-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>3</b></span><h4 data-t="s3h">Conselho Editorial</h4><p data-t="s3p">A obra é avaliada e aprovada por portaria, com auditoria completa do texto.</p></div>
+      <div class="ps rv"><span class="ps-n" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="ps-giro"><circle class="ps-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="ps-los" d="M0-28 28 0 0 28-28 0z"/><path class="ps-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>4</b></span><h4 data-t="s4h">EPUB acessível</h4><p data-t="s4p">Gera EPUB 3 acessível, PDF paginado e leitura aberta na internet.</p></div>
+      <div class="ps rv"><span class="ps-n" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="ps-giro"><circle class="ps-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="ps-los" d="M0-28 28 0 0 28-28 0z"/><path class="ps-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>5</b></span><h4 data-t="s5h">Exemplar controlado</h4><p data-t="s5p">Emite exemplares numerados e cifrados, com senha individual, e traduções para outros idiomas.</p></div>
     </div>
   </div>
 </section>
@@ -444,7 +528,7 @@ footer img{height:70px;margin:0 auto 16px}
       <article class="un rv" style="--c:#F5AA19"><span class="un-n">02</span><h3 data-t="u2h">Propriedade intelectual em casa</h3><p data-t="u2p">A Editora nasce dentro de uma instituição com marca coletiva registrada no INPI, a OREKA, e com a cerâmica Terena a caminho da indicação geográfica. O livro, a marca e o território caminham juntos.</p></article>
       <article class="un rv" style="--c:#4FA862"><span class="un-n">03</span><h3 data-t="u3h">Ciência indígena aplicada</h3><p data-t="u3p">Além da literatura, publica pesquisa feita a partir do território: bioeconomia, direito, saúde, língua e educação, escritas por quem vive esses temas na própria pele.</p></article>
       <article class="un rv" style="--c:#EE1A8C"><span class="un-n">04</span><h3 data-t="u4h">Tecnologia própria, acesso aberto</h3><p data-t="u4p">Um motor editorial desenvolvido pela própria Editora produz EPUB acessível, leitura gratuita na internet, exemplares numerados e cifrados e traduções para outros idiomas.</p></article>
-      <article class="un rv" style="--c:#111"><span class="un-n">05</span><h3 data-t="u5h">Governança comunitária</h3><p data-t="u5p">Nasce na primeira aldeia urbana do Brasil, fundada por mulheres Terena, com o nome do CMDDI autorizado pelo próprio Conselho e o apoio do Fórum dos Caciques de Mato Grosso do Sul.</p></article>
+      <article class="un rv" style="--c:#111"><span class="un-n">05</span><h3 data-t="u5h">Governança comunitária</h3><p data-t="u5p">Nasce na primeira aldeia urbana do Brasil, fundada por mulheres Terena, com o nome do CMDDI e do FOCAMS no selo, por convênio interinstitucional entre as entidades indígenas.</p></article>
     </div>
   </div>
 </section>
@@ -482,7 +566,7 @@ footer img{height:70px;margin:0 auto 16px}
       </div>
     </div>
     <div class="av-visual rv" aria-hidden="true">
-      <div class="disco"><img src="logos/editora-branca.png" alt=""></div>
+      <div class="disco-wrap"><svg class="av-anel" viewBox="-60 -60 120 120"></svg><div class="disco"><img src="logos/editora-branca.png" alt=""></div></div>
       <div class="ondas" id="ondas"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="linguas-t" data-t="av_povos">Povos indígenas de Mato Grosso do Sul</div>
       <div class="linguas"><span>Terena</span><span>Guarani</span><span>Kaiowá</span><span>Kadiwéu</span><span>Guató</span><span>Ofaié</span><span>Kinikinau</span><span>Atikum</span></div>
@@ -495,21 +579,21 @@ footer img{height:70px;margin:0 auto 16px}
   <div class="wrap">
     <div class="aut rv">
       <div class="selo" aria-hidden="true">
-        <svg viewBox="0 0 200 200"><defs><path id="cc" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="3 6"/><text font-family="Archivo,sans-serif" font-weight="800" font-size="12" letter-spacing="2.4" fill="#111"><textPath href="#cc">CMDDI · 202ª SESSÃO ORDINÁRIA · 13.11.2026 · USO AUTORIZADO ·</textPath></text></svg>
+        <svg viewBox="0 0 200 200"><defs><path id="cc" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><circle cx="100" cy="100" r="96" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="3 6"/><text font-family="Archivo,sans-serif" font-weight="800" font-size="10.5" fill="#111"><textPath href="#cc" textLength="508" lengthAdjust="spacing">CMDDI ✦ FOCAMS ✦ CONVÊNIO INTERINSTITUCIONAL ✦ 13.11.2026 ✦</textPath></text></svg>
         <div class="n"><img src="logos/cmddi.jpg" alt=""></div>
       </div>
       <div>
         <div class="etq"><i style="background:var(--verde)"></i><span data-t="aut_etq">Autorização institucional</span></div>
-        <h3 data-t="aut_h" style="margin-top:8px">O nome do CMDDI no selo, com a autorização do Conselho</h3>
-        <p data-t="aut_p">O uso do nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) no selo editorial e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena.</p>
-        <div class="aut-logos"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><img src="logos/focams.jpg" alt="FOCAMS"></div>
+        <h3 data-t="aut_h" style="margin-top:8px">O nome do CMDDI e do FOCAMS no selo, por convênio interinstitucional entre as entidades indígenas</h3>
+        <p data-t="aut_p">O nome do Conselho Municipal dos Direitos e Defesa dos Povos Indígenas de Campo Grande (CMDDI) e do Fórum dos Caciques de Mato Grosso do Sul (FOCAMS) integra o selo editorial por meio de convênio interinstitucional entre as entidades indígenas. No CMDDI, o uso do nome no selo e nas obras já publicadas pelo ICET foi autorizado na 202ª Sessão Ordinária do Conselho, em 13 de novembro de 2026, que tratou da aprovação do projeto do selo editorial indígena.</p>
+        <div class="aut-logos"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"><img src="logos/focams.jpg" alt="FOCAMS, Fórum dos Caciques de MS"></div>
         <small data-t="aut_s">Convocação assinada pelo Presidente do CMDDI, Lisio Lili. Ata aprovada pelo Plenário.</small>
       </div>
     </div>
     <div class="parc">
       <div class="rv"><div class="pc"><img src="logos/icet.jpg" alt="ICET"><span data-t="pa1">Realização</span></div></div>
-      <div class="rv"><div class="pc duplo"><div class="par-lg"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"></div><span data-t="pa2">Apoio institucional</span></div></div>
-      <div class="rv"><div class="pc"><img src="logos/focams.jpg" alt="FOCAMS"><span data-t="pa3">Parceria</span></div></div>
+      <div class="rv"><div class="pc duplo"><div class="par-lg"><img src="logos/cmddi.jpg" alt="CMDDI, logomarca atual"><img src="logos/cmddi-antiga.png" alt="CMDDI, logomarca histórica"></div><span data-t="pa2">Convênio interinstitucional</span></div></div>
+      <div class="rv"><div class="pc"><img src="logos/focams.jpg" alt="FOCAMS"><span data-t="pa3">Convênio interinstitucional</span></div></div>
     </div>
   </div>
 </section>
@@ -521,13 +605,14 @@ footer img{height:70px;margin:0 auto 16px}
       <div class="etq rv"><i style="background:var(--magenta)"></i><span data-t="pub_etq">Publique conosco</span></div>
       <h2 class="tit rv" data-t-html="pub_tit">Sua história <em>merece um livro</em></h2>
       <ul class="rv">
-        <li data-t="l1">Autoras e autores indígenas, individualmente ou em coletivo</li>
-        <li data-t="l2">Pesquisas, memórias, narrativas, poesia e obras em línguas indígenas</li>
-        <li data-t="l3">Coletâneas de comunidades, escolas e organizações indígenas</li>
-        <li data-t="l4">Parcerias com universidades e instituições, sempre com autoria indígena</li>
+        <li><svg class="pub-ic" aria-hidden="true" style="color:#00A8E8"><use href="#flor"/></svg><span data-t="l1">Autoras e autores indígenas, individualmente ou em coletivo</span></li>
+        <li><svg class="pub-ic" aria-hidden="true" style="color:#F5AA19"><use href="#losango"/></svg><span data-t="l2">Pesquisas, memórias, narrativas, poesia e obras em línguas indígenas</span></li>
+        <li><svg class="pub-ic" aria-hidden="true" style="color:#4FA862"><use href="#flor"/></svg><span data-t="l3">Coletâneas de comunidades, escolas e organizações indígenas</span></li>
+        <li><svg class="pub-ic" aria-hidden="true" style="color:#EE1A8C"><use href="#losango"/></svg><span data-t="l4">Parcerias com universidades e instituições, sempre com autoria indígena</span></li>
       </ul>
     </div>
     <div class="cartao rv">
+      <svg class="cartao-flor" aria-hidden="true"><use href="#flor"/></svg>
       <h3 data-t="c_h">Envie sua proposta</h3>
       <p data-t="c_p">Fale com a Editora pelo WhatsApp. A equipe orienta sobre o manuscrito, os direitos e as etapas de publicação.</p>
       <a class="bt" href="https://wa.me/5567981644664?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20a%20Editora%20Cacique%20Enir%20Terena." target="_blank" rel="noopener"><span data-t="c_bt">Falar com a Editora</span></a>
@@ -587,7 +672,7 @@ var T = {
  u4h:{en:'Own technology, open access',es:'Tecnología propia, acceso abierto',fr:'Technologie propre, accès ouvert'},
  u4p:{en:'An editorial engine developed by the Publisher itself produces accessible EPUB, free online reading, numbered and encrypted copies and translations into other languages.',es:'Un motor editorial desarrollado por la propia Editorial produce EPUB accesible, lectura gratuita en internet, ejemplares numerados y cifrados y traducciones a otros idiomas.',fr:'Un moteur éditorial développé par la maison produit des EPUB accessibles, une lecture gratuite en ligne, des exemplaires numérotés et chiffrés et des traductions.'},
  u5h:{en:'Community governance',es:'Gobernanza comunitaria',fr:'Gouvernance communautaire'},
- u5p:{en:'Born in Brazil’s first urban Indigenous village, founded by Terena women, with the CMDDI name authorized by the Council itself and the support of the Forum of Chiefs of Mato Grosso do Sul.',es:'Nace en la primera aldea urbana de Brasil, fundada por mujeres terena, con el nombre del CMDDI autorizado por el propio Consejo y el apoyo del Foro de los Caciques de Mato Grosso do Sul.',fr:'Née dans le premier village autochtone urbain du Brésil, fondée par des femmes terena, avec le nom du CMDDI autorisé par le Conseil lui-même et le soutien du Forum des caciques du Mato Grosso do Sul.'},
+ u5p:{en:'Born in Brazil’s first urban Indigenous village, founded by Terena women, with the names of CMDDI and FOCAMS in the imprint, through an inter-institutional agreement between Indigenous organizations.',es:'Nace en la primera aldea urbana de Brasil, fundada por mujeres terena, con el nombre del CMDDI y del FOCAMS en el sello, por convenio interinstitucional entre las entidades indígenas.',fr:'Née dans le premier village autochtone urbain du Brésil, fondée par des femmes terena, avec les noms du CMDDI et du FOCAMS dans le label, par une convention interinstitutionnelle entre les organisations autochtones.'},
  sb_etq:{en:'Project in development',es:'Proyecto en desarrollo',fr:'Projet en développement'},
  sb_tit:{en:'<em>Original Knowledge</em> Program',es:'Programa <em>Saberes Originarios</em>',fr:'Programme <em>Savoirs originaires</em>'},
  sb_lead:{en:'The Publisher is the heart of a wider program, developed by ICET with CMDDI and the support of FOCAMS, which brings together, under Indigenous ownership and governance, the publication, safekeeping and protection of the traditional knowledge of the Indigenous peoples of Mato Grosso do Sul.',es:'La Editorial es el corazón de un programa más amplio, desarrollado por el ICET con el CMDDI y el apoyo del FOCAMS, que reúne, bajo titularidad y gobernanza indígenas, la publicación, la guarda y la protección de los conocimientos tradicionales de los pueblos indígenas de Mato Grosso do Sul.',fr:'La maison est le cœur d’un programme plus large, développé par l’ICET avec le CMDDI et le soutien du FOCAMS, qui réunit, sous propriété et gouvernance autochtones, la publication, la conservation et la protection des savoirs traditionnels des peuples autochtones du Mato Grosso do Sul.'},
@@ -600,12 +685,12 @@ var T = {
  sb_nota:{en:'Authorship and ownership of the knowledge always remain with the communities of origin.',es:'La autoría y la titularidad de los saberes permanecen siempre con las comunidades de origen.',fr:'La paternité et la propriété des savoirs restent toujours aux communautés d’origine.'},
  mc_etq:{en:'A milestone in the history of Indigenous books',es:'Un hito en la historia del libro indígena',fr:'Un jalon dans l’histoire du livre autochtone'},
  mc_tit:{en:'From Brazil’s first urban Indigenous village, <em>the voice of the Indigenous peoples of Mato Grosso do Sul to the world</em>',es:'De la primera aldea urbana de Brasil, <em>la voz de los pueblos indígenas de Mato Grosso do Sul para el mundo</em>',fr:'Du premier village autochtone urbain du Brésil, <em>la voix des peuples autochtones du Mato Grosso do Sul pour le monde</em>'},
- mc_p1:{en:'In 1995, Terena families built the Marçal de Souza Urban Village in Campo Grande, recognized as the first urban Indigenous village in the country. Three decades later, it is there that the Cacique Enir Terena Publishing House is born, created by Terena women and named after the village’s founder, the first woman elected chief in Mato Grosso do Sul.',es:'En 1995, familias terena levantaron en Campo Grande la Aldea Urbana Marçal de Souza, reconocida como la primera aldea urbana del país. Tres décadas después, allí nace la Editorial Cacique Enir Terena, creada por mujeres terena y bautizada con el nombre de la fundadora de la aldea, la primera mujer elegida cacique en Mato Grosso do Sul.',fr:'En 1995, des familles terena ont bâti à Campo Grande le village urbain Marçal de Souza, reconnu comme le premier village autochtone urbain du pays. Trois décennies plus tard, c’est là que naissent les Éditions Cacique Enir Terena, créées par des femmes terena et baptisées du nom de la fondatrice du village, première femme élue cacique au Mato Grosso do Sul.'},
+ mc_p1:{en:'In 1995, Terena families built the Marçal de Souza Urban Village in Campo Grande, recognized as the first urban Indigenous village in the country. Three decades later, it is there that the Cacique Enir Terena Publishing House is born, from an Indigenous institute created by Terena women, and named after the village’s founder, the first woman elected chief in Mato Grosso do Sul.',es:'En 1995, familias terena levantaron en Campo Grande la Aldea Urbana Marçal de Souza, reconocida como la primera aldea urbana del país. Tres décadas después, allí nace la Editorial Cacique Enir Terena, de un Instituto indígena creado por mujeres terena, y bautizada con el nombre de la fundadora de la aldea, la primera mujer elegida cacique en Mato Grosso do Sul.',fr:'En 1995, des familles terena ont bâti à Campo Grande le village urbain Marçal de Souza, reconnu comme le premier village autochtone urbain du pays. Trois décennies plus tard, c’est là que naissent les Éditions Cacique Enir Terena, issues d’un institut autochtone créé par des femmes terena, et baptisées du nom de la fondatrice du village, première femme élue cacique au Mato Grosso do Sul.'},
  mc_p2:{en:'For centuries, the history of Indigenous peoples was written by others. Now the word of the Indigenous peoples of Mato Grosso do Sul has a home of its own: an imprint that publishes with Indigenous authorship, protects the knowledge of those who keep it and takes its books to the whole world, free of charge. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau and Atikum: the territory begins to write, and to tell, its own history.',es:'Durante siglos, la historia de los pueblos indígenas fue escrita por otros. Ahora la palabra de los pueblos indígenas de Mato Grosso do Sul tiene casa propia: un sello que publica con autoría indígena, protege los saberes de quien los guarda y lleva los libros a todo el mundo, gratuitamente. Terena, guaraní, kaiowá, kadiwéu, guató, ofaié, kinikinau y atikum: es el territorio que pasa a escribir, y a narrar, su propia historia.',fr:'Pendant des siècles, l’histoire des peuples autochtones a été écrite par d’autres. Désormais, la parole des peuples autochtones du Mato Grosso do Sul a sa propre maison : un label qui publie des auteurs autochtones, protège les savoirs de celles et ceux qui les gardent et porte ses livres au monde entier, gratuitement. Terena, Guarani, Kaiowá, Kadiwéu, Guató, Ofaié, Kinikinau et Atikum : c’est le territoire qui écrit, et raconte, sa propre histoire.'},
  mc_m1:{en:'The Marçal de Souza Urban Village is founded, Brazil’s first urban Indigenous village',es:'Nace la Aldea Urbana Marçal de Souza, la primera aldea urbana de Brasil',fr:'Naissance du village urbain Marçal de Souza, le premier du Brésil'},
  mc_m2:{en:'Terena women found the Cacique Enir Terena Institute',es:'Mujeres terena fundan el Instituto Cacique Enir Terena',fr:'Des femmes terena fondent l’Institut Cacique Enir Terena'},
  mc_m3:{en:'The Publisher’s first book, with ISBN and open access',es:'Primer libro de la Editorial, con ISBN y lectura abierta',fr:'Premier livre de la maison, avec ISBN et accès ouvert'},
- mc_m4:{en:'CMDDI authorizes the use of its name in the imprint',es:'El CMDDI autoriza el uso de su nombre en el sello',fr:'Le CMDDI autorise l’utilisation de son nom dans le label'},
+ mc_m4:{en:'CMDDI (Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande) and FOCAMS (Forum of Chiefs of Mato Grosso do Sul) authorize the use of their names in the imprint',es:'El CMDDI (Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande) y el FOCAMS (Foro de los Caciques de Mato Grosso do Sul) autorizan el uso de sus nombres en el sello',fr:'Le CMDDI (Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande) et le FOCAMS (Forum des caciques du Mato Grosso do Sul) autorisent l’utilisation de leurs noms dans le label'},
  n_cat:{en:'Catalogue',es:'Catálogo',fr:'Catalogue'}, n_ed:{en:'The Publisher',es:'La Editorial',fr:'La maison'}, n_como:{en:'How we publish',es:'Cómo publicamos',fr:'Comment nous publions'}, n_pub:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, n_icet:{en:'ICET',es:'ICET',fr:'ICET'},
  etq:{en:'Indigenous-authored imprint',es:'Sello editorial de autoría indígena',fr:'Label éditorial d’auteurs autochtones'},
  lema:{en:'Books born from the <b>territory</b>, written by those who <b>live the knowledge</b>. Digital, accessible and open to all.',es:'Libros que nacen del <b>territorio</b>, escritos por quienes <b>viven el saber</b>. Digitales, accesibles y abiertos a todos.',fr:'Des livres nés du <b>territoire</b>, écrits par celles et ceux qui <b>vivent le savoir</b>. Numériques, accessibles et ouverts à tous.'},
@@ -618,7 +703,7 @@ var T = {
  br_tg:{en:'In preparation',es:'En preparación',fr:'En préparation'}, br_h:{en:'Upcoming Indigenous-authored books',es:'Próximas obras de autoría indígena',fr:'Prochains ouvrages d’auteurs autochtones'},
  br_p:{en:'New titles will come through the Original Knowledge Literary Prize and partner communities.',es:'Nuevos títulos llegarán por el Premio Literario Saberes Originarios y las comunidades aliadas.',fr:'De nouveaux titres viendront du Prix littéraire Savoirs originaires et des communautés partenaires.'},
  ed_etq:{en:'The Publisher',es:'La Editorial',fr:'La maison'}, ed_tit:{en:'The Indigenous word <em>in print</em>',es:'La palabra indígena <em>en libro</em>',fr:'La parole autochtone <em>en livre</em>'},
- ed_lead:{en:'The Cacique Enir Terena Publishing House is the editorial imprint of the Cacique Enir Terena Institute (ICET), an Indigenous association in the Marçal de Souza Urban Village, Campo Grande. Its name honours Cacique Enir Terena, founder of the village and the first woman elected chief in Mato Grosso do Sul.',es:'La Editorial Cacique Enir Terena es el sello editorial del Instituto Cacique Enir Terena (ICET), asociación indígena de la Aldea Urbana Marçal de Souza, en Campo Grande. Su nombre homenajea a la Cacique Enir Terena, fundadora de la aldea y primera mujer elegida cacique en Mato Grosso do Sul.',fr:'Les Éditions Cacique Enir Terena sont le label de l’Institut Cacique Enir Terena (ICET), association autochtone du village urbain Marçal de Souza, à Campo Grande. Leur nom rend hommage à la cacique Enir Terena, fondatrice du village et première femme élue cacique au Mato Grosso do Sul.'},
+ ed_lead:{en:'The Cacique Enir Terena Publishing House is the editorial imprint of the Cacique Enir Terena Institute (ICET), an Indigenous association in the Marçal de Souza Urban Village, Campo Grande. Its name honours Cacique Enir Terena, founder of the village, the first woman elected chief in Mato Grosso do Sul and one of the first in Brazil.',es:'La Editorial Cacique Enir Terena es el sello editorial del Instituto Cacique Enir Terena (ICET), asociación indígena de la Aldea Urbana Marçal de Souza, en Campo Grande. Su nombre homenajea a la Cacique Enir Terena, fundadora de la aldea, primera mujer elegida cacique en Mato Grosso do Sul y una de las primeras de Brasil.',fr:'Les Éditions Cacique Enir Terena sont le label de l’Institut Cacique Enir Terena (ICET), association autochtone du village urbain Marçal de Souza, à Campo Grande. Leur nom rend hommage à la cacique Enir Terena, fondatrice du village, première femme élue cacique au Mato Grosso do Sul et l’une des premières du Brésil.'},
  p1h:{en:'Indigenous authorship',es:'Autoría indígena',fr:'Auteurs autochtones'}, p1p:{en:'Every book has at least one Indigenous author. Non-Indigenous partners take part alongside them.',es:'Toda obra tiene al menos una autora o un autor indígena. Los colaboradores no indígenas participan junto a ellos.',fr:'Chaque ouvrage compte au moins une autrice ou un auteur autochtone. Les partenaires non autochtones participent à leurs côtés.'},
  p2h:{en:'No cost to authors',es:'Sin costo para quien escribe',fr:'Sans frais pour les auteurs'}, p2p:{en:'ICET covers the ISBN and copyright registration for the imprint’s books.',es:'El ICET asume el ISBN y el registro de los derechos de autor de las obras del sello.',fr:'L’ICET prend en charge l’ISBN et l’enregistrement des droits d’auteur des ouvrages du label.'},
  p3h:{en:'Protected knowledge',es:'Saber protegido',fr:'Savoir protégé'}, p3p:{en:'Authorship and ownership remain with the authors and communities. No sacred knowledge is published without consent.',es:'La autoría y la titularidad quedan con los autores y las comunidades. Ningún saber sagrado se publica sin consentimiento.',fr:'La paternité et la propriété restent aux auteurs et aux communautés. Aucun savoir sacré n’est publié sans consentement.'},
@@ -630,10 +715,10 @@ var T = {
  s3h:{en:'Editorial Board',es:'Consejo Editorial',fr:'Comité éditorial'}, s3p:{en:'The book is reviewed and approved by ordinance, with a full audit of the text.',es:'La obra es evaluada y aprobada por resolución, con auditoría completa del texto.',fr:'L’ouvrage est évalué et approuvé par arrêté, avec un audit complet du texte.'},
  s4h:{en:'Accessible EPUB',es:'EPUB accesible',fr:'EPUB accessible'}, s4p:{en:'Produces accessible EPUB 3, paginated PDF and open online reading.',es:'Genera EPUB 3 accesible, PDF paginado y lectura abierta en internet.',fr:'Produit un EPUB 3 accessible, un PDF paginé et une lecture ouverte en ligne.'},
  s5h:{en:'Controlled copy',es:'Ejemplar controlado',fr:'Exemplaire contrôlé'}, s5p:{en:'Issues numbered, encrypted copies with individual passwords, and translations into other languages.',es:'Emite ejemplares numerados y cifrados, con contraseña individual, y traducciones a otros idiomas.',fr:'Délivre des exemplaires numérotés et chiffrés, à mot de passe individuel, et des traductions.'},
- aut_etq:{en:'Institutional authorization',es:'Autorización institucional',fr:'Autorisation institutionnelle'}, aut_h:{en:'The CMDDI name in the imprint, authorized by the Council',es:'El nombre del CMDDI en el sello, con la autorización del Consejo',fr:'Le nom du CMDDI dans le label, autorisé par le Conseil'},
- aut_p:{en:'The use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in the editorial imprint and in the works already published by ICET was authorized at the Council’s 202nd Ordinary Session, on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project.',es:'El uso del nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) en el sello editorial y en las obras ya publicadas por el ICET fue autorizado en la 202ª Sesión Ordinaria del Consejo, el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena.',fr:'L’utilisation du nom du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) dans le label et dans les ouvrages déjà publiés par l’ICET a été autorisée lors de la 202e session ordinaire du Conseil, le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone.'},
+ aut_etq:{en:'Institutional authorization',es:'Autorización institucional',fr:'Autorisation institutionnelle'}, aut_h:{en:'The names of CMDDI and FOCAMS in the imprint, through an inter-institutional agreement between Indigenous organizations',es:'El nombre del CMDDI y del FOCAMS en el sello, por convenio interinstitucional entre las entidades indígenas',fr:'Les noms du CMDDI et du FOCAMS dans le label, par une convention interinstitutionnelle entre les organisations autochtones'},
+ aut_p:{en:'The names of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) and of the Forum of Chiefs of Mato Grosso do Sul (FOCAMS) are part of the imprint through an inter-institutional agreement between the Indigenous organizations. At CMDDI, the use of the name of the Municipal Council for the Rights and Defense of Indigenous Peoples of Campo Grande (CMDDI) in the editorial imprint and in the works already published by ICET was authorized at the Council’s 202nd Ordinary Session, on November 13, 2026, which addressed the approval of the Indigenous editorial imprint project.',es:'El nombre del Consejo Municipal de los Derechos y Defensa de los Pueblos Indígenas de Campo Grande (CMDDI) y del Foro de los Caciques de Mato Grosso do Sul (FOCAMS) integra el sello editorial por medio de un convenio interinstitucional entre las entidades indígenas. En el CMDDI, el uso del nombre en el sello editorial y en las obras ya publicadas por el ICET fue autorizado en la 202ª Sesión Ordinaria del Consejo, el 13 de noviembre de 2026, que trató la aprobación del proyecto del sello editorial indígena.',fr:'Les noms du Conseil municipal des droits et de la défense des peuples autochtones de Campo Grande (CMDDI) et du Forum des caciques du Mato Grosso do Sul (FOCAMS) font partie du label grâce à une convention interinstitutionnelle entre les organisations autochtones. Au CMDDI, l’utilisation du nom dans le label et dans les ouvrages déjà publiés par l’ICET a été autorisée lors de la 202e session ordinaire du Conseil, le 13 novembre 2026, consacrée à l’approbation du projet de label éditorial autochtone.'},
  aut_s:{en:'Notice signed by the President of CMDDI, Lisio Lili. Minutes approved by the Plenary.',es:'Convocatoria firmada por el Presidente del CMDDI, Lisio Lili. Acta aprobada por el Pleno.',fr:'Convocation signée par le président du CMDDI, Lisio Lili. Procès-verbal approuvé par l’assemblée plénière.'},
- pa1:{en:'Production',es:'Realización',fr:'Réalisation'}, pa2:{en:'Institutional support',es:'Apoyo institucional',fr:'Soutien institutionnel'}, pa3:{en:'Partnership',es:'Alianza',fr:'Partenariat'},
+ pa1:{en:'Production',es:'Realización',fr:'Réalisation'}, pa2:{en:'Inter-institutional agreement',es:'Convenio interinstitucional',fr:'Convention interinstitutionnelle'}, pa3:{en:'Inter-institutional agreement',es:'Convenio interinstitucional',fr:'Convention interinstitutionnelle'},
  pub_etq:{en:'Publish with us',es:'Publica con nosotros',fr:'Publiez avec nous'}, pub_tit:{en:'Your story <em>deserves a book</em>',es:'Tu historia <em>merece un libro</em>',fr:'Votre histoire <em>mérite un livre</em>'},
  l1:{en:'Indigenous authors, individually or collectively',es:'Autoras y autores indígenas, individualmente o en colectivo',fr:'Autrices et auteurs autochtones, seuls ou en collectif'},
  l2:{en:'Research, memoirs, narratives, poetry and works in Indigenous languages',es:'Investigaciones, memorias, narrativas, poesía y obras en lenguas indígenas',fr:'Recherches, mémoires, récits, poésie et œuvres en langues autochtones'},
@@ -718,9 +803,81 @@ $$('.rv').forEach(function(el){ io.observe(el); });
   var obsT = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); }, { threshold: .3 });
   document.querySelectorAll('.tit,.marco-tit,.av-tit').forEach(function(t){ obsT.observe(t); });
 
-  /* cerâmica Terena desenhada no marco */
-  var marco = document.querySelector('.marco');
-  new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) marco.classList.add('ver'); }); }, { threshold: .25 }).observe(marco);
+  /* cerâmica Terena: o pote se ergue em roletes de barro, recebe a pintura e gira no torno */
+  (function(){
+    var marco = document.querySelector('.marco'), sv = marco.querySelector('.pote'); if(!sv) return;
+    var NS = 'http://www.w3.org/2000/svg', P = Math.PI, i;
+    function el(t, a, pai){ var e = document.createElementNS(NS, t); for(var k in a) e.setAttribute(k, a[k]); if(pai) pai.appendChild(e); return e; }
+    var sol = sv.querySelector('.pote-sol');
+    for(i = 0; i < 32; i++){ var a = i / 32 * P * 2; el('circle', { cx: 160 + Math.cos(a) * 156, cy: 206 + Math.sin(a) * 156, r: i % 4 ? 1.8 : 3.4 }, sol); }
+    var rol = sv.querySelector('.pote-roletes');
+    for(i = 58; i < 362; i += 11) el('path', { d: 'M0 ' + i + 'Q160 ' + (i + 12) + ' 320 ' + i, fill: 'none', stroke: '#3A1206', 'stroke-opacity': .16, 'stroke-width': 1.2 }, rol);
+    /* faixas pintadas: semielipses da frente do pote */
+    var bandas = sv.querySelector('.pote-bandas');
+    [[104,72,7,2.4],[144,104,9,2.4],[170,118,9,3],[238,126,10,3],[252,126,10,1.6],[300,110,9,2.4],[334,74,6,1.8]].forEach(function(b, k){
+      var p = el('path', { d: 'M' + (160 - b[1]) + ' ' + b[0] + 'Q160 ' + (b[0] + b[2] * 2) + ' ' + (160 + b[1]) + ' ' + b[0], 'stroke-width': b[3] }, bandas);
+      p.style.transitionDelay = (k * 0.12) + 's';
+    });
+    var mot = sv.querySelector('.pote-mot');
+    function motivo(id, cor, t){ var g = el('g', {}, mot); var u = el('use', { href: '#' + id, x: -t / 2, y: -t / 2, width: t, height: t }, g); u.style.color = cor; return g; }
+    var flores = [], los = [], cF = ['#F6E6D0','#F5AA19','#F6E6D0','#EE1A8C'], cL = ['#00A8E8','#4FA862','#F5AA19','#EE1A8C'];
+    for(i = 0; i < 8; i++) flores.push(motivo('flor', cF[i % 4], 40));
+    for(i = 0; i < 14; i++) los.push(motivo('losango', cL[i % 4], 19));
+    var zz = sv.querySelector('.pote-zz'), zz2 = sv.querySelector('.pote-zz2');
+    var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var th = 0, vel = .32, alvo = .32, tinta = reduz ? 1 : 0, rodando = false, ult = 0;
+    function lig(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
+    function por(g, ang, R, y, k, f){
+      var c = Math.cos(ang);
+      if(c < .04 || f <= 0){ g.setAttribute('opacity', 0); return; }
+      var x = 160 + R * Math.sin(ang), e = 1 - Math.pow(1 - f, 3);
+      g.setAttribute('opacity', Math.min(1, c * 1.8));
+      g.setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + (y + k * c).toFixed(1) + ') scale(' + (c * e).toFixed(3) + ' ' + e.toFixed(3) + ')');
+    }
+    function zigue(R, y, k, amp, n, fase){
+      var d = '';
+      for(var q = 0; q <= 64; q++){
+        var t = -P / 2 + q / 64 * P, u = (t + fase) * n / (2 * P), tri = Math.abs(u - Math.floor(u) - .5) * 4 - 1;
+        d += (q ? 'L' : 'M') + (160 + R * Math.sin(t)).toFixed(1) + ' ' + (y + amp * tri + k * Math.cos(t)).toFixed(1);
+      }
+      return d;
+    }
+    function desenhar(){
+      flores.forEach(function(g, k){ por(g, th + k * P / 4, 124, 196, 9, lig(tinta * 2.2 - k / 8)); });
+      los.forEach(function(g, k){ por(g, th + k * P * 2 / 14 + .22, 118, 276, 9, lig(tinta * 2.2 - .4 - k / 14)); });
+      zz.setAttribute('d', zigue(90, 124, 8, 8, 18, th)); zz.style.opacity = lig(tinta * 3 - .2);
+      zz2.setAttribute('d', zigue(96, 318, 8, 5, 26, -th)); zz2.style.opacity = lig(tinta * 3 - .8);
+    }
+    function quadro(t){
+      var dt = Math.min(.05, (t - (ult || t)) / 1000); ult = t;
+      vel += (alvo - vel) * .04; th += vel * dt; desenhar();
+      if(rodando) requestAnimationFrame(quadro); else ult = 0;
+    }
+    addEventListener('scroll', function(){ if(rodando) vel = Math.min(2.6, vel + .05); }, { passive: true });
+    sv.addEventListener('pointerenter', function(){ alvo = 1.5; });
+    sv.addEventListener('pointerleave', function(){ alvo = .32; });
+    sv.addEventListener('click', function(){ vel = 4; });
+    var sobe = sv.querySelector('.pote-sobe'), iniciado = false;
+    function erguer(){
+      if(reduz){ sobe.setAttribute('y', 0); sobe.setAttribute('height', 400); sv.classList.add('pinta'); desenhar(); return; }
+      var t0 = performance.now() + 700;
+      (function q(t){ var k = lig((t - t0) / 1900), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, y = 400 - 360 * e;
+        sobe.setAttribute('y', y.toFixed(1)); sobe.setAttribute('height', (400 - y).toFixed(1)); if(k < 1) requestAnimationFrame(q); })(performance.now());
+      setTimeout(function(){ sv.classList.add('pinta'); var t1 = performance.now(); (function q(t){ tinta = lig((t - t1) / 2200); if(tinta < 1) requestAnimationFrame(q); })(t1); }, 2500);
+      setTimeout(function(){ var voo = sv.querySelector('.pote-voo'), cor = ['#F5AA19','#EE1A8C','#00A8E8','#4FA862','#FBF8F2'], n = 0;
+        setInterval(function(){ if(!rodando || document.hidden) return;
+          var g = el('g', {}, voo), u = el('use', { href: '#flor', x: -7, y: -7, width: 14, height: 14 }, g); u.style.color = cor[n++ % 5];
+          g.style.setProperty('--x0', (150 + Math.random() * 20) + 'px'); g.style.setProperty('--x1', (110 + Math.random() * 100) + 'px'); g.style.setProperty('--r', (Math.random() * 360 - 180) + 'deg');
+          setTimeout(function(){ g.remove(); }, 3500); }, 650); }, 4200);
+    }
+    new IntersectionObserver(function(es){ es.forEach(function(e){
+      if(e.isIntersecting){ marco.classList.add('ver'); if(!iniciado){ iniciado = true; erguer(); } }
+    }); }, { threshold: .25 }).observe(marco);
+    new IntersectionObserver(function(es){ es.forEach(function(e){
+      if(e.isIntersecting && !reduz){ if(!rodando){ rodando = true; requestAnimationFrame(quadro); } } else rodando = false;
+    }); }).observe(sv);
+    if(reduz) desenhar();
+  })();
 
   /* cartão do livro em 3D com brilho */
   document.querySelectorAll('.obra:not(.breve)').forEach(function(c){
@@ -753,7 +910,7 @@ $$('.rv').forEach(function(el){ io.observe(el); });
       cur.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
       var agora = performance.now(); if(agora - ult < 55) return; ult = agora;
       var p = document.createElement('div'); p.className = 'petala-voo';
-      p.innerHTML = '<svg viewBox="-50 -50 100 100" width="16" height="16" style="color:' + cores[k++ % 4] + '"><use href="#flor"/></svg>';
+      p.innerHTML = '<svg width="16" height="16" style="color:' + cores[k++ % 4] + '"><use href="#flor"/></svg>';
       p.style.setProperty('--x', e.clientX - 8 + 'px'); p.style.setProperty('--y', e.clientY - 8 + 'px');
       p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); p.style.setProperty('--dy', (20 + Math.random() * 50) + 'px'); p.style.setProperty('--r', (Math.random() * 360) + 'deg');
       document.body.appendChild(p); setTimeout(function(){ p.remove(); }, 1000);
@@ -764,7 +921,23 @@ $$('.rv').forEach(function(el){ io.observe(el); });
   /* contagem dos anos no marco */
   var anos = document.querySelectorAll('.marco-marcos b');
   new IntersectionObserver(function(es, o){ es.forEach(function(e){ if(!e.isIntersecting) return; o.disconnect(); anos.forEach(function(b){ var alvo = b.textContent.trim(); if(!/^\d{4}$/.test(alvo)) return; var fim = +alvo, ini = fim - 40, t0 = performance.now(); (function q(t){ var k = Math.min(1, (t - t0) / 1400); b.textContent = Math.round(ini + (fim - ini) * (1 - Math.pow(1 - k, 3))); if(k < 1) requestAnimationFrame(q); })(t0); }); }); }, { threshold: .4 }).observe(document.querySelector('.marco-marcos'));
+  /* motor editorial: cada etapa se acende em sequência, como a obra passando pelo motor */
+  (function(){
+    var ps = Array.prototype.slice.call(document.querySelectorAll('#como .ps')), k = -1, timer = null;
+    function passo(){ ps.forEach(function(p){ p.classList.remove('on'); }); k = (k + 1) % ps.length; ps[k].classList.add('on'); }
+    var reduzM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    new IntersectionObserver(function(es){ es.forEach(function(e){
+      if(e.isIntersecting){ if(!timer && !reduzM){ setTimeout(passo, 900); timer = setInterval(passo, 1700); } }
+      else if(timer){ clearInterval(timer); timer = null; }
+    }); }, { threshold: .35 }).observe(document.querySelector('#como .passos'));
+    ps.forEach(function(p, i){ p.addEventListener('pointerenter', function(){ ps.forEach(function(q){ q.classList.remove('on'); }); p.classList.add('on'); k = i; }); });
+    /* anel de grafismo em volta do disco do audiovisual */
+    var an = document.querySelector('.av-anel'), h = '<circle r="56" fill="none" stroke="rgba(251,248,242,.25)" stroke-width="1" stroke-dasharray="2 4"/>', cs = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'];
+    for(var i = 0; i < 16; i++) h += '<g transform="rotate(' + (i * 22.5) + ') translate(0 -56)">' + (i % 2 ? '<circle r="1.6" fill="#FBF8F2"/>' : '<path d="M0-4 4 0 0 4-4 0z" fill="' + cs[(i / 2) % 4] + '"/>') + '</g>';
+    if(an) an.innerHTML = h;
+  })();
 })();
 </script>
+<script src="etnico.js?v=20261115"></script>
 </body>
 </html>
