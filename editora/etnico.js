@@ -145,7 +145,7 @@ $$('.selo .n img, .selo .nucleo img').forEach(function(im){
   document.documentElement.classList.add('com-maraca');
   var penas = mr.querySelector('.mr-penas'), CS = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'];
   var x = -200, y = -200, px = x, py = y, vx = 0, vy = 0, ang = 0, va = 0, pa = 0, vpa = 0, tremor = 0, ativo = false, ultSem = 0, k = 0, t = 0;
-  var S = 70 / 64;
+  var S = 46 / 64;
   function centro(){ var r = ang * Math.PI / 180, cx = 37 * S, cy = 37 * S; return [x + cx * Math.cos(r) - cy * Math.sin(r), y + cx * Math.sin(r) + cy * Math.cos(r)]; }
   function semente(c, forte){
     var e = document.createElement('i'), a = Math.random() * Math.PI * 2, d = forte ? 30 + Math.random() * 40 : 6 + Math.random() * 10;
@@ -156,6 +156,14 @@ $$('.selo .n img, .selo .nucleo img').forEach(function(im){
     e.style.setProperty('--r', (Math.random() * 540) + 'deg'); e.style.setProperty('--d', (forte ? .8 : 1.1) + 's');
     document.body.appendChild(e); setTimeout(function(){ e.remove(); }, 1200);
   }
+  function petala(){
+    var c = centro(), p = document.createElement('div'); p.className = 'mr-petala';
+    p.innerHTML = '<svg width="16" height="16" style="color:' + CS[k2++ % 4] + '"><use href="#etn-flor"/></svg>';
+    p.style.setProperty('--x', c[0] - 8 + 'px'); p.style.setProperty('--y', c[1] - 8 + 'px');
+    p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); p.style.setProperty('--dy', (20 + Math.random() * 50) + 'px'); p.style.setProperty('--r', (Math.random() * 360) + 'deg');
+    document.body.appendChild(p); setTimeout(function(){ p.remove(); }, 1000);
+  }
+  var k2 = 0;
   addEventListener('pointermove', function(e){
     if(e.pointerType && e.pointerType !== 'mouse') return;
     x = e.clientX; y = e.clientY;
@@ -173,7 +181,7 @@ $$('.selo .n img, .selo .nucleo img').forEach(function(im){
   });
   addEventListener('pointerdown', function(e){
     if(e.pointerType && e.pointerType !== 'mouse') return;
-    tremor = 1.4; var c = centro();
+    var c = centro();
     for(var i = 0; i < 3; i++){ (function(i){ setTimeout(function(){ var o = document.createElement('i'); o.className = 'mr-onda'; o.style.setProperty('--c', CS[(k + i) % 4]); o.style.setProperty('--x', c[0] + 'px'); o.style.setProperty('--y', c[1] + 'px'); document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 800); }, i * 110); })(i); }
     k++;
     for(var j = 0; j < 9; j++) semente(c, true);
@@ -184,15 +192,14 @@ $$('.selo .n img, .selo .nucleo img').forEach(function(im){
     vx = vx * .7 + dx * .3; vy = vy * .7 + dy * .3;
     var vel = Math.sqrt(dx * dx + dy * dy);
     /* o maracá balança ao contrário do movimento, como se a cabaça tivesse peso */
-    var alvo = Math.max(-38, Math.min(38, -vx * 1.6 + vy * .5));
-    va += (alvo - ang) * .16; va *= .74; ang += va;
-    tremor = Math.max(tremor * .9, Math.min(.8, vel / 45), ativo ? .32 : 0);
-    var chacoalho = Math.sin(t * 1.25) * tremor * 13;
-    vpa += (ang - pa) * .07; vpa *= .82; pa += vpa;
+    var alvo = Math.max(-22, Math.min(22, -vx * .9));
+    va += (alvo - ang) * .06; va *= .8; ang += va;
+    var chacoalho = 0;
+    vpa += (ang - pa) * .05; vpa *= .85; pa += vpa;
     mr.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + (ang + chacoalho).toFixed(2) + 'deg)';
     penas.style.transform = 'rotate(' + ((pa - ang) * .9 - chacoalho * .8).toFixed(2) + 'deg)';
     var agora = performance.now();
-    if(vel > 9 && agora - ultSem > 60){ ultSem = agora; semente(centro(), false); }
+    if(vel > 2 && agora - ultSem > 55){ ultSem = agora; petala(); }
     requestAnimationFrame(quadro);
   })();
 })();
