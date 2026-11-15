@@ -113,3 +113,86 @@ $$('.selo .n img, .selo .nucleo img').forEach(function(im){
   setInterval(function(){ fs[k].classList.remove('on'); k = (k + 1) % fs.length; fs[k].classList.add('on'); }, 2800);
 });
 })();
+
+/* ───────── cursor: maracá Terena estilizado ─────────
+   Cabaça pintada com grafismo Terena, cabo de madeira amarrado nas cores da Editora e penas.
+   Balança com a inércia do movimento, chacoalha sobre links e botões e, no clique,
+   solta ondas sonoras e sementes. A ponta do cabo é o ponto de clique. */
+(function(){
+  var fino = matchMedia('(hover:hover) and (pointer:fine)').matches, reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!fino || reduz) return;
+  var antigo = document.getElementById('cursor'); if(antigo) antigo.remove();
+  var pena = function(r, cor){ return '<g transform="translate(51 51) rotate(' + r + ')"><path d="M0 0C5-3.6 13-3.8 19-.6 13.6 1.2 6 2.6 0 0Z" fill="' + cor + '" stroke="#111" stroke-width=".7"/><path d="M1 0H17" stroke="#111" stroke-width=".6" opacity=".7"/><circle cx="19" cy="-.6" r="1.4" fill="#F5AA19" stroke="#111" stroke-width=".5"/></g>'; };
+  var SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs>' +
+    '<radialGradient id="mrCab" cx="33%" cy="30%" r="80%"><stop offset="0" stop-color="#F0B266"/><stop offset=".45" stop-color="#BE6524"/><stop offset="1" stop-color="#5A260A"/></radialGradient>' +
+    '<linearGradient id="mrCabo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A06A35"/><stop offset="1" stop-color="#4A2A10"/></linearGradient>' +
+    '<radialGradient id="mrAuraG"><stop offset="0" stop-color="#F5AA19" stop-opacity=".6"/><stop offset="1" stop-color="#EE1A8C" stop-opacity="0"/></radialGradient>' +
+    '<clipPath id="mrClip"><ellipse cx="40" cy="40" rx="17" ry="14.5" transform="rotate(45 40 40)"/></clipPath></defs>' +
+    '<circle class="mr-aura" cx="40" cy="40" r="25" fill="url(#mrAuraG)"/>' +
+    '<g class="mr-penas">' + pena(18, '#00A8E8') + pena(45, '#4FA862') + pena(72, '#EE1A8C') + '</g>' +
+    '<path d="M3.5 3.5 27 27" stroke="#111" stroke-width="6.2" stroke-linecap="round"/>' +
+    '<path d="M3.5 3.5 27 27" stroke="url(#mrCabo)" stroke-width="4.2" stroke-linecap="round"/>' +
+    '<path d="M16 19.4 19.4 16M18.6 22 22 18.6" stroke="#F5AA19" stroke-width="2.1"/><path d="M21.2 24.6 24.6 21.2" stroke="#EE1A8C" stroke-width="2.1"/><path d="M13.4 16.8 16.8 13.4" stroke="#00A8E8" stroke-width="2.1"/>' +
+    '<g class="mr-cab"><ellipse cx="40" cy="40" rx="17" ry="14.5" transform="rotate(45 40 40)" fill="url(#mrCab)" stroke="#111" stroke-width="1.6"/>' +
+    '<g clip-path="url(#mrClip)"><g transform="rotate(45 40 40)" fill="none" stroke="#F6E6D0" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M20 34.5h40M20 45.5h40" stroke-width="1.3"/>' +
+      '<path d="M21 31l2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5" stroke-width="1.1"/>' +
+      '<g stroke="none"><use href="#etn-flor" x="26.5" y="37" width="6" height="6" style="color:#F5AA19;--miolo:#F6E6D0"/><use href="#etn-flor" x="34" y="37" width="6" height="6" style="color:#F6E6D0;--miolo:#BE6524"/><use href="#etn-flor" x="41.5" y="37" width="6" height="6" style="color:#EE1A8C;--miolo:#F6E6D0"/><use href="#etn-flor" x="49" y="37" width="6" height="6" style="color:#00A8E8;--miolo:#F6E6D0"/>' +
+      '<path d="M30 48.5l1.6 1.6-1.6 1.6-1.6-1.6zM40 48.5l1.6 1.6-1.6 1.6-1.6-1.6zM50 48.5l1.6 1.6-1.6 1.6-1.6-1.6z" fill="#F6E6D0"/></g></g></g>' +
+    '<ellipse cx="33.5" cy="33.5" rx="3.2" ry="6" transform="rotate(45 33.5 33.5)" fill="#fff" opacity=".35"/></g>' +
+    '<circle cx="3.5" cy="3.5" r="2.6" fill="#111" stroke="#FBF8F2" stroke-width="1"/></svg>';
+  var mr = document.createElement('div'); mr.id = 'maraca'; mr.innerHTML = SVG; document.body.appendChild(mr);
+  document.documentElement.classList.add('com-maraca');
+  var penas = mr.querySelector('.mr-penas'), CS = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'];
+  var x = -200, y = -200, px = x, py = y, vx = 0, vy = 0, ang = 0, va = 0, pa = 0, vpa = 0, tremor = 0, ativo = false, ultSem = 0, k = 0, t = 0;
+  var S = 70 / 64;
+  function centro(){ var r = ang * Math.PI / 180, cx = 37 * S, cy = 37 * S; return [x + cx * Math.cos(r) - cy * Math.sin(r), y + cx * Math.sin(r) + cy * Math.cos(r)]; }
+  function semente(c, forte){
+    var e = document.createElement('i'), a = Math.random() * Math.PI * 2, d = forte ? 30 + Math.random() * 40 : 6 + Math.random() * 10;
+    e.className = 'mr-semente';
+    e.style.setProperty('--c', ['#F6E6D0','#3A1A08','#F5AA19'][Math.floor(Math.random() * 3)]);
+    e.style.setProperty('--x', c[0] + 'px'); e.style.setProperty('--y', c[1] + 'px');
+    e.style.setProperty('--dx', Math.cos(a) * d + 'px'); e.style.setProperty('--dy', (forte ? Math.sin(a) * d + 30 : 26 + Math.random() * 30) + 'px');
+    e.style.setProperty('--r', (Math.random() * 540) + 'deg'); e.style.setProperty('--d', (forte ? .8 : 1.1) + 's');
+    document.body.appendChild(e); setTimeout(function(){ e.remove(); }, 1200);
+  }
+  addEventListener('pointermove', function(e){
+    if(e.pointerType && e.pointerType !== 'mouse') return;
+    x = e.clientX; y = e.clientY;
+    if(!mr.classList.contains('vis')){ px = x; py = y; mr.classList.add('vis'); }
+    mr.classList.remove('oculto');
+  }, { passive: true });
+  document.addEventListener('mouseleave', function(){ mr.classList.add('oculto'); });
+  document.documentElement.addEventListener('mouseleave', function(){ mr.classList.add('oculto'); });
+  var ALVO = 'a,button,[role="button"],.obra,.pote,.med,.etn-card,label,summary,.cap,.lt-bt';
+  document.addEventListener('pointerover', function(e){
+    var el = e.target.closest ? e.target : e.target.parentElement;
+    var campo = el && el.closest('input,textarea,select,[contenteditable]');
+    mr.style.display = campo ? 'none' : '';
+    ativo = !!(el && el.closest(ALVO)); mr.classList.toggle('ativo', ativo);
+  });
+  addEventListener('pointerdown', function(e){
+    if(e.pointerType && e.pointerType !== 'mouse') return;
+    tremor = 1.4; var c = centro();
+    for(var i = 0; i < 3; i++){ (function(i){ setTimeout(function(){ var o = document.createElement('i'); o.className = 'mr-onda'; o.style.setProperty('--c', CS[(k + i) % 4]); o.style.setProperty('--x', c[0] + 'px'); o.style.setProperty('--y', c[1] + 'px'); document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 800); }, i * 110); })(i); }
+    k++;
+    for(var j = 0; j < 9; j++) semente(c, true);
+  });
+  (function quadro(){
+    t++;
+    var dx = x - px, dy = y - py; px = x; py = y;
+    vx = vx * .7 + dx * .3; vy = vy * .7 + dy * .3;
+    var vel = Math.sqrt(dx * dx + dy * dy);
+    /* o maracá balança ao contrário do movimento, como se a cabaça tivesse peso */
+    var alvo = Math.max(-38, Math.min(38, -vx * 1.6 + vy * .5));
+    va += (alvo - ang) * .16; va *= .74; ang += va;
+    tremor = Math.max(tremor * .9, Math.min(.8, vel / 45), ativo ? .32 : 0);
+    var chacoalho = Math.sin(t * 1.25) * tremor * 13;
+    vpa += (ang - pa) * .07; vpa *= .82; pa += vpa;
+    mr.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + (ang + chacoalho).toFixed(2) + 'deg)';
+    penas.style.transform = 'rotate(' + ((pa - ang) * .9 - chacoalho * .8).toFixed(2) + 'deg)';
+    var agora = performance.now();
+    if(vel > 9 && agora - ultSem > 60){ ultSem = agora; semente(centro(), false); }
+    requestAnimationFrame(quadro);
+  })();
+})();

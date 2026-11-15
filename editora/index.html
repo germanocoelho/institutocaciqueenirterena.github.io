@@ -376,7 +376,6 @@ footer img{height:70px;margin:0 auto 16px}
   <div class="ab-cortina e"></div><div class="ab-cortina d"></div>
 </div>
 <div id="prog" aria-hidden="true"><i></i></div>
-<div id="cursor" aria-hidden="true"></div>
 
 
 <header class="topo">
@@ -901,22 +900,6 @@ $$('.rv').forEach(function(el){ io.observe(el); });
       b.addEventListener('pointerleave', function(){ b.style.translate = ''; });
     });
   }
-
-  /* cursor com pétalas Terena */
-  var cur = document.getElementById('cursor');
-  if(matchMedia('(hover:hover) and (pointer:fine)').matches && !reduz){
-    var cores = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'], k = 0, ult = 0;
-    addEventListener('pointermove', function(e){
-      cur.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
-      var agora = performance.now(); if(agora - ult < 55) return; ult = agora;
-      var p = document.createElement('div'); p.className = 'petala-voo';
-      p.innerHTML = '<svg width="16" height="16" style="color:' + cores[k++ % 4] + '"><use href="#flor"/></svg>';
-      p.style.setProperty('--x', e.clientX - 8 + 'px'); p.style.setProperty('--y', e.clientY - 8 + 'px');
-      p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); p.style.setProperty('--dy', (20 + Math.random() * 50) + 'px'); p.style.setProperty('--r', (Math.random() * 360) + 'deg');
-      document.body.appendChild(p); setTimeout(function(){ p.remove(); }, 1000);
-    }, { passive: true });
-    document.querySelectorAll('a,button,.obra').forEach(function(el){ el.addEventListener('pointerenter', function(){ cur.classList.add('grande'); }); el.addEventListener('pointerleave', function(){ cur.classList.remove('grande'); }); });
-  } else { cur.remove(); }
 
   /* contagem dos anos no marco */
   var anos = document.querySelectorAll('.marco-marcos b');

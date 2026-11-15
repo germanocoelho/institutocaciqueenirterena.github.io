@@ -89,3 +89,21 @@
 }
 
 .aut>div,.autoriza>div{min-width:0}
+
+/* ───────── cursor: maracá Terena ───────── */
+html.com-maraca,html.com-maraca *{cursor:none!important}
+html.com-maraca input,html.com-maraca textarea,html.com-maraca select,html.com-maraca [contenteditable]{cursor:auto!important}
+#maraca{position:fixed;left:-3.8px;top:-3.8px;width:70px;height:70px;pointer-events:none;z-index:2147483000;opacity:0;transition:opacity .25s;transform-origin:3.8px 3.8px;will-change:transform;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.35)) drop-shadow(0 0 1.2px rgba(255,255,255,.9))}
+#maraca.vis{opacity:1}
+#maraca.oculto{opacity:0}
+#maraca svg{width:100%;height:100%;overflow:visible;transform-origin:3.8px 3.8px;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+#maraca.ativo svg{transform:scale(1.16)}
+#maraca .mr-penas{transform-box:view-box;transform-origin:51px 51px}
+#maraca .mr-aura{opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .3s}
+#maraca.ativo .mr-aura{opacity:1;animation:mrAura 1.1s ease-in-out infinite}
+@keyframes mrAura{50%{transform:scale(1.25);opacity:.55}}
+.mr-onda{position:fixed;left:0;top:0;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;border:2.5px solid var(--c);pointer-events:none;z-index:2147482999;animation:mrOnda .75s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes mrOnda{from{transform:translate(var(--x),var(--y)) scale(.3);opacity:.95}to{transform:translate(var(--x),var(--y)) scale(2.3);opacity:0}}
+.mr-semente{position:fixed;left:0;top:0;width:5px;height:7px;margin:-3px 0 0 -2px;border-radius:50%;background:var(--c);pointer-events:none;z-index:2147482999;animation:mrSemente var(--d,.9s) cubic-bezier(.3,.1,.7,1) forwards}
+@keyframes mrSemente{from{transform:translate(var(--x),var(--y)) rotate(0);opacity:1}to{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) rotate(var(--r));opacity:0}}
