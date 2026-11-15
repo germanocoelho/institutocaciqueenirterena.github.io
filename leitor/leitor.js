@@ -182,7 +182,7 @@ function ativar(){
     palco.addEventListener('pointerleave', function(){ lv.style.transform = ''; });
     lv.addEventListener('click', function(){ abrirDoc(lv.getAttribute('data-doc'), lv.getAttribute('data-pdf')); });
   });
-  $$('[data-abrir-doc]').forEach(function(b){ if(b.dataset.pronto) return; b.dataset.pronto = '1'; b.addEventListener('click', function(e){ e.preventDefault(); abrirDoc(b.getAttribute('data-abrir-doc'), b.getAttribute('data-pdf')); }); });
+  $$('[data-abrir-doc]').forEach(function(b){ if(b.dataset.pronto) return; b.dataset.pronto = '1'; b.addEventListener('click', function(e){ e.preventDefault(); abrirDoc(b.getAttribute('data-abrir-doc'), b.getAttribute('data-pdf')); }); b.addEventListener('keydown', function(e){ if((e.key === 'Enter' || e.key === ' ') && b.tagName !== 'BUTTON' && b.tagName !== 'A'){ e.preventDefault(); b.click(); } }); });
 }
 window.LeitorICET = { abrir: abrirDoc, ativar: ativar };
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ativar); else ativar();
