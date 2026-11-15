@@ -13,7 +13,7 @@ var L = {
   es:{pagina:'Página',sum:'Índice',bus:'Buscar',busca_t:'Buscar en el documento',ouvir:'Escuchar',lendo:'Leyendo en voz alta',parar:'Detener',sem:'Sin resultados.',res:'resultados',carregando:'Cargando el texto…',ph:'Escribe una palabra',baixar:'Descargar PDF',semsum:'Usa las miniaturas para recorrer las páginas.'},
   fr:{pagina:'Page',sum:'Sommaire',bus:'Rechercher',busca_t:'Rechercher dans le document',ouvir:'Écouter',lendo:'Lecture à voix haute',parar:'Arrêter',sem:'Aucun résultat.',res:'résultats',carregando:'Chargement du texte…',ph:'Tapez un mot',baixar:'Télécharger le PDF',semsum:'Utilisez les miniatures pour parcourir les pages.'}
 };
-function lg(){ var l = 'pt'; try{ l = localStorage.getItem('icet_lang') || (document.documentElement.lang || 'pt').slice(0, 2); }catch(e){} return L[l] ? l : 'pt'; }
+function lg(){ var l = null; try{ ['icet_lang','focams_lang','cmddi_lang'].some(function(k){ l = localStorage.getItem(k); return !!l; }); }catch(e){} l = (l || document.documentElement.lang || 'pt').slice(0, 2); return L[l] ? l : 'pt'; }
 function t(k){ return L[lg()][k] || L.pt[k]; }
 var IC = {
   x:'<path d="M18 6 6 18M6 6l12 12"/>', sum:'<path d="M4 6h16M4 12h16M4 18h10"/>', bus:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',

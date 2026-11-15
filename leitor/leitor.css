@@ -68,7 +68,7 @@
 .doc3d-anel{position:absolute;width:122%;aspect-ratio:1;border-radius:50%;border:1.5px dotted rgba(226,169,59,.45);animation:doc3dGiro 40s linear infinite;pointer-events:none}
 .doc3d-anel.r{width:100%;border-color:rgba(43,179,168,.35);animation-direction:reverse;animation-duration:28s}
 @keyframes doc3dGiro{to{transform:rotate(360deg)}}
-.livro3d{position:relative;width:100%;aspect-ratio:var(--ar,.707);transform-style:preserve-3d;transform:rotateY(-24deg) rotateX(6deg);transition:transform .6s cubic-bezier(.2,.7,.2,1);animation:doc3dFlutua 7s ease-in-out infinite;cursor:pointer;border:0;background:none;padding:0}
+.livro3d{position:relative;width:100%;aspect-ratio:var(--l3d-ar,.707);transform-style:preserve-3d;transform:rotateY(-24deg) rotateX(6deg);transition:transform .6s cubic-bezier(.2,.7,.2,1);animation:doc3dFlutua 7s ease-in-out infinite;cursor:pointer;border:0;background:none;padding:0}
 .livro3d:nth-child(2n){animation-delay:-2.3s}
 @keyframes doc3dFlutua{50%{translate:0 -12px}}
 .livro3d .capa{position:absolute;inset:0;border-radius:3px 8px 8px 3px;overflow:hidden;transform:translateZ(14px);box-shadow:0 30px 60px -20px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.08);background:#fff}
