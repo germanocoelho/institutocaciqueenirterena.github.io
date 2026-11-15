@@ -2457,6 +2457,28 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
 <link rel="alternate" hreflang="fr" href="https://institutocaciqueenirterena.com.br/?lang=fr">
 <link rel="alternate" hreflang="x-default" href="https://institutocaciqueenirterena.com.br/">
 <link rel="stylesheet" href="leitor/leitor.css?v=20261115">
+<style>
+/* medalhões GC e MA no padrão do motor da Editora */
+.aut-med2{position:relative;flex:none;display:grid;place-items:center;width:78px;height:78px;text-decoration:none;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.aut-med2 svg{position:absolute;inset:-6px;width:90px;height:90px;overflow:visible}
+.am-giro{animation:amGiro 22s linear infinite}
+.aut-med2:nth-of-type(2) .am-giro,.aut-med2.m .am-giro{animation-direction:reverse}
+@keyframes amGiro{to{transform:rotate(360deg)}}
+.am-giro path{fill:var(--c)}
+.am-anel{fill:none;stroke:var(--c);stroke-width:2;stroke-dasharray:1.5 6;stroke-linecap:round;opacity:.8}
+.am-los{fill:#111;stroke:var(--c);stroke-width:2.6;stroke-linejoin:round;stroke-dasharray:160;stroke-dashoffset:160;animation:amDesenha 1.4s cubic-bezier(.6,0,.2,1) .3s forwards;transition:fill .45s}
+@keyframes amDesenha{to{stroke-dashoffset:0}}
+.am-los2{fill:none;stroke:var(--c);stroke-width:1.6;opacity:.55;transition:stroke .4s,opacity .4s}
+.aut-med2 b{position:relative;font-family:'Cinzel','Fraunces',Georgia,serif;font-weight:700;font-size:1rem;color:#F4EEE3;transition:color .4s}
+.aut-med2.on,.aut-med2:hover,.aut-med2:focus-visible{transform:scale(1.14)}
+.aut-med2.on .am-los,.aut-med2:hover .am-los,.aut-med2:focus-visible .am-los{fill:var(--c)}
+.aut-med2.on .am-los2,.aut-med2:hover .am-los2{stroke:#111;opacity:.5}
+.aut-med2.on b,.aut-med2:hover b{color:#111}
+.aut-med2.on .am-giro,.aut-med2:hover .am-giro{animation-duration:4s}
+.aut-med2:focus-visible{outline:2px solid var(--c);outline-offset:8px;border-radius:50%}
+@media (prefers-reduced-motion:reduce){.am-giro{animation:none}.am-los{animation:none;stroke-dashoffset:0}}
+@media(max-width:860px){.ti-autoria .aut-med2.m,.cons-autoria .aut-med2.m{display:none}}
+</style>
 </head>
 <body>
 <canvas id="sparkle-canvas" aria-hidden="true"></canvas>
@@ -3108,13 +3130,13 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <div class="divider"></div>
     <p class="sec-lead" data-i18n="cons_l">Consultoria técnica realizada pelo ICET para o Fórum dos Caciques de Mato Grosso do Sul (FOCAMS), aprovada por aclamação pelas lideranças indígenas em 31 de outubro de 2026.</p>
     <div class="cons-autoria reveal">
-      <div class="aut-med" aria-hidden="true"><i></i><span>GC</span></div>
+      <a class="aut-med2" href="https://vertticonsultoria.com.br/#germano-pi" target="_blank" rel="noopener" style="--c:#E2A93B" aria-label="Germano Coelho Ramos Rocha-Silva"><svg viewBox="-40 -40 80 80" aria-hidden="true"><g class="am-giro"><circle class="am-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="am-los" d="M0-28 28 0 0 28-28 0z"/><path class="am-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>GC</b></a>
       <div class="aut-txt">
         <span class="eyebrow" data-i18n="cons_aut_eyb">Autoria dos projetos do FOCAMS</span>
         <p data-i18n-html="cons_aut_p">Os dois projetos desenvolvidos para o FOCAMS, o <strong>nacional</strong> e o <strong>de Mato Grosso do Sul</strong>, foram elaborados por <strong>Germano Coelho Ramos Rocha-Silva</strong>, indígena Terena, secretário-geral do ICET e mestre em Propriedade Intelectual e Transferência de Tecnologia para a Inovação, com o acompanhamento institucional da Presidente do ICET, <strong>Maria Auxiliadora Bezerra</strong>.</p>
         <div class="doc3d-acoes aut-acoes"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-programa-integrado/leitor/integral/" data-pdf="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf"><span data-i18n="cons_aut_b1">Projeto nacional</span></button><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-plano-estadual-ms/leitor/" data-pdf="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf"><span data-i18n="cons_aut_b2">Projeto de MS</span></button><a class="doc-bt" href="https://vertticonsultoria.com.br/#germano-pi" target="_blank" rel="noopener"><span data-i18n="cons_aut_b3">Germano na VERTTI</span></a></div>
       </div>
-      <div class="aut-med m" aria-hidden="true"><i></i><span>MA</span></div>
+      <a class="aut-med2 m" href="#diretoria" style="--c:#2BB3A8" aria-label="Maria Auxiliadora Bezerra"><svg viewBox="-40 -40 80 80" aria-hidden="true"><g class="am-giro"><circle class="am-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="am-los" d="M0-28 28 0 0 28-28 0z"/><path class="am-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>MA</b></a>
     </div>
     <div class="cons-grid">
       <figure class="cons-capa reveal"><img src="imgs/galeria/programa-integrado-01-capa.jpg" alt="Capa do resumo executivo do Programa Integrado" loading="lazy"><figcaption data-i18n="cons_cliente">Cliente: FOCAMS | 2027 a 2030</figcaption></figure>
@@ -9203,5 +9225,9 @@ else setTimeout(iniciar, 0);
 })();
 </script>
 <script src="leitor/leitor.js?v=20261115"></script>
+<script>
+/* medalhões GC e MA acendem alternadamente, como no motor da Editora */
+(function(){ document.querySelectorAll('.cons-autoria,.ti-autoria').forEach(function(box){ var ms=box.querySelectorAll('.aut-med2'); if(ms.length<2||matchMedia('(prefers-reduced-motion: reduce)').matches) return; var k=0; setInterval(function(){ ms.forEach(function(m){ m.classList.remove('on'); }); ms[k++%ms.length].classList.add('on'); },1800); }); })();
+</script>
 </body>
 </html>
