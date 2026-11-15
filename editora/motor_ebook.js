@@ -4570,7 +4570,7 @@ function montarUI(alvo) {
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
       '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="sem-ia" type="button" hidden title="Interrompe as etapas de IA em andamento; o livro é gerado sem elas">⏭ Continuar sem IA</button><button class="bt" data-a="acervo" disabled title="Guarda EPUB, relatório e projeto como nova versão no Acervo da Editora">📚 Registrar no acervo</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
-      '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
+      '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="anunciar" type="button" title="Mostra esta obra no catálogo da página da Editora como “em análise pelo Conselho Editorial, ISBN em registro”">📣 Anunciar na página da Editora</button><button class="bt" data-a="desanunciar" type="button" title="Retira esta obra da lista de obras em análise da página">✖ Retirar do anúncio</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
       '<div class="res" hidden><div class="placar"></div><div class="filtros"></div><div class="ocorr"></div>' +
@@ -4661,6 +4661,35 @@ function montarUI(alvo) {
   // ações
   Q('[data-a="regerar"]').addEventListener('click', function () { produzir(); });
   Q('[data-a="sem-ia"]').addEventListener('click', function () { iaParar('interrompida pelo editor'); this.disabled = true; ui.msg('Etapas de IA interrompidas; o livro segue sendo gerado sem elas…'); });
+  /* anúncio das obras em análise no catálogo público (editora/catalogo.json) */
+  function catLer() {
+    var api = 'https://api.github.com/repos/' + window.GH.repo + '/contents/editora/catalogo.json';
+    return fetch(api + '?ref=main&t=' + Date.now(), { headers: { 'Authorization': 'token ' + window.GH.token, 'Accept': 'application/vnd.github.raw' }, cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : { versao: 1, analise: [] }; }).catch(function () { return { versao: 1, analise: [] }; });
+  }
+  function catGravar(c, msg) { c.atualizado = new Date().toISOString(); return ghPut('editora/catalogo.json', btoa(unescape(encodeURIComponent(JSON.stringify(c, null, 2)))), msg); }
+  Q('[data-a="anunciar"]').addEventListener('click', function () {
+    if (!ghOk()) { ui.msg('Entre como ADM para anunciar a obra na página.', 'err'); return; }
+    if (!obra.titulo) { ui.msg('Preencha o título da obra em “Dados da obra” antes de anunciar.', 'err'); return; }
+    var id = slug(obra.titulo), ps = pessoas(obra.autores).concat(pessoas(obra.organizadores));
+    var item = { id: id, titulo: obra.titulo, subtitulo: obra.subtitulo || '', autores: ps.map(function (p) { return p.nome + (p.povo ? ' (' + p.povo + ')' : ''); }),
+      sinopse: String(obra.sinopse || '').replace(/\s+/g, ' ').trim().slice(0, 420), situacao: 'analise', capa: '' };
+    ui.msg('Anunciando “' + obra.titulo + '” na página da Editora…');
+    var envio = Promise.resolve();
+    var m = /^data:image\/(png|jpe?g|webp);base64,(.+)$/.exec(obra.capaPropria || '');
+    if (m) { var ext = m[1] === 'jpeg' ? 'jpg' : m[1]; item.capa = 'em-analise/' + id + '.' + ext; envio = ghPut('editora/' + item.capa, m[2], 'Editora: capa da obra em análise ' + obra.titulo); }
+    envio.then(catLer).then(function (c) {
+      c.analise = (c.analise || []).filter(function (x) { return x.id !== id; }); c.analise.push(item);
+      return catGravar(c, 'Editora: obra em análise anunciada, ' + obra.titulo);
+    }).then(function () { ui.msg('“' + obra.titulo + '” aparece no catálogo da página como obra em análise, com ISBN em registro. A página atualiza em cerca de um minuto.', 'ok'); },
+      function (er) { ui.msg('Não foi possível anunciar: ' + er.message, 'err'); });
+  });
+  Q('[data-a="desanunciar"]').addEventListener('click', function () {
+    if (!ghOk()) { ui.msg('Entre como ADM para alterar o catálogo da página.', 'err'); return; }
+    var id = slug(obra.titulo || '');
+    catLer().then(function (c) { var n = (c.analise || []).length; c.analise = (c.analise || []).filter(function (x) { return x.id !== id; }); if (c.analise.length === n) throw new Error('esta obra não estava anunciada'); return catGravar(c, 'Editora: obra retirada do anúncio, ' + obra.titulo); })
+      .then(function () { ui.msg('Obra retirada da lista de obras em análise da página.', 'ok'); }, function (er) { ui.msg('Nada alterado: ' + er.message, 'err'); });
+  });
   Q('[data-a="proj-salvar"]').addEventListener('click', function () {
     var pj = { tipo: 'projeto-editora-cacique-enir-terena', versao: VERSAO, salvo: new Date().toISOString(), obra: obra };
     baixar(new Blob([JSON.stringify(pj, null, 2)], { type: 'application/json' }), 'projeto-' + slug(obra.titulo || 'livro') + '.json');

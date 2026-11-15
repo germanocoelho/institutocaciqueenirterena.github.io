@@ -407,6 +407,21 @@ footer img{height:70px;margin:0 auto 16px}
 .cor span{display:block;font-size:.84rem;color:var(--tinta2);line-height:1.45}
 .marca-leg li:nth-child(5){--c:#111}
 @media(max-width:520px){.ed-cores{grid-template-columns:1fr}}
+
+/* obras em análise */
+.obra.analise{box-shadow:6px 6px 0 var(--cc,#F5AA19);cursor:default}
+.obra.analise:hover{transform:translate(-3px,-3px);box-shadow:10px 10px 0 var(--cc,#F5AA19)}
+.obra.analise img{aspect-ratio:.68;object-fit:cover;width:100%}
+.capa-gen{position:relative;aspect-ratio:.68;border-radius:3px 8px 8px 3px;background:var(--cc,#F5AA19);box-shadow:-6px 10px 20px -8px rgba(0,0,0,.5);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;color:#111}
+.capa-gen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 3px,transparent 3px 12px) left/14px 100% no-repeat}
+.capa-gen b{position:relative;font-family:var(--disp);font-weight:900;font-size:1rem;line-height:1.05;text-transform:uppercase}
+.capa-gen i{position:absolute;left:0;right:0;bottom:0;height:8px;background:#111}
+.cg-flor{position:absolute;right:-26px;top:-26px;width:110px;height:110px;color:rgba(255,255,255,.4);--miolo:transparent;animation:gira 20s linear infinite}
+.an-tg{display:flex;align-items:center;gap:8px;color:#c4106f!important}
+.an-pulso{width:9px;height:9px;border-radius:50%;background:#EE1A8C;animation:anPulso 1.8s ease-out infinite}
+@keyframes anPulso{0%{box-shadow:0 0 0 0 rgba(238,26,140,.6)}100%{box-shadow:0 0 0 10px rgba(238,26,140,0)}}
+.an-sub{font-family:var(--disp);font-weight:600;color:var(--tinta2)!important;margin-bottom:6px}
+.an-isbn{display:inline-block;margin-top:12px;font-family:var(--disp);font-weight:800;font-size:.74rem;letter-spacing:.06em;padding:6px 12px;border:1.5px dashed #111;border-radius:999px}
 /* criação */
 .cria-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .cria-ano{font-family:var(--disp);font-weight:900;font-stretch:62%;font-size:clamp(5rem,12vw,8.5rem);line-height:.8;color:transparent;-webkit-text-stroke:2px #111;background:linear-gradient(90deg,#00A8E8,#4FA862,#F5AA19,#EE1A8C) 0 100%/0 100% no-repeat;-webkit-background-clip:text;background-clip:text;transition:background-size 1.6s cubic-bezier(.6,0,.2,1) .3s;margin-bottom:12px}
@@ -833,6 +848,8 @@ document.querySelectorAll('#ondas i').forEach(function(e, k){ e.style.setPropert
 
 /* idiomas */
 var T = {
+ an_tg:{en:'Under review by the Editorial Board',es:'En evaluación por el Consejo Editorial',fr:'En évaluation par le comité éditorial'},
+ an_isbn:{en:'ISBN being registered · coming soon',es:'ISBN en registro · lanzamiento próximo',fr:'ISBN en cours d’enregistrement · bientôt disponible'},
  id_etq:{en:'Identity and governance',es:'Identidad y gobernanza',fr:'Identité et gouvernance'},
  id_tit:{en:'One mark, <em>one board</em>',es:'Una marca, <em>un consejo</em>',fr:'Une marque, <em>un comité</em>'},
  ab1:{en:'The Publisher’s logo',es:'La marca de la Editorial',fr:'Le logo de la maison'}, ab2:{en:'How the Publisher was created',es:'La creación de la Editorial',fr:'La création de la maison'},
@@ -952,6 +969,24 @@ function aplicar(){
 }
 $$('.idi button').forEach(function(b){ b.addEventListener('click', function(){ lang = b.getAttribute('data-lang'); ls('icet_lang', lang); aplicar(); }); });
 aplicar();
+/* obras em análise anunciadas pelo motor editorial (catalogo.json) */
+fetch('catalogo.json?t=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(c){
+  if(!c || !(c.analise || []).length) return;
+  var ref = document.querySelector('.obra.breve'), cs = ['#00A8E8','#F5AA19','#4FA862','#EE1A8C'];
+  var esc = function(t){ return String(t || '').replace(/[&<>"]/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }); };
+  c.analise.forEach(function(o, i){
+    var a = document.createElement('article'); a.className = 'obra analise rv in'; a.style.setProperty('--cc', cs[(i + 1) % 4]);
+    var capa = o.capa ? '<img src="' + esc(o.capa) + '" alt="" loading="lazy">' :
+      '<div class="capa-gen" aria-hidden="true"><svg class="cg-flor"><use href="#flor"/></svg><b>' + esc(o.titulo) + '</b><i></i></div>';
+    a.innerHTML = capa + '<div><div class="tg an-tg"><span class="an-pulso"></span><span data-t="an_tg">Em análise pelo Conselho Editorial</span></div>' +
+      '<h3>' + esc(o.titulo) + '</h3>' + (o.subtitulo ? '<p class="an-sub">' + esc(o.subtitulo) + '</p>' : '') +
+      (o.autores && o.autores.length ? '<div class="meta">' + esc(o.autores.join(', ')) + '</div>' : '') +
+      (o.sinopse ? '<p>' + esc(o.sinopse) + (o.sinopse.length >= 420 ? '…' : '') + '</p>' : '') +
+      '<div class="an-isbn"><span data-t="an_isbn">ISBN em registro · lançamento em breve</span></div></div>';
+    ref.parentNode.insertBefore(a, ref);
+  });
+  aplicar();
+}).catch(function(){});
 var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
 $$('.rv').forEach(function(el){ io.observe(el); });
 })();
