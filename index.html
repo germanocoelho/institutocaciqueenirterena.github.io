@@ -333,6 +333,26 @@ section.claro .btn-p,section.claro .btn-g,section.claro .org-mais,section.claro 
 .footer-adm a:hover{background-size:12px 4px}
 @media (prefers-reduced-motion:reduce){.cons-planos span,.cons-planos span::before,.cons-planos i,.cons-planos i::before,.creditos-rodape .badge-logo-link,.creditos-rodape .badge-logo-link::before,.creditos-rodape .badge-logo-link::after{animation:none!important}}
 
+/* ══ SEIS PLANOS: medalhões iguais aos do motor da Editora ══ */
+.cons-planos span{padding:.75rem 1rem .75rem .8rem}
+.pl-n{font-weight:inherit;position:relative;flex:none;display:grid;place-items:center;width:52px;height:52px;margin-right:.3rem;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.pl-n svg{position:absolute;left:-7px;top:-7px;width:66px;height:66px;overflow:visible}
+.pl-giro{animation:plGiro 22s linear infinite}
+@keyframes plGiro{to{transform:rotate(360deg)}}
+.pl-giro path{fill:var(--c)}
+.pl-anel{fill:none;stroke:var(--c);stroke-width:2;stroke-dasharray:1.5 6;stroke-linecap:round;opacity:.75}
+.pl-los{fill:#111;stroke:var(--c);stroke-width:2.6;stroke-linejoin:round;stroke-dasharray:160;stroke-dashoffset:160;transition:stroke-dashoffset 1.3s cubic-bezier(.6,0,.2,1),fill .5s}
+.cons-planos.in .pl-los,.cons-planos.visible .pl-los,.cons-planos .pl-los.desenhado{stroke-dashoffset:0}
+.pl-los2{fill:none;stroke:var(--c);stroke-width:1.6;opacity:.55;transition:opacity .4s,stroke .4s}
+.pl-n b{position:relative;font-family:'Cinzel',serif;font-weight:700;font-size:.82rem;color:#FBF8F2;transition:color .4s}
+.cons-planos span.on .pl-n{transform:scale(1.14)}
+.cons-planos span.on .pl-los{fill:var(--c)}
+.cons-planos span.on .pl-los2{stroke:#111;opacity:.5}
+.cons-planos span.on .pl-n b{color:#111}
+.cons-planos span.on .pl-giro{animation-duration:4s}
+.cons-planos span.on em{color:var(--c)}
+@media (prefers-reduced-motion:reduce){.pl-giro{animation:none}.pl-los{stroke-dashoffset:0}}
+
 /* ══ STATS HERO ══ */
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
@@ -3053,12 +3073,12 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
 
     <h3 class="cons-sub reveal" data-i18n="cons_planos_t">Os seis planos</h3>
     <div class="cons-planos reveal">
-      <span><i data-n="I">I</i><em data-i18n="cons_pl1">Saúde dos povos indígenas</em></span>
-      <span><i data-n="II">II</i><em data-i18n="cons_pl2">Educação escolar indígena</em></span>
-      <span><i data-n="III">III</i><em data-i18n="cons_pl3">Conhecimentos tradicionais</em></span>
-      <span><i data-n="IV">IV</i><em data-i18n="cons_pl4">Empreendedorismo indígena</em></span>
-      <span><i data-n="V">V</i><em data-i18n="cons_pl5">Produção agropecuária cooperativa</em></span>
-      <span><i data-n="VI">VI</i><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
+      <span style="--c:#00A8E8"><strong class="pl-n" style="--c:#00A8E8" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>I</b></strong><em data-i18n="cons_pl1">Saúde dos povos indígenas</em></span>
+      <span style="--c:#F5AA19"><strong class="pl-n" style="--c:#F5AA19" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>II</b></strong><em data-i18n="cons_pl2">Educação escolar indígena</em></span>
+      <span style="--c:#4FA862"><strong class="pl-n" style="--c:#4FA862" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>III</b></strong><em data-i18n="cons_pl3">Conhecimentos tradicionais</em></span>
+      <span style="--c:#EE1A8C"><strong class="pl-n" style="--c:#EE1A8C" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>IV</b></strong><em data-i18n="cons_pl4">Empreendedorismo indígena</em></span>
+      <span style="--c:#FBF8F2"><strong class="pl-n" style="--c:#FBF8F2" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>V</b></strong><em data-i18n="cons_pl5">Produção agropecuária cooperativa</em></span>
+      <span style="--c:#00A8E8"><strong class="pl-n" style="--c:#00A8E8" aria-hidden="true"><svg viewBox="-40 -40 80 80"><g class="pl-giro"><circle class="pl-anel" r="37"/><path d="M0-41 4-37 0-33-4-37z"/><path d="M41 0 37 4 33 0 37-4z"/><path d="M0 41 4 37 0 33-4 37z"/><path d="M-41 0-37 4-33 0-37-4z"/></g><path class="pl-los" d="M0-28 28 0 0 28-28 0z"/><path class="pl-los2" d="M0-17 17 0 0 17-17 0z"/></svg><b>VI</b></strong><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
     </div>
 
     <h3 class="cons-sub reveal" data-i18n="cons_docs_t">Documentos: versão mais atual</h3>
@@ -9064,6 +9084,21 @@ else setTimeout(iniciar, 0);
 (function(){
   function soltar(){ document.querySelectorAll('.icet-modal').forEach(function(m){ if(m.parentElement !== document.body) document.body.appendChild(m); }); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', soltar); else soltar();
+})();
+</script>
+<script>
+/* seis planos: cada medalhão se acende em sequência, como no motor da Editora */
+(function(){
+  var cx = document.querySelector('.cons-planos'); if(!cx) return;
+  var ps = Array.prototype.slice.call(cx.querySelectorAll(':scope > span')), k = -1, timer = null;
+  var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function passo(){ ps.forEach(function(p){ p.classList.remove('on'); }); k = (k + 1) % ps.length; ps[k].classList.add('on'); }
+  new IntersectionObserver(function(es){ es.forEach(function(e){
+    if(e.isIntersecting){ cx.querySelectorAll('.pl-los').forEach(function(l, i){ setTimeout(function(){ l.classList.add('desenhado'); }, i * 120); });
+      if(!timer && !reduz){ setTimeout(passo, 900); timer = setInterval(passo, 1700); } }
+    else if(timer){ clearInterval(timer); timer = null; }
+  }); }, { threshold: .3 }).observe(cx);
+  ps.forEach(function(p, i){ p.addEventListener('pointerenter', function(){ ps.forEach(function(q){ q.classList.remove('on'); }); p.classList.add('on'); k = i; }); });
 })();
 </script>
 </body>
