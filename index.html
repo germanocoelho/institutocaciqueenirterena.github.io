@@ -393,6 +393,12 @@ section.claro .nc-selo,section.claro .cons-tab{outline-color:rgba(154,106,18,.55
 .capa-ms i{position:absolute;left:0;right:0;bottom:12px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 7 8 1 16 7' fill='none' stroke='%23E2A93B' stroke-width='1.6'/%3E%3C/svg%3E") 0 0/16px 8px repeat-x}
 .doc3d.em-breve .livro3d{cursor:default}
 
+/* botões dos livros: folhear e baixar */
+.doc3d-acoes{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem}
+.doc-bt{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.05rem;border-radius:999px;border:1px solid currentColor;background:transparent;color:var(--ou,#E2A93B);font:700 .74rem 'Inter',system-ui,sans-serif;letter-spacing:.06em;text-decoration:none;cursor:pointer}
+.doc-bt.pri{background:var(--btp,linear-gradient(135deg,#A8422A,#C2502E));color:#FFF8F0;border-color:transparent}
+.doc-bt:hover{transform:translateY(-2px)}
+
 /* ══ STATS HERO ══ */
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
@@ -3134,6 +3140,7 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
         <span class="eyebrow" data-i18n="cons_ms_eyb">Projeto estadual</span>
         <h3 data-i18n="cons_ms_t">MS Povos Indígenas 2027 a 2030</h3>
         <p data-i18n-html="cons_ms_p">O <strong>Plano Estadual Integrado dos Povos Indígenas de Mato Grosso do Sul</strong> leva para o governo do estado a mesma lógica do Programa nacional: diagnóstico, ações, responsáveis, metas e entregas, pensados a partir das demandas das comunidades de Mato Grosso do Sul. São <strong>7 eixos, 64 ações e 69 metas verificáveis</strong>, com dez entregas-âncora, uma proposta de lei estadual de reserva efetiva de vagas para povos indígenas e o Programa Fundect Povos Indígenas. Elaborado pelo ICET, a pedido do FOCAMS e do CMDDI, em versão final de 9 de novembro de 2026.</p>
+        <div class="doc3d-acoes" style="justify-content:flex-start"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-plano-estadual-ms/leitor/" data-pdf="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf"><span data-i18n="cons_folhear">Folhear</span></button><a class="doc-bt" href="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf" target="_blank" rel="noopener" download><span data-i18n="cons_baixar">Baixar PDF</span></a></div>
       </div>
     </div>
     <h3 class="cons-sub reveal" data-i18n="cons_bib_t">Biblioteca dos projetos: folheie como um livro</h3>
@@ -3141,16 +3148,16 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
     <div class="docs3d">
       <div class="doc3d"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
         <button class="livro3d" data-doc="docs/consultorias/focams-programa-integrado/leitor/integral/" data-pdf="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf" aria-label="Programa completo"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/integral/p/005.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
-        <div><b data-i18n="cons_bk1">Programa completo</b><small data-i18n="cons_bk1s">Nacional · 222 páginas</small></div></div>
+        <div><b data-i18n="cons_bk1">Programa completo</b><small data-i18n="cons_bk1s">Nacional · 222 páginas</small><div class="doc3d-acoes"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-programa-integrado/leitor/integral/" data-pdf="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf"><span data-i18n="cons_folhear">Folhear</span></button><a class="doc-bt" href="docs/consultorias/focams-programa-integrado/programa-integrado-2027-2030-texto-integral.pdf" target="_blank" rel="noopener" download><span data-i18n="cons_baixar">Baixar PDF</span></a></div></div></div>
       <div class="doc3d"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
         <button class="livro3d" data-doc="docs/consultorias/focams-programa-integrado/leitor/resumo/" data-pdf="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf" aria-label="Resumo executivo"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/resumo/p/001.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
-        <div><b data-i18n="cons_bk2">Resumo executivo</b><small data-i18n="cons_bk2s">Nacional · 9 páginas</small></div></div>
+        <div><b data-i18n="cons_bk2">Resumo executivo</b><small data-i18n="cons_bk2s">Nacional · 9 páginas</small><div class="doc3d-acoes"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-programa-integrado/leitor/resumo/" data-pdf="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf"><span data-i18n="cons_folhear">Folhear</span></button><a class="doc-bt" href="docs/consultorias/focams-programa-integrado/resumo-executivo-programa-integrado-2027-2030.pdf" target="_blank" rel="noopener" download><span data-i18n="cons_baixar">Baixar PDF</span></a></div></div></div>
       <div class="doc3d"><div class="doc3d-palco larga"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
         <button class="livro3d" style="--l3d-ar:1.413" data-doc="docs/consultorias/focams-programa-integrado/leitor/apresentacao/" data-pdf="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf" aria-label="Apresentação"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-programa-integrado/leitor/apresentacao/p/001.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
-        <div><b data-i18n="cons_bk3">Apresentação</b><small data-i18n="cons_bk3s">Nacional · 13 slides</small></div></div>
+        <div><b data-i18n="cons_bk3">Apresentação</b><small data-i18n="cons_bk3s">Nacional · 13 slides</small><div class="doc3d-acoes"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-programa-integrado/leitor/apresentacao/" data-pdf="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf"><span data-i18n="cons_folhear">Folhear</span></button><a class="doc-bt" href="docs/consultorias/focams-programa-integrado/apresentacao-programa-integrado-2027-2030.pdf" target="_blank" rel="noopener" download><span data-i18n="cons_baixar">Baixar PDF</span></a></div></div></div>
       <div class="doc3d"><div class="doc3d-palco"><i class="doc3d-aura"></i><i class="doc3d-anel"></i><i class="doc3d-anel r"></i>
         <button class="livro3d" data-doc="docs/consultorias/focams-plano-estadual-ms/leitor/" data-pdf="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf" aria-label="Folhear o Plano Estadual de MS"><span class="lombada"></span><span class="miolo"></span><span class="capa"><img src="docs/consultorias/focams-plano-estadual-ms/leitor/p/001.webp" alt="" loading="lazy"></span><span class="sombra"></span></button></div>
-        <div><b data-i18n="cons_bk4">Plano Estadual de MS</b><small data-i18n="cons_bk4s">Estadual · 100 páginas</small></div></div>
+        <div><b data-i18n="cons_bk4">Plano Estadual de MS</b><small data-i18n="cons_bk4s">Estadual · 100 páginas</small><div class="doc3d-acoes"><button type="button" class="doc-bt pri" data-abrir-doc="docs/consultorias/focams-plano-estadual-ms/leitor/" data-pdf="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf"><span data-i18n="cons_folhear">Folhear</span></button><a class="doc-bt" href="docs/consultorias/focams-plano-estadual-ms/plano-estadual-integrado-povos-indigenas-ms-2027-2030.pdf" target="_blank" rel="noopener" download><span data-i18n="cons_baixar">Baixar PDF</span></a></div></div></div>
     </div>
     <h3 class="cons-sub reveal" data-i18n="cons_docs_t">Documentos: versão mais atual</h3>
     <div class="cons-tabs" role="tablist">
@@ -6560,6 +6567,7 @@ document.addEventListener('DOMContentLoaded',function(){
       cons_bk1: {pt:'Programa completo', es:'Programa completo', en:'Full Program', fr:'Programme complet'}, cons_bk1s: {pt:'Nacional · 222 páginas', es:'Nacional · 222 páginas', en:'National · 222 pages', fr:'National · 222 pages'},
       cons_bk2: {pt:'Resumo executivo', es:'Resumen ejecutivo', en:'Executive summary', fr:'Résumé exécutif'}, cons_bk2s: {pt:'Nacional · 9 páginas', es:'Nacional · 9 páginas', en:'National · 9 pages', fr:'National · 9 pages'},
       cons_bk3: {pt:'Apresentação', es:'Presentación', en:'Presentation', fr:'Présentation'}, cons_bk3s: {pt:'Nacional · 13 slides', es:'Nacional · 13 diapositivas', en:'National · 13 slides', fr:'National · 13 diapositives'},
+      cons_folhear: {"pt": "Folhear", "en": "Read", "es": "Hojear", "fr": "Feuilleter"}, cons_baixar: {"pt": "Baixar PDF", "en": "Download PDF", "es": "Descargar PDF", "fr": "Télécharger le PDF"},
       cons_bk4: {pt:'Plano Estadual de MS', es:'Plan Estatal de MS', en:'MS State Plan', fr:'Plan de l’État du MS'}, cons_bk4s: {pt:'Estadual · 100 páginas', es:'Estatal · 100 páginas', en:'State · 100 pages', fr:'État · 100 pages'},
       cons_n1: {pt:'planos nacionais', es:'planes nacionales', en:'national plans', fr:'plans nationaux'},
       cons_n2: {pt:'áreas de ação', es:'áreas de acción', en:'areas of action', fr:'domaines d’action'},
