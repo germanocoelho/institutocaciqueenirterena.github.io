@@ -276,6 +276,63 @@ section.claro .btn-p,section.claro .btn-g,section.claro .org-mais,section.claro 
 .ibge-btn .ibge-btn-ico{border-radius:1px;transform:rotate(45deg);width:7px;height:7px;box-shadow:0 0 0 2px rgba(226,169,59,.25)}
 @media (prefers-reduced-motion:reduce){.btn-p::before,.btn-g::before,.org-mais::before,.ibge-btn::before,.gal-btn::before,.cons-btn::before,.nc-ler::before,.org-case-aba::before,.ed-bt::before{animation:none!important}}
 
+/* ══ OS SEIS PLANOS: cartões vivos com medalhão em losango ══ */
+.cons-planos span{position:relative;overflow:hidden;isolation:isolate;cursor:default;
+  transition:transform .45s cubic-bezier(.3,1.4,.5,1),box-shadow .45s,border-color .45s,background .45s;
+  animation:planoEntra .9s cubic-bezier(.2,.9,.3,1.2) both}
+.cons-planos span:nth-child(1){animation-delay:.05s}.cons-planos span:nth-child(2){animation-delay:.15s}.cons-planos span:nth-child(3){animation-delay:.25s}
+.cons-planos span:nth-child(4){animation-delay:.35s}.cons-planos span:nth-child(5){animation-delay:.45s}.cons-planos span:nth-child(6){animation-delay:.55s}
+@keyframes planoEntra{from{opacity:0;transform:perspective(700px) rotateX(40deg) translateY(26px)}to{opacity:1;transform:none}}
+/* luz que percorre os seis cartões em onda */
+.cons-planos span::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(226,169,59,.16) 48%,rgba(43,179,168,.12) 55%,transparent 68%) -150% 0/250% 100% no-repeat;
+  animation:planoLuz 7s ease-in-out infinite}
+.cons-planos span:nth-child(2)::before{animation-delay:.35s}.cons-planos span:nth-child(3)::before{animation-delay:.7s}
+.cons-planos span:nth-child(4)::before{animation-delay:1.05s}.cons-planos span:nth-child(5)::before{animation-delay:1.4s}.cons-planos span:nth-child(6)::before{animation-delay:1.75s}
+@keyframes planoLuz{0%,55%{background-position:-150% 0}80%,100%{background-position:150% 0}}
+/* faixa em zigue-zague que se desenha na base */
+.cons-planos span::after{content:'';position:absolute;left:0;right:0;bottom:0;height:6px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='6'%3E%3Cpath d='M0 1 4 5 8 1' fill='none' stroke='%23E2A93B' stroke-width='1.5'/%3E%3Cpath d='M8 1 12 5 16 1' fill='none' stroke='%23C2502E' stroke-width='1.5'/%3E%3Cpath d='M16 1 20 5 24 1' fill='none' stroke='%232BB3A8' stroke-width='1.5'/%3E%3Cpath d='M24 1 28 5 32 1' fill='none' stroke='%23F4EEE3' stroke-width='1.5'/%3E%3C/svg%3E") 0 0/32px 6px repeat-x;
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .6s cubic-bezier(.6,0,.2,1)}
+.cons-planos span:hover{transform:translateY(-5px);border-color:rgba(226,169,59,.55);
+  background:var(--k3) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M11 3 19 11 11 19 3 11z' fill='none' stroke='%23F4EEE3' stroke-opacity='.1' stroke-width='1.2'/%3E%3Ccircle cx='11' cy='11' r='1.3' fill='%23E2A93B' fill-opacity='.3'/%3E%3C/svg%3E") 0 0/22px 22px;
+  box-shadow:0 14px 30px -14px rgba(194,80,46,.6),0 0 0 1px rgba(226,169,59,.2)}
+.cons-planos span:hover::after{transform:scaleX(1);animation:planoZig 1.4s linear infinite}
+@keyframes planoZig{to{background-position:32px 0}}
+/* medalhão: o numeral romano dentro de um losango com anel de contas girando */
+.cons-planos i{position:relative;border-radius:8px !important;transform:rotate(45deg);width:34px !important;height:34px !important;margin:4px 8px 4px 4px;
+  background:linear-gradient(135deg,#C2502E,#A8422A) !important;box-shadow:0 0 0 0 rgba(226,169,59,.5);
+  transition:transform .7s cubic-bezier(.3,1.6,.45,1),background .4s;animation:planoPulso 3.2s ease-in-out infinite}
+.cons-planos span:nth-child(2) i{animation-delay:.5s}.cons-planos span:nth-child(3) i{animation-delay:1s}.cons-planos span:nth-child(4) i{animation-delay:1.5s}.cons-planos span:nth-child(5) i{animation-delay:2s}.cons-planos span:nth-child(6) i{animation-delay:2.5s}
+@keyframes planoPulso{0%,100%{box-shadow:0 0 0 0 rgba(226,169,59,0)}50%{box-shadow:0 0 0 5px rgba(226,169,59,.18)}}
+.cons-planos i::before{content:'';position:absolute;inset:-7px;border:1.5px dotted rgba(226,169,59,.75);border-radius:10px;animation:planoAnel 12s linear infinite}
+@keyframes planoAnel{to{transform:rotate(360deg)}}
+.cons-planos i{font-size:0 !important}
+.cons-planos i::after{content:attr(data-n);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform:rotate(-45deg);font-family:'Cinzel',serif;font-weight:700;font-size:.8rem;color:#F4EEE3}
+.cons-planos span:hover i{transform:rotate(225deg) scale(1.08);background:linear-gradient(135deg,#E2A93B,#C2502E) !important}
+.cons-planos span:hover i::after{transform:rotate(-225deg)}
+.cons-planos span:hover i::before{animation-duration:3s;border-color:#2BB3A8}
+.cons-planos span:hover em{color:var(--cr)}
+.cons-planos em{transition:color .3s}
+
+/* ══ RODAPÉ: selos de crédito vivos ══ */
+.creditos-rodape .badge-logo-link{margin:0 .35rem;animation:seloFlutua 4s ease-in-out infinite}
+.creditos-rodape .badge-logo-link:nth-child(2){animation-delay:-2s}
+@keyframes seloFlutua{50%{transform:translateY(-3px)}}
+.creditos-rodape .badge-logo{width:30px;height:30px;transition:transform .5s cubic-bezier(.3,1.6,.5,1),box-shadow .4s;box-shadow:0 0 0 2px rgba(226,169,59,.25),0 0 14px rgba(226,169,59,.15)}
+.creditos-rodape .badge-logo-link::before{content:'';position:absolute;left:50%;top:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;border:1.5px dotted rgba(226,169,59,.7);animation:planoAnel 14s linear infinite;pointer-events:none}
+.creditos-rodape .badge-logo-link:nth-child(2)::before{animation-direction:reverse;border-color:rgba(43,179,168,.7)}
+.creditos-rodape .badge-logo-link::after{content:'';position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 82%,rgba(226,169,59,.75) 88%,transparent 94%);
+  -webkit-mask:radial-gradient(circle,transparent 23px,#000 24px,#000 25px,transparent 26px);mask:radial-gradient(circle,transparent 23px,#000 24px,#000 25px,transparent 26px);
+  animation:planoAnel 3.2s linear infinite;pointer-events:none}
+.creditos-rodape .badge-logo-link:nth-child(2)::after{animation-direction:reverse;background:conic-gradient(from 0deg,transparent 0 82%,rgba(43,179,168,.8) 88%,transparent 94%)}
+.creditos-rodape .badge-logo-link:hover .badge-logo{transform:scale(1.25) rotate(-8deg);box-shadow:0 0 0 2px #E2A93B,0 0 22px rgba(226,169,59,.5)}
+.creditos-rodape .badge-logo-link:hover::before{animation-duration:3s}
+.footer-adm a{position:relative;padding-bottom:4px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4'%3E%3Cpath d='M0 3 3 1 6 3 9 1 12 3' fill='none' stroke='%23E2A93B' stroke-width='1'/%3E%3C/svg%3E") 0 100%/12px 4px repeat-x;background-size:0 4px;transition:background-size .5s,color .3s}
+.footer-adm a:hover{background-size:12px 4px}
+@media (prefers-reduced-motion:reduce){.cons-planos span,.cons-planos span::before,.cons-planos i,.cons-planos i::before,.creditos-rodape .badge-logo-link,.creditos-rodape .badge-logo-link::before,.creditos-rodape .badge-logo-link::after{animation:none!important}}
+
 /* ══ STATS HERO ══ */
 .hero-stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
@@ -2996,12 +3053,12 @@ window.TRAD_AUTO = {traduzir: traduzir, traduzirCampos: traduzirCampos, pendente
 
     <h3 class="cons-sub reveal" data-i18n="cons_planos_t">Os seis planos</h3>
     <div class="cons-planos reveal">
-      <span><i>I</i><em data-i18n="cons_pl1">Saúde dos povos indígenas</em></span>
-      <span><i>II</i><em data-i18n="cons_pl2">Educação escolar indígena</em></span>
-      <span><i>III</i><em data-i18n="cons_pl3">Conhecimentos tradicionais</em></span>
-      <span><i>IV</i><em data-i18n="cons_pl4">Empreendedorismo indígena</em></span>
-      <span><i>V</i><em data-i18n="cons_pl5">Produção agropecuária cooperativa</em></span>
-      <span><i>VI</i><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
+      <span><i data-n="I">I</i><em data-i18n="cons_pl1">Saúde dos povos indígenas</em></span>
+      <span><i data-n="II">II</i><em data-i18n="cons_pl2">Educação escolar indígena</em></span>
+      <span><i data-n="III">III</i><em data-i18n="cons_pl3">Conhecimentos tradicionais</em></span>
+      <span><i data-n="IV">IV</i><em data-i18n="cons_pl4">Empreendedorismo indígena</em></span>
+      <span><i data-n="V">V</i><em data-i18n="cons_pl5">Produção agropecuária cooperativa</em></span>
+      <span><i data-n="VI">VI</i><em data-i18n="cons_pl6">Mineração em terras indígenas</em></span>
     </div>
 
     <h3 class="cons-sub reveal" data-i18n="cons_docs_t">Documentos: versão mais atual</h3>
