@@ -295,10 +295,10 @@ footer img{height:70px;margin:0 auto 16px}
 .flor-rodape svg{width:30px;height:30px;animation:gira 10s linear infinite}
 .flor-rodape svg:nth-child(2){animation-direction:reverse}.flor-rodape svg:nth-child(3){animation-duration:14s}
 
-@media (prefers-reduced-motion:reduce){#abertura,#cursor,.petala-voo{display:none!important}.palavra>span{transform:none}}
+@media (prefers-reduced-motion:reduce){#cursor,.petala-voo{display:none!important}.palavra>span{transform:none}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#abertura .ab-p{fill:var(--c);stroke-dashoffset:0}#abertura .ab-c{transform:none}#abertura .ab-nome{opacity:1;transform:none}#abertura .ab-pontos circle{opacity:.9}#abertura .ab-petalas{transform:none}*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero h1 span.l,.estrela .lv{opacity:1;transform:none}}
 /* ═════════ recortes com grafismo e movimento ═════════ */
 .como-flor{--miolo:transparent;position:absolute;right:-140px;top:-60px;width:520px;height:520px;color:rgba(251,248,242,.045);animation:gira 90s linear infinite;pointer-events:none;z-index:0}
 #como{overflow:hidden}#como .wrap{position:relative;z-index:1}
@@ -996,16 +996,21 @@ $$('.rv').forEach(function(el){ io.observe(el); });
   var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ss(k, v){ try{ if(v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); }catch(e){ return null; } }
 
-  /* abertura: a flor Terena desabrocha uma vez por visita */
-  var ab = document.getElementById('abertura');
-  if(reduz || ss('ed_abertura')){ ab.remove(); }
-  else {
-    ss('ed_abertura', '1');
+  /* abertura: a flor Terena desabrocha em toda entrada na página */
+  var abModelo = document.getElementById('abertura'), abHTML = abModelo.outerHTML;
+  function abrir(){
+    var velho = document.getElementById('abertura'); if(velho) velho.remove();
+    var t = document.createElement('div'); t.innerHTML = abHTML; var ab = t.firstElementChild;
+    document.body.insertBefore(ab, document.body.firstChild);
     var g = ab.querySelector('.ab-pontos'), ns = 'http://www.w3.org/2000/svg';
     for(var i = 0; i < 16; i++){ var a = i / 16 * Math.PI * 2, c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', Math.cos(a) * 112); c.setAttribute('cy', Math.sin(a) * 112); c.setAttribute('r', i % 2 ? 3 : 5); c.style.animationDelay = (0.9 + i * 0.04) + 's'; g.appendChild(c); }
-    var fim = function(){ ab.classList.add('sai'); setTimeout(function(){ ab.remove(); }, 1300); };
+    var feito = false, fim = function(){ if(feito) return; feito = true; ab.classList.add('sai'); setTimeout(function(){ ab.remove(); }, 1300); };
     setTimeout(fim, 2500); ab.style.pointerEvents = 'auto'; ab.addEventListener('click', fim);
   }
+  abModelo.remove();
+  abrir();
+  /* também ao voltar para a página pelo botão Voltar do navegador */
+  addEventListener('pageshow', function(e){ if(e.persisted) abrir(); });
 
   /* barra de progresso de leitura */
   var barra = document.querySelector('#prog i');
