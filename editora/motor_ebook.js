@@ -19,7 +19,7 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.1', BUILD = '20261117f';
+var VERSAO = '1.1', BUILD = '20261117g';
 /* caixa-preta: grava a última etapa da produção; se o navegador derrubar a página (falta de memória),
    o motor mostra, ao reabrir, onde a produção parou */
 function marco(txt) { try { var m = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB em uso (limite ' + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB)' : ''; localStorage.setItem('icet_motor_marco', JSON.stringify({ t: new Date().toLocaleString('pt-BR'), txt: txt, mem: m, build: BUILD })); } catch (e) {} }
@@ -2301,7 +2301,6 @@ async function processarIlustracoes(livro) {
       if (/^data:/i.test(src)) dados = dataUrlParaBytes(src);
       else if (/^(https?|blob):/i.test(src)) {
         try { var r = await fetch(src); if (r.ok) { var b = await r.blob(); dados = { bytes: new Uint8Array(await b.arrayBuffer()), mime: b.type }; } } catch (e) {}
-        if (/^blob:/i.test(src)) try { URL.revokeObjectURL(src); } catch (e) {}
       }
       if (!dados) { A.add('bloqueante', 'Técnico', 'Imagem não incorporável (arquivo ausente ou externo): ' + src.slice(0, 80), { onde: s.titulo, sug: 'Insira a imagem no próprio documento.' }); img.remove(); continue; }
       var h = hashBytes(dados.bytes), reg = mapa[h];
@@ -4561,6 +4560,9 @@ async function receberArquivo(file) {
   try {
     await libs();
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
+    // figuras do manuscrito anterior (blob:) liberadas ao trocar de manuscrito; as do atual valem enquanto ele estiver aberto
+    if (estado.entrada && estado.entrada.html) (estado.entrada.html.match(/blob:[^"')\s]+/g) || []).forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+    estado.entrada = null;
     await msGuardar(file, obra.titulo); // guardado antes da leitura: se a página cair, o manuscrito continua disponível
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
@@ -4909,9 +4911,12 @@ function montarUI(alvo) {
   });
   Q('[data-a="pdf"]').addEventListener('click', function () {
     if (!estado.livro) return;
-    var w = window.open('', '_blank');
-    if (!w) { ui.msg('Permita janelas pop-up para gerar o PDF.', 'err'); return; }
-    marco('montando o PDF para impressão'); w.document.open(); w.document.write(htmlImpressao(estado.livro, estado.logos, obra)); w.document.close(); marcoFim();
+    // a página de impressão abre em processo próprio do navegador (noopener), para não somar sua memória à do motor
+    marco('montando o PDF para impressão');
+    var u = URL.createObjectURL(new Blob([htmlImpressao(estado.livro, estado.logos, obra)], { type: 'text/html;charset=utf-8' }));
+    window.open(u, '_blank', 'noopener'); marcoFim();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 300000);
+    ui.msg('O livro abriu em outra aba para impressão: escolha “Salvar como PDF”. Se não abriu, permita janelas pop-up para este site.', 'ok');
   });
   var selPg = Q('[data-a="pg"]'), ifr = Q('iframe');
   function mostrarPg(k) {
