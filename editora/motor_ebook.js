@@ -19,7 +19,7 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.1', BUILD = '20261117g';
+var VERSAO = '1.1', BUILD = '20261117h';
 /* caixa-preta: grava a última etapa da produção; se o navegador derrubar a página (falta de memória),
    o motor mostra, ao reabrir, onde a produção parou */
 function marco(txt) { try { var m = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB em uso (limite ' + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB)' : ''; localStorage.setItem('icet_motor_marco', JSON.stringify({ t: new Date().toLocaleString('pt-BR'), txt: txt, mem: m, build: BUILD })); } catch (e) {} }
@@ -798,7 +798,7 @@ async function lerPdfDoc(pj, pdf) {
   // e o PDF tiver texto, segue com o texto extraído em vez de interromper a produção
   var avisoTexto = '';
   if (totalChars < 80 * pdf.numPages) {
-    if (!totalChars) return transcreverPdf(pdf, meta);
+    if (!totalChars) return lerPdfDigitalizado(pdf, meta);
     if (chaveClaude() && !IA.fora) { try { return await transcreverPdf(pdf, meta); } catch (e) { avisoTexto = 'Transcrição pela IA indisponível (' + e.message + '): o livro foi montado com o texto selecionável do PDF. Confira se há páginas só com imagem.'; } }
     else avisoTexto = 'PDF com pouco texto selecionável em algumas páginas: o livro foi montado com o texto que o PDF contém. Confira se há páginas só com imagem.';
   }
@@ -907,18 +907,141 @@ async function imagensDaPagina(pj, pg, ops, vp, textoPag) {
   }
   return out;
 }
-/* PDF digitalizado (sem texto) e imagens de páginas: transcrição pelo Claude com visão */
+/* PDF digitalizado (sem texto selecionável): transcrição pelo Claude quando a IA está disponível; sem chave,
+   sem crédito ou com a IA fora do ar, reconhecimento de texto (OCR) no próprio navegador, página por página,
+   com o Tesseract hospedado no site. O texto de cada página fica guardado neste navegador: se a página cair,
+   a leitura retoma de onde parou. */
+async function lerPdfDigitalizado(pdf, meta) {
+  if (chaveClaude() && !IA.fora) {
+    try { return await transcreverPdf(pdf, meta); }
+    catch (e) { if (!e.fatal && !IA.fora) throw e; ui.msg('IA indisponível (' + e.message + '): usando o reconhecimento de texto do próprio navegador.'); }
+  }
+  return ocrPdf(pdf, meta);
+}
+var _tess = null;
+function tesseractLib() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  if (!_tess) _tess = new Promise(function (ok, erro) { var sc = document.createElement('script'); sc.src = BASE + 'lib/ocr/tesseract.min.js'; sc.onload = function () { ok(window.Tesseract); }; sc.onerror = function () { _tess = null; erro(new Error('não foi possível carregar o leitor de texto (OCR)')); }; document.head.appendChild(sc); });
+  return _tess;
+}
+function ocrCacheDb() { return new Promise(function (ok) { try { var r = indexedDB.open('icet_ebook_ocr', 1); r.onupgradeneeded = function () { r.result.createObjectStore('pg'); }; r.onsuccess = function () { ok(r.result); }; r.onerror = function () { ok(null); }; } catch (e) { ok(null); } }); }
+function ocrCache(db, k, v) { return new Promise(function (ok) { if (!db) return ok(null); try { var t = db.transaction('pg', v == null ? 'readonly' : 'readwrite'), st = t.objectStore('pg'); if (v == null) { var r = st.get(k); r.onsuccess = function () { ok(r.result == null ? null : r.result); }; r.onerror = function () { ok(null); }; } else { st.put(v, k); t.oncomplete = function () { ok(v); }; t.onerror = function () { ok(v); }; } } catch (e) { ok(null); } }); }
+async function ocrPdf(pdf, meta) {
+  var T = await tesseractLib(), N = pdf.numPages, chave = 'v1|' + (pdf.fingerprints ? pdf.fingerprints[0] : '') + '|' + N, db = await ocrCacheDb();
+  var nW = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1)), ws = [];
+  var textos = new Array(N), feitas = 0, t0 = Date.now(), prox = 1;
+  for (var i = 0; i < nW; i++) ws.push(await T.createWorker('por', 1, { workerPath: BASE + 'lib/ocr/worker.min.js', corePath: BASE + 'lib/ocr/', langPath: BASE + 'lib/ocr/', gzip: true }));
+  function aviso() {
+    var seg = (Date.now() - t0) / 1000, falta = feitas ? Math.round(seg / feitas * (N - feitas) / 60) : 0;
+    ui.msg('Lendo o PDF digitalizado (reconhecimento de texto no navegador, sem IA): página ' + feitas + ' de ' + N + (feitas > 3 ? ', faltam cerca de ' + falta + ' min' : '') + '. Mantenha a página aberta.');
+    marco('reconhecendo o texto do PDF digitalizado, página ' + feitas + ' de ' + N);
+  }
+  async function trabalhar(w) {
+    while (prox <= N) {
+      var pn = prox++, k = chave + '|' + pn, t = await ocrCache(db, k);
+      if (t == null) {
+        var pg = await pdf.getPage(pn), vp0 = pg.getViewport({ scale: 1 }), esc2 = Math.min(2.4, 2000 / Math.max(vp0.width, vp0.height) * 1.4), vp = pg.getViewport({ scale: esc2 });
+        var cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+        var g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height);
+        await pg.render({ canvasContext: g, viewport: vp }).promise;
+        var r = await w.recognize(cv); t = (r && r.data && r.data.text) || '';
+        cv.width = cv.height = 0; try { pg.cleanup(); } catch (e) {}
+        await ocrCache(db, k, t);
+      }
+      textos[pn - 1] = t; feitas++; aviso();
+      if (feitas % 15 === 0) { try { await pdf.cleanup(); } catch (e) {} }
+    }
+  }
+  aviso();
+  try { await Promise.all(ws.map(trabalhar)); } finally { for (var j = 0; j < ws.length; j++) { try { await ws[j].terminate(); } catch (e) {} } }
+  return montarTextoOcr(textos, meta);
+}
+/* páginas de texto do OCR → HTML: tira números de página e cabeçalhos repetidos, junta linhas e palavras
+   hifenizadas, une parágrafos que continuam na página seguinte e infere os títulos pela forma das linhas */
+function montarTextoOcr(textos, meta) {
+  var norm = function (t) { return t.replace(/\d+/g, '#').replace(/\s+/g, ' ').trim().toLowerCase(); }, freq = {};
+  var pags = textos.map(function (t) { return String(t || '').replace(/\r/g, '').split('\n'); });
+  pags.forEach(function (ls) { var v = {}; ls.filter(function (l) { return l.trim(); }).slice(0, 1).concat(ls.filter(function (l) { return l.trim(); }).slice(-1)).forEach(function (l) { var k = norm(l); if (k && !v[k]) { v[k] = 1; freq[k] = (freq[k] || 0) + 1; } }); });
+  var repetidas = Object.keys(freq).filter(function (k) { return freq[k] >= Math.max(4, textos.length * 0.2) && k.length < 90; });
+  // capa, folha de rosto, ficha e sumário do original: o motor gera os seus; descartados até o fim do sumário
+  var ini = 0, iSum = pags.findIndex(function (ls, i) { return i < 40 && ls.some(function (l) { return /^\s*sum[aá]rio\s*$/i.test(l); }); });
+  if (iSum >= 0) { ini = iSum + 1; while (ini < pags.length && ini < iSum + 15) { var txt = pags[ini].join(' '), longos = pags[ini].join('\n').split(/\n\s*\n/).filter(function (b) { return b.replace(/\s+/g, ' ').length > 220; }).length; if (longos >= 1 && !/cap[ií]tulo\s+\d+\s*\.?\s+\S.*\s\d{1,3}\s*$/im.test(txt)) break; ini++; } }
+  var blocos = [], pulaIndice = false, emRefs = false, capAtual = 0, ROM = { I: 1, V: 5, X: 10, L: 50, C: 100 };
+  function romano(r) { var n = 0; r = r.toUpperCase(); for (var i = 0; i < r.length; i++) { var a = ROM[r[i]], b = ROM[r[i + 1]] || 0; n += a < b ? -a : a; } return n; }
+  function corrigeTitulo(t) {
+    // “Capítulo |” e “Capítulo l” do OCR são “Capítulo I”; numeração de seção sem o ponto (12 → 1.2) dentro do capítulo 1
+    t = t.replace(/^(cap[ií]tulo)\s+[|!l](?=\b|\s|$|[.:])/i, '$1 I');
+    t = t.replace(/^(cap[ií]tulo\s+[\dIVXLC]+)\s*[!|]+\s*/i, '$1 ');
+    var mc = /^cap[ií]tulo\s+(\d{1,2}|[IVXLC]+)\b/i.exec(t); if (mc) capAtual = /\d/.test(mc[1]) ? +mc[1] : romano(mc[1]);
+    var ms = /^(\d{2,3})\s+([A-ZÀ-Ý].*)$/.exec(t);
+    if (ms && capAtual && ms[1].indexOf(String(capAtual)) === 0 && ms[1].length > String(capAtual).length && t === t.toUpperCase()) t = String(capAtual) + '.' + ms[1].slice(String(capAtual).length) + ' ' + ms[2];
+    return t;
+  }
+  pags.forEach(function (ls, ip) {
+    if (ip < ini) return;
+    var cheias = ls.map(function (l) { return l.replace(/\s+$/, ''); });
+    while (cheias.length && !cheias[0].trim()) cheias.shift(); while (cheias.length && !cheias[cheias.length - 1].trim()) cheias.pop();
+    [0, cheias.length - 1].forEach(function (ix, j) { var l = cheias[j ? cheias.length - 1 : 0]; if (l != null && (/^\s*[-–]?\s*\d{1,4}\s*[-–]?\s*$/.test(l) || repetidas.indexOf(norm(l)) >= 0)) { if (j) cheias.pop(); else cheias.shift(); } });
+    var txtPag = cheias.join('\n').replace(/^(\s*cap[ií]tulo\s+[\dIVXLC|!l]{1,5})\s*\n/gim, '$1\n\n').replace(/^\s*\[?(\d{1,2})\.([0-9l])\b/gm, function (m, a, b) { return a + '.' + (b === 'l' ? '1' : b); });
+    var bs = [];
+    txtPag.split(/\n\s*\n+/).forEach(function (b) {
+      var linhas = b.split('\n').map(function (l) { return l.trim(); }).filter(Boolean), t = '';
+      function caps(l) { return l === l.toUpperCase() && /[A-ZÀ-Ý]{3}/.test(l) && l.length < 100; }
+      // linhas iniciais em maiúsculas seguidas de texto comum: título separado do parágrafo
+      var k0 = 0; while (k0 < linhas.length - 1 && caps(linhas[k0])) k0++;
+      if (k0 && k0 < linhas.length && !caps(linhas[k0])) { bs.push(linhas.slice(0, k0).join(' ')); linhas = linhas.slice(k0); }
+      linhas.forEach(function (l) {
+        if (/[A-Za-zÀ-ÿ]-$/.test(t) && /^[a-zà-ÿ]/.test(l)) t = t.slice(0, -1) + l;
+        else if (t && /[.)]$/.test(t) && /^[A-ZÀ-Ý][A-ZÀ-Ý'’\- ]{2,},\s/.test(l)) { bs.push(t); t = l; }   // nova entrada de referência (SOBRENOME, Nome.)
+        else t += (t ? ' ' : '') + l;
+      });
+      if (t) bs.push(t);
+    });
+    bs = bs.map(function (t) { return t.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+    bs.forEach(function (t, k) {
+      var ant = blocos[blocos.length - 1];
+      if (ant && !ant.c && !ant.nvF && !/[.!?:”"»)]$/.test(ant.t) && /^[a-zà-ÿ(“"]/.test(t)) { if (/[A-Za-zÀ-ÿ]-$/.test(ant.t) && /^[a-zà-ÿ]/.test(t)) ant.t = ant.t.slice(0, -1) + t; else ant.t += ' ' + t; return; }
+      t = corrigeTitulo(t);
+      // título de seção quebrado em duas linhas pelo OCR: a segunda linha, em maiúsculas, completa a primeira
+      var ct = classeTitulo(t);
+      // “CAPÍTULO II, DA GOVERNANÇA…”: divisão interna de um documento citado (minuta, estatuto), não capítulo do livro
+      if (/^cap[ií]tulo\s+[\dIVXLC|!l]+\s*,/i.test(t)) ct = { num: 2 };
+      var fim = t === t.toUpperCase() && /^(REFER[EÊ]NCIAS|BIBLIOGRAFIA|GLOSS[AÁ]RIO|AP[EÊ]NDICE|ANEXO|NOTA SOBRE OS AUTORES|SOBRE OS AUTORES|LINHA DO TEMPO|[IÍ]NDICE REMISSIVO|CONSIDERA[CÇ][OÕ]ES FINAIS)\b/.test(t) && t.length < 100;
+      if (fim) ct = { nv: 1, forte: 1 };
+      // dentro das referências, entradas em maiúsculas (órgãos, instituições) não são títulos
+      if (emRefs && ct && !fim && !ct.cap) ct = null;
+      if (ct && ct.forte) emRefs = /^(REFER[EÊ]NCIAS|BIBLIOGRAFIA)/i.test(t);
+      // índice remissivo do original: o motor gera o seu a partir do texto
+      if (ct && ct.forte && /^[IÍ]NDICE REMISSIVO/i.test(t)) { pulaIndice = true; return; }
+      if (pulaIndice) { if (ct && ct.forte) pulaIndice = false; else return; }
+      if (ant && ant.c && (ant.c.caps || ant.c.num) && !ant.c.cap && !(ct && (ct.cap || ct.forte || ct.num)) && ant.t.length < 110 && !/[.:;!?]$/.test(ant.t) && t === t.toUpperCase() && /[A-ZÀ-Ý]{3}/.test(t) && t.length < 80 && !/^\d/.test(t)) { ant.t += ' ' + t; ant.c = classeTitulo(ant.t) || ant.c; return; }
+      blocos.push({ t: t, c: ct });
+    });
+  });
+  estruturarTitulos(blocos);
+  var html = blocos.map(function (b) { var h = esc(b.t); return b.nv ? '<h' + b.nv + '>' + h + '</h' + b.nv + '>' : '<p>' + h + '</p>'; }).join('\n');
+  var avisos = ['PDF digitalizado lido pelo reconhecimento de texto (OCR) do próprio navegador, sem IA: confira o texto com o original, sobretudo nomes próprios, números, palavras em línguas indígenas, notas de rodapé e tabelas. Para o resultado exato, envie o arquivo original em Word.'];
+  if (iSum >= 0) avisos.push('Capa, folha de rosto, ficha e sumário do PDF original foram descartados (páginas 1 a ' + ini + '); o motor gera os seus.');
+  return { html: html, meta: meta || {}, avisos: avisos };
+}
 async function transcreverPdf(pdf, meta) {
   if (!chaveClaude()) throw new Error('Este PDF é digitalizado (sem texto selecionável). Configure a chave do Claude na aba Tradução para transcrevê-lo, ou envie o arquivo original em Word.');
-  var imgs = [];
-  for (var pn = 1; pn <= pdf.numPages; pn++) {
-    var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1.7 }), cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
-    await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
-    imgs.push({ mime: 'image/jpeg', b64: cv.toDataURL('image/jpeg', 0.82).split(',')[1] });
-    cv.width = cv.height = 0; try { pg.cleanup(); } catch (e) {} if (pn % 15 === 0) { try { await pdf.cleanup(); } catch (e) {} }
-    if (ui.msg) ui.msg('Preparando a página ' + pn + ' de ' + pdf.numPages + ' do PDF digitalizado…');
+  // de 3 em 3 páginas: só o lote atual fica na memória, e uma falha da IA aparece já no primeiro lote
+  var acc = { html: [], notas: [], k: 0 };
+  for (var pn = 1; pn <= pdf.numPages; pn += 3) {
+    var imgs = [];
+    for (var q = pn; q < pn + 3 && q <= pdf.numPages; q++) {
+      var pg = await pdf.getPage(q), vp = pg.getViewport({ scale: 1.7 }), cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+      await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+      imgs.push({ mime: 'image/jpeg', b64: cv.toDataURL('image/jpeg', 0.82).split(',')[1] });
+      cv.width = cv.height = 0; try { pg.cleanup(); } catch (e) {}
+    }
+    if (ui.msg) ui.msg('Transcrevendo pela IA as páginas ' + pn + ' a ' + Math.min(pn + 2, pdf.numPages) + ' de ' + pdf.numPages + '…');
+    marco('transcrevendo pela IA o PDF digitalizado, páginas ' + pn + ' a ' + Math.min(pn + 2, pdf.numPages) + ' de ' + pdf.numPages);
+    await transcreverPaginas(imgs, acc);
+    if (pn % 15 === 1) { try { await pdf.cleanup(); } catch (e) {} }
   }
-  var r = await transcreverPaginas(imgs); r.meta = Object.assign(meta || {}, r.meta); return r;
+  var r = transcreverFim(acc); r.meta = Object.assign(meta || {}, r.meta); return r;
 }
 async function lerImagem(buf, mime) {
   if (!chaveClaude()) throw new Error('Para transcrever imagens de páginas, configure a chave do Claude na aba Tradução.');
@@ -926,20 +1049,25 @@ async function lerImagem(buf, mime) {
   if (!/^image\/(jpeg|png|gif|webp)$/.test(mime)) { var nz = await normalizarImagem(u, mime); if (!nz) throw new Error('Formato de imagem não suportado; envie em JPG ou PNG.'); u = nz.bytes; mime = nz.mime; }
   return transcreverPaginas([{ mime: mime, b64: bufParaB64(u) }]);
 }
-async function transcreverPaginas(imgs) {
+async function transcreverPaginas(imgs, acc) {
   var schema = { type: 'object', additionalProperties: false, required: ['html', 'notas'], properties: { html: { type: 'string' }, notas: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['n', 'texto'], properties: { n: { type: 'string' }, texto: { type: 'string' } } } } } };
   var sis = 'Você transcreve páginas de manuscritos e livros para uma editora acadêmica, com fidelidade absoluta: copie o texto exatamente como está, sem corrigir, resumir, traduzir nem completar. ' +
     'Devolva HTML simples: <h1> para títulos de capítulo, <h2> e <h3> para seções, <p> para parágrafos (una as linhas quebradas e as palavras hifenizadas no fim da linha), <blockquote><p> para citações recuadas, <em> e <strong> para itálico e negrito, <ul>/<ol>/<li> para listas e <table> para tabelas. ' +
     'Omita cabeçalhos e rodapés repetidos e números de página. Chamadas de nota no texto: escreva [[nota:N]] no lugar exato do número sobrescrito; o texto das notas de rodapé vai em "notas", com o mesmo N. Trechos ilegíveis: [ilegível].';
-  var html = [], notas = [], k = 0;
+  var proprio = !acc; acc = acc || { html: [], notas: [], k: 0 };
+  var html = acc.html, notas = acc.notas;
   for (var i = 0; i < imgs.length; i += 3) {
-    if (ui.msg) ui.msg('Transcrevendo páginas ' + (i + 1) + ' a ' + Math.min(i + 3, imgs.length) + ' de ' + imgs.length + '…');
+    if (proprio && ui.msg) ui.msg('Transcrevendo páginas ' + (i + 1) + ' a ' + Math.min(i + 3, imgs.length) + ' de ' + imgs.length + '…');
     var cont = imgs.slice(i, i + 3).map(function (im) { return { type: 'image', source: { type: 'base64', media_type: im.mime, data: im.b64 } }; });
     cont.push({ type: 'text', text: 'Transcreva estas páginas, na ordem.' });
     var r = await claudeTrad({ sistema: sis, conteudo: cont, schema: schema, effort: 'medium', maxTokens: 32000 });
-    var mapa = {}; (r.notas || []).forEach(function (x) { notas.push(x.texto); k++; mapa[x.n] = k; });
+    var mapa = {}; (r.notas || []).forEach(function (x) { notas.push(x.texto); acc.k++; mapa[x.n] = acc.k; });
     html.push(String(r.html || '').replace(/\[\[nota:([^\]]+)\]\]/g, function (m, n) { return mapa[n] ? refNota(mapa[n]) : ''; }));
   }
+  return proprio ? transcreverFim(acc) : acc;
+}
+function transcreverFim(acc) {
+  var html = acc.html, notas = acc.notas;
   return { html: html.join('\n') + notasMammoth(notas.map(esc)), meta: {}, avisos: ['Texto transcrito de imagens pelo Claude: confira com o original, sobretudo nomes próprios, números e palavras em línguas indígenas.'] };
 }
 
