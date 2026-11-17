@@ -783,7 +783,14 @@ async function lerPdf(buf) {
     ops = null; tc = null; try { pg.cleanup(); } catch (e) {}
     if (pn % 15 === 0) { try { await pdf.cleanup(); } catch (e) {} await new Promise(function (ok) { setTimeout(ok, 0); }); }
   }
-  if (totalChars < 80 * pdf.numPages) return transcreverPdf(pdf, meta);
+  // pouco texto selecionável: tenta a transcrição pela IA; se a IA não estiver disponível (sem chave, sem crédito, fora do ar)
+  // e o PDF tiver texto, segue com o texto extraído em vez de interromper a produção
+  var avisoTexto = '';
+  if (totalChars < 80 * pdf.numPages) {
+    if (!totalChars) return transcreverPdf(pdf, meta);
+    if (chaveClaude() && !IA.fora) { try { return await transcreverPdf(pdf, meta); } catch (e) { avisoTexto = 'Transcrição pela IA indisponível (' + e.message + '): o livro foi montado com o texto selecionável do PDF. Confira se há páginas só com imagem.'; } }
+    else avisoTexto = 'PDF com pouco texto selecionável em algumas páginas: o livro foi montado com o texto que o PDF contém. Confira se há páginas só com imagem.';
+  }
   // cabeçalhos e rodapés repetidos e números de página
   var norm = function (t) { return t.replace(/\d+/g, '#').toLowerCase(); }, freq = {};
   pags.forEach(function (ls) { var vis = {}; ls.forEach(function (L) { if (L.yb > L.alturaPag * 0.9 || L.yb < L.alturaPag * 0.1) { var k = norm(L.t); if (!vis[k]) { vis[k] = 1; freq[k] = (freq[k] || 0) + 1; } } }); });
@@ -851,6 +858,7 @@ async function lerPdf(buf) {
   var avisos = ['PDF convertido pelo texto e pela posição das linhas: confira títulos, citações longas e notas. Tabelas do PDF chegam como texto; para resultado exato, envie o .docx ou .odt original.'];
   if (nFiguras) avisos.push(nFiguras + ' figura(s) extraída(s) do PDF na posição em que aparecem; confira legendas e textos alternativos.');
   if (soltas) avisos.push(soltas + ' nota(s) de rodapé do PDF sem chamada reconhecida no texto.');
+  if (avisoTexto) avisos.push(avisoTexto);
   return { html: htmlDeBlocos(blocos) + notasMammoth(notas), meta: meta, avisos: avisos };
 }
 /* imagens de uma página do PDF: segue a matriz de transformação das operações de desenho para saber onde cada
