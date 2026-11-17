@@ -150,7 +150,7 @@ var OBRA_PADRAO = {
   titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', isbnHtml: '', exemplares: [], cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
   sinopse: '', notasRevisao: '', logosObra: [], traducoes: {}, marcaEditora: { rosto: 'auto', falsaRosto: '', creditos: '', colofao: 'auto', capa: 'auto', capaAutores: '', capaPosicao: 'auto', html: 'auto' }, licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
-  numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
+  numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, preparacaoSemIsbn: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
 };
 var obra = clone(OBRA_PADRAO);
 var _origemIA = {};
@@ -2917,7 +2917,7 @@ function fichaCatalografica(o, livro) {
   if (!entradaTitulo) secund.push('Título');
   if (o.serie) secund.push('Série');
   var pistas = assuntos.map(function (a, i) { return (i + 1) + '. ' + a.replace(/\.$/, '') + '.'; }).join(' ') + (secund.length ? ' ' + secund.map(function (s, i) { return romano(i + 1) + '. ' + s.replace(/\.$/, '') + '.'; }).join(' ') : '');
-  return { principal: principal, titulo: titulo, imprenta: imprenta, desc: desc, isbn: o.isbn ? 'ISBN ' + isbnFormatado(o.isbn) : '', pistas: pistas.trim(), cdd: o.cdd, cdu: o.cdu, cutter: o.cutter };
+  return { principal: principal, titulo: titulo, imprenta: imprenta, desc: desc, isbn: o.isbn ? 'ISBN ' + isbnFormatado(o.isbn) : (o.preparacaoSemIsbn ? 'ISBN em registro' : ''), pistas: pistas.trim(), cdd: o.cdd, cdu: o.cdu, cutter: o.cutter };
 }
 
 function orn(doc, nome, cls) { return el(doc, 'img', { 'class': cls, src: '../img/' + nome + '.svg', alt: '', role: 'presentation' }); }
@@ -3432,7 +3432,8 @@ function auditarObra(o, A, logos) {
   if (!aut.length && !org.length) A.add('bloqueante', 'Metadados', 'Nenhum autor ou organizador informado.', { sug: 'Informe um por linha: Nome completo; Povo (se indígena).' });
   if (cfg.regras.exigeAutorIndigena && (aut.length || org.length) && !aut.concat(org).some(function (p) { return p.indigena; }))
     A.add('bloqueante', 'Selo', 'Política do selo: nenhum autor ou organizador indígena declarado. Autores não indígenas só podem publicar se ao menos um dos autores for indígena.', { norma: 'Política editorial da Editora Cacique Enir Terena', sug: 'Indique o povo do(s) autor(es) indígena(s) após ponto e vírgula, por exemplo: Maria Terena; Terena.' });
-  if (!o.isbn) A.add('bloqueante', 'ISBN', 'ISBN do livro digital não informado.', { norma: 'Lei 10.753/2003 (Política Nacional do Livro), art. 6º', sug: 'Solicite o ISBN do e-book à Câmara Brasileira do Livro (agência brasileira do ISBN). O e-book precisa de ISBN próprio, diferente do impresso.' });
+  if (!o.isbn && o.preparacaoSemIsbn) A.add('info', 'ISBN', 'Versão de preparação, sem ISBN: a ficha catalográfica indica “ISBN em registro”. Esta versão instrui o pedido do ISBN e não deve circular como edição publicada.', { norma: 'Lei 10.753/2003 (Política Nacional do Livro), art. 6º', sug: 'Ao receber o ISBN, informe-o em “Dados da obra”, desmarque a versão de preparação e regere para o lançamento.' });
+  else if (!o.isbn) A.add('bloqueante', 'ISBN', 'ISBN do livro digital não informado.', { norma: 'Lei 10.753/2003 (Política Nacional do Livro), art. 6º', sug: 'Solicite o ISBN do e-book à Câmara Brasileira do Livro (agência brasileira do ISBN). O e-book precisa de ISBN próprio, diferente do impresso.' });
   else if (!isbnValido(o.isbn)) A.add('bloqueante', 'ISBN', 'ISBN inválido (dígito verificador não confere): ' + o.isbn, { norma: 'ISO 2108', sug: 'Confira o número junto à agência do ISBN.' });
   else {
     if (!/^97[89](65|85)/.test(isbnLimpo(o.isbn))) A.add('aviso', 'ISBN', 'ISBN sem prefixo de grupo brasileiro (978-65 ou 978-85).', { norma: 'ISO 2108' });
@@ -3486,7 +3487,32 @@ function resumoAuditoria(A, final) {
   var status = b ? 'REPROVADO PARA PUBLICAÇÃO' : g ? 'APROVADO COM RESSALVAS' : 'APROVADO PARA PUBLICAÇÃO';
   if (final && b) status = 'EMITIDO POR DECISÃO DO EDITOR, COM PENDÊNCIAS';
   else if (final && (g || A.itens.some(function (i) { return /em desenvolvimento/.test(i.msg); }))) status = 'VERSÃO FINAL EMITIDA COM PENDÊNCIAS DECLARADAS';
+  if (obra && obra.preparacaoSemIsbn && !isbnValido(obra.isbn) && !b) status = 'VERSÃO DE PREPARAÇÃO, SEM ISBN' + (g ? ', COM RESSALVAS' : '');
   return { pontos: pontos, status: status, classe: b ? (final ? 'ress' : 'rep') : g ? 'ress' : 'apr', b: b, g: g, a: A.conta('aviso'), i: A.conta('info') };
+}
+function relatorioPendencias(ac, oAlt) {
+  var o = oAlt || obra, P = [], d = new Date(), E = oAlt ? { arquivado: !!oAlt._arquivo } : estado, A = !oAlt && estado.livro && estado.livro.A;
+  function add(grupo, item, como) { P.push({ g: grupo, i: item, c: como || '' }); }
+  if (!o.titulo) add('Dados da obra', 'Título', 'Aba Dados da obra.');
+  if (!String(o.autores || '').trim() && !String(o.organizadores || '').trim()) add('Dados da obra', 'Autoria', 'Um nome por linha: Nome completo; Povo.');
+  if (!o.sinopse) add('Dados da obra', 'Sinopse', 'Usada no catálogo e no pedido do ISBN.');
+  if (!o.assuntos) add('Dados da obra', 'Assuntos', 'Definidos com o(a) bibliotecário(a).');
+  if (!o.cdd && !o.cdu) add('Ficha catalográfica', 'Classificação CDD ou CDU', 'Definida pelo(a) bibliotecário(a).');
+  if (!cfg.equipe.bibliotecario || !cfg.equipe.crb) add('Ficha catalográfica', 'Bibliotecário(a) responsável e registro no CRB', 'Lei 4.084/1962.');
+  if (!cfg.conselho.length && !cfg.editora.conselhoAto) add('Editora', 'Conselho Editorial', 'Aba Editora e conselho.');
+  if (!isbnValido(o.isbn)) add('ISBN', 'ISBN do livro digital', o.preparacaoSemIsbn ? 'Em registro: esta é a versão de preparação. Envie o PDF e os dados à agência do ISBN.' : 'Solicite à agência do ISBN ou marque “Versão de preparação, sem ISBN”.');
+  if (oAlt) { if (!E.arquivado) add('Produção', 'Projeto e manuscrito arquivados', 'Inclua o projeto (.json) e o manuscrito na mesma versão do Acervo.'); }
+  else if (!estado.entrada) add('Produção', 'Manuscrito', 'Envie o manuscrito na aba Produção.');
+  else if (!estado.epub) add('Produção', 'Livro ainda não gerado', 'Clique em Regerar.');
+  if (A) A.itens.filter(function (x) { return x.sev === 'bloqueante' || x.sev === 'grave'; }).forEach(function (x) { add('Auditoria (' + x.sev + ')', x.cat + ': ' + x.msg, x.sug || ''); });
+  (ac && ac.pendencias || []).forEach(function (x) { add('Acervo', x, ''); });
+  var etapas = ['Concluir os dados da obra, o conselho e a ficha catalográfica.', 'Gerar a versão de preparação, sem ISBN, e conferir a auditoria.', 'Registrar a versão de preparação no Acervo.', 'Gerar o PDF (arquivo de impressão, Salvar como PDF) e solicitar o ISBN à agência, com os dados da obra.', 'Aprovação da obra pelo Conselho Editorial e portaria assinada.', 'Ao receber o ISBN: informá-lo em Dados da obra, desmarcar a versão de preparação e regerar.', 'Registrar a versão de lançamento no Acervo e publicar.', 'Depósito legal na Biblioteca Nacional, em até 30 dias da publicação.'];
+  var porG = {}; P.forEach(function (x) { (porG[x.g] = porG[x.g] || []).push(x); });
+  return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pendências | ' + esc(o.titulo || 'obra') + '</title><style>body{font:15px/1.55 Georgia,serif;max-width:860px;margin:2rem auto;padding:0 1rem;color:#1b1b1b}h1{font-size:1.4rem;margin:0}h2{font-size:1.05rem;border-bottom:2px solid #8a5a00;padding-bottom:.2rem;margin-top:1.6rem}table{width:100%;border-collapse:collapse;font-size:.9rem}td,th{border-bottom:1px solid #ddd;padding:.35rem .4rem;text-align:left;vertical-align:top}th{background:#f3ead8}.ok{color:#166534}.meta{color:#555;font-size:.85rem}ol li{margin:.25rem 0}</style></head><body>' +
+    '<h1>Relatório de pendências</h1><p class="meta">' + esc(cfg.editora.nome) + ' · ' + esc(o.titulo || '(sem título)') + (o.subtitulo ? ': ' + esc(o.subtitulo) : '') + ' · ' + d.toLocaleString('pt-BR') + '</p>' +
+    '<p><b>Situação:</b> ' + (A ? esc(resumoAuditoria(A, o.emitirComPendencias, o).status) : 'livro ainda não gerado nesta sessão') + (ac && ac.situacao ? ' · Acervo: ' + esc(ac.situacao) + (ac.versao ? ', versão ' + esc(ac.versao) : '') : '') + '</p>' +
+    (P.length ? Object.keys(porG).map(function (g) { return '<h2>' + esc(g) + '</h2><table><tr><th style="width:55%">Pendência</th><th>Como resolver</th></tr>' + porG[g].map(function (x) { return '<tr><td>' + esc(x.i) + '</td><td>' + esc(x.c) + '</td></tr>'; }).join('') + '</table>'; }).join('') : '<p class="ok">Nenhuma pendência encontrada.</p>') +
+    '<h2>Etapas até o lançamento</h2><ol>' + etapas.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ol></body></html>';
 }
 var CHECKLIST = [
   ['Selo', 'Política do selo (autoria indígena)'], ['Conselho', 'Conselho editorial'], ['ISBN', 'ISBN do livro digital (Lei 10.753/2003)'],
@@ -4494,7 +4520,7 @@ async function receberArquivo(file) {
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
-    if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca, marcaEditora: mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}) }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
+    if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, preparacaoSemIsbn: obra.preparacaoSemIsbn, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca, marcaEditora: mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}) }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
     await produzir();
   } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
@@ -4567,10 +4593,11 @@ function montarUI(alvo) {
         '<label><input type="checkbox" data-o="ocultarResponsavelFicha"> Omitir responsável pela ficha</label>' +
         '<label title="Padrão da Editora: rótulos e intervalos sem travessão, textos editoriais em frases corridas e auditoria de estilo que aponta travessões, setas e marcadores no texto"><input type="checkbox" data-o="semTravessao"> Estilo sem travessões</label>' +
         '<label title="Emite a versão final mesmo sem conselho, bibliotecário(a) ou autorização das marcas, declarando no livro: em desenvolvimento"><input type="checkbox" data-o="emitirComPendencias"> Versão final com pendências declaradas</label>' +
+        '<label title="Gera EPUB, PDF e HTML completos sem ISBN, com a ficha catalográfica indicando “ISBN em registro”. Serve para instruir o pedido do ISBN e para leitura prévia; ao receber o número, informe-o em Dados da obra e regere para o lançamento"><input type="checkbox" data-o="preparacaoSemIsbn"> Versão de preparação, sem ISBN</label>' +
         '<label><input type="checkbox" data-o="revisaoIA"> Revisão linguística por IA</label>' +
       '</div>' +
       '<div class="acoes"><button class="bt pri" data-a="regerar" disabled>⟳ Regerar com os dados atuais</button><button class="bt" data-a="epub" disabled>⬇ Baixar EPUB</button><button class="bt" data-a="rel" disabled>📋 Relatório de auditoria</button><button class="bt" data-a="pdf" disabled>🖨 PDF para impressão</button><button class="bt" data-a="sem-ia" type="button" hidden title="Interrompe as etapas de IA em andamento; o livro é gerado sem elas">⏭ Continuar sem IA</button><button class="bt" data-a="acervo" disabled title="Guarda EPUB, relatório e projeto como nova versão no Acervo da Editora">📚 Registrar no acervo</button><button class="bt" data-a="html" disabled title="Arquivo único que abre em qualquer navegador, sem instalação; pode ser exemplar numerado, nominal e protegido por senha">🔒 HTML de leitura (cópia controlada)</button></div>' +
-      '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="anunciar" type="button" title="Mostra esta obra no catálogo da página da Editora como “em análise pelo Conselho Editorial, ISBN em registro”">📣 Anunciar na página da Editora</button><button class="bt" data-a="desanunciar" type="button" title="Retira esta obra da lista de obras em análise da página">✖ Retirar do anúncio</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
+      '<div class="acoes"><button class="bt" data-a="proj-salvar" type="button">💾 Salvar projeto</button><button class="bt" data-a="anunciar" type="button" title="Mostra esta obra no catálogo da página da Editora como “em análise pelo Conselho Editorial, ISBN em registro”">📣 Anunciar na página da Editora</button><button class="bt" data-a="desanunciar" type="button" title="Retira esta obra da lista de obras em análise da página">✖ Retirar do anúncio</button><button class="bt" data-a="proj-abrir" type="button">📂 Abrir projeto</button><button class="bt" data-a="prep-lista" type="button" title="Mostra os projetos arquivados no Acervo que ainda não foram concluídos, com as pendências de cada um e os botões para continuar">🗂 Projetos em preparação</button><button class="bt" data-a="pendencias" type="button" title="Relatório de tudo o que falta para concluir esta obra, do manuscrito ao lançamento">📋 Relatório de pendências</button><button class="bt" data-a="pacote" type="button" disabled title="Baixa EPUB, impressão para PDF, HTML de leitura, relatórios e projeto num único arquivo, prontos para o pedido do ISBN">📦 Pacote sem ISBN</button><input type="file" accept=".json,application/json" data-proj hidden><button class="bt" data-a="corr-limpar" type="button">↺ Desfazer correções do editor</button><span class="corr-total" style="font-size:.74rem;color:rgba(247,242,232,.7);align-self:center"></span></div>' +
       '<div class="msg" role="status" aria-live="polite"></div>' +
       '<ol class="etapas"></ol>' +
       '<div class="res" hidden><div class="placar"></div><div class="filtros"></div><div class="ocorr"></div>' +
@@ -4634,6 +4661,7 @@ function montarUI(alvo) {
   QA('.tab').forEach(function (b) { b.addEventListener('click', function () { QA('.tab').forEach(function (x) { x.classList.toggle('on', x === b); }); QA('.pane').forEach(function (p) { p.classList.toggle('on', p.getAttribute('data-p') === b.getAttribute('data-p')); }); if (b.getAttribute('data-p') === 'ac') abrirAcervo(); }); });
   var _acervoAberto = false;
   function abrirAcervo() { if (!window.ACERVO_ICET) { ui.msg('O módulo do acervo não carregou; recarregue a página.', 'err'); return; } ACERVO_ICET.montar(Q('.acervo-raiz')); if (!_acervoAberto) { _acervoAberto = true; ACERVO_ICET.abrir(); } }
+  ui.irProducao = function () { var t = raiz.querySelector('.tab[data-p="prod"]'); if (t) t.click(); };
   ui.irAcervo = function () { var t = raiz.querySelector('.tab[data-p="ac"]'); if (t) t.click(); };
 
   // envio do manuscrito
@@ -4724,6 +4752,45 @@ function montarUI(alvo) {
       ui.msg(dest ? 'Exemplar nº ' + String(n).padStart(3, '0') + ' gerado para ' + dest + ' e registrado no projeto.' : 'HTML de leitura gerado.', 'ok');
     }, function (er) { ui.msg('Não foi possível gerar o HTML: ' + er.message, 'err'); });
   });
+  Q('[data-a="prep-lista"]').addEventListener('click', function () {
+    if (!window.ACERVO_ICET) { ui.msg('O módulo do acervo não carregou; recarregue a página.', 'err'); return; }
+    ui.irAcervo(); ACERVO_ICET.verPreparacao();
+  });
+  Q('[data-a="pendencias"]').addEventListener('click', function () {
+    var h = relatorioPendencias(window.ACERVO_ICET && ACERVO_ICET.pendenciasPorTitulo ? ACERVO_ICET.pendenciasPorTitulo(obra.titulo) : null);
+    baixar(new Blob([h], { type: 'text/html' }), 'pendencias-' + slug(obra.titulo || 'livro') + '.html');
+    ui.msg('Relatório de pendências gerado.', 'ok');
+  });
+  Q('[data-a="pacote"]').addEventListener('click', function () {
+    if (!estado.epub || !estado.livro) return;
+    ui.msg('Montando o pacote…');
+    var base = slug(obra.titulo || 'livro'), semIsbn = !isbnValido(obra.isbn);
+    libs().then(function () { return htmlLeitura(estado.livro, estado.logos, obra, {}); }).then(function (leitura) {
+      var z = new window.JSZip();
+      z.file(base + '.epub', estado.epub);
+      z.file('impressao-' + base + '.html', htmlImpressao(estado.livro, estado.logos, obra));
+      z.file('leitura-' + base + '.html', leitura);
+      if (estado.relatorio) z.file('auditoria-' + base + '.html', estado.relatorio);
+      z.file('pendencias-' + base + '.html', relatorioPendencias(window.ACERVO_ICET && ACERVO_ICET.pendenciasPorTitulo ? ACERVO_ICET.pendenciasPorTitulo(obra.titulo) : null));
+      z.file('projeto-' + base + '.json', JSON.stringify({ tipo: 'projeto-editora-cacique-enir-terena', versao: VERSAO, salvo: new Date().toISOString(), obra: obra }, null, 2));
+      z.file('LEIA-ME.txt', [
+        cfg.editora.nome + ' | ' + (obra.titulo || ''),
+        semIsbn ? 'Versão de preparação, sem ISBN. A ficha catalográfica indica "ISBN em registro".' : 'Versão com ISBN ' + isbnFormatado(obra.isbn) + '.',
+        '',
+        'Conteúdo do pacote:',
+        '- ' + base + '.epub: livro digital EPUB 3.',
+        '- impressao-' + base + '.html: abra no navegador e use Imprimir > Salvar como PDF para obter o PDF do livro.',
+        '- leitura-' + base + '.html: livro em HTML, abre em qualquer navegador.',
+        '- auditoria-' + base + '.html: relatório de auditoria editorial.',
+        '- pendencias-' + base + '.html: o que falta para concluir a obra.',
+        '- projeto-' + base + '.json: projeto do motor, para continuar a produção.',
+        '',
+        semIsbn ? 'Para o pedido de ISBN: gere o PDF a partir do arquivo de impressão e envie-o à agência do ISBN com os dados da obra. Ao receber o número, informe-o em Dados da obra, desmarque "Versão de preparação, sem ISBN", regere e registre a versão de lançamento no Acervo.' : ''
+      ].join('\r\n'));
+      return z.generateAsync({ type: 'blob', mimeType: 'application/zip' });
+    }).then(function (blob) { baixar(blob, 'pacote-' + (semIsbn ? 'preparacao-' : '') + base + '.zip'); ui.msg('Pacote gerado' + (semIsbn ? ' (versão de preparação, sem ISBN)' : '') + '.', 'ok'); },
+      function (er) { ui.msg('Não foi possível gerar o pacote: ' + er.message, 'err'); });
+  });
   Q('[data-a="pdf"]').addEventListener('click', function () {
     if (!estado.livro) return;
     var w = window.open('', '_blank');
@@ -4738,7 +4805,7 @@ function montarUI(alvo) {
   selPg.addEventListener('change', function () { mostrarPg(+selPg.value); });
 
   ui.msg = function (m, t) { QA('.msg').forEach(function (e) { e.textContent = m; e.className = 'msg' + (e.classList.contains('tr-msg') ? ' tr-msg' : '') + (t ? ' ' + t : ''); }); };
-  ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html|acervo)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
+  ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html|acervo|pacote)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
     var li = raiz.querySelector('.etapas [data-e="' + id + '"]'); if (!li) return;
@@ -5093,7 +5160,7 @@ function iniciar(alvo) {
 window.EBOOK_ICET = {
   versao: VERSAO, iniciar: iniciar, admEntrou: admEntrou,
   // API para testes e automação
-  _interno: { htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, cfgSalvarNuvem: cfgSalvarNuvem, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, senhaAdm: function () { return _senhaAdm; }, bufParaB64: bufParaB64, baixar: baixar, slug: slug, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg, ia: IA, iaParar: iaParar }
+  _interno: { relatorioPendencias: relatorioPendencias, irProducao: function () { if (ui.irProducao) ui.irProducao(); }, htmlLeitura: htmlLeitura, paginarEpub: paginarEpub, htmlImpressao: htmlImpressao, silabarPt: silabarPt, ajusteHifensJs: AJUSTE_HIFENS_JS, lerArquivo: lerArquivo, processar: processar, processarIlustracoes: processarIlustracoes, montarEditoriais: montarEditoriais, empacotar: empacotar, auditarObra: auditarObra, resumoAuditoria: resumoAuditoria, relatorioHtml: relatorioHtml, isbnValido: isbnValido, extrairCitacoes: extrairCitacoes, libs: libs, cfg: function () { return cfg; }, cfgSalvarNuvem: cfgSalvarNuvem, obra: function () { return obra; }, setObra: function (o) { obra = mesclar(clone(OBRA_PADRAO), o); obraGuardar(); if (ui.preencherForm) ui.preencherForm(); }, estado: estado, receberArquivo: receberArquivo, produzir: produzir, logosDaObra: logosDaObra, gerarCapa: gerarCapa, carimbarMarca: carimbarMarca, traduzirEdicao: traduzirEdicao, cifrarSegredo: cifrarSegredo, decifrarSegredo: decifrarSegredo, senhaAdm: function () { return _senhaAdm; }, bufParaB64: bufParaB64, baixar: baixar, slug: slug, setLingua: function (l) { LINGUA = l; }, setTermosInd: function (l) { TRAD_TERMOS_IND = l; }, deMarcacao: deMarcacao, verificarSeg: verificarSeg, ia: IA, iaParar: iaParar }
 };
 function auto() {
   var alvo = document.getElementById('editora-ebook-motor');

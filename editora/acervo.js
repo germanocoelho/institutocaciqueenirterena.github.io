@@ -169,10 +169,10 @@ function desenhar() {
   else if (!st.cat) corpo = '<div class="acoes"><button class="bt pri" data-ac="criar">📚 Criar o acervo</button><button class="bt" data-ac="abrir">⟳ Abrir</button></div>';
   else {
     var V = st.vista;
-    corpo = '<div class="sub2">' + [['titulos', '📚 Títulos'], ['documentos', '📄 Documentos'], ['isbn', '🔢 ISBN'], ['exemplares', '🎫 Exemplares'], ['historico', '🕘 Histórico'], ['dados', '⇅ Importar e exportar']].map(function (b) { return '<button class="bt' + (V === b[0] || (V === 'obra' && b[0] === 'titulos') ? ' on' : '') + '" data-ac="vista" data-v="' + b[0] + '">' + b[1] + '</button>'; }).join('') +
+    corpo = '<div class="sub2">' + [['titulos', '📚 Títulos'], ['preparacao', '🛠 Em preparação'], ['documentos', '📄 Documentos'], ['isbn', '🔢 ISBN'], ['exemplares', '🎫 Exemplares'], ['historico', '🕘 Histórico'], ['dados', '⇅ Importar e exportar']].map(function (b) { return '<button class="bt' + (V === b[0] || (V === 'obra' && b[0] === 'titulos') ? ' on' : '') + '" data-ac="vista" data-v="' + b[0] + '">' + b[1] + '</button>'; }).join('') +
       '<button class="bt" data-ac="abrir" title="Recarregar do servidor">⟳</button></div>';
     if (!st.cat.documentos) st.cat.documentos = [];
-    corpo += V === 'obra' ? vObra() : V === 'documentos' ? vDocumentos() : V === 'isbn' ? vIsbn() : V === 'exemplares' ? vExemplares() : V === 'historico' ? vHistorico() : V === 'dados' ? vDados() : vTitulos();
+    corpo += V === 'obra' ? vObra() : V === 'preparacao' ? vPreparacao() : V === 'documentos' ? vDocumentos() : V === 'isbn' ? vIsbn() : V === 'exemplares' ? vExemplares() : V === 'historico' ? vHistorico() : V === 'dados' ? vDados() : vTitulos();
   }
   R.innerHTML = topo + corpo + '<div class="msg ac-msg' + (st.ultMsg && st.ultMsg[1] ? ' ' + st.ultMsg[1] : '') + '" role="status" aria-live="polite">' + esc(st.ultMsg ? st.ultMsg[0] : '') + '</div><input type="file" multiple hidden data-ac-arq><dialog data-ac-dlg></dialog>';
 }
@@ -189,6 +189,29 @@ function pendencias(o) {
   if (!ed.versoes.length || !verVigente(ed).arquivos.length) p.push('arquivos da versão');
   else if (ed.versoes.every(function (v) { return v.tipo === 'preparacao'; })) p.push('lançamento: ao receber o ISBN, regerar com o número e registrar a versão ' + ed.n + '.0');
   return p;
+}
+function emPreparacao(o) {
+  if (o.situacao === 'publicada' || o.situacao === 'esgotada' || o.situacao === 'retirada de circulação') return false;
+  var ed = edVigente(o); if (!ed) return true;
+  return !ed.versoes.length || ed.versoes.every(function (v) { return v.tipo === 'preparacao'; }) || !ed.publicacao || pendencias(o).length > 0;
+}
+function vPreparacao() {
+  var L = st.cat.obras.filter(emPreparacao);
+  return '<div class="aviso-box">Projetos arquivados que ainda não foram concluídos. Para cada um: <b>Continuar no motor</b> abre o projeto e o manuscrito na aba Produção; <b>Emitir versão sem ISBN</b> gera o EPUB, o PDF e o HTML completos com a ficha indicando “ISBN em registro”, e arquiva tudo como versão de preparação, pronta para instruir o pedido do ISBN; <b>Relatório de pendências</b> lista o que falta até o lançamento.</div>' +
+    (L.length ? '<div class="cards">' + L.map(function (x) {
+      var ed = edVigente(x), v = ed && verVigente(ed), p = pendencias(x), f = ed && fonteMotor(ed);
+      return '<div class="card"><small>' + esc(x.id) + '</small><h4>' + esc(x.titulo) + '</h4><small>' + esc((x.autores || []).slice(0, 3).join('; ')) + '</small>' +
+        '<div><span class="selo">' + esc(x.situacao) + '</span>' + (ed ? '<span class="selo">' + ord(ed.n) + ' ed.' + (v ? ' · v' + esc(v.v) + ' ' + esc(v.tipo === 'preparacao' ? '(preparação)' : '') : '') + '</span>' : '') + '</div>' +
+        (p.length ? '<small class="alerta">Pendente: ' + esc(p.join('; ')) + '</small>' : '<small class="okk">Sem pendências no acervo</small>') +
+        (f ? '' : '<small class="mut">Sem projeto e manuscrito arquivados na mesma versão: inclua-os com “＋ arquivo” na ficha do título para continuar no motor.</small>') +
+        '<div class="acoes">' + (f ? '<button class="bt pri mini" data-ac="prep-continuar" data-id="' + x.id + '">⚙ Continuar no motor</button><button class="bt mini" data-ac="prep-emitir" data-id="' + x.id + '">📦 Emitir versão sem ISBN</button>' : '') +
+        '<button class="bt mini" data-ac="prep-relatorio" data-id="' + x.id + '">📋 Relatório de pendências</button><button class="bt mini" data-ac="ver" data-id="' + x.id + '">Ficha do título</button></div></div>';
+    }).join('') + '</div>' : '<p class="okk">Nenhum projeto em preparação: todos os títulos do acervo estão concluídos.</p>');
+}
+function pendenciasPorTitulo(t) {
+  var o = st.cat && st.cat.obras.find(function (x) { return x.titulo.trim().toLowerCase() === String(t || '').trim().toLowerCase(); });
+  if (!o) return null; var ed = edVigente(o), v = ed && verVigente(ed);
+  return { situacao: o.situacao, versao: v ? v.v : '', pendencias: pendencias(o) };
 }
 function vTitulos() {
   var o = st.cat.obras;
@@ -464,6 +487,22 @@ async function acao(ac, b) {
       var xr = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); if ((v.senha || '').length < 8) throw new Error('Senha muito curta.');
       xr.senha = v.senha; log('senha registrada', o.id, ord(ed.n) + ' ed. nº ' + n3(xr.n)); await salvar('Acervo: senha de exemplar'); desenhar();
     });
+    case 'prep-continuar': case 'prep-emitir': case 'prep-relatorio': {
+      var op = obraPorId(b.getAttribute('data-id')), ep = op && edVigente(op);
+      if (!op) return;
+      if (ac === 'prep-relatorio') {
+        var f0 = fonteMotor(ep), oa = { titulo: op.titulo, subtitulo: op.subtitulo, autores: (op.autores || []).join('\n'), sinopse: op.sinopse, cdd: op.cdd, cdu: op.cdu, assuntos: (op.assuntos || []).join('\n') };
+        if (livroNoMotor(op, ep)) oa = null;
+        else if (f0) { var pj0 = JSON.parse(new TextDecoder().decode(await decifrar(await ghLerBytes(ARQ + f0.projeto.id + '.bin')))); oa = pj0.obra || pj0; oa._arquivo = oa._arquivo || f0.manuscrito.nome; }
+        baixar(new Blob([I().relatorioPendencias(pendenciasPorTitulo(op.titulo), oa)], { type: 'text/html' }), 'pendencias-' + slug(op.titulo) + '.html');
+        return msg('Relatório de pendências de “' + op.titulo + '” gerado.', 'ok');
+      }
+      if (ac === 'prep-continuar') { await carregarNoMotor(op, ep); I().irProducao(); return msg('Projeto “' + op.titulo + '” aberto na aba Produção para continuar.', 'ok'); }
+      await carregarNoMotor(op, ep, { preparacaoSemIsbn: !(ep.formatos.epub && ep.formatos.epub.isbn) });
+      await registrarMotor(op, ep);
+      I().irProducao();
+      return msg('Versão sem ISBN de “' + op.titulo + '” gerada e arquivada. Na aba Produção: “📦 Pacote sem ISBN” baixa EPUB, PDF (impressão), HTML e relatórios para o pedido do ISBN.', 'ok');
+    }
     case 'carregar-motor': await carregarNoMotor(o, ed); return msg('Livro carregado no motor (aba Produção). Agora é possível emitir exemplares em HTML.', 'ok');
     case 'cancelar-ex': return dialogo('Cancelar exemplar nº ' + n3(b.getAttribute('data-x')), '<p class="mut" style="grid-column:1/-1">O número fica registrado como cancelado e nunca é reutilizado.</p>' + campoF('Motivo', 'motivo', ''), async function (v) {
       var x = ed.exemplares.find(function (y) { return String(y.n) === b.getAttribute('data-x'); }); x.situacao = 'cancelado'; x.motivo = v.motivo; x.cancelado = hoje();
@@ -507,12 +546,12 @@ function livroNoMotor(o, ed) {
   if (st.motorObra === o.id + '|' + ed.n) return true;
   var t = I().obra && I().obra().titulo; return !!(t && t.trim().toLowerCase() === o.titulo.trim().toLowerCase());
 }
-async function carregarNoMotor(o, ed) {
+async function carregarNoMotor(o, ed, extra) {
   var f = fonteMotor(ed); if (!f) throw new Error('Esta edição não tem projeto (.json) e manuscrito arquivados numa mesma versão. Inclua-os com “＋ arquivo”.');
   msg('Carregando o livro arquivado no motor (versão ' + f.versao.v + '); pode levar alguns minutos…');
   var pj = JSON.parse(new TextDecoder().decode(await decifrar(await ghLerBytes(ARQ + f.projeto.id + '.bin'))));
   var ms = await decifrar(await ghLerBytes(ARQ + f.manuscrito.id + '.bin'));
-  var ob = pj.obra || pj; ob.revisaoIA = false; // a emissão reproduz o texto aprovado, sem nova revisão
+  var ob = pj.obra || pj; ob.revisaoIA = false; if (extra) Object.keys(extra).forEach(function (k) { ob[k] = extra[k]; }); // a emissão reproduz o texto aprovado, sem nova revisão
   I().setObra(ob);
   await I().receberArquivo(new File([ms], ob._arquivo || f.manuscrito.nome));
   if (!I().estado.livro) throw new Error('o motor não conseguiu montar o livro; veja a aba Produção');
@@ -564,7 +603,8 @@ async function registrarMotor(o, ed) {
   var base = slug(o.titulo), arqs = [{ nome: base + '.epub', bytes: new Uint8Array(await mot.epub.arrayBuffer()), formato: 'EPUB' }];
   if (mot.relatorio) arqs.push({ nome: 'auditoria-' + base + '.html', bytes: new TextEncoder().encode(mot.relatorio), formato: 'Relatório' });
   arqs.push({ nome: 'projeto-' + base + '.json', bytes: new TextEncoder().encode(JSON.stringify({ tipo: 'projeto-editora-cacique-enir-terena', versao: M.versao || '1.0', salvo: new Date().toISOString(), obra: ob })), formato: 'Projeto' });
-  var nv = await criarVersao(o, ed, ed.versoes.length ? 'correcao' : 'lancamento', 'Gerada pelo motor editorial' + (mot.arquivo && mot.arquivo.name ? ' a partir de ' + mot.arquivo.name : ''), '', arqs);
+  var prep = ob.preparacaoSemIsbn && !isbnOk(ob.isbn || '');
+  var nv = await criarVersao(o, ed, prep ? 'preparacao' : ed.versoes.length && !ed.versoes.every(function (v) { return v.tipo === 'preparacao'; }) ? 'correcao' : 'lancamento', (prep ? 'Versão de preparação, sem ISBN (ficha: ISBN em registro). ' : '') + 'Gerada pelo motor editorial' + (mot.arquivo && mot.arquivo.name ? ' a partir de ' + mot.arquivo.name : ''), '', arqs);
   await salvar('Acervo: ' + o.id + ' versão ' + nv.v + ' (motor)');
   st.obraId = o.id; st.vista = 'obra'; desenhar(); msg('Versão ' + nv.v + ' de “' + o.titulo + '” registrada com EPUB, relatório e projeto. O PDF para impressão pode ser incluído em “＋ arquivo”.', 'ok');
 }
@@ -611,5 +651,5 @@ async function importarDocs(z, lista, oPadrao) {
   }
   return n;
 }
-window.ACERVO_ICET = { montar: montar, emitirPorTitulo: function (t) { return emitirPorTitulo(t); }, abrir: abrir, senhaPronta: function () { if (st.raiz) abrir(); }, registrarMotor: async function () { if (!st.cat) await abrir(); if (st.cat) return registrarMotor(null, null).catch(function (e) { msg(e.message, 'err'); }); }, _st: st };
+window.ACERVO_ICET = { verPreparacao: async function () { if (!st.cat) await abrir(); st.vista = 'preparacao'; desenhar(); }, pendenciasPorTitulo: pendenciasPorTitulo, montar: montar, emitirPorTitulo: function (t) { return emitirPorTitulo(t); }, abrir: abrir, senhaPronta: function () { if (st.raiz) abrir(); }, registrarMotor: async function () { if (!st.cat) await abrir(); if (st.cat) return registrarMotor(null, null).catch(function (e) { msg(e.message, 'err'); }); }, _st: st };
 })();
