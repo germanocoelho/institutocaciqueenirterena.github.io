@@ -3578,12 +3578,22 @@ function htmlPrevia(livro, k, logos) {
   var p = livro.paginas[k];
   return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>' + cssParaNavegador(livro.css) + 'body{margin:1.6em 8%;font-size:17px;background:#fffdf8}</style></head><body>' + trocarImagens(corpoDe(p.arq), livro, logos).replace(/href="([^"#:]*\.xhtml)(#[^"]*)?"/g, 'href="#" data-arq="$1"') + '</body></html>';
 }
+/* cada imagem é convertida uma única vez por livro, e só quando usada: antes a conversão de todas as
+   imagens se repetia a cada página, o que esgotava a memória do navegador em livros grandes e ilustrados */
+var _mapaDados = new WeakMap();
 function trocarImagensDados(html, livro, logos) {
-  var mapa = {}; ORNAMENTOS.forEach(function (f) { mapa['img/' + f] = BASE + f; });
-  if (livro.capaBytes) mapa['img/capa.jpg'] = bytesParaDataUrl(livro.capaBytes, 'image/jpeg');
-  livro.imagens.forEach(function (im) { mapa[im.arquivo] = bytesParaDataUrl(im.bytes, im.mime); });
-  logos.forEach(function (l) { if (l.arquivoEpub && l.dados) mapa[l.arquivoEpub] = l.dados.url; });
-  return html.replace(/src="\.\.\/(img\/[^"]+)"/g, function (m, p) { return 'src="' + (mapa[p] || p) + '"'; });
+  var c = _mapaDados.get(livro);
+  if (!c || c.logos !== logos) { c = { logos: logos, url: {} }; _mapaDados.set(livro, c); }
+  function url(p) {
+    if (c.url[p] !== undefined) return c.url[p];
+    var v = null, f = p.replace(/^img\//, '');
+    if (ORNAMENTOS.indexOf(f) >= 0) v = BASE + f;
+    else if (p === 'img/capa.jpg' && livro.capaBytes) v = bytesParaDataUrl(livro.capaBytes, 'image/jpeg');
+    if (!v) { var im = livro.imagens.find(function (x) { return x.arquivo === p; }); if (im) v = bytesParaDataUrl(im.bytes, im.mime); }
+    if (!v) { var l = logos.find(function (x) { return x.arquivoEpub === p && x.dados; }); if (l) v = l.dados.url; }
+    return (c.url[p] = v || p);
+  }
+  return html.replace(/src="\.\.\/(img\/[^"]+)"/g, function (m, p) { return 'src="' + url(p) + '"'; });
 }
 /* Hifenização pt-BR para a saída impressa (PDF): os motores de impressão do navegador não trazem
    dicionário de hifenização do português, e texto justificado sem partição abre “rios” entre palavras.
@@ -3695,9 +3705,9 @@ async function htmlLeitura(livro, logos, o, opc) {
   while ((m = rx.exec(h))) urls[m[0]] = 1;
   for (var u in urls) {
     var mime = /\.woff2$/.test(u) ? 'font/woff2' : /\.woff$/.test(u) ? 'font/woff' : /\.svg$/.test(u) ? 'image/svg+xml' : /\.png$/.test(u) ? 'image/png' : 'image/jpeg';
-    var bytes = new Uint8Array(await (await fetch(u)).arrayBuffer());
-    h = h.split(u).join(bytesParaDataUrl(bytes, mime));
+    urls[u] = bytesParaDataUrl(new Uint8Array(await (await fetch(u)).arrayBuffer()), mime);
   }
+  h = h.replace(rx, function (x) { return typeof urls[x] === 'string' ? urls[x] : x; });
   var isbnEpub = isbnValido(o.isbn) ? isbnFormatado(o.isbn) : '', isbnH = isbnValido(o.isbnHtml) ? isbnFormatado(o.isbnHtml) : '';
   var ident = isbnH ? 'ISBN ' + isbnH + ' (HTML)' + (isbnEpub ? T('; edição em EPUB: ISBN {i}', { i: isbnEpub }) : '') : (isbnEpub ? T('Cópia de leitura em HTML da edição digital ISBN {i} (EPUB)', { i: isbnEpub }) : T('Cópia de leitura em HTML'));
   var ex = opc.exemplar ? String(opc.exemplar).padStart(3, '0') : '';
@@ -4837,11 +4847,14 @@ function montarUI(alvo) {
     if (!estado.epub || !estado.livro) return;
     ui.msg('Montando o pacote…');
     var base = slug(obra.titulo || 'livro'), semIsbn = !isbnValido(obra.isbn);
-    libs().then(function () { return htmlLeitura(estado.livro, estado.logos, obra, {}); }).then(function (leitura) {
-      var z = new window.JSZip();
-      z.file(base + '.epub', estado.epub);
-      z.file('impressao-' + base + '.html', htmlImpressao(estado.livro, estado.logos, obra));
-      z.file('leitura-' + base + '.html', leitura);
+    var z;
+    libs().then(function () {
+      z = new window.JSZip();
+      z.file(base + '.epub', estado.epub, { compression: 'STORE' });
+      z.file('impressao-' + base + '.html', new Blob([htmlImpressao(estado.livro, estado.logos, obra)], { type: 'text/html' }));
+      return htmlLeitura(estado.livro, estado.logos, obra, {});
+    }).then(function (leitura) {
+      z.file('leitura-' + base + '.html', new Blob([leitura], { type: 'text/html' })); leitura = null;
       if (estado.relatorio) z.file('auditoria-' + base + '.html', estado.relatorio);
       z.file('pendencias-' + base + '.html', relatorioPendencias(window.ACERVO_ICET && ACERVO_ICET.pendenciasPorTitulo ? ACERVO_ICET.pendenciasPorTitulo(obra.titulo) : null));
       z.file('projeto-' + base + '.json', JSON.stringify({ tipo: 'projeto-editora-cacique-enir-terena', versao: VERSAO, salvo: new Date().toISOString(), obra: obra }, null, 2));
@@ -4859,7 +4872,7 @@ function montarUI(alvo) {
         '',
         semIsbn ? 'Para o pedido de ISBN: gere o PDF a partir do arquivo de impressão e envie-o à agência do ISBN com os dados da obra. Ao receber o número, informe-o em Dados da obra, desmarque "Versão de preparação, sem ISBN", regere e registre a versão de lançamento no Acervo.' : ''
       ].join('\r\n'));
-      return z.generateAsync({ type: 'blob', mimeType: 'application/zip' });
+      return z.generateAsync({ type: 'blob', mimeType: 'application/zip', compression: 'DEFLATE', compressionOptions: { level: 3 }, streamFiles: true });
     }).then(function (blob) { baixar(blob, 'pacote-' + (semIsbn ? 'preparacao-' : '') + base + '.zip'); ui.msg('Pacote gerado' + (semIsbn ? ' (versão de preparação, sem ISBN)' : '') + '.', 'ok'); },
       function (er) { ui.msg('Não foi possível gerar o pacote: ' + er.message, 'err'); });
   });
