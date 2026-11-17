@@ -4450,6 +4450,7 @@ async function produzir(opcoesExtras) {
     estado.relatorio = relatorioHtml(livro, obra, res, revisao);
     etapa('auditoria', res.b ? 'erro' : res.g ? 'aviso' : 'ok', res.status + ' · ' + res.pontos + '/100');
     ui.resultado(livro, res);
+    if (ui.renderPrep) ui.renderPrep();
     ui.msg('E-book gerado. ' + res.status + '.', res.b ? 'err' : 'ok');
     if (ui.renderTraducao) ui.renderTraducao();
     if (chaveClaude() && !IA.fora && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
@@ -4508,6 +4509,10 @@ function aplicarMetaManuscrito(livro) {
   if (usados.length) livro.A.add('info', 'Metadados', 'Dados lidos do próprio manuscrito: ' + usados.join(', ') + '. Confira na aba “Dados da obra”.', {});
   obraGuardar(); if (ui.preencherForm) ui.preencherForm();
 }
+/* manuscrito guardado neste navegador (IndexedDB), para retomar o projeto depois de fechar a página */
+function msDb() { return new Promise(function (ok) { try { var r = indexedDB.open('icet_ebook_ms', 1); r.onupgradeneeded = function () { r.result.createObjectStore('ms'); }; r.onsuccess = function () { ok(r.result); }; r.onerror = function () { ok(null); }; } catch (e) { ok(null); } }); }
+function msGuardar(file, titulo) { return msDb().then(function (db) { if (!db) return; return new Promise(function (ok) { try { var t = db.transaction('ms', 'readwrite'); t.objectStore('ms').put({ nome: file.name, tipo: file.type, blob: file, titulo: titulo || '', data: new Date().toISOString() }, 'atual'); t.oncomplete = ok; t.onerror = ok; } catch (e) { ok(); } }); }); }
+function msLer() { return msDb().then(function (db) { if (!db) return null; return new Promise(function (ok) { try { var r = db.transaction('ms').objectStore('ms').get('atual'); r.onsuccess = function () { ok(r.result || null); }; r.onerror = function () { ok(null); }; } catch (e) { ok(null); } }); }); }
 async function receberArquivo(file) {
   if (!file) return;
   // sem limite prático de tamanho: livros longos e com muitas imagens são o caso comum; as imagens são reduzidas
@@ -4522,6 +4527,7 @@ async function receberArquivo(file) {
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
     if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, preparacaoSemIsbn: obra.preparacaoSemIsbn, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca, marcaEditora: mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}) }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
+    msGuardar(file, obra.titulo);
     await produzir();
   } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
 }
@@ -4540,6 +4546,7 @@ var CSS_PAINEL = '\
 .ebm .tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:1rem;border-bottom:1px solid rgba(242,196,90,.2)}\
 .ebm .tab{background:none;border:0;border-bottom:2px solid transparent;color:rgba(247,242,232,.75);padding:.5rem .8rem;cursor:pointer;font-size:.82rem}\
 .ebm .tab.on{color:#F2C45A;border-color:#F2C45A}.ebm .pane{display:none}.ebm .pane.on{display:block}\
+.ebm .prep-painel{border:1px solid rgba(242,196,90,.45);border-radius:10px;padding:.6rem .9rem;margin-bottom:.9rem;background:rgba(242,196,90,.06)}.ebm .prep-painel summary{cursor:pointer;font-weight:700;color:#F2C45A}.ebm .prep-painel summary small{background:rgba(242,196,90,.2);border-radius:9px;padding:0 .45rem;margin-left:.3rem}.ebm .pp-card{border-top:1px solid rgba(242,196,90,.2);padding:.7rem 0 .2rem;margin-top:.5rem}.ebm .pp-card>small{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7}.ebm .pp-card h4{margin:.15rem 0;font-size:1.02rem}.ebm .pp-card ul{margin:.3rem 0;padding-left:1.1rem;font-size:.82rem}.ebm .pp-sub{font-size:.8rem;opacity:.8;margin:.2rem 0}.ebm .prep-painel .alerta{color:#ffb15c}.ebm .prep-painel a{color:#F2C45A}\
 .ebm .drop{border:2px dashed rgba(242,196,90,.45);border-radius:10px;padding:1.6rem 1rem;text-align:center;cursor:pointer;background:rgba(242,196,90,.04);transition:.2s}\
 .ebm .drop.sobre{background:rgba(242,196,90,.14)}.ebm .drop b{color:#F2C45A}.ebm .drop small{display:block;color:rgba(247,242,232,.6);margin-top:.4rem}\
 .ebm .opc{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;font-size:.8rem;align-items:center}.ebm .opc label{display:flex;gap:.35rem;align-items:center}\
@@ -4584,6 +4591,7 @@ function montarUI(alvo) {
     '<p class="sub">Envie o manuscrito e a Coordenação Editorial Digital produz o livro digital completo, em EPUB 3, no padrão da Editora: capa, folha de rosto, créditos, conselho editorial, ficha catalográfica, sumário, normas da ABNT, notas, referências, índice e logomarcas. Ao final, faz uma auditoria rigorosa e entrega o relatório.</p>' +
     '<div class="tabs"><button class="tab on" data-p="prod">Produção</button><button class="tab" data-p="obra">Dados da obra</button><button class="tab" data-p="ed">Editora e conselho</button><button class="tab" data-p="lg">Logomarcas</button><button class="tab" data-p="tr">Tradução</button><button class="tab" data-p="ac">📚 Acervo</button></div>' +
     '<div class="pane on" data-p="prod">' +
+      '<div class="prep-painel"></div>' +
       '<div class="drop" tabindex="0" role="button" aria-label="Enviar manuscrito"><b>Arraste o manuscrito aqui</b> ou clique para escolher<small>Qualquer formato: Word (.docx, .doc), LibreOffice (.odt, .fodt), PDF (inclusive digitalizado), RTF, EPUB, Pages, LaTeX, Markdown, texto, HTML ou fotos das páginas. O .docx com estilos de título dá o resultado mais exato.</small><input type="file" hidden></div>' +
       '<div class="opc">' +
         '<label>Numeração <select data-o="numeracao"><option value="auto">Automática</option><option value="abnt">Progressiva ABNT (1, 1.1, 1.1.1)</option><option value="capitulo">Capítulo 1, 2, 3</option><option value="nenhuma">Sem numeração</option></select></label>' +
@@ -4728,7 +4736,7 @@ function montarUI(alvo) {
     f.text().then(function (t) {
       var pj = JSON.parse(t); if (!pj || !pj.obra) throw new Error('arquivo de projeto inválido');
       obra = mesclar(clone(OBRA_PADRAO), pj.obra); obra.correcoes = mesclar(correcoesVazias(), obra.correcoes || {});
-      obraGuardar(); ui.preencherForm(); ui.pendentes();
+      obraGuardar(); ui.preencherForm(); ui.pendentes(); if (ui.renderPrep) ui.renderPrep();
       ui.msg('Projeto “' + (obra.titulo || f.name) + '” aberto.' + (estado.entrada ? ' Clique em Regerar.' : ' Envie o manuscrito ' + (obra._arquivo ? '(' + obra._arquivo + ')' : '') + ' para gerar o livro.'), 'ok');
     }).catch(function (er) { ui.msg('Não foi possível abrir o projeto: ' + er.message, 'err'); });
   });
@@ -4752,9 +4760,73 @@ function montarUI(alvo) {
       ui.msg(dest ? 'Exemplar nº ' + String(n).padStart(3, '0') + ' gerado para ' + dest + ' e registrado no projeto.' : 'HTML de leitura gerado.', 'ok');
     }, function (er) { ui.msg('Não foi possível gerar o HTML: ' + er.message, 'err'); });
   });
+  /* painel “Projetos em preparação”: o projeto aberto no motor, as obras anunciadas em análise e os títulos do acervo não concluídos */
+  var _catPub = null;
+  function catPublico() {
+    if (_catPub) return Promise.resolve(_catPub);
+    var p = ghOk() ? catLer() : fetch((document.querySelector('script[src*="motor_ebook.js"]').getAttribute('src').replace(/motor_ebook\.js.*$/, '')) + 'catalogo.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : { analise: [] }; }).catch(function () { return { analise: [] }; });
+    return p.then(function (c) { _catPub = c || { analise: [] }; return _catPub; });
+  }
+  ui.renderPrep = function () {
+    var box = Q('.prep-painel');
+    return Promise.all([catPublico(), msLer()]).then(function (r) {
+      var cat = r[0], ms = r[1], tit = String(obra.titulo || '').trim(), mesmo = function (t) { return String(t || '').trim().toLowerCase() === tit.toLowerCase(); };
+      var msOk = ms && (!obra._arquivo || ms.nome === obra._arquivo);
+      var cards = [];
+      if (tit) {
+        var semIsbn = !isbnValido(obra.isbn), liv = estado.livro && estado.epub;
+        var linhasSt = [
+          ['Manuscrito', estado.entrada ? 'carregado (' + esc(estado.arquivo ? estado.arquivo.name : obra._arquivo || '') + ')' : msOk ? 'guardado neste navegador (' + esc(ms.nome) + '), pronto para retomar' : obra._arquivo ? '<span class="alerta">envie de novo o arquivo ' + esc(obra._arquivo) + '</span>' : '<span class="alerta">não enviado</span>'],
+          ['Livro', liv ? esc(estado.res ? estado.res.status : 'gerado') : estado.rodando ? 'em produção…' : 'ainda não gerado nesta sessão'],
+          ['ISBN', semIsbn ? 'sem ISBN: a versão sai com “ISBN em registro” na ficha' : 'ISBN ' + esc(isbnFormatado(obra.isbn))]
+        ];
+        cards.push('<div class="pp-card"><small>Projeto aberto no motor' + ((cat.analise || []).some(function (x) { return mesmo(x.titulo); }) ? ' · anunciado na página (em análise)' : '') + '</small><h4>' + esc(tit) + '</h4>' + (obra.subtitulo ? '<p class="pp-sub">' + esc(obra.subtitulo) + '</p>' : '') +
+          '<ul>' + linhasSt.map(function (l) { return '<li><b>' + l[0] + ':</b> ' + l[1] + '</li>'; }).join('') + '</ul>' +
+          '<div class="acoes">' +
+          '<button class="bt pri" data-pp="emitir" type="button">▶ ' + (liv ? 'Regerar' : 'Gerar') + ' ' + (semIsbn ? 'versão sem ISBN' : 'o livro') + ' (EPUB, PDF e HTML)</button>' +
+          '<button class="bt" data-pp="pdf" type="button"' + (liv ? '' : ' disabled') + ' title="Abre o livro diagramado para impressão; escolha Salvar como PDF. Este é o PDF que vai para a agência do ISBN">🖨 PDF para o pedido do ISBN</button>' +
+          '<button class="bt" data-pp="epub" type="button"' + (liv ? '' : ' disabled') + '>⬇ EPUB</button>' +
+          '<button class="bt" data-pp="html" type="button"' + (liv ? '' : ' disabled') + '>⬇ HTML</button>' +
+          '<button class="bt" data-pp="pacote" type="button"' + (liv ? '' : ' disabled') + '>📦 Pacote completo</button>' +
+          '<button class="bt" data-pp="pend" type="button">📋 Relatório de pendências</button>' +
+          '</div></div>');
+      }
+      (cat.analise || []).filter(function (x) { return !mesmo(x.titulo); }).forEach(function (x) {
+        cards.push('<div class="pp-card"><small>Anunciado na página (em análise)</small><h4>' + esc(x.titulo) + '</h4>' + (x.subtitulo ? '<p class="pp-sub">' + esc(x.subtitulo) + '</p>' : '') +
+          '<p class="pp-sub">Para continuar, abra o projeto (.json) desta obra e envie o manuscrito.</p><div class="acoes"><button class="bt" data-pp="abrir" type="button">📂 Abrir projeto desta obra</button></div></div>');
+      });
+      var acv = window.ACERVO_ICET && ACERVO_ICET._st && ACERVO_ICET._st.cat ? ACERVO_ICET._st.cat.obras.filter(function (o) { return o.situacao !== 'publicada' && !mesmo(o.titulo); }) : [];
+      if (acv.length) cards.push('<div class="pp-card"><small>Acervo</small><h4>' + acv.length + ' título(s) do acervo em preparação</h4><p class="pp-sub">' + acv.map(function (o) { return esc(o.titulo); }).join('; ') + '</p><div class="acoes"><button class="bt" data-pp="acervo" type="button">🗂 Ver no Acervo</button></div></div>');
+      box.innerHTML = '<summary>🗂 Projetos em preparação <small>' + cards.length + '</small></summary>' +
+        (cards.length ? cards.join('') : '<p class="pp-sub">Nenhum projeto em preparação. Envie um manuscrito abaixo ou abra um projeto (.json).</p>') +
+        (ghOk() && !acv.length ? '<p class="pp-sub"><a href="#" data-pp="acervo">Abrir o Acervo</a> para ver títulos arquivados.</p>' : '');
+      if (tit && !box.hasAttribute('data-ini')) { box.setAttribute('data-ini', '1'); box.open = true; }
+    });
+  };
+  Q('.prep-painel').outerHTML = '<details class="prep-painel"></details>';
+  Q('.prep-painel').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pp]'); if (!b) return; e.preventDefault();
+    var a = b.getAttribute('data-pp');
+    if (a === 'emitir') {
+      if (estado.rodando) return;
+      obra.preparacaoSemIsbn = !isbnValido(obra.isbn); var cb = Q('[data-o="preparacaoSemIsbn"]'); if (cb) cb.checked = obra.preparacaoSemIsbn; obraGuardar();
+      if (estado.entrada) { produzir(); ui.renderPrep(); return; }
+      msLer().then(function (ms) {
+        if (ms && (!obra._arquivo || ms.nome === obra._arquivo)) { ui.msg('Retomando o manuscrito guardado (' + ms.nome + ')…'); receberArquivo(new File([ms.blob], ms.nome, { type: ms.tipo || '' })); ui.renderPrep(); }
+        else { ui.msg('Envie o manuscrito' + (obra._arquivo ? ' (' + obra._arquivo + ')' : '') + ' para gerar a versão sem ISBN.', 'err'); inp.click(); }
+      });
+    }
+    else if (a === 'pdf') Q('[data-a="pdf"]').click();
+    else if (a === 'epub') Q('[data-a="epub"]').click();
+    else if (a === 'html') Q('[data-a="html"]').click();
+    else if (a === 'pacote') Q('[data-a="pacote"]').click();
+    else if (a === 'pend') Q('[data-a="pendencias"]').click();
+    else if (a === 'abrir') Q('[data-a="proj-abrir"]').click();
+    else if (a === 'acervo') { ui.irAcervo(); if (window.ACERVO_ICET && ACERVO_ICET.verPreparacao) ACERVO_ICET.verPreparacao(); }
+  });
+  ui.renderPrep();
   Q('[data-a="prep-lista"]').addEventListener('click', function () {
-    if (!window.ACERVO_ICET) { ui.msg('O módulo do acervo não carregou; recarregue a página.', 'err'); return; }
-    ui.irAcervo(); ACERVO_ICET.verPreparacao();
+    ui.renderPrep().then(function () { var pp = Q('.prep-painel'); pp.open = true; pp.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   });
   Q('[data-a="pendencias"]').addEventListener('click', function () {
     var h = relatorioPendencias(window.ACERVO_ICET && ACERVO_ICET.pendenciasPorTitulo ? ACERVO_ICET.pendenciasPorTitulo(obra.titulo) : null);
