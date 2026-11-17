@@ -779,6 +779,9 @@ async function lerPdf(buf) {
     // figuras entram como linhas especiais, na altura em que aparecem na página
     figuras.forEach(function (f) { linhas.push({ fig: f.url, yb: f.topo, tam: 0, x0: f.x, x1: f.x + f.w, t: '[figura]', h: '', pag: pn, alturaPag: vp.height, larguraPag: vp.width, alt: f.alt }); nFiguras++; });
     pags.push(linhas.filter(function (L) { return L.t; }).sort(function (a, b) { return b.yb - a.yb; }));
+    // libera a página lida (lista de operações, imagens decodificadas): sem isso, livros longos esgotam a memória do navegador
+    ops = null; tc = null; try { pg.cleanup(); } catch (e) {}
+    if (pn % 15 === 0) { try { await pdf.cleanup(); } catch (e) {} await new Promise(function (ok) { setTimeout(ok, 0); }); }
   }
   if (totalChars < 80 * pdf.numPages) return transcreverPdf(pdf, meta);
   // cabeçalhos e rodapés repetidos e números de página
@@ -867,7 +870,7 @@ async function imagensDaPagina(pj, pg, ops, vp, textoPag) {
       var img = null;
       try { img = fn === O.paintInlineImageXObject ? a[0] : await new Promise(function (ok) { var nm = a[0], obj = String(nm).indexOf('g_') === 0 ? pg.commonObjs : pg.objs; try { obj.get(nm, ok); } catch (e) { ok(null); } setTimeout(function () { ok(null); }, 45000); }); } catch (e) {}
       if (!img || !img.width || img.width < 120) continue;
-      var cv = document.createElement('canvas'), esc = Math.min(1, 2000 / Math.max(img.width, img.height)); cv.width = Math.round(img.width * esc); cv.height = Math.round(img.height * esc);
+      var tmp = null, cv = document.createElement('canvas'), esc = Math.min(1, 2000 / Math.max(img.width, img.height)); cv.width = Math.round(img.width * esc); cv.height = Math.round(img.height * esc);
       var g = cv.getContext('2d');
       g.fillStyle = '#ffffff'; g.fillRect(0, 0, cv.width, cv.height);   // transparência sobre o branco da página (o JPEG não tem canal alfa)
       if (img.bitmap) g.drawImage(img.bitmap, 0, 0, cv.width, cv.height);
@@ -878,7 +881,9 @@ async function imagensDaPagina(pj, pg, ops, vp, textoPag) {
         else continue;
         tg.putImageData(id, 0, 0); g.drawImage(tmp, 0, 0, cv.width, cv.height);
       } else continue;
-      out.push({ url: cv.toDataURL('image/jpeg', 0.88), topo: y + h, x: x, w: w, alt: '' });
+      var bl = await new Promise(function (ok) { cv.toBlob(ok, 'image/jpeg', 0.88); });
+      if (bl) out.push({ url: URL.createObjectURL(bl), topo: y + h, x: x, w: w, alt: '' });
+      cv.width = cv.height = 0; if (tmp) { tmp.width = tmp.height = 0; tmp = null; } img = null;
     }
   }
   return out;
@@ -891,6 +896,7 @@ async function transcreverPdf(pdf, meta) {
     var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1.7 }), cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
     await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
     imgs.push({ mime: 'image/jpeg', b64: cv.toDataURL('image/jpeg', 0.82).split(',')[1] });
+    cv.width = cv.height = 0; try { pg.cleanup(); } catch (e) {} if (pn % 15 === 0) { try { await pdf.cleanup(); } catch (e) {} }
     if (ui.msg) ui.msg('Preparando a página ' + pn + ' de ' + pdf.numPages + ' do PDF digitalizado…');
   }
   var r = await transcreverPaginas(imgs); r.meta = Object.assign(meta || {}, r.meta); return r;
@@ -2274,8 +2280,9 @@ async function processarIlustracoes(livro) {
     for (var img of imgs) {
       var src = img.getAttribute('src') || '', dados = null;
       if (/^data:/i.test(src)) dados = dataUrlParaBytes(src);
-      else if (/^https?:/i.test(src)) {
+      else if (/^(https?|blob):/i.test(src)) {
         try { var r = await fetch(src); if (r.ok) { var b = await r.blob(); dados = { bytes: new Uint8Array(await b.arrayBuffer()), mime: b.type }; } } catch (e) {}
+        if (/^blob:/i.test(src)) try { URL.revokeObjectURL(src); } catch (e) {}
       }
       if (!dados) { A.add('bloqueante', 'Técnico', 'Imagem não incorporável (arquivo ausente ou externo): ' + src.slice(0, 80), { onde: s.titulo, sug: 'Insira a imagem no próprio documento.' }); img.remove(); continue; }
       var h = hashBytes(dados.bytes), reg = mapa[h];
