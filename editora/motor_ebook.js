@@ -19,7 +19,12 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.1';
+var VERSAO = '1.1', BUILD = '20261117f';
+/* caixa-preta: grava a última etapa da produção; se o navegador derrubar a página (falta de memória),
+   o motor mostra, ao reabrir, onde a produção parou */
+function marco(txt) { try { var m = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB em uso (limite ' + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB)' : ''; localStorage.setItem('icet_motor_marco', JSON.stringify({ t: new Date().toLocaleString('pt-BR'), txt: txt, mem: m, build: BUILD })); } catch (e) {} }
+function marcoFim() { try { localStorage.removeItem('icet_motor_marco'); } catch (e) {} }
+function marcoLer() { try { return JSON.parse(localStorage.getItem('icet_motor_marco') || 'null'); } catch (e) { return null; } }
 var LS_OBRA = 'icet_ebook_obra', LS_CFG = 'icet_editora_cfg';
 var XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
@@ -737,10 +742,16 @@ function pdfjs() { if (!_pdfjs) _pdfjs = import(BASE + 'lib/pdf.min.mjs').then(f
 async function lerPdf(buf) {
   var pj = await pdfjs();
   var pdf = await pj.getDocument({ data: new Uint8Array(buf), isEvalSupported: false, disableFontFace: true, useSystemFonts: false }).promise;
+  buf = null;
+  // o documento é fechado ao fim da leitura: aberto, ele mantém na memória o PDF inteiro e o que já foi decodificado
+  try { return await lerPdfDoc(pj, pdf); } finally { try { await pdf.destroy(); } catch (e) {} }
+}
+async function lerPdfDoc(pj, pdf) {
   var meta = {}; try { var md = await pdf.getMetadata(); meta.titulo = (md.info && md.info.Title) || ''; meta.autor = (md.info && md.info.Author) || ''; } catch (e) {}
   var pags = [], totalChars = 0, nFiguras = 0;
   for (var pn = 1; pn <= pdf.numPages; pn++) {
     if (pn % 20 === 1 && ui.msg) ui.msg('Lendo o PDF: página ' + pn + ' de ' + pdf.numPages + '…');
+    marco('lendo o PDF, página ' + pn + ' de ' + pdf.numPages + ' (' + nFiguras + ' figura(s) extraída(s) até aqui)');
     var pg = await pdf.getPage(pn), vp = pg.getViewport({ scale: 1 }), tc = await pg.getTextContent();
     // nomes reais das fontes (negrito e itálico) ficam disponíveis depois da lista de operações
     var fontes = {}, figuras = [];
@@ -4475,13 +4486,14 @@ async function produzir(opcoesExtras) {
     estado.relatorio = relatorioHtml(livro, obra, res, revisao);
     etapa('auditoria', res.b ? 'erro' : res.g ? 'aviso' : 'ok', res.status + ' · ' + res.pontos + '/100');
     ui.resultado(livro, res);
+    marcoFim();
     if (ui.renderPrep) ui.renderPrep();
     ui.msg('E-book gerado. ' + res.status + '.', res.b ? 'err' : 'ok');
     if (ui.renderTraducao) ui.renderTraducao();
     if (chaveClaude() && !IA.fora && ui.preencherTraducao && Object.keys(IDIOMAS).some(function (b) { var t = tradCfg(b); return !t.titulo || !t.glossario; })) setTimeout(function () { ui.preencherTraducao(false); }, 300);
   } catch (e) {
     console.error(e);
-    ui.msg('Erro na produção: ' + e.message, 'err');
+    marcoFim(); ui.msg('Erro na produção: ' + e.message, 'err');
     ui.etapaErro(e.message);
   } finally { estado.rodando = false; ui.travar(false); }
 }
@@ -4544,17 +4556,18 @@ async function receberArquivo(file) {
   // ao padrão EPUB (até 2000 px) durante a produção. Só arquivos acima do que o navegador consegue abrir são recusados.
   var mb = file.size / 1048576;
   if (mb > 1900) { ui.msg('Arquivo de ' + Math.round(mb) + ' MB: acima do que o navegador consegue abrir (cerca de 2 GB). Reduza as imagens no Word (Arquivo > Compactar imagens) e envie de novo.', 'err'); return; }
+  marco('abrindo o manuscrito ' + file.name + ' (' + mb.toFixed(1) + ' MB)');
   ui.msg('Lendo ' + file.name + (mb > 60 ? ' (' + Math.round(mb) + ' MB; arquivos grandes levam alguns minutos, mantenha a página aberta)' : '') + '…');
   try {
     await libs();
     estado.arquivo = file; estado.metaIAFeita = false; estado.cddSugerida = '';
+    await msGuardar(file, obra.titulo); // guardado antes da leitura: se a página cair, o manuscrito continua disponível
     estado.entrada = await lerArquivo(file);
     var novo = !!obra._arquivo && obra._arquivo !== file.name;
     if (novo) { var manter = { emitirComPendencias: obra.emitirComPendencias, preparacaoSemIsbn: obra.preparacaoSemIsbn, semTravessao: obra.semTravessao, estiloCitacao: obra.estiloCitacao, numeracao: obra.numeracao, revisaoIA: obra.revisaoIA, indice: obra.indice, listas: obra.listas, licenca: obra.licenca, marcaEditora: mesclar(clone(OBRA_PADRAO.marcaEditora), cfg.editora.marcaPadrao || {}) }; obra = mesclar(clone(OBRA_PADRAO), manter); ui.preencherForm(); }
     obra._arquivo = file.name;
-    msGuardar(file, obra.titulo);
     await produzir();
-  } catch (e) { console.error(e); ui.msg(e.message, 'err'); }
+  } catch (e) { console.error(e); marcoFim(); ui.msg(e.message, 'err'); }
 }
 function baixar(blob, nome) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
 
@@ -4796,7 +4809,7 @@ function montarUI(alvo) {
     var box = Q('.prep-painel');
     return Promise.all([catPublico(), msLer()]).then(function (r) {
       var cat = r[0], ms = r[1], tit = String(obra.titulo || '').trim(), mesmo = function (t) { return String(t || '').trim().toLowerCase() === tit.toLowerCase(); };
-      var msOk = ms && (!obra._arquivo || ms.nome === obra._arquivo);
+      var msOk = ms && (!obra._arquivo || ms.nome === obra._arquivo || (ms.titulo && ms.titulo === obra.titulo));
       var cards = [];
       if (tit) {
         var semIsbn = !isbnValido(obra.isbn), liv = estado.livro && estado.epub;
@@ -4822,10 +4835,12 @@ function montarUI(alvo) {
       });
       var acv = window.ACERVO_ICET && ACERVO_ICET._st && ACERVO_ICET._st.cat ? ACERVO_ICET._st.cat.obras.filter(function (o) { return o.situacao !== 'publicada' && !mesmo(o.titulo); }) : [];
       if (acv.length) cards.push('<div class="pp-card"><small>Acervo</small><h4>' + acv.length + ' título(s) do acervo em preparação</h4><p class="pp-sub">' + acv.map(function (o) { return esc(o.titulo); }).join('; ') + '</p><div class="acoes"><button class="bt" data-pp="acervo" type="button">🗂 Ver no Acervo</button></div></div>');
-      box.innerHTML = '<summary>🗂 Projetos em preparação <small>' + cards.length + '</small></summary>' +
+      var mc = marcoLer(), aviso = mc && !estado.rodando ? '<div class="pp-card" style="border:1px solid #ffb15c;border-radius:8px;padding:.6rem .8rem"><b class="alerta">A última produção foi interrompida pelo navegador</b><p class="pp-sub">Parou em: <b>' + esc(mc.txt) + '</b><br>' + esc(mc.t) + (mc.mem ? ' · memória: ' + esc(mc.mem) : '') + ' · versão do motor: ' + esc(mc.build) + '</p><p class="pp-sub">Envie esta linha ao suporte. <a href="#" data-pp="marco-limpar">Apagar o aviso</a></p></div>' : '';
+      box.innerHTML = '<summary>🗂 Projetos em preparação <small>' + cards.length + '</small></summary>' + aviso +
         (cards.length ? cards.join('') : '<p class="pp-sub">Nenhum projeto em preparação. Envie um manuscrito abaixo ou abra um projeto (.json).</p>') +
-        (ghOk() && !acv.length ? '<p class="pp-sub"><a href="#" data-pp="acervo">Abrir o Acervo</a> para ver títulos arquivados.</p>' : '');
-      if (tit && !box.hasAttribute('data-ini')) { box.setAttribute('data-ini', '1'); box.open = true; }
+        (ghOk() && !acv.length ? '<p class="pp-sub"><a href="#" data-pp="acervo">Abrir o Acervo</a> para ver títulos arquivados.</p>' : '') +
+        '<p class="pp-sub" style="opacity:.5;font-size:.7rem">Motor versão ' + BUILD + '</p>';
+      if ((tit || aviso) && !box.hasAttribute('data-ini')) { box.setAttribute('data-ini', '1'); box.open = true; }
     });
   };
   Q('.prep-painel').outerHTML = '<details class="prep-painel"></details>';
@@ -4837,10 +4852,11 @@ function montarUI(alvo) {
       obra.preparacaoSemIsbn = !isbnValido(obra.isbn); var cb = Q('[data-o="preparacaoSemIsbn"]'); if (cb) cb.checked = obra.preparacaoSemIsbn; obraGuardar();
       if (estado.entrada) { produzir(); ui.renderPrep(); return; }
       msLer().then(function (ms) {
-        if (ms && (!obra._arquivo || ms.nome === obra._arquivo)) { ui.msg('Retomando o manuscrito guardado (' + ms.nome + ')…'); receberArquivo(new File([ms.blob], ms.nome, { type: ms.tipo || '' })); ui.renderPrep(); }
+        if (ms && (!obra._arquivo || ms.nome === obra._arquivo || (ms.titulo && ms.titulo === obra.titulo))) { ui.msg('Retomando o manuscrito guardado (' + ms.nome + ')…'); receberArquivo(new File([ms.blob], ms.nome, { type: ms.tipo || '' })); ui.renderPrep(); }
         else { ui.msg('Envie o manuscrito' + (obra._arquivo ? ' (' + obra._arquivo + ')' : '') + ' para gerar a versão sem ISBN.', 'err'); inp.click(); }
       });
     }
+    else if (a === 'marco-limpar') { marcoFim(); ui.renderPrep(); }
     else if (a === 'pdf') Q('[data-a="pdf"]').click();
     else if (a === 'epub') Q('[data-a="epub"]').click();
     else if (a === 'html') Q('[data-a="html"]').click();
@@ -4860,7 +4876,7 @@ function montarUI(alvo) {
   });
   Q('[data-a="pacote"]').addEventListener('click', function () {
     if (!estado.epub || !estado.livro) return;
-    ui.msg('Montando o pacote…');
+    ui.msg('Montando o pacote…'); marco('montando o pacote completo');
     var base = slug(obra.titulo || 'livro'), semIsbn = !isbnValido(obra.isbn);
     var z;
     libs().then(function () {
@@ -4888,14 +4904,14 @@ function montarUI(alvo) {
         semIsbn ? 'Para o pedido de ISBN: gere o PDF a partir do arquivo de impressão e envie-o à agência do ISBN com os dados da obra. Ao receber o número, informe-o em Dados da obra, desmarque "Versão de preparação, sem ISBN", regere e registre a versão de lançamento no Acervo.' : ''
       ].join('\r\n'));
       return z.generateAsync({ type: 'blob', mimeType: 'application/zip', compression: 'DEFLATE', compressionOptions: { level: 3 }, streamFiles: true });
-    }).then(function (blob) { baixar(blob, 'pacote-' + (semIsbn ? 'preparacao-' : '') + base + '.zip'); ui.msg('Pacote gerado' + (semIsbn ? ' (versão de preparação, sem ISBN)' : '') + '.', 'ok'); },
+    }).then(function (blob) { marcoFim(); baixar(blob, 'pacote-' + (semIsbn ? 'preparacao-' : '') + base + '.zip'); ui.msg('Pacote gerado' + (semIsbn ? ' (versão de preparação, sem ISBN)' : '') + '.', 'ok'); },
       function (er) { ui.msg('Não foi possível gerar o pacote: ' + er.message, 'err'); });
   });
   Q('[data-a="pdf"]').addEventListener('click', function () {
     if (!estado.livro) return;
     var w = window.open('', '_blank');
     if (!w) { ui.msg('Permita janelas pop-up para gerar o PDF.', 'err'); return; }
-    w.document.open(); w.document.write(htmlImpressao(estado.livro, estado.logos, obra)); w.document.close();
+    marco('montando o PDF para impressão'); w.document.open(); w.document.write(htmlImpressao(estado.livro, estado.logos, obra)); w.document.close(); marcoFim();
   });
   var selPg = Q('[data-a="pg"]'), ifr = Q('iframe');
   function mostrarPg(k) {
@@ -4908,6 +4924,7 @@ function montarUI(alvo) {
   ui.travar = function (s) { QA('[data-a="sem-ia"]').forEach(function (b) { b.hidden = !s || !chaveClaude(); b.disabled = false; }); QA('.acoes .bt').forEach(function (b) { if (b.getAttribute('data-a') === 'sem-ia') return; if (/regerar/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.entrada; else if (/^(epub|rel|pdf|html|acervo|pacote)$/.test(b.getAttribute('data-a'))) b.disabled = s || !estado.epub; }); drop.style.pointerEvents = s ? 'none' : ''; drop.style.opacity = s ? .6 : 1; };
   ui.limparEtapas = function () { Q('.etapas').innerHTML = ETAPAS.map(function (e) { return '<li data-e="' + e[0] + '"><span class="ic">○</span><span>' + esc(e[1]) + '</span><span class="det"></span></li>'; }).join(''); Q('.res').hidden = true; estado.epub = null; };
   ui.etapa = function (id, st, det) {
+    if (st === 'rodando') marco('etapa “' + id + '”' + (det ? ': ' + det : ''));
     var li = raiz.querySelector('.etapas [data-e="' + id + '"]'); if (!li) return;
     li.className = st; li.querySelector('.ic').textContent = { ok: '✓', aviso: '!', erro: '✗', rodando: '◌', pulado: '–' }[st] || '○';
     if (det != null) li.querySelector('.det').textContent = det;
