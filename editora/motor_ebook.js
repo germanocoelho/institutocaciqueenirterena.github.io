@@ -19,7 +19,7 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.1', BUILD = '20261117h';
+var VERSAO = '1.1', BUILD = '20261118a';
 /* caixa-preta: grava a última etapa da produção; se o navegador derrubar a página (falta de memória),
    o motor mostra, ao reabrir, onde a produção parou */
 function marco(txt) { try { var m = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB em uso (limite ' + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB)' : ''; localStorage.setItem('icet_motor_marco', JSON.stringify({ t: new Date().toLocaleString('pt-BR'), txt: txt, mem: m, build: BUILD })); } catch (e) {} }
@@ -1694,8 +1694,14 @@ function fimAutoria(t) {
   return -1;
 }
 /* devolve [início, fim] do trecho que deve receber destaque, ou null */
+/* autoria de entidade com órgão subordinado (BRASIL. Tribunal Superior Eleitoral.): o órgão também é autoria */
+function fimAutoriaEnt(t) {
+  var ia = fimAutoria(t), mOrg; if (ia < 0) return ia;
+  while ((mOrg = /^(?:Minist[ée]rio|Tribunal|Conselho|Supremo|Senado|C[aâ]mara|Presid[eê]ncia|Secretaria|Congresso|Departamento|Comiss[aã]o|Small Business Administration|Office of)\b[^.]{0,90}\.\s+/.exec(t.slice(ia)))) ia += mOrg[0].length;
+  return ia;
+}
 function alvoDestaque(t) {
-  var ia = fimAutoria(t); if (ia < 0) return null;
+  var ia = fimAutoriaEnt(t); if (ia < 0) return null;
   var r = t.slice(ia);
   if (RX_LEGISL.test(r)) { var mDO = /Di[aá]rio Oficial( d[aoe]s?)?( [A-ZÀ-Ý][\wÀ-ÿ]*| da| do| de)*/.exec(r); return mDO ? [ia + mDO.index, ia + mDO.index + mDO[0].trim().length] : null; }
   var mIn = /\bIn:\s+/.exec(r);
@@ -1737,6 +1743,8 @@ function anosRef(texto) {
   var antes = texto.split(/Dispon[ií]vel em|Acesso em/i)[0], anos = [], m;
   RX_ANO.lastIndex = 0;
   while ((m = RX_ANO.exec(antes))) anos.push(m[1] + (m[2] || ''));
+  // data provável entre colchetes (NBR 6023:2018, 8.6.1.3): [197-], [197-?], [18--], [18--?], [ca. 1960], [entre 1906 e 1912]
+  if (!anos.length) { var mp = /\[(?:ca\.\s*)?((?:1[5-9]|20)\d?-{1,2})\??\]/.exec(antes); if (mp) anos.push(mp[1]); }
   return anos;
 }
 function casaCitacao(c, refs) {
@@ -1780,7 +1788,7 @@ function processarRefs(nos, A, onde, doc, corr) {
       if (/(https?:\/\/|www\.)/i.test(t) && !(/Dispon[ií]vel em\s*:/i.test(t) && /Acesso em\s*:/i.test(t))) { semAcesso++; A.add('grave', 'Referências', 'Documento on-line sem “Disponível em:” e “Acesso em:”: “' + t.slice(0, 90) + '…”.', { onde: onde, norma: 'NBR 6023', sug: 'Acrescente: Disponível em: <endereço>. Acesso em: dia mês abreviado ano.', acao: acaoRef }); }
       if (!p.querySelector('strong,b,em,i') && destacarTitulo(p)) autoDest++;
       var d = p.querySelector('strong,b') ? 'negrito' : p.querySelector('em,i') ? 'italico' : '';
-      if (d) destaques[d] = (destaques[d] || 0) + 1; else if (!/^_{3,}/.test(t) && t.length > 40 && !RX_LEGISL.test(t.slice(Math.max(0, fimAutoria(t))))) semDestaque++;
+      if (d) destaques[d] = (destaques[d] || 0) + 1; else if (!/^_{3,}/.test(t) && t.length > 40 && !RX_LEGISL.test(t.slice(Math.max(0, fimAutoriaEnt(t))))) semDestaque++;
       itens.push({ el: p, chave: chave, anos: anos, texto: t, palavras: N(t.split(/Dispon[ií]vel em/i)[0]).replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/) });
       p._ordem = N(/^_{3,}/.test(t) ? (chave + ' ' + t.replace(/^_+\.?/, '')) : t);
     });
@@ -2029,7 +2037,7 @@ async function processar(entrada, opcoes, progresso) {
         if (h.hasAttribute('data-ref')) { nh.setAttribute('data-ref', '1'); if (/^(REFERENCIAS|REFERENCIAS BIBLIOGRAFICAS|BIBLIOGRAFIA)$/.test(N(txt(nh)))) nh.textContent = 'Referências'; }
       }
       h.parentNode.replaceChild(nh, h);
-      if (lv <= 3) sec.subtitulos.push({ id: nh.id, nivel: lv, ind: nh.getAttribute('data-ind') || '', texto: txt(nh).replace(/^\d+(\.\d+)*\s*/, '') });
+      if (lv <= 3) { var mInd = /^(\d+(?:\.\d+)*)\s+/.exec(txt(nh)); sec.subtitulos.push({ id: nh.id, nivel: lv, ind: nh.getAttribute('data-ind') || (mInd ? mInd[1] : ''), texto: txt(nh).replace(/^\d+(\.\d+)*\s*/, '') }); }
       nh.removeAttribute('data-ind');
     });
     livro.secoes.push(sec);
@@ -2278,7 +2286,7 @@ async function processar(entrada, opcoes, progresso) {
     estilos = { alta: 0, mista: 0 };
   }
   if (estilos.alta && estilos.mista) A.add('aviso', 'Citações', 'Autoria nas citações entre parênteses aparece ora em MAIÚSCULAS (' + estilos.alta + '), ora em maiúsculas e minúsculas (' + estilos.mista + ').', { norma: 'NBR 10520', sug: 'Padronize a grafia da autoria em todas as citações, conforme a versão vigente da NBR 10520 adotada pela Editora.' });
-  if (!todasRefs.length && livro.secoes.some(function (s) { return extrairCitacoes(s.cont.textContent).length > 2; })) A.add('grave', 'Referências', 'O texto tem citações no sistema autor-data, mas o manuscrito não tem seção de Referências.', { norma: 'NBR 6023', sug: 'Inclua a seção REFERÊNCIAS ao final.' });
+  if (!todasRefs.length && !livro.secoes.some(function (s) { return s.refs && s.refs.length; }) && livro.secoes.some(function (s) { return extrairCitacoes(s.cont.textContent).length > 2; })) A.add('grave', 'Referências', 'O texto tem citações no sistema autor-data, mas o manuscrito não tem seção de Referências.', { norma: 'NBR 6023', sug: 'Inclua a seção REFERÊNCIAS ao final.' });
 
   /* glossário: termo em negrito e ordem alfabética */
   livro.secoes.filter(function (s) { return s.tipo === 'glossario'; }).forEach(function (s) {
@@ -2535,7 +2543,10 @@ async function processarIlustracoes(livro) {
     if (i.numOrig) {
       var k = i.tipo + ' ' + i.numOrig;
       (mapaSec[i.secao.id] = mapaSec[i.secao.id] || {})[k] = i.tipo + ' ' + novo;
-      if (!(k in mapaGlob)) mapaGlob[k] = i.tipo + ' ' + novo; else { mapaGlob[k] = null; dup[k] = 1; }
+      // numeração repetida só é falha dentro da mesma parte; volumes com planos independentes recomeçam a contagem em cada um
+      if (!(k in mapaGlob)) mapaGlob[k] = i.tipo + ' ' + novo; else mapaGlob[k] = null;
+      (mapaSec[i.secao.id]._vistos = mapaSec[i.secao.id]._vistos || {});
+      if (mapaSec[i.secao.id]._vistos[k]) dup[k] = 1; else mapaSec[i.secao.id]._vistos[k] = 1;
       if (i.numOrig !== novo) mudou++;
     } else mudou++;
     i.prefixo.nodeValue = i.tipo + ' ' + novo + sepRot();
