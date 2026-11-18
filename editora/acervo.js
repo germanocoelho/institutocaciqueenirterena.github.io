@@ -536,7 +536,7 @@ function gerarSenha() { var A = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ
 function fonteMotor(ed) {
   var vs = ed.versoes.slice().sort(function (a, b) { return (b.vigente ? 1 : 0) - (a.vigente ? 1 : 0); });
   for (var i = 0; i < vs.length; i++) {
-    var pj = vs[i].arquivos.find(function (a) { return a.formato === 'Projeto'; }), ms = vs[i].arquivos.find(function (a) { return a.formato === 'Manuscrito' || /\.(docx|doc|odt|rtf)$/i.test(a.nome); });
+    var pj = vs[i].arquivos.find(function (a) { return a.formato === 'Projeto'; }), ms = vs[i].arquivos.find(function (a) { return a.formato === 'Manuscrito' || /\.(docx|doc|odt|rtf)$/i.test(a.nome) || /^manuscrito/i.test(a.nome); });
     if (pj && ms) return { versao: vs[i], projeto: pj, manuscrito: ms };
   }
   return null;
