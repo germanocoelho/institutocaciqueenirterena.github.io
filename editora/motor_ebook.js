@@ -19,7 +19,7 @@ var BASE = (function () {
   var s = document.currentScript && document.currentScript.src;
   return s ? s.replace(/[^\/?#]*([?#].*)?$/, '') : 'editora/';
 })();
-var VERSAO = '1.1', BUILD = '20261118a';
+var VERSAO = '1.1', BUILD = '20261118b';
 /* caixa-preta: grava a última etapa da produção; se o navegador derrubar a página (falta de memória),
    o motor mostra, ao reabrir, onde a produção parou */
 function marco(txt) { try { var m = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB em uso (limite ' + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + ' MB)' : ''; localStorage.setItem('icet_motor_marco', JSON.stringify({ t: new Date().toLocaleString('pt-BR'), txt: txt, mem: m, build: BUILD })); } catch (e) {} }
@@ -3023,16 +3023,21 @@ async function gerarCapa(o, logos) {
   y += (linhas.length - 1) * lh + 110;
   losangos(g, W / 2, y);
   y += 110;
-  if (o.subtitulo) {
-    g.font = 'italic 400 60px "EB Literata", serif'; g.fillStyle = '#EDE4C8';
-    quebrarLinhas(g, o.subtitulo, 1240).slice(0, 4).forEach(function (l, i) { g.fillText(l, W / 2, y + i * 78); });
-  }
   var nomes = pessoas(o.autores).map(function (p) { return p.nome; });
   var orgs = pessoas(o.organizadores).map(function (p) { return p.nome; });
   var linhaAut = nomes.length ? nomes : orgs.length ? orgs : [];
-  g.font = '400 58px "EB Cinzel", serif'; g.fillStyle = '#E8A853';
-  var yA = 1820 - Math.max(0, linhaAut.length - 3) * 68;
   if (linhaAut.length > 6) linhaAut = linhaAut.slice(0, 5).concat(['e outros']);
+  var yA = 1820 - Math.max(0, linhaAut.length - 3) * 68;
+  // subtítulo inteiro, nunca cortado: o corpo diminui até caber entre o título e os autores
+  if (o.subtitulo) {
+    g.fillStyle = '#EDE4C8';
+    var tSub = 60, lSub, lhSub, dispSub = yA - 70 - y;
+    do { g.font = 'italic 400 ' + tSub + 'px "EB Literata", serif'; lSub = quebrarLinhas(g, o.subtitulo, 1300); lhSub = tSub * 1.3; tSub -= 2; } while (lSub.length * lhSub > dispSub && tSub > 30);
+    lSub.forEach(function (l, i) { g.fillText(l, W / 2, y + i * lhSub); });
+  }
+  // nomes inteiros, sem corte nas bordas: o corpo diminui se algum nome for largo demais
+  g.fillStyle = '#E8A853';
+  var tAut = 58; do { g.font = '400 ' + tAut + 'px "EB Cinzel", serif'; tAut -= 2; } while (tAut > 34 && linhaAut.some(function (n) { return g.measureText(n).width > W - 180; }));
   linhaAut.forEach(function (n, i) { g.fillText(n, W / 2, yA + i * 76); });
   if (!nomes.length && orgs.length) { g.font = 'italic 400 40px "EB Literata", serif'; g.fillText(orgs.length > 1 ? T('(organizadores)') : T('(organização)'), W / 2, yA + linhaAut.length * 76); }
   // régua de logomarcas
@@ -3823,7 +3828,11 @@ function htmlImpressao(livro, logos, o, opc) {
   opc = opc || {};
   var css = cssParaNavegador(livro.css) + '@page{size:148mm 210mm;margin:18mm 15mm 20mm 17mm;@bottom-center{content:counter(page);font-family:"Literata",Georgia,serif;font-size:8.5pt;color:#8C2F1C;vertical-align:top;padding-top:5mm}}' +
     '@page semfolio{@bottom-center{content:none}}' + SEM_FOLIO.map(function (t) { return '.pg-' + t; }).join(',') + '{page:semfolio}' +
-    'body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}aside.nota{display:block}a{color:inherit}' +
+    'body{margin:0;font-size:10.5pt}.pg{break-before:page;page-break-before:always}.pg:first-child{break-before:auto}.capa img{width:100%;height:auto}' +
+    // capa inteira dentro da área útil da página (116 × 172 mm), sem cortes: o Chromium recorta tudo o que passa da margem
+    '@page capa{@bottom-center{content:none}}@media print{.pg-capa{page:capa;height:172mm;display:flex;align-items:center;justify-content:center}' +
+    '.pg-capa section{margin:0!important;padding:0!important;text-align:center;line-height:0}' +
+    '.pg-capa img{display:block;width:auto!important;height:auto!important;max-width:116mm!important;max-height:171mm!important;margin:0 auto!important;box-shadow:0 0 0 .2mm #c9b79c}}' +
     // no PDF, o título da tabela sai do <caption> para um parágrafo preso à tabela (o navegador não segura caption + 1ª linha na mesma página)
     '.cap-tab{font-size:.85em;color:#2E1A10;line-height:1.3;text-align:justify;text-align-last:center;text-indent:0;margin:0 0 .5em;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}tr{break-inside:avoid;page-break-inside:avoid}' +
     // entradas com número de página: título justificado à esquerda, número alinhado à margem direita na última linha
