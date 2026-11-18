@@ -6,7 +6,7 @@
     "cidade": "Campo Grande",
     "uf": "MS",
     "endereco": "Rua da Serra, 217",
-    "email": "",
+    "email": "institutocaciqueenirterenabr@gmail.com",
     "site": "https://institutocaciqueenirterena.com.br",
     "politica": "Selo editorial de autoria indígena. Autores não indígenas só participam de uma publicação se ao menos um dos autores for indígena. O Instituto arca com os custos de registro de direitos autorais e de ISBN.",
     "conselhoAto": "aprovado por portaria interna da Diretoria do Instituto Cacique Enir Terena",
@@ -22,9 +22,9 @@
   "conselho": [],
   "equipe": {
     "editor": "Editora Cacique Enit Terena",
-    "revisao": "",
+    "revisao": "Instituto Cacique Enir Terena",
     "projetoGrafico": "Editora Cacique Enir Terena",
-    "capa": "",
+    "capa": "Instituto Cacique Enir Terena",
     "diagramacao": "Editora Cacique Enir Terena",
     "bibliotecario": "",
     "crb": ""
@@ -67,7 +67,7 @@
       "papel": "Apoio institucional",
       "arquivo": "logos/focams.jpg",
       "fundo": "#ffffff",
-      "autorizado": false
+      "autorizado": true
     }
   ],
   "claudeCifrada": {
@@ -76,5 +76,5 @@
     "c": "KrFxtDTEH8FRJZPLZ4TARWZ/On6j88L6tMCcUShsI03GTUU10Eb0E02BVlwkBEmGg+F9wzK4VxgrYql+AFX2MWJNF+xGut9VZj2L7fPyQ2Kbmrvqi5MDfI7xh5NmF1IEabnG6bDf8BIGclh4KBuPgPCN3Na8m1xqivg=",
     "it": 600000
   },
-  "_t": 1794887028754
+  "_t": 1794970449116
 }
