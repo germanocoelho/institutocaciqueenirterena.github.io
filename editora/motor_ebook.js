@@ -152,7 +152,7 @@ function logoDados(l) {
 
 /* ───────────────────────── dados da obra ───────────────────────── */
 var OBRA_PADRAO = {
-  titulo: '', subtitulo: '', autores: '', organizadores: '', edicao: '1', ano: String(new Date().getFullYear()),
+  titulo: '', subtitulo: '', autores: '', organizadores: '', editores: '', edicao: '1', ano: String(new Date().getFullYear()),
   local: '', isbn: '', isbnImpresso: '', isbnHtml: '', exemplares: [], cdd: '', cdu: '', cutter: '', assuntos: '', palavrasChave: '', serie: '',
   sinopse: '', notasRevisao: '', logosObra: [], traducoes: {}, marcaEditora: { rosto: 'auto', falsaRosto: '', creditos: '', colofao: 'auto', capa: 'auto', capaAutores: '', capaPosicao: 'auto', html: 'auto' }, licenca: 'todos', direitosTexto: '', capaGerada: false, correcoes: { tabelas: {}, refsNovas: [], refsEdit: {}, citIgnorar: {}, textos: [] }, termosIndice: '', ctDeclaracao: false, ctTexto: '', dedicatoria: '', epigrafe: '',
   numeracao: 'auto', estiloCitacao: 'maioria', emitirComPendencias: false, preparacaoSemIsbn: false, ocultarResponsavelFicha: false, semTravessao: true, revisaoIA: true, indice: true, listas: 'auto', capaPropria: ''
@@ -2807,7 +2807,7 @@ var I18N = {
     'Licenças das fontes': 'Font licenses', 'Lista de ilustrações': 'List of illustrations', 'Lista de tabelas e quadros': 'List of tables and charts', 'Lista de abreviaturas e siglas': 'List of abbreviations and acronyms',
     'Índice remissivo': 'Index', 'Pontos de referência': 'Landmarks', 'Início do texto': 'Start of text', 'Referências': 'References', 'Abertura': 'Opening', 'Ficha catalográfica': 'Cataloguing-in-Publication data', 'Sem título': 'Untitled',
     'Capa do livro “{t}”{por}. {ed}.': 'Cover of the book “{t}”{por}. {ed}.', ', de {a}': ', by {a}', ', organização de {a}': ', edited by {a}',
-    '(organizadores)': '(editors)', '(organização)': '(editor)', 'Organização: {a}': 'Edited by {a}',
+    '(organizadores)': '(editors)', '(organização)': '(editor)', 'Organização: {a}': 'Edited by {a}', 'Edição: {a}': 'Edited by {a}',
     '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, the Indigenous-authorship publishing imprint of the {mant}.', ' Autoria indígena: {l}.': ' Indigenous authorship: {l}.',
     'Conselho Editorial': 'Editorial Board', 'Em desenvolvimento.': 'In preparation.', 'Equipe editorial': 'Editorial team',
     'Edição': 'Editing', 'Revisão': 'Proofreading', 'Projeto gráfico': 'Book design', 'Coordenação Editorial Digital': 'Digital Publishing Coordination', 'Tradução': 'Translation', 'Revisão da tradução': 'Translation review', 'Título original': 'Original title',
@@ -2839,7 +2839,7 @@ var I18N = {
     'Licenças das fontes': 'Licences des polices', 'Lista de ilustrações': 'Liste des illustrations', 'Lista de tabelas e quadros': 'Liste des tableaux et encadrés', 'Lista de abreviaturas e siglas': 'Liste des abréviations et sigles',
     'Índice remissivo': 'Index', 'Pontos de referência': 'Repères', 'Início do texto': 'Début du texte', 'Referências': 'Références', 'Abertura': 'Ouverture', 'Ficha catalográfica': 'Notice de catalogage', 'Sem título': 'Sans titre',
     'Capa do livro “{t}”{por}. {ed}.': 'Couverture du livre « {t} »{por}. {ed}.', ', de {a}': ', de {a}', ', organização de {a}': ', sous la direction de {a}',
-    '(organizadores)': '(sous la direction de)', '(organização)': '(sous la direction de)', 'Organização: {a}': 'Sous la direction de {a}',
+    '(organizadores)': '(sous la direction de)', '(organização)': '(sous la direction de)', 'Organização: {a}': 'Sous la direction de {a}', 'Edição: {a}': 'Édition : {a}',
     '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, label éditorial consacré aux auteurs autochtones, rattaché à l’institution {mant}.', ' Autoria indígena: {l}.': ' Auteurs autochtones : {l}.',
     'Conselho Editorial': 'Comité éditorial', 'Em desenvolvimento.': 'En cours de constitution.', 'Equipe editorial': 'Équipe éditoriale',
     'Edição': 'Édition', 'Revisão': 'Révision', 'Projeto gráfico': 'Conception graphique', 'Coordenação Editorial Digital': 'Coordination éditoriale numérique', 'Tradução': 'Traduction', 'Revisão da tradução': 'Révision de la traduction', 'Título original': 'Titre original',
@@ -2871,7 +2871,7 @@ var I18N = {
     'Licenças das fontes': 'Licencias de las fuentes', 'Lista de ilustrações': 'Lista de ilustraciones', 'Lista de tabelas e quadros': 'Lista de tablas y cuadros', 'Lista de abreviaturas e siglas': 'Lista de abreviaturas y siglas',
     'Índice remissivo': 'Índice analítico', 'Pontos de referência': 'Puntos de referencia', 'Início do texto': 'Inicio del texto', 'Referências': 'Referencias', 'Abertura': 'Apertura', 'Ficha catalográfica': 'Ficha catalográfica', 'Sem título': 'Sin título',
     'Capa do livro “{t}”{por}. {ed}.': 'Cubierta del libro «{t}»{por}. {ed}.', ', de {a}': ', de {a}', ', organização de {a}': ', edición a cargo de {a}',
-    '(organizadores)': '(coordinadores)', '(organização)': '(coordinación)', 'Organização: {a}': 'Coordinación: {a}',
+    '(organizadores)': '(coordinadores)', '(organização)': '(coordinación)', 'Organização: {a}': 'Coordinación: {a}', 'Edição: {a}': 'Edición: {a}',
     '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, sello editorial de autoría indígena del {mant}.', ' Autoria indígena: {l}.': ' Autoría indígena: {l}.',
     'Conselho Editorial': 'Consejo Editorial', 'Em desenvolvimento.': 'En proceso de conformación.', 'Equipe editorial': 'Equipo editorial',
     'Edição': 'Edición', 'Revisão': 'Corrección', 'Projeto gráfico': 'Diseño gráfico', 'Coordenação Editorial Digital': 'Coordinación Editorial Digital', 'Tradução': 'Traducción', 'Revisão da tradução': 'Revisión de la traducción', 'Título original': 'Título original',
@@ -2903,7 +2903,7 @@ var I18N = {
     'Licenças das fontes': 'Schriftlizenzen', 'Lista de ilustrações': 'Abbildungsverzeichnis', 'Lista de tabelas e quadros': 'Tabellen- und Übersichtenverzeichnis', 'Lista de abreviaturas e siglas': 'Abkürzungsverzeichnis',
     'Índice remissivo': 'Register', 'Pontos de referência': 'Orientierungspunkte', 'Início do texto': 'Textbeginn', 'Referências': 'Literaturverzeichnis', 'Abertura': 'Eröffnung', 'Ficha catalográfica': 'Bibliografische Information', 'Sem título': 'Ohne Titel',
     'Capa do livro “{t}”{por}. {ed}.': 'Umschlag des Buches „{t}“{por}. {ed}.', ', de {a}': ' von {a}', ', organização de {a}': ', herausgegeben von {a}',
-    '(organizadores)': '(Hrsg.)', '(organização)': '(Hrsg.)', 'Organização: {a}': 'Herausgegeben von {a}',
+    '(organizadores)': '(Hrsg.)', '(organização)': '(Hrsg.)', 'Organização: {a}': 'Herausgegeben von {a}', 'Edição: {a}': 'Herausgegeben von {a}',
     '{ed}, selo editorial de autoria indígena do {mant}.': '{ed}, Verlagsmarke für indigene Autorschaft der Einrichtung {mant}.', ' Autoria indígena: {l}.': ' Indigene Autorschaft: {l}.',
     'Conselho Editorial': 'Herausgeberbeirat', 'Em desenvolvimento.': 'In Vorbereitung.', 'Equipe editorial': 'Redaktion',
     'Edição': 'Lektorat', 'Revisão': 'Korrektorat', 'Projeto gráfico': 'Gestaltung', 'Coordenação Editorial Digital': 'Digitale Verlagskoordination', 'Tradução': 'Übersetzung', 'Revisão da tradução': 'Revision der Übersetzung', 'Título original': 'Originaltitel',
@@ -3068,11 +3068,12 @@ function tituloCaso(t) {
 }
 function frase(lista) { return lista.length <= 1 ? (lista[0] || '') : lista.slice(0, -1).join(', ') + ({ en: ' and ', fr: ' et ', es: ' y ', de: ' und ' }[lingBase()] || ' e ') + lista[lista.length - 1]; }
 function fichaCatalografica(o, livro) {
-  var aut = pessoas(o.autores), org = pessoas(o.organizadores);
+  var aut = pessoas(o.autores), org = pessoas(o.organizadores), edt = pessoas(o.editores);
   var entradaTitulo = !aut.length || aut.length > 3;
   var principal = entradaTitulo ? '' : nomeFicha(aut[0].nome);
   var resp = aut.length ? frase(aut.map(function (p) { return p.nome; })) : '';
   if (org.length) resp += (resp ? ' ; ' : '') + (org.length > 1 ? 'organizadores ' : 'organização ') + frase(org.map(function (p) { return p.nome; }));
+  if (edt.length) resp += (resp ? ' ; ' : '') + (edt.length > 1 ? 'editores ' : 'editor ') + frase(edt.map(function (p) { return p.nome; }));
   if (o._traducao && o._traducao.tradutorInformado) resp += (resp ? ' ; ' : '') + 'tradução de ' + o._traducao.tradutorInformado;
   var titulo = o.titulo + ' [recurso eletrônico]' + (o.subtitulo ? ' : ' + o.subtitulo : '') + (resp ? ' / ' + resp : '') + '.';
   var ed = (o.edicao || '1').replace(/\D/g, '') || '1';
@@ -3083,6 +3084,7 @@ function fichaCatalografica(o, livro) {
   var secund = [];
   aut.slice(entradaTitulo ? 0 : 1).forEach(function (p) { secund.push(nomeFicha(p.nome)); });
   org.forEach(function (p) { secund.push(nomeFicha(p.nome) + ', org.'); });
+  edt.forEach(function (p) { secund.push(nomeFicha(p.nome) + ', ed.'); });
   if (!entradaTitulo) secund.push('Título');
   if (o.serie) secund.push('Série');
   var pistas = assuntos.map(function (a, i) { return (i + 1) + '. ' + a.replace(/\.$/, '') + '.'; }).join(' ') + (secund.length ? ' ' + secund.map(function (s, i) { return romano(i + 1) + '. ' + s.replace(/\.$/, '') + '.'; }).join(' ') : '');
@@ -3113,8 +3115,8 @@ function regua(doc, logos) {
 async function montarEditoriais(livro, o, logos) {
   var doc = livro.doc, A = livro.A, extras = [];
   o = Object.assign({}, o, { titulo: (o.titulo || '').trim() || T('Sem título') });
-  var aut = pessoas(o.autores), org = pessoas(o.organizadores);
-  var nomesAut = aut.map(function (p) { return p.nome; }), nomesOrg = org.map(function (p) { return p.nome; });
+  var aut = pessoas(o.autores), org = pessoas(o.organizadores), edt = pessoas(o.editores);
+  var nomesAut = aut.map(function (p) { return p.nome; }), nomesOrg = org.map(function (p) { return p.nome; }), nomesEd = edt.map(function (p) { return p.nome; });
   function sec(tipo, et, role, titulo, cls) { return { tipo: tipo, def: { et: et, role: role, parte: 'front' }, id: tipo, titulo: titulo, cont: el(doc, 'div', cls ? { 'class': cls } : null), subtitulos: [], gerada: true }; }
 
   // capa
@@ -3137,6 +3139,7 @@ async function montarEditoriais(livro, o, logos) {
   rosto.cont.appendChild(el(doc, 'h1', { 'class': 'r-titulo' }, [o.titulo]));
   if (o.subtitulo) rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-subtitulo' }, [o.subtitulo]));
   if (nomesAut.length && nomesOrg.length) rosto.cont.appendChild(el(doc, 'p', null, [T('Organização: {a}', { a: frase(nomesOrg) })]));
+  if (nomesEd.length) rosto.cont.appendChild(el(doc, 'p', null, [T('Edição: {a}', { a: frase(nomesEd) })]));
   rosto.cont.appendChild(el(doc, 'p', { 'class': 'r-edicao' }, [edicaoT(o.edicao)]));
   var imgsRosto = marcaImgs(doc, logos, varMarca(om.rosto, LUM_PAGINA, 'cor'), 'r-marca'), marcaCor = imgsRosto.length > 0;
   var selo = logos.find(function (l) { return l.id === 'icet' && l.arquivoEpub; });
@@ -3515,12 +3518,13 @@ async function empacotar(livro, o, logos, editoriais, opcoes) {
   add('nav.xhtml', navXhtml(livro, ordem, landmarks), 'application/xhtml+xml', 'nav', 'nav');
   add('toc.ncx', ncx(livro, ordem, idPub, o.titulo), 'application/x-dtbncx+xml', 'ncx');
 
-  var aut = pessoas(o.autores), org = pessoas(o.organizadores);
+  var aut = pessoas(o.autores), org = pessoas(o.organizadores), edt = pessoas(o.editores);
   var md = ['<dc:identifier id="pub-id">' + esc(idPub) + '</dc:identifier>',
     '<dc:title id="titulo">' + esc(o.titulo) + '</dc:title>', '<meta refines="#titulo" property="title-type">main</meta>'];
   if (o.subtitulo) md.push('<dc:title id="subtitulo">' + esc(o.subtitulo) + '</dc:title>', '<meta refines="#subtitulo" property="title-type">subtitle</meta>');
   aut.forEach(function (p, i) { md.push('<dc:creator id="aut' + i + '">' + esc(p.nome) + '</dc:creator>', '<meta refines="#aut' + i + '" property="role" scheme="marc:relators">aut</meta>', '<meta refines="#aut' + i + '" property="file-as">' + esc(nomeFicha(p.nome)) + '</meta>'); });
   org.forEach(function (p, i) { md.push('<dc:creator id="org' + i + '">' + esc(p.nome) + '</dc:creator>', '<meta refines="#org' + i + '" property="role" scheme="marc:relators">edt</meta>', '<meta refines="#org' + i + '" property="file-as">' + esc(nomeFicha(p.nome)) + '</meta>'); });
+  edt.forEach(function (p, i) { md.push('<dc:contributor id="edt' + i + '">' + esc(p.nome) + '</dc:contributor>', '<meta refines="#edt' + i + '" property="role" scheme="marc:relators">edt</meta>', '<meta refines="#edt' + i + '" property="file-as">' + esc(nomeFicha(p.nome)) + '</meta>'); });
   md.push('<dc:language>' + LINGUA + '</dc:language>', '<dc:publisher>' + esc(cfg.editora.nome) + '</dc:publisher>', '<dc:date>' + esc(/^\d{4}$/.test(o.ano) ? o.ano : String(new Date().getFullYear())) + '</dc:date>');
   String(o.palavrasChave || '').split(/;|\n/).map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (k) { md.push('<dc:subject>' + esc(k) + '</dc:subject>'); });
   if (o.sinopse) md.push('<dc:description>' + esc(o.sinopse) + '</dc:description>');
@@ -3597,8 +3601,8 @@ async function paginarEpub(blob, pag, fonte, ancoras) {
 /* ───────────────────────── 11. AUDITORIA EDITORIAL ───────────────────────── */
 function auditarObra(o, A, logos) {
   if (!o.titulo) A.add('bloqueante', 'Metadados', 'Título da obra não informado.', { sug: 'Preencha na aba “Dados da obra”.' });
-  var aut = pessoas(o.autores), org = pessoas(o.organizadores);
-  if (!aut.length && !org.length) A.add('bloqueante', 'Metadados', 'Nenhum autor ou organizador informado.', { sug: 'Informe um por linha: Nome completo; Povo (se indígena).' });
+  var aut = pessoas(o.autores), org = pessoas(o.organizadores), edt = pessoas(o.editores);
+  if (!aut.length && !org.length && !edt.length) A.add('bloqueante', 'Metadados', 'Nenhum autor ou organizador informado.', { sug: 'Informe um por linha: Nome completo; Povo (se indígena).' });
   if (cfg.regras.exigeAutorIndigena && (aut.length || org.length) && !aut.concat(org).some(function (p) { return p.indigena; }))
     A.add('bloqueante', 'Selo', 'Política do selo: nenhum autor ou organizador indígena declarado. Autores não indígenas só podem publicar se ao menos um dos autores for indígena.', { norma: 'Política editorial da Editora Cacique Enir Terena', sug: 'Indique o povo do(s) autor(es) indígena(s) após ponto e vírgula, por exemplo: Maria Terena; Terena.' });
   if (!o.isbn && o.preparacaoSemIsbn) A.add('info', 'ISBN', 'Versão de preparação, sem ISBN: a ficha catalográfica indica “ISBN em registro”. Esta versão instrui o pedido do ISBN e não deve circular como edição publicada.', { norma: 'Lei 10.753/2003 (Política Nacional do Livro), art. 6º', sug: 'Ao receber o ISBN, informe-o em “Dados da obra”, desmarque a versão de preparação e regere para o lançamento.' });
@@ -4683,7 +4687,7 @@ function aplicarMetaManuscrito(livro) {
   pre('direitosTexto', m.direitos);
   if (m.local && !obra.local) { obra.local = m.local; usados.push('local'); }
   var povos = povosDaSecaoSobre(livro), np = 0;
-  ['autores', 'organizadores'].forEach(function (c) {
+  ['autores', 'organizadores', 'editores'].forEach(function (c) {
     obra[c] = String(obra[c] || '').split('\n').map(function (l) {
       var pp = l.split(/\s*;\s*/); if (!pp[0].trim() || (pp[1] || '').trim()) return l;
       var povo = povos[N(pp[0].replace(/[‑–]/g, '-'))]; if (povo) { np++; return pp[0].trim() + '; ' + povo; } return l;
@@ -4803,6 +4807,7 @@ function montarUI(alvo) {
       campo('titulo', 'Título', 'text') + campo('subtitulo', 'Subtítulo', 'text') +
       campo('autores', 'Autores (um por linha: Nome; Povo, se indígena)', 'area', 'Ex.: Maria da Silva Terena; Terena') +
       campo('organizadores', 'Organizadores (um por linha: Nome; Povo)', 'area') +
+      campo('editores', 'Editores (um por linha: Nome; Povo)', 'area') +
       campo('edicao', 'Edição (número)', 'text') + campo('ano', 'Ano de publicação', 'text') +
       campo('local', 'Local de publicação', 'text', 'Padrão: ' + cfg.editora.cidade + ', ' + cfg.editora.uf) +
       campo('isbn', 'ISBN do e-book', 'text', 'Obrigatório (Lei 10.753/2003). Diferente do impresso.') + campo('isbnImpresso', 'ISBN do impresso (se houver)', 'text') + campo('isbnHtml', 'ISBN da versão HTML (se registrada)', 'text', 'Cada formato distribuído separadamente tem ISBN próprio, registrado na Agência Brasileira do ISBN.') +

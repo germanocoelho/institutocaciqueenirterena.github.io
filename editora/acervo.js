@@ -229,7 +229,7 @@ function vObra() {
   var h = '<div class="acoes"><button class="bt" data-ac="vista" data-v="titulos">← Títulos</button></div>' +
     '<div class="bloco"><h4>' + esc(o.id) + ' · ' + esc(o.titulo) + '</h4><div class="form" data-form="obra">' +
     campoF('Título', 'titulo', o.titulo) + campoF('Subtítulo', 'subtitulo', o.subtitulo) +
-    campoF('Autores (um por linha)', 'autores', (o.autores || []).join('\n'), 'area') + campoF('Organizadores (um por linha)', 'organizadores', (o.organizadores || []).join('\n'), 'area') +
+    campoF('Autores (um por linha)', 'autores', (o.autores || []).join('\n'), 'area') + campoF('Organizadores (um por linha)', 'organizadores', (o.organizadores || []).join('\n'), 'area') + campoF('Editores (um por linha)', 'editores', (o.editores || []).join('\n'), 'area') +
     campoF('Situação', 'situacao', o.situacao, 'sel', SITUACOES) + campoF('Série / coleção', 'serie', o.serie) + campoF('Idioma', 'idioma', o.idioma || 'pt-BR') +
     campoF('CDD', 'cdd', o.cdd) + campoF('CDU', 'cdu', o.cdu) + campoF('Assuntos (um por linha)', 'assuntos', (o.assuntos || []).join('\n'), 'area') +
     campoF('Identidade cultural citada na portaria (Art. 4º)', 'identidade', o.identidade || '') + campoF('Sinopse', 'sinopse', o.sinopse, 'area') + campoF('Observações internas', 'obs', o.obs, 'area') +
@@ -371,7 +371,7 @@ function linhas(s) { return String(s || '').split(/\n+/).map(function (x) { retu
 async function lerArquivos(lista) { var r = []; for (var i = 0; i < (lista || []).length; i++) r.push({ nome: lista[i].name, bytes: new Uint8Array(await lista[i].arrayBuffer()) }); return r; }
 function novaEdicao(n, base) { return { n: n, rotulo: '', ano: String(new Date().getFullYear()), publicacao: '', aprovacao: {}, depositoLegal: {}, direitos: '', preco: '', notas: '', formatos: {}, versoes: [], exemplares: [], criada: hoje(), base: base || null }; }
 function novaObra(d) {
-  return { id: novoCodigo(), titulo: d.titulo || '', subtitulo: d.subtitulo || '', autores: d.autores || [], organizadores: d.organizadores || [], situacao: d.situacao || 'em produção', serie: d.serie || '', idioma: d.idioma || 'pt-BR', cdd: d.cdd || '', cdu: d.cdu || '', assuntos: d.assuntos || [], sinopse: d.sinopse || '', obs: d.obs || '', criada: hoje(), edicoes: [novaEdicao(1)] };
+  return { id: novoCodigo(), titulo: d.titulo || '', subtitulo: d.subtitulo || '', autores: d.autores || [], organizadores: d.organizadores || [], editores: d.editores || [], situacao: d.situacao || 'em produção', serie: d.serie || '', idioma: d.idioma || 'pt-BR', cdd: d.cdd || '', cdu: d.cdu || '', assuntos: d.assuntos || [], sinopse: d.sinopse || '', obs: d.obs || '', criada: hoje(), edicoes: [novaEdicao(1)] };
 }
 function proximaVersao(ed, tipo) {
   var prep = ed.versoes.filter(function (x) { return x.tipo === 'preparacao'; }), pub = ed.versoes.filter(function (x) { return x.tipo !== 'preparacao'; });
@@ -414,7 +414,7 @@ async function acao(ac, b) {
     });
     case 'salvar-obra': {
       var f = lerForm('[data-form="obra"]'), antes = o.situacao;
-      o.titulo = f.titulo; o.subtitulo = f.subtitulo; o.autores = linhas(f.autores); o.organizadores = linhas(f.organizadores); o.situacao = f.situacao; o.serie = f.serie; o.idioma = f.idioma; o.cdd = f.cdd; o.cdu = f.cdu; o.assuntos = linhas(f.assuntos); o.sinopse = f.sinopse; o.obs = f.obs; o.identidade = f.identidade;
+      o.titulo = f.titulo; o.subtitulo = f.subtitulo; o.autores = linhas(f.autores); o.organizadores = linhas(f.organizadores); o.editores = linhas(f.editores); o.situacao = f.situacao; o.serie = f.serie; o.idioma = f.idioma; o.cdd = f.cdd; o.cdu = f.cdu; o.assuntos = linhas(f.assuntos); o.sinopse = f.sinopse; o.obs = f.obs; o.identidade = f.identidade;
       if (o.situacao === 'publicada' && antes !== 'publicada') { var e1 = edVigente(o); if (!e1.publicacao) e1.publicacao = hoje(); }
       log('dados do título' + (antes !== o.situacao ? '; situação: ' + antes + ' → ' + o.situacao : ''), o.id, ''); await salvar('Acervo: ' + o.id);
       if (o.situacao === 'aprovada' && antes !== 'aprovada' && !edVigente(o).portaria) { await emitirPortaria(o, edVigente(o)); return; }
@@ -491,7 +491,7 @@ async function acao(ac, b) {
       var op = obraPorId(b.getAttribute('data-id')), ep = op && edVigente(op);
       if (!op) return;
       if (ac === 'prep-relatorio') {
-        var f0 = fonteMotor(ep), oa = { titulo: op.titulo, subtitulo: op.subtitulo, autores: (op.autores || []).join('\n'), sinopse: op.sinopse, cdd: op.cdd, cdu: op.cdu, assuntos: (op.assuntos || []).join('\n') };
+        var f0 = fonteMotor(ep), oa = { titulo: op.titulo, subtitulo: op.subtitulo, autores: (op.autores || []).join('\n'), organizadores: (op.organizadores || []).join('\n'), editores: (op.editores || []).join('\n'), sinopse: op.sinopse, cdd: op.cdd, cdu: op.cdu, assuntos: (op.assuntos || []).join('\n') };
         if (livroNoMotor(op, ep)) oa = null;
         else if (f0) { var pj0 = JSON.parse(new TextDecoder().decode(await decifrar(await ghLerBytes(ARQ + f0.projeto.id + '.bin')))); oa = pj0.obra || pj0; oa._arquivo = oa._arquivo || f0.manuscrito.nome; }
         baixar(new Blob([I().relatorioPendencias(pendenciasPorTitulo(op.titulo), oa)], { type: 'text/html' }), 'pendencias-' + slug(op.titulo) + '.html');
