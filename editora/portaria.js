@@ -13,7 +13,7 @@ var PADRAO = {
   regimento: 'Art. 10, IV do Regimento Interno da Editora Cacique Enir Terena',
   resolucao: 'Resolução nº 01/2025',
   cidade: 'Campo Grande/MS',
-  signatario: 'Germano Coelho Ramos Rocha da Silva',
+  signatario: 'Germano Coelho Ramos Rocha-Silva',
   cargo: 'Presidente do Conselho Editorial da Editora Cacique Enir Terena'
 };
 function dataExtenso(iso) { var p = String(iso).slice(0, 10).split('-'); return (+p[2]) + ' de ' + MESES[+p[1] - 1] + ' de ' + p[0]; }
